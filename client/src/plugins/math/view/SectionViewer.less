@@ -1,0 +1,103 @@
+.section-viewer {
+  margin: 10px 0;
+  padding: 5px 10px;
+  font-size: initial;
+  line-height: 1.5em;
+  user-select: none;
+  -webkit-user-select: none;
+
+  & .slice-content {
+    white-space: pre-wrap;
+  }
+
+  & .inline-latex {
+    font-size: small;
+    padding: 0 5px;
+  }
+
+  & .section-name {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+}
+
+.section-viewer.A,
+.section-viewer.B,
+.section-viewer.C,
+.section-viewer.D {
+  background: #0001;
+  border-radius: 5px;
+
+  & .section-name {
+    font-weight: normal;
+  }
+
+  & .section-name::after {
+    content: ".";
+  }
+}
+
+.section-viewer.view-mode.题干,
+.section-viewer.view-mode.标题,
+.section-viewer.view-mode.简介,
+.section-viewer.view-mode.详情 {
+  & .section-name {
+    display: none;
+  }
+}
+
+.section-viewer.view-mode.简介,
+.section-viewer.view-mode.详情 {
+  padding: 0;
+  // margin: 0 -12px;
+}
+
+.section-viewer.view-mode.题干 {
+  padding: 5px 0;
+}
+
+.section-viewer.view-mode.标题 {
+  font-size: larger;
+  padding: 5px 0;
+}
+
+.section-viewer.view-mode video {
+  border: 1px solid #0004;
+  border-radius: 5px;
+}
+
+.section-viewer img {
+  margin: 0 0 0 auto !important;
+}
+
+.section-viewer.view-mode.解析,
+.section-viewer.view-mode.答案 {
+  border-radius: 5px;
+  background: #0001;
+  min-height: 6em;
+
+  & .section-name {
+    background: #0001;
+    padding: 5px 10px;
+    width: calc(100% + 20px);
+    display: block;
+    border-radius: 5px 5px 0 0;
+    margin: -3px -10px 10px -10px;
+  }
+}
+
+.article-list {
+  counter-reset: section;
+
+  & > .article > .section-viewer:first-child::before {
+    counter-increment: section;
+    content: counter(section) "、 ";
+  }
+
+  & > .article.problem-viewer {
+    &.解答,
+    &.证明 {
+      margin-bottom: 80px;
+    }
+  }
+}

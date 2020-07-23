@@ -1,0 +1,31 @@
+syntax = "proto3";
+package moglogie.tags;
+import "google/protobuf/empty.proto";
+import "messages.proto";
+option csharp_namespace = "Modlogie.Api";
+
+service TagsService {
+  rpc GetAll(google.protobuf.Empty) returns (TagsReply);
+  rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
+  rpc Add(Tag) returns (TagReply);
+  rpc UpdateName(Tag) returns (modlogie.messages.Reply);
+  rpc UpdateValues(Tag) returns (modlogie.messages.Reply);
+}
+
+message Tag {
+  string id = 1;
+  string name = 2;
+  enum Type { STRING = 0; };
+  Type type = 3;
+  string values = 4;
+}
+
+message TagReply {
+  modlogie.messages.Error error = 1;
+  Tag tag = 2;
+}
+
+message TagsReply {
+  modlogie.messages.Error error = 1;
+  repeated Tag tags = 2;
+}

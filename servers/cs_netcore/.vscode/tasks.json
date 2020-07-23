@@ -1,0 +1,65 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "src",
+                // Ask dotnet build to generate full paths for file names.
+                "/property:GenerateFullPaths=true",
+                // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "generate_db",
+            "dependsOn": [
+                "build"
+            ],
+            "command": "dotnet",
+            "options": {
+                "cwd": "${workspaceFolder}/src/Modlogie/bin/Debug/netcoreapp3.1/"
+            },
+            "type": "shell",
+            "args": [
+                "Modlogie.dll",
+                "/Execue:UpdateDbOnly=true",
+            ]
+        },
+        {
+            "label": "generate_models",
+            "dependsOn": [
+                "generate_db"
+            ],
+            "command": "dotnet",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/src/Modlogie"
+            },
+            "args": [
+                "ef",
+                "dbcontext",
+                "scaffold",
+                "'Server=db;Database=modlogie;User=root;Password=123456;'",
+                "Pomelo.EntityFrameworkCore.MySql",
+                "--context",
+                "ModlogieContext",
+                "--force",
+                "--context-dir",
+                "Infrastructure/Data",
+                "--output-dir",
+                "Domain/Models",
+            ]
+        }
+    ]
+}

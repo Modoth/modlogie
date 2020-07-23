@@ -1,0 +1,5 @@
+            - endpoint:
+                address:
+                  socket_address:
+                    address: SERVER_TYPE
+                    port_value: 50051

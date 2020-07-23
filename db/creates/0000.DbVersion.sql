@@ -1,0 +1,3 @@
+CREATE TABLE DbVersion(
+    Id INTEGER PRIMARY KEY
+);

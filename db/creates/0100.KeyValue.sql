@@ -1,0 +1,4 @@
+CREATE TABLE KeyValue(
+    `Id` NVARCHAR(128) PRIMARY KEY,
+    Value NVARCHAR(128)
+);

@@ -1,0 +1,95 @@
+.article-view {
+  &.ant-card-bordered {
+    margin: 3px 0;
+    border-radius: 2px;
+    box-shadow: 0px 0px 1px #0008;
+    background: #fffe;
+  }
+
+  & .ant-card-body {
+    padding: 0;
+  }
+
+  & .article-body {
+    padding: 0;
+    background: transparent;
+    display: block;
+    min-height: 8em;
+  }
+  .article-title{
+    word-break: break-all;
+    // border-bottom: 1px solid #00000005;
+    background: #00000005;
+    padding: 15px 20px;
+    margin-bottom: 5px;
+    color: rgba(0, 0, 0, 0.65);
+    margin: -1px -1px 0px -1px;
+    border-radius: 2px 2px 0 0;
+  }
+  & .actions-list {
+    display: flex;
+    padding: 10px 0;
+    overflow-x: auto;
+    justify-content: space-around;
+    border-radius: 0 0 2px 2px;
+    // background: #00000005;
+    border-top: 1px solid #00000005;
+    margin: 20px -1px -1px -1px;
+
+    & button {
+      opacity: 1;
+      color: rgba(0, 0, 0, 0.65);
+
+      &.ant-btn-dangerous {
+        color: rgb(120, 20, 20, 0.65);
+        ;
+      }
+    }
+
+    & button:hover {
+      opacity: 1;
+    }
+  }
+
+  & .files-list {
+    display: flex;
+    overflow-x: auto;
+    background: #00000005;
+    margin: 0 -1px -1px -1px;
+    padding: 0 21px 10px 21px;
+    border-radius: 0 0 2px 2px;
+    align-items: center;
+    justify-content: space-between;
+
+    &>button {
+      color: rgba(0, 0, 0, 0.65);
+
+      &.ant-btn-dangerous {
+        color: rgb(120, 20, 20, 0.65);
+      }
+    }
+  }
+
+  & .actions-tags-list {
+    display: flex;
+    box-sizing: border-box;
+    overflow-x: auto;
+    background: #00000005;
+    margin: 20px -1px 0 -1px;
+    padding: 20px 21px 10px 21px;
+    border-top: 1px solid #00000005;
+
+    & .ant-tree-select {
+      flex: 1;
+      min-width: 12em;
+    }
+
+    & .ant-select-selector {
+      border-radius: 10px;
+    }
+
+    &>* {
+      margin-right: 8px;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package modlogie.messages;
+option csharp_namespace = "Modlogie.Api";
+
+enum Error {
+  NONE = 0;
+  INVALID_USER_OR_PWD = 1;
+  NO_SUCH_ENTITY = 2;
+  ENTITY_CONFLICT = 3;
+  INVALID_ARGUMENTS = 4;
+  INVALID_OPERATION = 5;
+}
+
+message Reply { Error error = 1; }
+
+message StringId { string Id = 1; }

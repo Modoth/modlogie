@@ -1,0 +1,26 @@
+syntax = "proto3";
+package modlogie.keyvalue;
+import "google/protobuf/empty.proto";
+import "messages.proto";
+option csharp_namespace = "Modlogie.Api";
+
+service KeyValuesService {
+  rpc GetAll(google.protobuf.Empty) returns (KeyValuesReply);
+  rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
+  rpc AddOrUpdate(KeyValue) returns (KeyValueReply);
+}
+
+message KeyValue {
+  string id = 1;
+  string value = 2;
+}
+
+message KeyValueReply {
+  modlogie.messages.Error error = 1;
+  KeyValue key_value = 2;
+}
+
+message KeyValuesReply {
+  modlogie.messages.Error error = 1;
+  repeated KeyValue key_values = 2;
+}

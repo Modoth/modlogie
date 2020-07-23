@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../apis/Protos"
+		},
+		{
+			"path": "../../client"
+		},
+		{
+			"path": "../../db"
+		},
+		{
+			"path": "../../tools"
+		}
+	],
+	"settings": {}
+}

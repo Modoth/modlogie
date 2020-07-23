@@ -1,0 +1,31 @@
+version: '3.1'
+services: 
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        client_image_name: ${docker_user}/modlogie_client:${app_version}
+    container_name: ${app_name}
+    restart: always
+    volumes:
+      - /data/${app_name}/files:/usr/share/nginx/html/files
+    ports:
+      - "${app_port}:443"
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    restart: always
+    container_name: ${app_name}_server
+  db:
+    image: mariadb
+    container_name: ${app_name}_db
+    restart: always
+    volumes:
+      - /data/${app_name}/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${db_pwd}
+  redis:
+    image: redis
+    container_name: ${app_name}_redis

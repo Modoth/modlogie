@@ -1,0 +1,40 @@
+version: "3.1"
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+      args:
+        - HOST_NAME=base
+    container_name: modlogie_dev_base
+    image: modlogie_dev_base:latest
+    privileged: true
+    volumes:
+      - ../../../.docker:/var/lib/docker
+    entrypoint: ["sh", "-c", "( [ -f /var/run/docker.pid ] && rm /var/run/docker.pid ); dockerd"]
+  cs_netcore:
+    build:
+      context: .
+      dockerfile: Dockerfile.cs_netcore
+    depends_on:
+      - base
+    container_name: modlogie_dev_cs_netcore
+    image: modlogie_dev_cs_netcore:latest
+    cap_add:
+      - SYS_PTRACE
+    volumes:
+      - ../../..:/home/dev
+    ports:
+      - "9022:22"
+    environment:
+      - DOCKER_HOST=tcp://base:2375
+  db:
+    image: mariadb
+    container_name: modlogie_dev_db
+    volumes:
+      - ../../../.db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+  redis:
+    image: redis
+    container_name: modlogie_dev_redis

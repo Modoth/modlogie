@@ -1,0 +1,136 @@
+syntax = "proto3";
+package modlogie.file;
+import "google/protobuf/empty.proto";
+import "messages.proto";
+option csharp_namespace = "Modlogie.Api";
+
+service FilesService {
+  rpc GetFolders(google.protobuf.Empty) returns (FilesReply);
+  rpc GetFiles(GetFilesRequest) returns (FilesReply);
+  rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
+  rpc Add(AddRequest) returns (FileReply);
+  rpc AddResource(AddResourceRequest) returns (ResourceReply);
+  rpc UpdateName(UpdateNameRequest) returns (FileReply);
+  rpc Move(MoveRequest) returns (FileReply);
+  rpc UpdateContent(UpdateContentRequest) returns (modlogie.messages.Reply);
+  rpc Query(QueryRequest) returns (FilesReply);
+  rpc AddOrUpdateTags(AddOrUpdateTagsRequest) returns (modlogie.messages.Reply);
+  rpc DeleteTags(DeleteTagsRequest) returns (modlogie.messages.Reply);
+}
+
+message FileTag {
+  string tag_id = 1;
+  string value = 2;
+}
+
+message AddOrUpdateTagsRequest {
+  string id = 1;
+  repeated FileTag tags = 2;
+}
+
+message DeleteTagsRequest {
+  string id = 1;
+  repeated FileTag tags = 2;
+}
+
+message QueryRequest {
+  Query query = 1;
+  string filter = 2;
+  int32 skip = 3;
+  int32 take = 4;
+}
+
+message Query {
+  string parent = 1;
+  Condition where = 2;
+  string order_by = 3;
+  bool order_by_desc = 4;
+}
+
+message Condition {
+  enum ConditionType {
+    NONE = 0;
+    AND = 1;
+    NOT = 2;
+    OR = 3;
+    HAS = 4;
+    EQUAL = 5;
+    CONTAINS = 6;
+    STARTS_WITH = 7;
+    ENDS_WITH = 8;
+    GREATER_THAN = 9;
+    GREATER_THAN_OR_EQUAL = 10;
+    LESS_THEN_OR_EQUAL = 11;
+  }
+  ConditionType type = 1;
+  string prop = 2;
+  string value = 3;
+  repeated Condition children = 4;
+}
+
+message File {
+  string id = 1;
+  string name = 2;
+  string path = 3;
+  enum FileType {
+    NORMAL = 0;
+    FOLDER = 1;
+    RESOURCE = 2;
+  }
+  FileType file_type = 4;
+  string parent_id = 5;
+  int32 normal_files_count = 6;
+  string content = 7;
+  repeated FileTag tags = 8;
+}
+
+message FilesReply {
+  modlogie.messages.Error error = 1;
+  int32 total = 2;
+  repeated File files = 3;
+}
+
+message AddRequest {
+  string name = 1;
+  File.FileType file_type = 2;
+  string parent_id = 3;
+}
+
+message AddResourceRequest {
+  string type = 1;
+  bytes content = 2;
+  string parent_id = 3;
+}
+
+message ResourceReply {
+  modlogie.messages.Error error = 1;
+  string id = 2;
+  string content_id = 3;
+}
+
+message GetFilesRequest {
+  string parent_id = 1;
+  int32 skip = 2;
+  int32 take = 3;
+}
+
+message FileReply {
+  modlogie.messages.Error error = 1;
+  File file = 2;
+}
+
+message UpdateNameRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message UpdateContentRequest {
+  string id = 1;
+  string content = 2;
+  repeated string resource_ids = 3;
+}
+
+message MoveRequest {
+  string id = 1;
+  string parentId = 2;
+}

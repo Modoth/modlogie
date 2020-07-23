@@ -1,0 +1,43 @@
+.article-list-menus {
+  right: 10px;
+  top: 10px;
+  position: fixed;
+  display: flex;
+
+  & > * {
+    margin-left: 10px;
+    box-shadow: 1px 1px 3px #0008 !important;
+  }
+}
+
+.article-list {
+  padding: 20px;
+  padding-top: 60px;
+  background: white;
+  min-height: 100vh;
+}
+
+.article-list.column-count-1 {
+  column-count: 1;
+}
+
+.article-list.column-count-2 {
+  column-count: 2;
+}
+
+@media print {
+  .article-list-menus {
+    display: none;
+  }
+
+  .article-list {
+    padding: 0;
+    background: transparent;
+    min-height: unset;
+  }
+
+  .article-list.column-count-2 {
+    column-fill: auto;
+    height: 100%;
+  }
+}

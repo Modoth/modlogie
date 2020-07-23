@@ -1,0 +1,28 @@
+#!/bin/env bash
+
+set -o errexit
+
+scripts_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd "$scripts_dir"
+
+export IMAGE_USER=${IMAGE_USER:-modoth}
+export IMAGE_VERSION=${IMAGE_VERSION:-latest}
+
+
+methods=$1
+
+case $methods in
+    prepare) methods="prepare-build-image.sh";shift;;
+    build) methods="build-image.sh";shift;;
+    push) methods="push-image.sh";shift;;
+    *) methods="prepare-build-image.sh build-image.sh push-image.sh";;
+esac
+
+for image in "$@"
+do
+    echo -e "\n==========  Handle ${image}  ==========\n"
+    for method in $methods
+    do
+        ( cd $image && ./$method )
+    done
+done

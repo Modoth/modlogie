@@ -1,0 +1,33 @@
+import React from 'react'
+import { ArticleContentViewerProps } from '../../IPluginInfo';
+import Highlight from './Hightlight';
+const ReactMarkdown = require('react-markdown')
+import './ArticleViewer.less'
+import { ArticleContent } from '../../../domain/Article';
+import classNames from 'classnames';
+import { Tabs } from 'antd';
+const { TabPane } = Tabs;
+
+export default function ArticleViewer(props: ArticleContentViewerProps) {
+    var existedSections = new Map((props.content?.sections || []).map(s => [s.name!, s]))
+    var sections = props.type!.allSections.size > 0 ? Array.from(
+        props.type!.allSections, name => existedSections.get(name)!).filter(s => s && s.content)
+        : Array.from(existedSections.values())
+
+    return props.print ? <div className={classNames('article-viewer', "only-print")}>
+        {
+            sections.map(section => <div className={classNames(section.name, "code")} key={section.name}>
+                <div>{section.name} </div>
+                <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
+            </div>)
+        }
+    </div> :
+        <Tabs className={classNames('article-viewer', "no-print")}>{
+            sections.map(section => <TabPane className={classNames(section.name, "code")} tab={section.name} key={section.name}>
+                <div onClick={props.onClick}>
+                    <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
+                </div>
+            </TabPane>)
+        }
+        </Tabs>
+}
