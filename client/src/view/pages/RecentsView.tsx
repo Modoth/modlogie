@@ -5,7 +5,7 @@ import IViewService from '../services/IViewService'
 import classNames from 'classnames'
 import './RecentsView.less'
 import { generateRandomStyle } from './common'
-import IPluginInfo, { ArticleContentType, PluginsConfig } from '../../plugins/IPluginInfo'
+import IPluginInfo, { ArticleContentType, PluginsConfig, ArticleType } from '../../plugins/IPluginInfo'
 import { useHistory } from 'react-router-dom'
 import Article from '../../domain/Article'
 import ITagsService, { TagNames } from '../../domain/ITagsService'
@@ -13,6 +13,7 @@ import { Carousel } from 'antd'
 import IArticleViewServie from '../services/IArticleViewService'
 import IArticleService from '../../domain/IArticleService'
 import IConfigsService from '../../domain/IConfigsSercice'
+import ConfigKeys from '../../app/ConfigKeys'
 
 function RecentArticle(props: { article: Article, type: ArticleContentType, onClick?: MouseEventHandler<any>; }) {
   return (
@@ -30,15 +31,8 @@ export default function RecentsView() {
   const viewService = locator.locate(IViewService)
   const [articles, setArticles] = useState<Article[]>([])
   const [articleTypes, setArticleTypes] = useState(new Map<Article, ArticleContentType>())
+  const [type, setType] = useState<ArticleType | undefined>();
 
-  const history = useHistory();
-  const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types)[0]
-  const goto = (id: string) => {
-    if (!type) {
-      return
-    }
-    history.push('/' + type.route + '/' + id)
-  }
   const fetchArticles = async (page?: number) => {
     if (!type) {
       return
@@ -63,9 +57,27 @@ export default function RecentsView() {
     setArticleTypes(types)
     setArticles(articles)
   }
+
+  const fetchType = async () => {
+    var recentType = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECENT_TYPE);
+    if (!recentType) {
+      return;
+    }
+    const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types).find(t => t.name == recentType);
+    setType(type);
+  }
+
   useEffect(() => {
     fetchArticles()
+  }, [type])
+
+  useEffect(() => {
+    fetchType()
   }, [])
+
+  if (!type) {
+    return <></>
+  }
   return (
     <div className="recents-view">
       <div className="title">{langs.get(LangKeys.Latest)}</div>

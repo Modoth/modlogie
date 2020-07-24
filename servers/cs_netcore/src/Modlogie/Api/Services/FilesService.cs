@@ -505,6 +505,11 @@ namespace Modlogie.Api.Services
                 await trans.Commit();
             }
             reply.File = _converter(item);
+            if (item.Type == (int)FileType.Folder)
+            {
+                await ClearFolderVersionsCache();
+
+            }
             return reply;
         }
 

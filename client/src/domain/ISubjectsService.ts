@@ -2,7 +2,7 @@ import Subject from './Subject'
 import IFilesServiceBase from './IFilesServiceBase'
 
 export default class ISubjectsService extends IFilesServiceBase {
-  all(): Promise<Subject[]> {
+  all(rootChildName?: string): Promise<Subject[]> {
     throw new Error('Method not implemented.')
   }
 

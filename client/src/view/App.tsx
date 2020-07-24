@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './App.less'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { BrowserRouter as Router, HashRouter } from 'react-router-dom'
 import { UserContext, useServicesLocator } from '../app/Contexts'
 import LoginService from '../app/LoginService'
 import Nav from './pages/Nav'
@@ -53,12 +53,12 @@ export default function App() {
           }}
         ></ServiceView>
         <div ref={ref}>
-          <Router >
+          <HashRouter >
             <Nav></Nav>
             <div className="nav-content-wrapper">
               <NavContent></NavContent>
             </div>
-          </Router>
+          </HashRouter>
         </div>
       </UserContext.Provider>
     </>

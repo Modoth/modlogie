@@ -14,10 +14,18 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
   private subjects: Subject[]
   private allSubjects: Map<string, Subject>
   private ICON_TAG = TagNames.RESERVED_PREFIX + 'icon';
+  private loadingTask?: Promise<void>
 
-  async all(): Promise<Subject[]> {
+  async all(rootChildName?: string): Promise<Subject[]> {
     await this.loadCache();
-    return this.subjects.map(s => s.clone());
+    if (!rootChildName) {
+      return this.subjects.map(s => s.clone());
+    }
+    var parent = this.subjects.find(s => s.name == rootChildName);
+    if (!parent) {
+      return [];
+    }
+    return [parent.clone()];
   }
 
   private addSubjectToCache(subject: Subject, parentId?: string) {
@@ -100,6 +108,15 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     if (this.cached) {
       return
     }
+    if (this.loadingTask) {
+      return this.loadingTask;
+    }
+    this.loadingTask = this.loadCacheInternal().then(() => this.loadingTask = undefined);
+    await this.loadingTask
+    this.cached = true;
+  }
+
+  async loadCacheInternal(): Promise<any> {
     var res = (await ClientRun(() => this.locate(FilesServiceClient).getFolders(new Empty(), null)));
     var folders = res.getFilesList();
     var version = res.getVersion()
@@ -144,7 +161,6 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     for (var sbj of this.subjects) {
       updateTotalArticleCount(sbj);
     }
-    this.cached = true;
   }
 
   private async subjectFrom(item: File): Promise<Subject> {
