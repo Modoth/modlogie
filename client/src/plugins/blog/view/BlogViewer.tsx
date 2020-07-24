@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ArticleContentViewerProps } from '../../IPluginInfo'
 import { ArticleSection } from '../../../domain/Article'
-import './ProblemViewer.less'
+import './BlogViewer.less'
 import SectionViewer from './SectionViewer'
 import classNames from 'classnames'
 
@@ -10,12 +10,12 @@ const getSections = (allSections: Set<string>, sections?: ArticleSection[]) => {
   return Array.from(allSections, (name) => existedSections.get(name) || { name, content: '' } as ArticleSection)
 }
 
-export default function ProblemViewer(props: ArticleContentViewerProps) {
+export default function BlogViewer(props: ArticleContentViewerProps) {
   const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
   const [sections] = useState((getSections(props.type?.allSections!, props.content!.sections!)))
   const [showHidden, setShowHidden] = useState(props.showHiddens == true)
   return (
-    <div className={classNames(props.className, props.type?.name, "problem-viewer")} onClick={(e) => {
+    <div className={classNames(props.className, props.type?.name, "blog-viewer")} onClick={(e) => {
       if (props.onClick) {
         props.onClick(e)
       } else {

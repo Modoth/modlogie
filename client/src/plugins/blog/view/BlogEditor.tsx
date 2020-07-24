@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ArticleContentEditorProps, ArticleContentType } from '../../IPluginInfo'
-import './ProblemEditor.less'
+import './BlogEditor.less'
 import { ArticleFile, ArticleSection } from '../../../domain/Article'
 import SectionEditor, { ArticleSectionVm } from './SectionEditor'
 
@@ -9,7 +9,7 @@ const getSections = (allSections: Set<string>, sections?: ArticleSection[]) => {
   return Array.from(allSections, (name) => Object.assign((existedSections.get(name) || { name, content: '' }), { callbacks: {} }) as ArticleSectionVm)
 }
 
-export default function ProblemEditor(props: ArticleContentEditorProps) {
+export default function BlogEditor(props: ArticleContentEditorProps) {
   const [type, setType] = useState<ArticleContentType | undefined>(undefined)
   const [sections, setSections] = useState<ArticleSectionVm[]>([])
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function ProblemEditor(props: ArticleContentEditorProps) {
       sections: sections.map(s => ({ content: s.content, name: s.name }))
     }
   }
-  return <div className="problem-editor">
+  return <div className="blog-editor">
     {sections.map(section =>
       <SectionEditor formulaEditor={undefined} onpaste={props.onpaste} key={section.name} onClick={section === currentSection ? undefined : () => saveCurrentSectionAndChange(section)} section={section} filesDict={filesDict} editing={section === currentSection}></SectionEditor>
     )}

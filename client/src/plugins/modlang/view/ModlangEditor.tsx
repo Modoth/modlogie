@@ -3,7 +3,7 @@ import { ArticleContentEditorProps } from '../../IPluginInfo';
 import TextArea from 'antd/lib/input/TextArea';
 import { ArticleSection } from '../../../domain/Article';
 import classNames from 'classnames';
-import './ArticleEditor.less'
+import './ModlangEditor.less'
 import { Tabs } from 'antd';
 const { TabPane } = Tabs;
 
@@ -20,7 +20,7 @@ function SectionEditor(props: { section: ArticleSection, callbacks: { getEditedC
     </TextArea>
 }
 
-export default function ArticleEditor(props: ArticleContentEditorProps) {
+export default function ModlangEditor(props: ArticleContentEditorProps) {
     var existedSections = new Map((props.content?.sections || []).map(s => [s.name!, s]))
     var sections = Array.from(
         props.type!.allSections, name => existedSections.get(name) || { name } as ArticleSection)
@@ -29,7 +29,7 @@ export default function ArticleEditor(props: ArticleContentEditorProps) {
         return { sections: Array.from(callbacks, ([{ name, content }, { getEditedContent }]) => ({ name, content: getEditedContent ? getEditedContent() : content })) }
     }
     return (
-        <Tabs className={classNames('article-editor')}>{
+        <Tabs className={classNames('modlang-editor')}>{
             sections.map(section => <TabPane className={classNames(section.name, "code")} tab={section.name} key={section.name}>
                 <div >
                     <SectionEditor callbacks={callbacks.get(section)!} key={section.name} section={section}></SectionEditor>

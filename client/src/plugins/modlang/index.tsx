@@ -1,8 +1,8 @@
 import React, { memo } from 'react'
 import IPluginInfo, { ArticleType } from '../IPluginInfo'
-import { BookOutlined } from '@ant-design/icons'
-import ArticleViewer from './view/ArticleViewer';
-import ArticleEditor from './view/ArticleEditor';
+import { LaptopOutlined } from '@ant-design/icons'
+import ModlangViewer from './view/ModlangViewer';
+import ModlangEditor from './view/ModlangEditor';
 import IConfigsService, { Config } from '../../domain/IConfigsSercice';
 import ModlangDefaultConfigs from './ModlangDefaultConfigs';
 import ModlangConfigKeys from './ModlangConfigKeys';
@@ -21,23 +21,15 @@ export class ModlangPluginInfo implements IPluginInfo {
   }
 
   async init(configs: IConfigsService): Promise<any> {
-    var groupsConfig = await configs.get(ModlangConfigKeys.MODLANG_TYPES)
-    if (!groupsConfig) {
-      return
-    }
-    var configValue = groupsConfig.value || groupsConfig.defaultValue
-    if (!configValue) {
-      return
-    }
-    var groups = configValue.split(' ').map(g => g.trim()).filter(g => g);
+    var groups = await configs.getValuesOrDefault(ModlangConfigKeys.MODLANG_TYPES)
     this.articleTypes = groups.map(group => (
       {
         route: group,
         name: group,
         rootSubject: group,
-        icon: <BookOutlined />,
-        Viewer: memo(ArticleViewer) as any,
-        Editor: memo(ArticleEditor) as any,
+        icon: <LaptopOutlined />,
+        Viewer: memo(ModlangViewer) as any,
+        Editor: memo(ModlangEditor) as any,
       }
     ))
   }

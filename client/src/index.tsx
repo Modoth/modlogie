@@ -31,7 +31,7 @@ import TagsServiceSingleton from './domain/TagsServiceSingleton'
 import { FilesServiceClient } from './apis/FilesServiceClientPb'
 import IArticleService from './domain/IArticleService'
 import ArticleService from './domain/ArticleService'
-import MathPluginInfo from './plugins/math'
+import BlogPluginInfo from './plugins/blog'
 import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG } from './app/ConfigKeys'
 // import './assets/images'
 import logoImg from './assets/logo.png'
@@ -62,8 +62,8 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       case 'Modlang':
         plugins.push(new ModlangPluginInfo());
         break
-      case 'Math':
-        plugins.push(new MathPluginInfo());
+      case 'Blog':
+        plugins.push(new BlogPluginInfo());
         break
     }
   }
