@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './NavContent.less'
 import Login from './Login'
 import { Switch, Route } from 'react-router-dom'
@@ -10,10 +10,20 @@ import { useServicesLocator } from '../../app/Contexts'
 import { PluginsConfig } from '../../plugins/IPluginInfo'
 import Home from './Home'
 import { ManageConfigs } from './ManageConfigs'
+import IConfigsService from '../../domain/IConfigsSercice'
+import ConfigKeys from '../../app/ConfigKeys'
 
 function NavContent() {
   const locator = useServicesLocator()
   const plugins = locator.locate(PluginsConfig)
+  const [footer, setFooter] = useState('')
+  const fetchFooter = async () => {
+    var footer = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_FOOTER)
+    setFooter(footer)
+  }
+  useEffect(() => {
+    fetchFooter()
+  }, [])
   return (
     <Switch>
       {
@@ -37,7 +47,12 @@ function NavContent() {
         <Login />
       </Route>
       <Route path="/">
-        <Home />
+        <>
+          <Home />
+          {
+            footer ? <div className="footer">{footer.split('\\n').map(p => <div>{p}</div>)}</div> : null
+          }
+        </>
       </Route>
     </Switch>
   )

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Modlogie.Api.Common;
 using Modlogie.Domain;
 using static Modlogie.Api.File.Types;
@@ -17,6 +19,42 @@ namespace Modlogie.Api.Services
     {
         private const string PATH_SEP = "/";
 
+        private const string FOLDERS_VERSION_CACHE_KEY = "FILES_VERSION";
+
+        private async Task<FilesReply> UpdateFolderVersionsCache()
+        {
+            var folders = await this.GetFoldersInternal();
+            var version = await _contentService.Add(_cachesGroup, (fs) =>
+            {
+                using (var s = new Google.Protobuf.CodedOutputStream(fs))
+                {
+                    folders.WriteTo(s);
+                }
+                return Task.FromResult(true);
+            }, "bin");
+            await _cahce.SetStringAsync(FOLDERS_VERSION_CACHE_KEY, version);
+            return folders;
+        }
+
+        private async Task ClearFolderVersionsCache()
+        {
+            await _cahce.RemoveAsync(FOLDERS_VERSION_CACHE_KEY);
+            return;
+        }
+
+        private async Task<string> GetFolderVersionsCache()
+        {
+            return await _cahce.GetStringAsync(FOLDERS_VERSION_CACHE_KEY);
+        }
+
+        private string GetFolderCacheFile(string version)
+        {
+
+            return "caches/folders." + version + ".json";
+        }
+
+        private const string FOLDERS_VERSION_CLEAN_CACHES_KEY = "FILES_VERSION";
+
         private static string JoinPath(string basePath, string name)
         {
             return basePath + PATH_SEP + name;
@@ -26,6 +64,17 @@ namespace Modlogie.Api.Services
         {
             return path.Substring(0, path.LastIndexOf(PATH_SEP));
         }
+
+        private static Expression<Func<Domain.Models.File, object>> _folderCachesSelector = i =>
+        new
+        {
+            Id = i.Id.ToString(),
+            Name = i.Name,
+            Path = i.Path,
+            NormalFilesCount = i.NormalFilesCount ?? 0,
+            ParentId = i.ParentId != null ? i.ParentId.ToString() : string.Empty,
+            FileTags = i.FileTags != null ? i.FileTags.Select(t => new { TagId = t.TagId.ToString(), Value = t.Value }) : null
+        };
 
         private static Expression<Func<Domain.Models.File, File>> _selector = i =>
         new File
@@ -39,18 +88,33 @@ namespace Modlogie.Api.Services
             FileTagsForSelect = i.FileTags != null ? i.FileTags.Select(t => new FileTag { TagId = t.TagId.ToString(), Value = t.Value }) : null
         };
         private static Func<Domain.Models.File, File> _converter = _selector.Compile();
-
+        private readonly string _instanceName;
+        private readonly string _resourcesGroup;
+        private readonly string _cachesGroup;
         private readonly IFilesEntityService _service;
+        private readonly ITagsEntityService _tagsService;
         private readonly IFileContentService _contentService;
         private readonly IFileQueryCompileService _queryCompiler;
         private readonly ILoginUserService _userService;
+        private readonly IDistributedCache _cahce;
 
-        public FilesService(IFilesEntityService service, IFileContentService contentService, ILoginUserService userService, Common.IFileQueryCompileService queryCompiler)
+        public FilesService(IConfiguration configuration,
+        IFilesEntityService service,
+        ITagsEntityService tagsService,
+        IFileContentService contentService,
+        ILoginUserService userService,
+        Common.IFileQueryCompileService queryCompiler,
+        IDistributedCache cahce)
         {
+            _instanceName = configuration.GetValue<string>("Execute:InstanceName");
+            _resourcesGroup = configuration.GetValue<string>("File:Resources");
+            _cachesGroup = configuration.GetValue<string>("File:Caches");
             _service = service;
+            _tagsService = tagsService;
             _contentService = contentService;
             _queryCompiler = queryCompiler;
             _userService = userService;
+            _cahce = cahce;
         }
 
         public async override Task<FilesReply> Query(QueryRequest request, ServerCallContext context)
@@ -134,7 +198,7 @@ namespace Modlogie.Api.Services
             return reply;
         }
 
-        public async override Task<FilesReply> GetFolders(Empty request, ServerCallContext context)
+        private async Task<FilesReply> GetFoldersInternal()
         {
             var reply = new FilesReply();
             reply.Files.AddRange(await _service.All()
@@ -142,6 +206,23 @@ namespace Modlogie.Api.Services
                 .Select(_selector)
                 .ToArrayAsync());
             return reply;
+        }
+
+        public async override Task<FilesReply> GetFolders(Empty request, ServerCallContext context)
+        {
+
+            var version = await _cahce.GetStringAsync(FOLDERS_VERSION_CACHE_KEY);
+            if (string.IsNullOrWhiteSpace(version))
+            {
+                var reply = await UpdateFolderVersionsCache();
+                return reply;
+            }
+            else
+            {
+                var reply = new FilesReply();
+                reply.Version = version;
+                return reply;
+            }
         }
 
         public async override Task<FilesReply> GetFiles(GetFilesRequest request, ServerCallContext context)
@@ -185,9 +266,9 @@ namespace Modlogie.Api.Services
             return reply;
         }
 
-        public async override Task<Reply> AddOrUpdateTags(AddOrUpdateTagsRequest request, ServerCallContext context)
+        public async override Task<AddOrUpdateTagsReply> AddOrUpdateTags(AddOrUpdateTagsRequest request, ServerCallContext context)
         {
-            var reply = new Reply();
+            var reply = new AddOrUpdateTagsReply();
             if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
             {
                 reply.Error = Error.InvalidOperation;
@@ -199,7 +280,7 @@ namespace Modlogie.Api.Services
                 return reply;
             }
 
-            var item = await _service.All().Where(i => i.Id == id).Include(i => i.FileTags).FirstOrDefaultAsync();
+            var item = await _service.All().Where(i => i.Id == id).Include(i => i.FileTags).ThenInclude(t => t.Tag).FirstOrDefaultAsync();
             if (item == null)
             {
                 reply.Error = Error.NoSuchEntity;
@@ -212,21 +293,71 @@ namespace Modlogie.Api.Services
             }
             var tags = item.FileTags;
             var tagsDict = tags.ToDictionary(t => t.TagId);
-            var updates = request.Tags.Select(t => new Modlogie.Domain.Models.FileTag { TagId = Guid.Parse(t.TagId), Value = t.Value, File = item });
-            foreach (var tag in updates)
+            var updates = request.Tags.Select(t => new { TagId = Guid.Parse(t.TagId), Value = t.Value, Content = t.Content, ContentType = GetContentType(t.ContentType), File = item });
+
+            var resourceContentToDelete = new List<string>();
+            foreach (var update in updates)
             {
-                if (tagsDict.ContainsKey(tag.TagId))
+                Modlogie.Domain.Models.FileTag tag;
+                if (tagsDict.ContainsKey(update.TagId))
                 {
-                    tagsDict[tag.TagId].Value = tag.Value;
+                    tag = tagsDict[update.TagId];
                 }
                 else
                 {
+                    tag = new Modlogie.Domain.Models.FileTag
+                    {
+                        Tag = await _tagsService.All().FirstOrDefaultAsync(t => t.Id == update.TagId),
+                        File = item
+                    };
+
+                    if (tag.Tag == null)
+                    {
+                        reply.Error = Error.NoSuchEntity;
+                        return reply;
+                    }
                     tags.Add(tag);
                 }
+                if (tag.Tag.Type == (int)Tag.Types.Type.Resource)
+                {
+                    if (string.IsNullOrWhiteSpace(update.ContentType))
+                    {
+                        reply.Error = Error.InvalidArguments;
+                        return reply;
+                    }
+                    if (!string.IsNullOrWhiteSpace(tag.Value))
+                    {
+                        resourceContentToDelete.Add(tag.Value);
+                    }
+                    tag.Value = await _contentService.Add(_resourcesGroup, stream =>
+                    {
+                        update.Content.WriteTo(stream);
+                        return Task.FromResult(true);
+                    }, update.ContentType);
+                }
+                else
+                {
+                    tag.Value = update.Value;
+                }
+                reply.TagContents.Add(tag.Value);
             }
 
             await _service.Update(item);
-
+            foreach (var todelete in resourceContentToDelete)
+            {
+                try
+                {
+                    await _contentService.Delete(todelete);
+                }
+                catch (Exception e)
+                {
+                    //ignore
+                }
+            }
+            if (item.Type == (int)FileType.Folder)
+            {
+                await ClearFolderVersionsCache();
+            }
             return reply;
         }
 
@@ -257,6 +388,10 @@ namespace Modlogie.Api.Services
                 var deletes = request.Tags.Select(t => Guid.Parse(t.TagId)).ToHashSet();
                 item.FileTags = item.FileTags.Where(t => deletes.Contains(t.TagId)).ToList();
                 await _service.Update(item);
+                if (item.Type == (int)FileType.Folder)
+                {
+                    await ClearFolderVersionsCache();
+                }
             }
 
             var tags = item.FileTags;
@@ -310,6 +445,12 @@ namespace Modlogie.Api.Services
                 {
                     file.Parent.NormalFilesCount = (file.Parent.NormalFilesCount ?? 0) + 1;
                     await _service.Update(file.Parent);
+                    await ClearFolderVersionsCache();
+
+                }
+                else if (file.Type == (int)FileType.Folder)
+                {
+                    await ClearFolderVersionsCache();
                 }
                 await trans.Commit();
             }
@@ -401,6 +542,12 @@ namespace Modlogie.Api.Services
                 {
                     file.Parent.NormalFilesCount = Math.Max(0, ((file.Parent.NormalFilesCount ?? 0) - 1));
                     await _service.Update(file.Parent);
+                    await ClearFolderVersionsCache();
+                }
+                else if (file.Type == (int)FileType.Folder)
+                {
+                    await ClearFolderVersionsCache();
+
                 }
 
                 var childrenPathSufix = file.Path + PATH_SEP;
@@ -453,7 +600,7 @@ namespace Modlogie.Api.Services
             }
             var originContent = item.Content;
             var resources = request.ResourceIds.Select(r => Guid.Parse(r)).ToHashSet();
-            item.Content = await _contentService.Add(request.Content);
+            item.Content = await _contentService.Add(_resourcesGroup, request.Content);
             using (var trans = _service.Context.BeginTransaction())
             {
                 var children = await _service.All().Where(f => f.ParentId == item.Id).ToListAsync();
@@ -468,21 +615,31 @@ namespace Modlogie.Api.Services
             return reply;
         }
 
+        private string GetContentType(string type)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+
+                return null;
+            }
+            type = type.Split('/').Last();
+            if (!new Regex(@"[a-z0-9]{3,6}").Match(type).Success)
+            {
+                return null;
+            }
+            return type;
+        }
+
         public async override Task<ResourceReply> AddResource(AddResourceRequest request, ServerCallContext context)
         {
             var reply = new ResourceReply();
-            var type = request.Type;
+            var type = GetContentType(request.Type);
             if (string.IsNullOrWhiteSpace(type))
             {
                 reply.Error = Error.InvalidArguments;
                 return reply;
             }
-            type = type.Split('/').Last();
-            if (!new Regex(@"[a-z0-9]{3,6}").Match(type).Success)
-            {
-                reply.Error = Error.InvalidArguments;
-                return reply;
-            }
+
             if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
             {
                 reply.Error = Error.InvalidOperation;
@@ -502,7 +659,7 @@ namespace Modlogie.Api.Services
             }
             var file = new Modlogie.Domain.Models.File { Type = (int)FileType.Resource, Name = Guid.NewGuid().ToString(), Parent = parent, Created = DateTime.Now, Modified = DateTime.Now };
             file.Path = JoinPath(parent.Path, file.Name);
-            file.Content = await _contentService.Add(stream =>
+            file.Content = await _contentService.Add(_resourcesGroup, stream =>
             {
                 request.Content.WriteTo(stream);
                 return Task.FromResult(true);
@@ -544,8 +701,13 @@ namespace Modlogie.Api.Services
                         await _service.DeleteRange(children);
                         if (file.Type == (int)FileType.Normal && file.Parent != null && file.Parent.Type == (int)FileType.Folder)
                         {
+                            await ClearFolderVersionsCache();
                             file.Parent.NormalFilesCount = Math.Max(0, ((file.Parent.NormalFilesCount ?? 0) - 1));
                             await _service.Update(file.Parent);
+                        }
+                        else if (file.Type == (int)FileType.Folder)
+                        {
+                            await ClearFolderVersionsCache();
                         }
                         await trans.Commit();
                     }

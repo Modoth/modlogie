@@ -1,7 +1,8 @@
 import Article from "./Article"
 import { Query } from "../apis/files_pb"
+import IFilesServiceBase from "./IFilesServiceBase"
 
-export default class IArticleService {
+export default class IArticleService extends IFilesServiceBase {
     all(subjectId: string, skip: number, take: number): Promise<[number, Article[]]> {
         throw new Error('Method not implemented.')
     }

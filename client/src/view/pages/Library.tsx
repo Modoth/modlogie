@@ -22,7 +22,6 @@ import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys, { get_ARTICLE_TAGS } from '../../app/ConfigKeys'
 import IArticleService from '../../domain/IArticleService'
 import { Query, Condition } from '../../apis/files_pb'
-import IFilesService from '../../domain/IFilesService'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -191,9 +190,9 @@ export default function Library(props: LibraryProps) {
     tag: ArticleTag,
     tagValue: string
   ) => {
-    const api = locator.locate(IFilesService)
+    const api = locator.locate(IArticleService)
     try {
-      await api.updateArticleTags(article.id!, { id: tag.id!, value: tagValue })
+      await api.updateTags(article.id!, { id: tag.id!, value: tagValue })
       if (!article.tagsDict) {
         article.tagsDict = new Map()
         article.tags = article.tags || []

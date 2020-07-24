@@ -14,18 +14,25 @@ service FilesService {
   rpc Move(MoveRequest) returns (FileReply);
   rpc UpdateContent(UpdateContentRequest) returns (modlogie.messages.Reply);
   rpc Query(QueryRequest) returns (FilesReply);
-  rpc AddOrUpdateTags(AddOrUpdateTagsRequest) returns (modlogie.messages.Reply);
+  rpc AddOrUpdateTags(AddOrUpdateTagsRequest) returns (AddOrUpdateTagsReply);
   rpc DeleteTags(DeleteTagsRequest) returns (modlogie.messages.Reply);
 }
 
 message FileTag {
   string tag_id = 1;
   string value = 2;
+  bytes content = 3;
+  string content_type = 4;
 }
 
 message AddOrUpdateTagsRequest {
   string id = 1;
   repeated FileTag tags = 2;
+}
+
+message AddOrUpdateTagsReply {
+  modlogie.messages.Error error = 1;
+  repeated string tag_contents = 2;
 }
 
 message DeleteTagsRequest {
@@ -87,7 +94,8 @@ message File {
 message FilesReply {
   modlogie.messages.Error error = 1;
   int32 total = 2;
-  repeated File files = 3;
+  string version = 3;
+  repeated File files = 4;
 }
 
 message AddRequest {

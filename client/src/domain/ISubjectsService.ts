@@ -1,6 +1,7 @@
 import Subject from './Subject'
+import IFilesServiceBase from './IFilesServiceBase'
 
-export default class ISubjectsService implements ISubjectsService {
+export default class ISubjectsService extends IFilesServiceBase {
   all(): Promise<Subject[]> {
     throw new Error('Method not implemented.')
   }
@@ -19,5 +20,13 @@ export default class ISubjectsService implements ISubjectsService {
 
   clearCache() {
     throw new Error("Method not implemented.")
+  }
+
+  setIcon(subjectId: string, type: string, content: Uint8Array): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+
+  resetIcon(subjectId: string): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 }

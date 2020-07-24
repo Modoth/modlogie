@@ -10,6 +10,7 @@ services:
     restart: always
     volumes:
       - /data/${app_name}/files:/usr/share/nginx/html/files
+      - /data/${app_name}/caches:/usr/share/nginx/html/caches
     ports:
       - "${app_port}:443"
   server:
@@ -19,7 +20,7 @@ services:
     restart: always
     container_name: ${app_name}_server
   db:
-    image: mariadb
+    image: mariadb:10.5.4
     container_name: ${app_name}_db
     restart: always
     volumes:
@@ -27,5 +28,5 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${db_pwd}
   redis:
-    image: redis
+    image: redis:6.0.6
     container_name: ${app_name}_redis

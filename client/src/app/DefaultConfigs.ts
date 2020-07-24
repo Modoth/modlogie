@@ -3,6 +3,7 @@ import { Config, ConfigType } from "../domain/IConfigsSercice";
 
 class DefaultConfigsClass implements ConfigKeysInterface<Config> {
     WEB_SITE_NAME = new Config(ConfigKeys.WEB_SITE_NAME, ConfigType.STRING, "博客");
+    WEB_SITE_FOOTER = new Config(ConfigKeys.WEB_SITE_FOOTER, ConfigType.STRING, "");
     PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, "");
 }
 

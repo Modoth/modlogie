@@ -23,9 +23,9 @@ function Nav() {
   const locator = useServicesLocator()
   const plugins = locator.locate(PluginsConfig)
   const langs = locator.locate(ILangsService)
-  const [title, setTitile] = useState(langs.get(LangKeys.Home))
   const [showDrawer, setShowDrawer] = useState(false)
   const user = useUser()
+  const [title, setTitile] = useState(langs.get(LangKeys.Home))
   const fetchTitle = async () => {
     var nameConfig = await locator.locate(IConfigsService).get(ConfigKeys.WEB_SITE_NAME)
     var title = nameConfig?.value || nameConfig?.defaultValue

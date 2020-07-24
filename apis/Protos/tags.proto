@@ -15,7 +15,14 @@ service TagsService {
 message Tag {
   string id = 1;
   string name = 2;
-  enum Type { STRING = 0; };
+  enum Type {
+    STRING = 0;
+    ENUM = 1;
+    NUMBER = 2;
+    BOOLEAN = 3;
+    ARTICLE = 4;
+    RESOURCE = 5;
+  };
   Type type = 3;
   string values = 4;
 }

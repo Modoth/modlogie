@@ -16,10 +16,15 @@ class LangKeysClass implements LangKeysInterface, IKeyValue {
   ENUM = '枚举';
   [key: string]: string;
   AddToArticleList = '添加';
+  AdmLogin= '管理登陆';
+  Cancle = '取消';
   Configs = '配置';
   Create = '创建';
   DefaultValue = '默认值';
+  Delete = '删除';
+  EnumValue = '枚举值';
   Home = '首页';
+  Import = '导入';
   Latest = '最近更新';
   Login = '登陆';
   Logout = "注销";
@@ -27,20 +32,16 @@ class LangKeysClass implements LangKeysInterface, IKeyValue {
   Modify = '修改';
   MSG_ERROR_NETWORK = '网络错误';
   MSG_ERROR_USER_OR_PWD = '用户名或密码错误';
+  Name = '名称';
+  Ok = '确定';
   Password = '密码';
   RemoveFromArticleList = '移除';
   Reset = '重置';
   Subject = '主题';
   Tags = '标签';
+  Type = '类型';
   UserName = '用户名';
   Value = '值';
-  Delete = '删除';
-  Type = '类型';
-  Name = '名称';
-  Cancle = '取消';
-  Ok = '确定';
-  Import = '导入';
-  EnumValue = '枚举值';
   Welcome = '感谢使用';
 }
 

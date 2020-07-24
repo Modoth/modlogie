@@ -20,7 +20,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
     async addDefaultConfigs(...configs: Config[]): Promise<void> {
         await this.loadCache();
         this.defaultConfigs.push(...configs)
-        this.clearCache();
+        this.clearCache(true);
         await this.loadCache();
     }
 

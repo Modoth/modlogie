@@ -13,7 +13,7 @@ export default class MathPluginInfo implements IPluginInfo {
       {
         route: 'library',
         name: '题库',
-        rootSubject: '数学',
+        rootSubject: '题库',
         noTitle: true,
         icon: <ApartmentOutlined />,
         Viewer: memo(ProblemViewer) as any,
@@ -22,7 +22,7 @@ export default class MathPluginInfo implements IPluginInfo {
       {
         route: 'subject',
         name: '专题',
-        rootSubject: '数学',
+        rootSubject: '专题',
         icon: <ApiOutlined />,
         Viewer: memo(ProblemViewer) as any,
         Editor: memo(ProblemEditor) as any

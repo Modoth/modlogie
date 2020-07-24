@@ -34,6 +34,11 @@ export namespace Tag {
 
   export enum Type { 
     STRING = 0,
+    ENUM = 1,
+    NUMBER = 2,
+    BOOLEAN = 3,
+    ARTICLE = 4,
+    RESOURCE = 5,
   }
 }
 

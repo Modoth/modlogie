@@ -2,7 +2,7 @@ import React from 'react'
 import './Account.less'
 import { useUser, useServicesLocator } from '../../app/Contexts'
 import { Button, Avatar } from 'antd'
-import { Redirect } from 'react-router-dom'
+import { Redirect, Link } from 'react-router-dom'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import ILoginService from '../../app/ILoginService'
 import IViewService from '../services/IViewService'
@@ -25,6 +25,13 @@ export default function Account() {
           type="text"
         >
           {langs.get(LangKeys.Welcome)}
+        </Button>
+        <Button
+          className="adm-login"
+          size="small"
+          type="text"
+        >
+           <Link to={'/login'}>{langs.get(LangKeys.AdmLogin)}</Link>
         </Button>
       </div>
     )

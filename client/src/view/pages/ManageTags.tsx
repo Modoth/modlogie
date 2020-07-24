@@ -7,7 +7,7 @@ import { PlusOutlined, DeleteFilled, UploadOutlined } from '@ant-design/icons'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
 import YAML, { stringify } from 'yaml'
-import ITagsService, { Tag, TagType } from '../../domain/ITagsService'
+import ITagsService, { Tag, TagType, TagNames } from '../../domain/ITagsService'
 
 export function ManageTags() {
   const user = useUser()
@@ -22,7 +22,7 @@ export function ManageTags() {
   const [tags, setTags] = useState<Tag[] | undefined>()
   const fetchTags = async () => {
     try {
-      var tags = (await locator.locate(ITagsService).all()).sort((a, b) => a.name.localeCompare(b.name));
+      var tags = (await locator.locate(ITagsService).all()).filter(t => !t.name.startsWith(TagNames.RESERVED_PREFIX)).sort((a, b) => a.name.localeCompare(b.name));
       setTags(tags)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -50,7 +50,7 @@ export function ManageTags() {
         }
       ],
       async (newTagName: string, newTagValue: string, typeName: string) => {
-        if (!newTagName) {
+        if (!newTagName || newTagName.startsWith(TagNames.RESERVED_PREFIX)) {
           return
         }
         var type = tagTypes[tagTypeNames.indexOf(typeName)]
@@ -85,10 +85,13 @@ export function ManageTags() {
           hint: langs.get(LangKeys.Tags)
         }
       ],
-      async (newName: string) => {
+      async (newTagName: string) => {
+        if (!newTagName || newTagName.startsWith(TagNames.RESERVED_PREFIX)) {
+          return
+        }
         try {
-          await locator.locate(ITagsService).updateName(tag.name, newName);
-          tag!.name = newName
+          await locator.locate(ITagsService).updateName(tag.name, newTagName);
+          tag!.name = newTagName
           setTags([...tags!])
           locator.locate(ITagsService).clearCache()
           return true

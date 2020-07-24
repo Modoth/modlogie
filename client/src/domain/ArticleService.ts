@@ -1,13 +1,13 @@
-import Article, { ArticleContent, ArticleTag } from "./Article"
-import IServicesLocator from "../common/IServicesLocator"
+import Article, { ArticleTag } from "./Article"
 import IArticleService from "./IArticleService"
 import { ClientRun } from "../common/GrpcUtils"
 import { FilesServiceClient } from "../apis/FilesServiceClientPb"
 import { StringId } from "../apis/messages_pb"
 import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest } from "../apis/files_pb"
 import ITagsService from "./ITagsService"
+import FilesServiceBase from "./FilesServiceBase"
 
-export default class ArticleService extends IServicesLocator implements IArticleService {
+export default class ArticleService extends FilesServiceBase implements IArticleService {
 
     private async tryParseContent(url: string): Promise<any> {
         try {

@@ -1,10 +1,10 @@
 export enum ConfigType {
     STRING = 0,
+    ENUM,
     NUMBER,
     BOOLEAN,
-    ENUM,
     ARTICLE,
-    IMAGE
+    RESOURCE
 }
 
 export class Config {

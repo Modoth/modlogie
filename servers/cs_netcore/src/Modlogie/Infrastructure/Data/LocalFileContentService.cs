@@ -10,7 +10,6 @@ namespace Modlogie.Infrastructure.Data
     {
         public string ContentRoot { get; set; }
 
-        public string Prefix { get; set; }
     }
     public class LocalFileContentService : IFileContentService
     {
@@ -20,12 +19,12 @@ namespace Modlogie.Infrastructure.Data
             _options = options.Value;
         }
 
-        private (string, string) GenerateAndPrepareForFileName(string ext)
+        private (string, string) GenerateAndPrepareForFileName(string group, string type)
         {
             var guid = Guid.NewGuid().ToString();
             var idx = guid.IndexOf("-");
-            var folder = Path.Join(_options.Prefix, guid.Substring(0, idx));
-            var file = guid.Substring(idx + 1, guid.Length - (idx + 1)) + ext;
+            var folder = Path.Join(group, guid.Substring(0, idx));
+            var file = guid.Substring(idx + 1, guid.Length - (idx + 1)) + "." + type;
             var id = Path.Join(folder, file);
             var folderPath = Path.Join(_options.ContentRoot, folder);
             if (!Directory.Exists(folderPath))
@@ -36,16 +35,16 @@ namespace Modlogie.Infrastructure.Data
             return (id, filePath);
         }
 
-        public async Task<string> Add(string content)
+        public async Task<string> Add(string group, string content, string type)
         {
-            var (id, filePath) = GenerateAndPrepareForFileName(".txt");
+            var (id, filePath) = GenerateAndPrepareForFileName(group, type);
             await System.IO.File.WriteAllTextAsync(filePath, content);
             return id;
         }
 
-        public async Task<string> Add(Func<Stream, Task> writeContent, string type)
+        public async Task<string> Add(string group, Func<Stream, Task> writeContent, string type)
         {
-            var (id, filePath) = GenerateAndPrepareForFileName("." + type);
+            var (id, filePath) = GenerateAndPrepareForFileName(group, type);
             using (var fs = File.OpenWrite(filePath))
             {
                 await writeContent(fs);

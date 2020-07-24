@@ -31,7 +31,6 @@ import Langs from '../Langs'
 import IArticleService from '../../domain/IArticleService'
 import IConfigsService from '../../domain/IConfigsSercice'
 import { title } from 'process'
-import IFilesService from '../../domain/IFilesService'
 
 const { Option } = Select
 
@@ -104,7 +103,7 @@ export default function ArticleView(props: {
       async (file: File) => {
         try {
           viewService.setLoading(true)
-          const fileService = locator.locate(IFilesService)
+          const fileService = locator.locate(IArticleService)
           const articleService = locator.locate(IArticleService)
           const [id, url] = await fileService.addFile(props.article.id!, file.type, new Uint8Array(await file.arrayBuffer()))
           const newFiles = [...(files || [])]
@@ -164,9 +163,9 @@ export default function ArticleView(props: {
   }
 
   const updateTag = async (tag: ArticleTag, tagValue: string) => {
-    const service = locator.locate(IFilesService)
+    const service = locator.locate(IArticleService)
     try {
-      await service.updateArticleTags(props.article.id!, { id: tag.id!, value: tagValue });
+      await service.updateTags(props.article.id!, { id: tag.id!, value: tagValue });
       const newTags = tagsDict || new Map()
       let newTag: ArticleTag
       if (!newTags.has(tag.name)) {

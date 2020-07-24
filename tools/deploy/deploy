@@ -30,7 +30,7 @@ if [[ -n "$@" ]]; then
     exit
 fi
 
-# cd "$deploy_dir" && docker-compose down || true
+( cd "$deploy_dir" && docker-compose down || true )
 
 rm -rf "$deploy_dir" || true
 mkdir -p "$deploy_dir"
@@ -53,5 +53,5 @@ if [ ! -f 'cert.pem' ];then
     openssl req -new -newkey rsa:4096 -nodes -keyout cert.key -out cert.csr -subj '/CN=localhost' -config <(printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
     openssl x509 -req -sha256 -days 1 -in cert.csr -signkey cert.key -out cert.pem
 fi
-# docker-compose pull
+docker-compose pull
 docker-compose up -d --build

@@ -27,7 +27,11 @@ function SubjectView(props: { subject: Subject, deepth: number, parentPath: stri
   }
   return (
     <Badge count={props.subject.totalArticleCount} className={classNames("subject-content-wraper", `subject-${props.deepth}`)}>
-      <div onClick={() => props.onClick(props.subject)} className={classNames("subject-content", generateRandomStyle())}>{props.subject.name}</div>
+      <div onClick={() => props.onClick(props.subject)} className={classNames("subject-content", generateRandomStyle())}>
+        {
+          props.subject.iconUrl ? <img src={props.subject.iconUrl}></img> : <span>{props.subject.name}</span>
+        }
+      </div>
     </Badge>
   )
 }

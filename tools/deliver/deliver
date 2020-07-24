@@ -8,15 +8,21 @@ cd "$scripts_dir"
 export IMAGE_USER=${IMAGE_USER:-modoth}
 export IMAGE_VERSION=${IMAGE_VERSION:-latest}
 
+methods=""
 
-methods=$1
+while :
+do
+    case $1 in
+        prepare) methods="$methods prepare-build-image.sh";shift;;
+        build) methods="$methods build-image.sh";shift;;
+        push) methods="$methods push-image.sh";shift;;
+        *) break;;
+    esac
+done
 
-case $methods in
-    prepare) methods="prepare-build-image.sh";shift;;
-    build) methods="build-image.sh";shift;;
-    push) methods="push-image.sh";shift;;
-    *) methods="prepare-build-image.sh build-image.sh push-image.sh";;
-esac
+if [ -z "$methods" ];then
+    methods="prepare-build-image.sh build-image.sh push-image.sh"
+fi
 
 for image in "$@"
 do

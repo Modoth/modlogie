@@ -10,6 +10,14 @@ export class FileTag extends jspb.Message {
   getValue(): string;
   setValue(value: string): FileTag;
 
+  getContent(): Uint8Array | string;
+  getContent_asU8(): Uint8Array;
+  getContent_asB64(): string;
+  setContent(value: Uint8Array | string): FileTag;
+
+  getContentType(): string;
+  setContentType(value: string): FileTag;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): FileTag.AsObject;
   static toObject(includeInstance: boolean, msg: FileTag): FileTag.AsObject;
@@ -22,6 +30,8 @@ export namespace FileTag {
   export type AsObject = {
     tagId: string,
     value: string,
+    content: Uint8Array | string,
+    contentType: string,
   }
 }
 
@@ -46,6 +56,30 @@ export namespace AddOrUpdateTagsRequest {
   export type AsObject = {
     id: string,
     tagsList: Array<FileTag.AsObject>,
+  }
+}
+
+export class AddOrUpdateTagsReply extends jspb.Message {
+  getError(): messages_pb.Error;
+  setError(value: messages_pb.Error): AddOrUpdateTagsReply;
+
+  getTagContentsList(): Array<string>;
+  setTagContentsList(value: Array<string>): AddOrUpdateTagsReply;
+  clearTagContentsList(): AddOrUpdateTagsReply;
+  addTagContents(value: string, index?: number): AddOrUpdateTagsReply;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddOrUpdateTagsReply.AsObject;
+  static toObject(includeInstance: boolean, msg: AddOrUpdateTagsReply): AddOrUpdateTagsReply.AsObject;
+  static serializeBinaryToWriter(message: AddOrUpdateTagsReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddOrUpdateTagsReply;
+  static deserializeBinaryFromReader(message: AddOrUpdateTagsReply, reader: jspb.BinaryReader): AddOrUpdateTagsReply;
+}
+
+export namespace AddOrUpdateTagsReply {
+  export type AsObject = {
+    error: messages_pb.Error,
+    tagContentsList: Array<string>,
   }
 }
 
@@ -245,6 +279,9 @@ export class FilesReply extends jspb.Message {
   getTotal(): number;
   setTotal(value: number): FilesReply;
 
+  getVersion(): string;
+  setVersion(value: string): FilesReply;
+
   getFilesList(): Array<File>;
   setFilesList(value: Array<File>): FilesReply;
   clearFilesList(): FilesReply;
@@ -262,6 +299,7 @@ export namespace FilesReply {
   export type AsObject = {
     error: messages_pb.Error,
     total: number,
+    version: string,
     filesList: Array<File.AsObject>,
   }
 }

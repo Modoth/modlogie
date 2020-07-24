@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react'
 import './ManageSubjects.less'
 import { useUser, useServicesLocator } from '../../app/Contexts'
 import { Redirect } from 'react-router-dom'
-import { Button, Table } from 'antd'
+import { Button, Table, Avatar } from 'antd'
 import {
   DeleteFilled,
   SisternodeOutlined,
-  SubnodeOutlined
+  SubnodeOutlined,
+  PictureOutlined
 } from '@ant-design/icons'
 import Subject from '../../domain/Subject'
 import ISubjectsService from '../../domain/ISubjectsService'
@@ -134,6 +135,63 @@ export function ManageSubjects() {
     )
   }
 
+  const setIcon = (subject: Subject) => {
+    viewService.prompt(
+      langs.get(LangKeys.Import),
+      [
+        {
+          type: 'File',
+          value: undefined
+        }
+      ],
+      async (file: File) => {
+        if (!file) {
+          return
+        }
+        viewService.setLoading(true)
+        const service: ISubjectsService = locator.locate(ISubjectsService)
+        var iconUrl
+        try {
+          iconUrl = await service.setIcon(subject.id, file.type, new Uint8Array(await file.arrayBuffer()))
+        } catch (e) {
+          viewService!.errorKey(langs, e.message)
+          viewService.setLoading(false)
+          return
+        }
+        subject.iconUrl = iconUrl
+        if (subject.parent) {
+          updateSubjectAncestors(subject)
+        } else {
+          const idx = subjects!.findIndex(s => s.id === subject.id)
+          subjects!.splice(idx, 1, Object.assign({}, subject))
+        }
+        setSubjects([...subjects!])
+        viewService.setLoading(false)
+        return true
+      }
+    )
+  }
+
+  const resetIcon = async (subject: Subject) => {
+    const service: ISubjectsService = locator.locate(ISubjectsService)
+    try {
+      await service.resetIcon(subject.id)
+    } catch (e) {
+      viewService!.errorKey(langs, e.message)
+      return
+    }
+    subject.iconUrl = undefined
+    subject.iconUrl = undefined
+    if (subject.parent) {
+      updateSubjectAncestors(subject)
+    } else {
+      const idx = subjects!.findIndex(s => s.id === subject.id)
+      subjects!.splice(idx, 1, Object.assign({}, subject))
+    }
+    setSubjects([...subjects!])
+    return true
+  }
+
   useEffect(() => {
     fetchSubjects()
   }, [])
@@ -141,6 +199,21 @@ export function ManageSubjects() {
   const renderName = (_: string, subject: Subject) => {
     return (
       <span onClick={() => updateSubjectName(subject)}>{subject.name}</span>
+    )
+  }
+  const renderIcon = (_: string, subject: Subject) => {
+    return (
+      subject.iconUrl ?
+        <div onClick={() => resetIcon(subject)}>
+          <Avatar
+            src={subject.iconUrl}
+          />
+        </div> :
+        <Button
+          type="link"
+          onClick={() => setIcon(subject)}
+          icon={<PictureOutlined />}
+        />
     )
   }
   const renderCreate = (_: string, subject: Subject) => {
@@ -171,6 +244,11 @@ export function ManageSubjects() {
             dataIndex: 'name',
             key: 'name',
             render: renderName
+          },
+          {
+            key: 'icon',
+            className: 'subject-icon-column',
+            render: renderIcon
           },
           {
             key: 'create',

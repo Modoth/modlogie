@@ -235,7 +235,12 @@ proto.moglogie.tags.Tag.serializeBinaryToWriter = function(message, writer) {
  * @enum {number}
  */
 proto.moglogie.tags.Tag.Type = {
-  STRING: 0
+  STRING: 0,
+  ENUM: 1,
+  NUMBER: 2,
+  BOOLEAN: 3,
+  ARTICLE: 4,
+  RESOURCE: 5
 };
 
 /**

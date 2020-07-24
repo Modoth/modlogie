@@ -1,6 +1,7 @@
 export class ConfigKeysInterface<T> {
     PLUGINS: T = <any>'PLUGINS'
     WEB_SITE_NAME: T = <any>'WEB_SITE_NAME';
+    WEB_SITE_FOOTER: T = <any>'WEB_SITE_FOOTER';
 }
 
 export function get_ARTICLE_TAGS(typeName: string) {

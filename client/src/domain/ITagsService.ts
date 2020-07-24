@@ -1,15 +1,15 @@
 export const TagNames = {
-    ArticleTagsSurfix: '标签',
-    TypeTag: '类型',
-    SubTypeSurfix: '子类',
-    ArticleSectionSurfix: '章节',
     HidenSectionPrefix: '_',
-    TitleTag: '标题'
+    RESERVED_PREFIX : '__'
 }
 
 export enum TagType {
     STRING = 0,
-    ENUM = 1
+    ENUM,
+    NUMBER,
+    BOOLEAN,
+    ARTICLE,
+    RESOURCE
 }
 
 export class Tag {

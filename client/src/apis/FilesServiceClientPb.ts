@@ -17,6 +17,7 @@ import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty
 import * as messages_pb from './messages_pb';
 
 import {
+  AddOrUpdateTagsReply,
   AddOrUpdateTagsRequest,
   AddRequest,
   AddResourceRequest,
@@ -401,28 +402,28 @@ export class FilesServiceClient {
   }
 
   methodInfoAddOrUpdateTags = new grpcWeb.AbstractClientBase.MethodInfo(
-    messages_pb.Reply,
+    AddOrUpdateTagsReply,
     (request: AddOrUpdateTagsRequest) => {
       return request.serializeBinary();
     },
-    messages_pb.Reply.deserializeBinary
+    AddOrUpdateTagsReply.deserializeBinary
   );
 
   addOrUpdateTags(
     request: AddOrUpdateTagsRequest,
-    metadata: grpcWeb.Metadata | null): Promise<messages_pb.Reply>;
+    metadata: grpcWeb.Metadata | null): Promise<AddOrUpdateTagsReply>;
 
   addOrUpdateTags(
     request: AddOrUpdateTagsRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.Error,
-               response: messages_pb.Reply) => void): grpcWeb.ClientReadableStream<messages_pb.Reply>;
+               response: AddOrUpdateTagsReply) => void): grpcWeb.ClientReadableStream<AddOrUpdateTagsReply>;
 
   addOrUpdateTags(
     request: AddOrUpdateTagsRequest,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.Error,
-               response: messages_pb.Reply) => void) {
+               response: AddOrUpdateTagsReply) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         new URL('/modlogie.file.FilesService/AddOrUpdateTags', this.hostname_).toString(),
