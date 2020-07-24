@@ -33,6 +33,24 @@ import IArticleService from './domain/IArticleService'
 import ArticleService from './domain/ArticleService'
 import MathPluginInfo from './plugins/math'
 import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG } from './app/ConfigKeys'
+// import './assets/images'
+import logoImg from './assets/logo.png'
+
+const dynamicSetHead = () => {
+  let icon = document.createElement('link');
+  icon.rel = 'icon'
+  icon.type = 'image/x-icon'
+  icon.href = logoImg;
+  document.head.appendChild(icon)
+
+  let appTouchIcon = document.createElement('link');
+  appTouchIcon.rel = 'apple-touch-icon'
+  appTouchIcon.href = logoImg;
+  document.head.appendChild(appTouchIcon)
+
+}
+dynamicSetHead();
+
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)

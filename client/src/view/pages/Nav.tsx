@@ -18,6 +18,10 @@ import ITagsService, { TagNames } from '../../domain/ITagsService'
 import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
 import { PluginsConfig } from '../../plugins/IPluginInfo'
+
+import  logoImg from '../../assets/logo.png'
+import  avatarImg from '../../assets/avatar.png'
+
 const { SubMenu } = Menu
 function Nav() {
   const locator = useServicesLocator()
@@ -80,7 +84,7 @@ function Nav() {
             icon={
               <Avatar
                 className="avatar"
-                src={user.avatar || '/assets/avatar.png'}
+                src={user.avatar || avatarImg}
               />
             }
           >
@@ -89,7 +93,7 @@ function Nav() {
         ) : (
             <Menu.Item className="nav-avatar-icon" icon={<Avatar
               className="avatar"
-              src="/assets/logo.png"
+              src={logoImg}
             />}>
               <Link to="/account"></Link>
             </Menu.Item>

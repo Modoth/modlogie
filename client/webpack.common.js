@@ -1,11 +1,22 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyPlugin = require('copy-webpack-plugin')
 const path = require('path')
 
 module.exports = {
   entry: './src/index.tsx',
   module: {
     rules: [
+      {
+        test: /\.(png|jpg|gif)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,
+              name: 'assets/[name].[hash:8].[ext]'
+            },
+          },
+        ],
+      },
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
@@ -41,7 +52,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: '[name].[ext]',
+              name: '[name].[contenthash].[ext]',
               outputPath: 'fonts/'
             }
           }
@@ -53,17 +64,12 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js']
   },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist')
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html'
-    }),
-    new CopyPlugin({
-      patterns: [
-        { from: '*', to: 'assets', context: 'src/assets/' }
-      ]
     })
   ]
 }

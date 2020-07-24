@@ -32,7 +32,12 @@ function NavContent() {
         </Route>)
       }
       <Route path="/account">
-        <Account />
+        <>
+          <Account />
+          {
+            footer ? <div className="footer">{footer.split('\\n').map(p => <div>{p}</div>)}</div> : null
+          }
+        </>
       </Route>
       <Route path="/manage/tags">
         <ManageTags />
