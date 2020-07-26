@@ -36,7 +36,7 @@ function NavContent() {
         <>
           <Account />
           {
-            footer ? <div className="footer">{footer.split('\\n').map(p => <div>{p}</div>)}</div> : null
+            footer ? <ReactMarkdown className="footer" source={footer}></ReactMarkdown> : null
           }
         </>
       </Route>
