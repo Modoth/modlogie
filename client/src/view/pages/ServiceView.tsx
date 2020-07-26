@@ -8,6 +8,7 @@ import ArticleList from './ArticleList'
 import ArticleSingle from './ArticleSingle'
 import { ArticleContentType } from '../../plugins/IPluginInfo'
 import Article from '../../domain/Article'
+import TextArea from 'antd/lib/input/TextArea'
 
 class ViewService implements IViewService {
   errorKey(langs: ILangsService, key: any, timeout?: number | undefined): void {
@@ -227,13 +228,20 @@ export default function ServiceView(props: {
             switch (field.type) {
               case 'Text':
                 return (
-                  <Input
-                    suffix={field.icon}
-                    key={i}
-                    value={field.value}
-                    onChange={(e) => updateField(i, field, e.target.value)}
-                    placeholder={field.hint}
-                  ></Input>
+                  field.multiline ?
+                    <TextArea
+                      key={i}
+                      value={field.value}
+                      onChange={(e) => updateField(i, field, e.target.value)}
+                      placeholder={field.hint}
+                    ></TextArea> :
+                    <Input
+                      suffix={field.icon}
+                      key={i}
+                      value={field.value}
+                      onChange={(e) => updateField(i, field, e.target.value)}
+                      placeholder={field.hint}
+                    ></Input>
                 )
               case 'Enum':
                 return (

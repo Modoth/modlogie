@@ -11,6 +11,24 @@ import BlogDefaultConfigs from './BlogDefaultConfigs'
 export default class BlogPluginInfo implements IPluginInfo {
   private articleTypes: ArticleType[] = [];
 
+  constructor(typeNames: string[]) {
+    this.articleTypes = typeNames.map(name => {
+      var noTitle = name.startsWith('_');
+      if (noTitle) {
+        name = name.slice(1)
+      }
+      return {
+        route: name,
+        name: name,
+        rootSubject: name,
+        noTitle,
+        icon: <BookOutlined />,
+        Viewer: memo(BlogViewer) as any,
+        Editor: memo(BlogEditor) as any,
+      }
+    })
+  }
+
   get types(): ArticleType[] {
     return this.articleTypes;
   }
@@ -19,22 +37,7 @@ export default class BlogPluginInfo implements IPluginInfo {
   }
 
   async init(configs: IConfigsService): Promise<any> {
-    var groups = await configs.getValuesOrDefault(BlogConfigKeys.BLOG_TYPES)
-    this.articleTypes = groups.map(group => {
-      var noTitle = group.startsWith('_');
-      if (noTitle) {
-        group = group.slice(1)
-      }
-      return {
-        route: group,
-        name: group,
-        rootSubject: group,
-        noTitle,
-        icon: <BookOutlined />,
-        Viewer: memo(BlogViewer) as any,
-        Editor: memo(BlogEditor) as any,
-      }
-    })
+    // var groups = await configs.getValuesOrDefault(BlogConfigKeys.BLOG_TYPES)
   }
 
   get langs(): { [key: string]: string } {

@@ -6,7 +6,7 @@ import { Table, Button } from 'antd'
 import { ClearOutlined, EditOutlined } from '@ant-design/icons'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
-import IConfigsService, { Config } from '../../domain/IConfigsSercice'
+import IConfigsService, { Config, ConfigType } from '../../domain/IConfigsSercice'
 
 
 export function ManageConfigs() {
@@ -33,6 +33,7 @@ export function ManageConfigs() {
         {
           type: 'Text',
           value: config.value || config.defaultValue,
+          multiline: config.type === ConfigType.TEXT,
           hint: langs.get(LangKeys.Value)
         }
       ],

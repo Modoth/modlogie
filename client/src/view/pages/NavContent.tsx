@@ -12,6 +12,7 @@ import Home from './Home'
 import { ManageConfigs } from './ManageConfigs'
 import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
+import ReactMarkdown from 'react-markdown'
 
 function NavContent() {
   const locator = useServicesLocator()
@@ -55,7 +56,7 @@ function NavContent() {
         <>
           <Home />
           {
-            footer ? <div className="footer">{footer.split('\\n').map(p => <div>{p}</div>)}</div> : null
+            footer ? <ReactMarkdown className="footer" source={footer}></ReactMarkdown> : null
           }
         </>
       </Route>

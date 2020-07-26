@@ -44,6 +44,9 @@ export class ArticleContentEditorProps extends ArticleContentViewerProps {
 }
 
 export default class IPluginInfo {
+  constructor(typeNames: string[]) {
+    throw new Error('Method not implemented.')
+  }
   init(configs: IConfigsService): Promise<any> {
     throw new Error('Method not implemented.')
   }

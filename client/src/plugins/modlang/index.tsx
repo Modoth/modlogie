@@ -9,9 +9,31 @@ import ModlangConfigKeys from './ModlangConfigKeys';
 
 export class ModlangPluginInfo implements IPluginInfo {
   private articleTypes: ArticleType[] = [];
+
+  constructor(typeNames: string[]) {
+    this.articleTypes = typeNames.map(name => {
+      var noTitle = name.startsWith('_');
+      if (noTitle) {
+        name = name.slice(1)
+      }
+      return (
+        {
+          route: name,
+          name: name,
+          rootSubject: name,
+          noTitle,
+          icon: <LaptopOutlined />,
+          Viewer: memo(ModlangViewer) as any,
+          Editor: memo(ModlangEditor) as any,
+        }
+      )
+    })
+  }
+
   get types(): ArticleType[] {
     return this.articleTypes;
   }
+
   get defaultConfigs(): Config[] {
     return ModlangDefaultConfigs;
   }
@@ -21,16 +43,7 @@ export class ModlangPluginInfo implements IPluginInfo {
   }
 
   async init(configs: IConfigsService): Promise<any> {
-    var groups = await configs.getValuesOrDefault(ModlangConfigKeys.MODLANG_TYPES)
-    this.articleTypes = groups.map(group => (
-      {
-        route: group,
-        name: group,
-        rootSubject: group,
-        icon: <LaptopOutlined />,
-        Viewer: memo(ModlangViewer) as any,
-        Editor: memo(ModlangEditor) as any,
-      }
-    ))
+    // var groups = await configs.getValuesOrDefault(ModlangConfigKeys.MODLANG_TYPES)
+
   }
 }

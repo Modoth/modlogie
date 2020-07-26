@@ -92,7 +92,6 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
 
     async reset(key: string): Promise<Config | undefined> {
         await this.loadCache();
-
         var config = this.configs.get(key);
         if (!config) {
             return

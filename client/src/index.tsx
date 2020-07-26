@@ -55,15 +55,16 @@ dynamicSetHead();
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
   var tagsService = serviceLocator.locate(ITagsService)
-  var enabledPlugins = await (await configsService.getValueOrDefault(ConfigKeys.PLUGINS)).split(' ').map(c => c.trim()).filter(c => c);
+  var enabledPlugins = await (await configsService.getValueOrDefault(ConfigKeys.PLUGINS)).split(',').map(c => c.trim()).filter(c => c);
   var plugins = [];
   for (var p of enabledPlugins) {
-    switch (p) {
+    const [plugin, ...names] = p.split(' ').map(c => c.trim()).filter(c => c);
+    switch (plugin) {
       case 'Modlang':
-        plugins.push(new ModlangPluginInfo());
+        plugins.push(new ModlangPluginInfo(names));
         break
       case 'Blog':
-        plugins.push(new BlogPluginInfo());
+        plugins.push(new BlogPluginInfo(names));
         break
     }
   }
@@ -76,6 +77,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING),
     ]))
   var types = plugins.flatMap(p => p.types)
+
   for (var type of types) {
     type.subTypeTag = await configsService.getValueOrDefault(get_SUB_TYPE_TAG(type.name))
     if (type.subTypeTag) {

@@ -14,6 +14,8 @@ import IArticleViewServie from '../services/IArticleViewService'
 import IArticleService from '../../domain/IArticleService'
 import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
+import { Query, Condition } from '../../apis/files_pb'
+import ISubjectsService from '../../domain/ISubjectsService'
 
 function RecentArticle(props: { article: Article, type: ArticleContentType, onClick?: MouseEventHandler<any>; }) {
   return (
@@ -33,18 +35,27 @@ export default function RecentsView() {
   const [articleTypes, setArticleTypes] = useState(new Map<Article, ArticleContentType>())
   const [type, setType] = useState<ArticleType | undefined>();
 
-  const fetchArticles = async (page?: number) => {
+  const fetchArticles = async () => {
     if (!type) {
       return
     }
-    const api = locator.locate(IArticleService)
-    var articles = []
+    const subject = type.rootSubject ? (await locator.locate(ISubjectsService).all(type.rootSubject))?.[0] : null;
+    const subjectId = subject?.path;
+    var articles: Article[] = []
     try {
-      var _
-      [_, articles] = (await api.all('',
-        0,
-        5
-      ));
+      var query = new Query()
+        .setWhere(new Condition()
+          .setType(Condition.ConditionType.AND)
+          .setChildrenList([
+            new Condition().setType(Condition.ConditionType.EQUAL)
+              .setProp('Type')
+              .setValue('0'),
+            ...(subjectId ? [new Condition().setType(Condition.ConditionType.STARTS_WITH)
+              .setProp('Path').setValue(subjectId)] : [])
+          ])
+        )
+      var res = await locator.locate(IArticleService).query(query, 0, 5);
+      articles = res[1];
     } catch (e) {
       viewService!.errorKey(langs, e.message)
       return false
@@ -59,11 +70,7 @@ export default function RecentsView() {
   }
 
   const fetchType = async () => {
-    var recentType = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECENT_TYPE);
-    if (!recentType) {
-      return;
-    }
-    const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types).find(t => t.name == recentType);
+    const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types)[0];
     setType(type);
   }
 

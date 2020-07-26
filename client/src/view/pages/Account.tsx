@@ -10,6 +10,8 @@ import logoImg from '../../assets/logo.png'
 import avatarImg from '../../assets/avatar.png'
 import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
+import ReactMarkdown from 'react-markdown'
+
 export default function Account() {
   const user = useUser()
   const locator = useServicesLocator()
@@ -46,7 +48,7 @@ export default function Account() {
           </Button> : null
         }
         {
-          siteDesc ? <div className="welcome-content">{siteDesc.split('\\n').map(p => <div>{p}</div>)}</div> : null
+          siteDesc ? <ReactMarkdown className="welcome-content" source={siteDesc}></ReactMarkdown> : null
         }
 
         <Button

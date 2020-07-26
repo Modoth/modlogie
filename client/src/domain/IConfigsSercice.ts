@@ -4,7 +4,8 @@ export enum ConfigType {
     NUMBER,
     BOOLEAN,
     ARTICLE,
-    RESOURCE
+    RESOURCE,
+    TEXT,
 }
 
 export class Config {

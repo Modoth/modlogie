@@ -7,6 +7,7 @@ export interface IPromptField<TValue, TType extends 'Text' | 'Password' | 'Enum'
   hint?: string;
   value: TValue;
   values?: TValue[];
+  multiline?: boolean;
   icon?: React.ReactNode
   accept?: string;
 }
