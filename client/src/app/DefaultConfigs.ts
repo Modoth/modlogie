@@ -6,6 +6,8 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
     WEB_SITE_DESCRIPTION = new Config(ConfigKeys.WEB_SITE_DESCRIPTION, ConfigType.TEXT, "");
     WEB_SITE_FOOTER = new Config(ConfigKeys.WEB_SITE_FOOTER, ConfigType.TEXT, "");
     PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, "");
+    WEB_SITE_LOGO_TITLE = new Config(ConfigKeys.WEB_SITE_LOGO_TITLE, ConfigType.RESOURCE, "/配置/标题LOGO");
+    WEB_SITE_LOGO = new Config(ConfigKeys.WEB_SITE_LOGO, ConfigType.RESOURCE, "/配置/LOGO");
 }
 
 const DefaultConfigs: Config[] = Array.from(Object.values(new DefaultConfigsClass()))

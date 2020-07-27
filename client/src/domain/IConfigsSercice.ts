@@ -25,6 +25,10 @@ export default class IConfigsService {
         throw new Error('Method not implemented')
     }
 
+    getResource(key: string): Promise<string | undefined> {
+        throw new Error('Method not implemented')
+    }
+
     getValueOrDefault(key: string): Promise<string> {
         throw new Error('Method not implemented')
     }

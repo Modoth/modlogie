@@ -5,6 +5,7 @@ import { ClientRun } from "../common/GrpcUtils";
 import { Empty } from "google-protobuf/google/protobuf/empty_pb";
 import { KeyValue } from "../apis/keyvalues_pb";
 import { StringId } from "../apis/messages_pb";
+import ISubjectsService from "./ISubjectsService";
 
 export class ConfigsServiceSingleton extends IServicesLocator implements IConfigsSercice {
     private configs: Map<string, Config>
@@ -72,6 +73,17 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
             return
         }
         return this.cloneConfig(config);
+    }
+
+    async getResource(key: string): Promise<string | undefined> {
+        await this.loadCache();
+
+        var path = await this.getValueOrDefault(key);
+        if (!path) {
+            return
+        }
+        var resourceFile = await this.locate(ISubjectsService).getByPath(path)
+        return resourceFile?.iconUrl;
     }
 
     async set(key: string, value: string): Promise<Config | undefined> {

@@ -13,6 +13,7 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
   private cached: boolean;
   private subjects: Subject[]
   private allSubjects: Map<string, Subject>
+  private pathSubjects: Map<string, Subject>
   private ICON_TAG = TagNames.RESERVED_PREFIX + 'icon';
   private loadingTask?: Promise<void>
 
@@ -28,8 +29,16 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     return [parent.clone()];
   }
 
+
+  async getByPath(path: string): Promise<Subject | undefined> {
+    await this.loadCache();
+    return this.pathSubjects.get(path)
+  }
+
+
   private addSubjectToCache(subject: Subject, parentId?: string) {
     this.allSubjects.set(subject.id, subject);
+    this.pathSubjects.set(subject.path!, subject);
     if (parentId) {
       subject.parent = this.allSubjects.get(parentId)!
       subject.parent.children = subject.parent.children || []
@@ -41,6 +50,8 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
 
   private removeSubjectFromCache(subject: Subject) {
     this.allSubjects.delete(subject.id)
+    this.pathSubjects.delete(subject.path!)
+
     if (subject.parent) {
       subject.parent.children = subject.parent.children!.filter(s => s !== subject)
     } else {
@@ -140,8 +151,11 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     }
     this.subjects = [];
     this.allSubjects = new Map();
+    this.pathSubjects = new Map();
     for (var f of folders) {
-      this.allSubjects.set(f.getId(), await this.subjectFrom(f))
+      var sbj = await this.subjectFrom(f);
+      this.allSubjects.set(sbj.id, sbj)
+      this.pathSubjects.set(sbj.path!, sbj)
     }
     for (var folder of folders) {
       var id = folder.getId();

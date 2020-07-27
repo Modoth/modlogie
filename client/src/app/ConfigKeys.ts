@@ -3,6 +3,8 @@ export class ConfigKeysInterface<T> {
     WEB_SITE_NAME: T = <any>'WEB_SITE_NAME';
     WEB_SITE_FOOTER: T = <any>'WEB_SITE_FOOTER';
     WEB_SITE_DESCRIPTION: T = <any>'WEB_SITE_DESCRIPTION';
+    WEB_SITE_LOGO_TITLE: T = <any>'WEB_SITE_LOGO_TITLE';
+    WEB_SITE_LOGO: T = <any>'WEB_SITE_LOGO';
 }
 
 export function get_ARTICLE_TAGS(typeName: string) {

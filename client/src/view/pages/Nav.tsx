@@ -19,8 +19,8 @@ import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
 import { PluginsConfig } from '../../plugins/IPluginInfo'
 
-import logoImg from '../../assets/logo.png'
-import avatarImg from '../../assets/avatar.png'
+import defaultLogoImg from '../../assets/logo.png'
+import defaultAvatarImg from '../../assets/avatar.png'
 
 const { SubMenu } = Menu
 function Nav() {
@@ -29,18 +29,22 @@ function Nav() {
   const langs = locator.locate(ILangsService)
   const [showDrawer, setShowDrawer] = useState(false)
   const user = useUser()
-  const [title, setTitile] = useState(langs.get(LangKeys.Home))
-  const fetchTitle = async () => {
-    var nameConfig = await locator.locate(IConfigsService).get(ConfigKeys.WEB_SITE_NAME)
-    var title = nameConfig?.value || nameConfig?.defaultValue
-    if (!title) {
-      return
-    }
+  const [title, setTitile] = useState('')
+  const [logoTitleImg, setLogoTitleImg] = useState('')
+  const [logo, setLogo] = useState('')
+  const onComponentDidMount = async () => {
+    const configService = locator.locate(IConfigsService)
+    var nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
+    var title = nameConfig?.value || nameConfig?.defaultValue || langs.get(LangKeys.Home)
+    var logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE);
+    var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO);
     document.title = title
     setTitile(title)
+    setLogoTitleImg(logoTitle!)
+    setLogo(logo || defaultAvatarImg);
   }
   useEffect(() => {
-    fetchTitle()
+    onComponentDidMount()
   }, [])
   return (
     <>
@@ -75,15 +79,21 @@ function Nav() {
       <Menu mode="horizontal" className={classNames("nav")}>
         <Menu.Item className="nav-open-menu" icon={<MenuOutlined />} onClick={() => setShowDrawer(true)}>
         </Menu.Item>
-        <Menu.Item className="nav-home" icon={<HomeOutlined />}>
-          <Link to="/">{title}</Link>
-        </Menu.Item>
+        {
+          logoTitleImg ? <Menu.Item className="nav-home" icon={<img
+            src={logoTitleImg}
+          />}>
+            <Link to="/"></Link>
+          </Menu.Item> : (title ? <Menu.Item className="nav-home" icon={<HomeOutlined />}>
+            <Link to="/">{title}</Link>
+          </Menu.Item> : null)
+        }
         {user ? (
           <Menu.Item
             className="nav-avatar-icon"
             icon={
               <img
-                src={user.avatar || avatarImg}
+                src={logo}
               />
             }
           >

@@ -387,7 +387,7 @@ namespace Modlogie.Api.Services
             if (item.FileTags != null)
             {
                 var deletes = request.Tags.Select(t => Guid.Parse(t.TagId)).ToHashSet();
-                item.FileTags = item.FileTags.Where(t => deletes.Contains(t.TagId)).ToList();
+                item.FileTags = item.FileTags.Where(t => !deletes.Contains(t.TagId)).ToList();
                 await _service.Update(item);
                 if (item.Type == (int)FileType.Folder)
                 {

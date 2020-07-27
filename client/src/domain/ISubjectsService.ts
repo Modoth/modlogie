@@ -6,6 +6,10 @@ export default class ISubjectsService extends IFilesServiceBase {
     throw new Error('Method not implemented.')
   }
 
+  getByPath(path: string): Promise<Subject | undefined> {
+    throw new Error('Method not implemented.')
+  }
+
   add(name: string, parentId?: string): Promise<Subject> {
     throw new Error('Method not implemented.')
   }

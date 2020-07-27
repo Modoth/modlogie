@@ -20,23 +20,25 @@ export default function Account() {
   const viewService = locator.locate(IViewService)
   const [siteName, setSiteName] = useState('')
   const [siteDesc, setSiteDesc] = useState('')
-  const fetchDesc = async () => {
-    var name = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
-    var desc = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_DESCRIPTION)
+  const [logoImg, setLogoImg] = useState('')
+  const onComponentDidMount = async () => {
+    var configService = locator.locate(IConfigsService);
+    var name = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
+    var desc = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_DESCRIPTION)
+    var logoIcon = await configService.getResource(ConfigKeys.WEB_SITE_LOGO);
     setSiteName(name)
     setSiteDesc(desc)
+    setLogoImg(logoIcon || avatarImg)
   }
   useEffect(() => {
-    if (!user) {
-      fetchDesc()
-    }
-  }, [user])
+    onComponentDidMount()
+  }, [])
 
   if (!user) {
     return (
       <div className="account">
         <div className="avatar-wraper">
-          <Avatar className="avatar" src={avatarImg} />
+          {logoImg ? <Avatar className="avatar" src={logoImg} /> : null}
         </div>
         {
           siteName ? <Button
@@ -71,7 +73,7 @@ export default function Account() {
   return (
     <div className="account">
       <div className="avatar-wraper">
-        <Avatar className="avatar" src={user.avatar || avatarImg} />
+        {logoImg ? <Avatar className="avatar" src={logoImg} /> : null}
       </div>
       <Button
         className="user-name"
