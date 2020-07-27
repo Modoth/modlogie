@@ -19,8 +19,8 @@ import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
 import { PluginsConfig } from '../../plugins/IPluginInfo'
 
-import  logoImg from '../../assets/logo.png'
-import  avatarImg from '../../assets/avatar.png'
+import logoImg from '../../assets/logo.png'
+import avatarImg from '../../assets/avatar.png'
 
 const { SubMenu } = Menu
 function Nav() {
@@ -47,7 +47,7 @@ function Nav() {
       <Drawer className="side-nav-panel" visible={showDrawer} onClose={() => setShowDrawer(false)} closable={false} placement="left">
         <Menu className="side-nav" mode="inline" onClick={() => setShowDrawer(false)} >
           {
-            plugins.Plugins.flatMap(p => p.types).map(t => <Menu.Item key={t.route} icon={t.icon}>
+            plugins.Plugins.flatMap(p => p.types).filter(t => (!t.hiddenFromMenu) || user).map(t => <Menu.Item key={t.route} icon={t.icon}>
               <Link to={'/' + t.route}>{t.name}</Link>
             </Menu.Item>)
           }
@@ -82,8 +82,7 @@ function Nav() {
           <Menu.Item
             className="nav-avatar-icon"
             icon={
-              <Avatar
-                className="avatar"
+              <img
                 src={user.avatar || avatarImg}
               />
             }
@@ -91,10 +90,7 @@ function Nav() {
             <Link to="/account"></Link>
           </Menu.Item>
         ) : (
-            <Menu.Item className="nav-avatar-icon" icon={<Avatar
-              className="avatar"
-              src={logoImg}
-            />}>
+            <Menu.Item className="nav-avatar-icon" icon={<UserOutlined />}>
               <Link to="/account"></Link>
             </Menu.Item>
           )}

@@ -13,7 +13,7 @@ import ILoginService from './app/ILoginService'
 import ILangsService from './domain/ILangsService'
 import ISubjectsService from './domain/ISubjectsService'
 import SubjectsServiceSingleton from './domain/SubjectsServiceSingleton'
-import { PluginsConfig } from './plugins/IPluginInfo'
+import IPluginInfo, { PluginsConfig } from './plugins/IPluginInfo'
 import { ModlangPluginInfo } from './plugins/modlang'
 import IArticleListService, { ArticleListSingletonService } from './domain/IArticleListService'
 import Langs from './view/Langs'
@@ -58,14 +58,26 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var enabledPlugins = await (await configsService.getValueOrDefault(ConfigKeys.PLUGINS)).split(',').map(c => c.trim()).filter(c => c);
   var plugins = [];
   for (var p of enabledPlugins) {
-    const [plugin, ...names] = p.split(' ').map(c => c.trim()).filter(c => c);
-    switch (plugin) {
+    let [pluginName, ...names] = p.split(' ').map(c => c.trim()).filter(c => c);
+    let plugin: IPluginInfo | undefined;
+    let hiddenPlugin = false;
+    if (pluginName.startsWith('_')) {
+      hiddenPlugin = true;
+      pluginName = pluginName.slice(1);
+    }
+    switch (pluginName) {
       case 'Modlang':
-        plugins.push(new ModlangPluginInfo(names));
+        plugin = new ModlangPluginInfo(names);
         break
       case 'Blog':
-        plugins.push(new BlogPluginInfo(names));
+        plugin = new BlogPluginInfo(names);
         break
+    }
+    if (plugin) {
+      if (hiddenPlugin) {
+        plugin.types.forEach(t => t.hiddenFromMenu = true)
+      }
+      plugins.push(plugin);
     }
   }
   await configsService.addDefaultConfigs(...plugins.flatMap(p => p.defaultConfigs))

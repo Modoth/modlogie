@@ -282,7 +282,7 @@ export default function Library(props: LibraryProps) {
   }, [])
 
   useEffect(() => {
-    if (!subjects.length) {
+    if (!subjects.length || (!rootSubjectId && props.type.rootSubject )) {
       return
     }
     fetchArticles(1)

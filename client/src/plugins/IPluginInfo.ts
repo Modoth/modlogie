@@ -9,6 +9,7 @@ export interface ArticleType {
   subTypeTag?: string;
   rootSubject?: string;
   noTitle?: boolean;
+  hiddenFromMenu?: boolean;
   icon: React.ReactNode;
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
   Editor: (props: ArticleContentEditorProps) => JSX.Element;
