@@ -20,7 +20,7 @@ function SubjectView(props: { type: ArticleType, subject: Subject, deepth: numbe
     const path = props.parentPath ? (props.parentPath + "/" + props.subject.name) : props.subject.name
     return (
       <div className={classNames("category", `subject-${props.deepth}`)}>
-        <Link to={'/' + props.type.route + '/' + props.subject.id} onClick={() => props.onClick(props.subject)} className={classNames("category-title")}>{path}</Link>
+        <Link to={'/' + props.type.route + '/' + props.subject.id} onClick={() => props.onClick(props.subject)} className={classNames("category-title")}>{props.subject.iconUrl ? <img src={props.subject.iconUrl}></img> : null}{path}</Link>
         <div className="category-content">{sortSubjectByChildrenCount(props.subject.children).map(subject => <SubjectView key={subject.id} type={props.type} onClick={props.onClick} subject={subject} parentPath={path} deepth={props.deepth + 1}></SubjectView>)}</div>
       </div>
     )

@@ -17,11 +17,10 @@ namespace Modlogie.Domain.Models
         public string Name { get; set; }
         public Guid? ParentId { get; set; }
         public int? Type { get; set; }
-        public string MainTag { get; set; }
         public string Path { get; set; }
         public string Content { get; set; }
-        public ulong? Shared { get; set; }
         public int? NormalFilesCount { get; set; }
+        public string Comment { get; set; }
 
         public virtual File Parent { get; set; }
         public virtual ICollection<FileTag> FileTags { get; set; }

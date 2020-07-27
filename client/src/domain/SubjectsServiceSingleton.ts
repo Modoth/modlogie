@@ -3,7 +3,7 @@ import ISubjectsService from './ISubjectsService'
 import { FilesServiceClient } from '../apis/FilesServiceClientPb'
 import { ClientRun } from '../common/GrpcUtils'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
-import { File, AddRequest, UpdateNameRequest, FilesReply } from '../apis/files_pb'
+import { File, AddRequest, UpdateNameRequest, FilesReply, UpdateCommentRequest } from '../apis/files_pb'
 import { StringId } from '../apis/messages_pb'
 import { BinaryReader } from 'google-protobuf'
 import FilesServiceBase from './FilesServiceBase'
@@ -104,6 +104,14 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     return subject.clone();
   }
 
+  async setOrder(subjectId: string, order: number): Promise<void> {
+    await this.loadCache();
+    var subject = this.allSubjects.get(subjectId)!;
+    await (await ClientRun(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(subject.id).setComment(Infinity === order ? '' : order.toString()), null)))!
+    subject.order = order;
+    return;
+  }
+
   async loadCache(): Promise<any> {
     if (this.cached) {
       return
@@ -154,6 +162,7 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
         for (var c of subject.children) {
           totalCount += updateTotalArticleCount(c);
         }
+        subject.children = subject.children.sort((a, b) => a.order - b.order);
       }
       subject.totalArticleCount = totalCount;
       return subject.totalArticleCount;
@@ -161,6 +170,7 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     for (var sbj of this.subjects) {
       updateTotalArticleCount(sbj);
     }
+    this.subjects.sort((a, b) => a.order - b.order)
   }
 
   private async subjectFrom(item: File): Promise<Subject> {
@@ -168,6 +178,10 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     sbj.id = item.getId();
     sbj.name = item.getName();
     sbj.path = item.getPath();
+    sbj.order = parseInt(item.getComment());
+    if (isNaN(sbj.order)) {
+      sbj.order = Infinity;
+    }
     sbj.articleCount = item.getNormalFilesCount();
     var tags = item.getTagsList()
     if (!tags || !tags.length) {

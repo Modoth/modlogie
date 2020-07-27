@@ -27,7 +27,7 @@ const ArticleViewerMemo = memo(ArticleView)
 
 export class SubjectViewModel extends Subject {
   get title() {
-    return this.name + (this.totalArticleCount ? `(${this.totalArticleCount})` : '');
+    return <div className="library-subject-item">{this.iconUrl ? <img src={this.iconUrl}></img> : null}{this.name + (this.totalArticleCount ? `(${this.totalArticleCount})` : '')}</div>;
   }
 
   get key() {
@@ -282,7 +282,7 @@ export default function Library(props: LibraryProps) {
   }, [])
 
   useEffect(() => {
-    if (!subjects.length || (!rootSubjectId && props.type.rootSubject )) {
+    if (!subjects.length || (!rootSubjectId && props.type.rootSubject)) {
       return
     }
     fetchArticles(1)

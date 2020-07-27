@@ -13,6 +13,7 @@ service FilesService {
   rpc UpdateName(UpdateNameRequest) returns (FileReply);
   rpc Move(MoveRequest) returns (FileReply);
   rpc UpdateContent(UpdateContentRequest) returns (modlogie.messages.Reply);
+  rpc UpdateComment(UpdateCommentRequest) returns (modlogie.messages.Reply);
   rpc Query(QueryRequest) returns (FilesReply);
   rpc AddOrUpdateTags(AddOrUpdateTagsRequest) returns (AddOrUpdateTagsReply);
   rpc DeleteTags(DeleteTagsRequest) returns (modlogie.messages.Reply);
@@ -88,7 +89,8 @@ message File {
   string parent_id = 5;
   int32 normal_files_count = 6;
   string content = 7;
-  repeated FileTag tags = 8;
+  string comment = 8;
+  repeated FileTag tags = 9;
 }
 
 message FilesReply {
@@ -136,6 +138,11 @@ message UpdateContentRequest {
   string id = 1;
   string content = 2;
   repeated string resource_ids = 3;
+}
+
+message UpdateCommentRequest {
+  string id = 1;
+  string comment = 2;
 }
 
 message MoveRequest {

@@ -16,7 +16,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue {
   ENUM = '枚举';
   [key: string]: string;
   AddToArticleList = '添加';
-  AdmLogin= '管理登陆';
+  AdmLogin = '管理登陆';
   Cancle = '取消';
   Configs = '配置';
   Create = '创建';
@@ -43,6 +43,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue {
   UserName = '用户名';
   Value = '值';
   Welcome = '感谢使用';
+  Order = '顺序';
 }
 
 const Langs = new LangKeysClass();

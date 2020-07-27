@@ -7,7 +7,8 @@ import {
   DeleteFilled,
   SisternodeOutlined,
   SubnodeOutlined,
-  PictureOutlined
+  PictureOutlined,
+  OrderedListOutlined
 } from '@ant-design/icons'
 import Subject from '../../domain/Subject'
 import ISubjectsService from '../../domain/ISubjectsService'
@@ -135,6 +136,45 @@ export function ManageSubjects() {
     )
   }
 
+  const updateSubjectOrder = (subject: Subject) => {
+    viewService.prompt(
+      langs.get(LangKeys.Modify),
+      [
+        {
+          type: 'Text',
+          value: Infinity == subject.order ? '' : subject.order,
+          hint: langs.get(LangKeys.Order)
+        }
+      ],
+      async (newOrderStr: string) => {
+        var newOrder = newOrderStr ? parseInt(newOrderStr) : Infinity;
+        if (isNaN(newOrder)) {
+          newOrder = Infinity;
+        }
+        const service: ISubjectsService = locator.locate(ISubjectsService)
+        try {
+          await service.setOrder(subject.id, newOrder)
+        } catch (e) {
+          viewService!.errorKey(langs, e.message)
+          return
+        }
+        subject.order = newOrder
+        if (subject.parent) {
+          updateSubjectAncestors(subject)
+          if (subject.parent.children) {
+            subject.parent.children = subject.parent.children.sort((a, b) => a.order - b.order);
+          }
+        } else {
+          const idx = subjects!.findIndex(s => s.id === subject.id)
+          subjects!.splice(idx, 1, Object.assign({}, subject))
+          subjects!.sort((a, b) => a.order - b.order);
+        }
+        setSubjects([...subjects!])
+        return true
+      }
+    )
+  }
+
   const setIcon = (subject: Subject) => {
     viewService.prompt(
       langs.get(LangKeys.Import),
@@ -198,7 +238,16 @@ export function ManageSubjects() {
 
   const renderName = (_: string, subject: Subject) => {
     return (
-      <span onClick={() => updateSubjectName(subject)}>{subject.name}</span>
+      <span onClick={() => updateSubjectName(subject)}>{Infinity === subject.order ? '' : (subject.order + '. ')}{subject.name}</span>
+    )
+  }
+  const renderOrder = (_: string, subject: Subject) => {
+    return (
+      <Button
+        type="link"
+        onClick={() => updateSubjectOrder(subject)}
+        icon={<OrderedListOutlined />}
+      ></Button>
     )
   }
   const renderIcon = (_: string, subject: Subject) => {
@@ -244,6 +293,12 @@ export function ManageSubjects() {
             dataIndex: 'name',
             key: 'name',
             render: renderName
+          },
+          {
+            dataIndex: 'order',
+            key: 'order',
+            className: 'subject-order-column',
+            render: renderOrder
           },
           {
             key: 'icon',

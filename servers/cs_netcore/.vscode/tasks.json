@@ -28,7 +28,10 @@
             ],
             "command": "dotnet",
             "options": {
-                "cwd": "${workspaceFolder}/src/Modlogie/bin/Debug/netcoreapp3.1/"
+                "cwd": "${workspaceFolder}/src/Modlogie/bin/Debug/netcoreapp3.1/",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
             },
             "type": "shell",
             "args": [

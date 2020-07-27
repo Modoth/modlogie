@@ -22,6 +22,11 @@ export default class ISubjectsService extends IFilesServiceBase {
     throw new Error("Method not implemented.")
   }
 
+  setOrder(subjectId: string, order: number): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+
   setIcon(subjectId: string, type: string, content: Uint8Array): Promise<string> {
     throw new Error('Method not implemented.')
   }

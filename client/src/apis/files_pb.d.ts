@@ -240,6 +240,9 @@ export class File extends jspb.Message {
   getContent(): string;
   setContent(value: string): File;
 
+  getComment(): string;
+  setComment(value: string): File;
+
   getTagsList(): Array<FileTag>;
   setTagsList(value: Array<FileTag>): File;
   clearTagsList(): File;
@@ -262,6 +265,7 @@ export namespace File {
     parentId: string,
     normalFilesCount: number,
     content: string,
+    comment: string,
     tagsList: Array<FileTag.AsObject>,
   }
 
@@ -481,6 +485,28 @@ export namespace UpdateContentRequest {
     id: string,
     content: string,
     resourceIdsList: Array<string>,
+  }
+}
+
+export class UpdateCommentRequest extends jspb.Message {
+  getId(): string;
+  setId(value: string): UpdateCommentRequest;
+
+  getComment(): string;
+  setComment(value: string): UpdateCommentRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateCommentRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateCommentRequest): UpdateCommentRequest.AsObject;
+  static serializeBinaryToWriter(message: UpdateCommentRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateCommentRequest;
+  static deserializeBinaryFromReader(message: UpdateCommentRequest, reader: jspb.BinaryReader): UpdateCommentRequest;
+}
+
+export namespace UpdateCommentRequest {
+  export type AsObject = {
+    id: string,
+    comment: string,
   }
 }
 

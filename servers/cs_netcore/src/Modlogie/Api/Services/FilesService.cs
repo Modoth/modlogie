@@ -85,6 +85,7 @@ namespace Modlogie.Api.Services
             NormalFilesCount = i.NormalFilesCount ?? 0,
             ParentId = i.ParentId != null ? i.ParentId.ToString() : string.Empty,
             Content = i.Content ?? string.Empty,
+            Comment = i.Comment ?? string.Empty,
             FileTagsForSelect = i.FileTags != null ? i.FileTags.Select(t => new FileTag { TagId = t.TagId.ToString(), Value = t.Value }) : null
         };
         private static Func<Domain.Models.File, File> _converter = _selector.Compile();
@@ -606,16 +607,39 @@ namespace Modlogie.Api.Services
             var originContent = item.Content;
             var resources = request.ResourceIds.Select(r => Guid.Parse(r)).ToHashSet();
             item.Content = await _contentService.Add(_resourcesGroup, request.Content);
-            using (var trans = _service.Context.BeginTransaction())
-            {
-                var children = await _service.All().Where(f => f.ParentId == item.Id).ToListAsync();
-                item = await _service.Update(item);
-                await _service.DeleteRange(children);
-                await trans.Commit();
-            }
+            item = await _service.Update(item);
             if (!string.IsNullOrWhiteSpace(originContent))
             {
                 await _contentService.Delete(originContent);
+            }
+            return reply;
+        }
+
+        public override async Task<Reply> UpdateComment(UpdateCommentRequest request, ServerCallContext context)
+        {
+            var reply = new Reply();
+            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            {
+                reply.Error = Error.InvalidOperation;
+                return reply;
+            }
+            if (!Guid.TryParse(request.Id, out Guid id))
+            {
+                reply.Error = Error.InvalidArguments;
+                return reply;
+            }
+
+            var item = await _service.All().Where(i => i.Id == id).FirstOrDefaultAsync();
+            if (item == null)
+            {
+                reply.Error = Error.NoSuchEntity;
+                return reply;
+            }
+            item.Comment = request.Comment;
+            item = await _service.Update(item);
+            if (item.Type == (int)FileType.Folder)
+            {
+                await ClearFolderVersionsCache();
             }
             return reply;
         }

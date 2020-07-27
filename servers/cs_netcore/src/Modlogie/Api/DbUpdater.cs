@@ -76,12 +76,18 @@ namespace Modlogie.Api
 
         private async Task InitDb(DbConnection conn)
         {
+            var version = 0;
+            var newVersions = GetLatestVersions(version);
+            if (newVersions.Any())
+            {
+                version = int.Parse(newVersions.Last());
+            }
             using (var trans = await conn.BeginTransactionAsync())
             {
                 await ExecuteSqlsInDir(conn, trans, Path.Combine(_scriptsPath, CREATES_PATH));
                 var cmd = conn.CreateCommand();
                 cmd.Transaction = trans;
-                cmd.CommandText = $"INSERT INTO {VERSIONS_TABLE_NAME} VALUES (0)";
+                cmd.CommandText = $"INSERT INTO {VERSIONS_TABLE_NAME} VALUES ({version})";
                 await cmd.ExecuteNonQueryAsync();
                 await trans.CommitAsync();
             }

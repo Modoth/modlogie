@@ -31,6 +31,7 @@ import Langs from '../Langs'
 import IArticleService from '../../domain/IArticleService'
 import IConfigsService from '../../domain/IConfigsSercice'
 import { title } from 'process'
+import { spawn } from 'child_process'
 
 const { Option } = Select
 
@@ -236,7 +237,29 @@ export default function ArticleView(props: {
   }
   return (
     <Card className={classNames("article-view")}>
-      {props.type.noTitle ? null : <div onClick={user ? updateArticleName : undefined} className="article-title">{name}</div>}
+      <div className="article-title">
+        {props.type.noTitle ? <div></div> : <div onClick={(user && !props.type.noTitle) ? updateArticleName : undefined}>{name}</div>}
+        {
+          editing ? null : (<div className={classNames("actions-list")}>{[...(user ? [
+            <Button type="link" danger ghost icon={<DeleteOutlined />} onClick={() =>
+              props.articleHandlers.onDelete(props.article.id!)
+            } key="delete"></Button>] : []),
+          inArticleList ?
+            <Button type="link" ghost danger icon={<PrinterOutlined />} onClick={() => {
+              articleListService.remove(props.article)
+              setInArticleList(articleListService.has(props.article))
+            }}
+              key={LangKeys.RemoveFromArticleList}></Button> :
+            <Button type="link" ghost icon={<PrinterOutlined />} onClick={() => {
+              articleListService.add(props.article, type)
+              setInArticleList(articleListService.has(props.article))
+            }}
+              key={LangKeys.AddToArticleList}></Button>,
+          ...(user ? [<Button type="link" ghost icon={<EditOutlined />} onClick={toggleEditing}
+            key="edit"></Button>
+          ] : [])]} </div>)
+        }
+      </div>
       <div ref={ref} className="article-body">
         {editing ? (
           <props.type.Editor
@@ -276,25 +299,7 @@ export default function ArticleView(props: {
             ))}
           </Select>
         ))
-      ]}</div>) : (<div className={classNames("actions-list")}>{[...(user ? [
-        <Button type="link" danger ghost icon={<DeleteOutlined />} onClick={() =>
-          props.articleHandlers.onDelete(props.article.id!)
-        } key="delete">{langs.get(LangKeys.Delete)}</Button>] : []),
-      inArticleList ?
-        <Button type="link" ghost icon={<PrinterOutlined />} onClick={() => {
-          articleListService.remove(props.article)
-          setInArticleList(articleListService.has(props.article))
-        }}
-          key={LangKeys.RemoveFromArticleList}>{langs.get(LangKeys.RemoveFromArticleList)}</Button> :
-        <Button type="link" ghost icon={<PrinterOutlined />} onClick={() => {
-          articleListService.add(props.article, type)
-          setInArticleList(articleListService.has(props.article))
-        }}
-          key={LangKeys.AddToArticleList}>{langs.get(LangKeys.AddToArticleList)}</Button>,
-      ...(user ? [<Button type="link" ghost icon={<EditOutlined />} onClick={toggleEditing}
-        key="edit">{langs.get(LangKeys.Modify)}</Button>
-
-      ] : [])]} </div>)
+      ]}</div>) : null
       }
       {editing ? (
         <>
