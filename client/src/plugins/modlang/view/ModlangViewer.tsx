@@ -14,7 +14,7 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
         props.type!.allSections, name => existedSections.get(name)!).filter(s => s && s.content)
         : Array.from(existedSections.values())
 
-    return props.print ? <div className={classNames('article-viewer', "only-print")}>
+    return props.print ? <div className={classNames('modlang-viewer', "only-print")}>
         <>
             {props.showTitle ? <h4 className="article-title">{props.title}</h4> : null}
             {

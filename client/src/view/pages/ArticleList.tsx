@@ -3,13 +3,16 @@ import './ArticleList.less'
 import { useServicesLocator } from '../../app/Contexts'
 import IArticleListService from '../../domain/IArticleListService'
 import { Button } from 'antd';
-import { CloseOutlined, PrinterOutlined, ReadOutlined, ProfileOutlined } from '@ant-design/icons'
+import { CloseOutlined, PrinterOutlined, ReadOutlined, BorderOuterOutlined } from '@ant-design/icons'
 import Article from '../../domain/Article';
 import { ArticleContentType } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
 import IViewService from '../services/IViewService';
 import IConfigsService from '../../domain/IConfigsSercice';
 import ConfigKeys from '../../app/ConfigKeys';
+
+const maxColumn = 3;
+const maxBorderStyle = 4;
 
 export default function ArticleList() {
     const locator = useServicesLocator()
@@ -29,6 +32,7 @@ export default function ArticleList() {
         setItems(all)
     }
     const [columnCount, setColumnCount] = useState(2)
+    const [borderStyle, setBorderStyle] = useState(2)
     useEffect(() => {
         fetchArticles()
     }, [])
@@ -38,7 +42,7 @@ export default function ArticleList() {
     }
     return (
         <>
-            <div ref={ref} className={classNames(`column-count-${columnCount}`, "article-list")}>{items.filter(([article]) => article.content && article.content.sections).map(
+            <div ref={ref} className={classNames(`column-count-${columnCount}`, `border-style-${borderStyle}`, "article-list")}>{items.filter(([article]) => article.content && article.content.sections).map(
                 ([article, type]) =>
                     <>
                         <type.Viewer title={article.name} showTitle={!type.noTitle} print={true} className="article" content={article.content!} files={article.files} type={type}></type.Viewer>
@@ -46,8 +50,9 @@ export default function ArticleList() {
             )}
             </div>
             <div className="article-list-menus" onClick={e => e.stopPropagation()}>
-                {columnCount !== 1 ? <Button type="primary" size="large" shape="circle" icon={<ProfileOutlined />} onClick={() => setColumnCount(1)} /> : null}
-                {columnCount !== 2 ? <Button type="primary" size="large" shape="circle" icon={<ReadOutlined />} onClick={() => setColumnCount(2)} /> : null}
+                <Button type="primary" size="large" shape="circle" icon={<ReadOutlined />} onClick={() => setColumnCount(((columnCount) % maxColumn) + 1)} />
+                <Button type="primary" size="large" shape="circle" icon={<BorderOuterOutlined />} onClick={() => setBorderStyle(((borderStyle) % maxBorderStyle) + 1)} />
+
                 <Button type="primary" size="large" shape="circle" icon={<PrinterOutlined />} onClick={() => window.print()} />
                 <Button type="primary" size="large" danger shape="circle" icon={<CloseOutlined />} onClick={close} />
             </div>

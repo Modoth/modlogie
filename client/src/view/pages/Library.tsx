@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo } from 'react'
 import './Library.less'
+import './Library.css'
 import Subject from '../../domain/Subject'
 import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
