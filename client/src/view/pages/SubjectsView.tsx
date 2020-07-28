@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useServicesLocator } from '../../app/Contexts'
+import { useServicesLocator, useUser } from '../../app/Contexts'
 import ILangsService from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
 import Subject from '../../domain/Subject'
@@ -71,7 +71,8 @@ function SingleTypeSubjectsView(props: { type: ArticleType }) {
 export default function SubjectsView() {
   const locator = useServicesLocator()
   const plugins = locator.locate(PluginsConfig)
-  const types = plugins.Plugins.flatMap(p => p.types);
+  const user = useUser();
+  const types = plugins.Plugins.flatMap(p => p.types).filter(p=> user || !p.hiddenFromMenu);
   return (<div className="subjects-view">
     {
       types.map(type => <SingleTypeSubjectsView type={type} key={type.name} ></SingleTypeSubjectsView>)

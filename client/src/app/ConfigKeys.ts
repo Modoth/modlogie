@@ -5,6 +5,7 @@ export class ConfigKeysInterface<T> {
     WEB_SITE_DESCRIPTION: T = <any>'WEB_SITE_DESCRIPTION';
     WEB_SITE_LOGO_TITLE: T = <any>'WEB_SITE_LOGO_TITLE';
     WEB_SITE_LOGO: T = <any>'WEB_SITE_LOGO';
+    MAX_PRINT_COUNT: T = <any>'MAX_PRINT_COUNT';
 }
 
 export function get_ARTICLE_TAGS(typeName: string) {

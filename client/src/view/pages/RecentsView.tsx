@@ -1,5 +1,5 @@
 import React, { useState, useEffect, MouseEventHandler } from 'react'
-import { useServicesLocator } from '../../app/Contexts'
+import { useServicesLocator, useUser } from '../../app/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
 import classNames from 'classnames'
@@ -34,12 +34,16 @@ export default function RecentsView() {
   const [articles, setArticles] = useState<Article[]>([])
   const [articleTypes, setArticleTypes] = useState(new Map<Article, ArticleContentType>())
   const [type, setType] = useState<ArticleType | undefined>();
+  const user = useUser();
 
   const fetchArticles = async () => {
     if (!type) {
       return
     }
     const subject = type.rootSubject ? (await locator.locate(ISubjectsService).all(type.rootSubject))?.[0] : null;
+    if (!subject) {
+      return
+    }
     const subjectId = subject?.path;
     var articles: Article[] = []
     try {
@@ -63,14 +67,14 @@ export default function RecentsView() {
     const s = locator.locate(IArticleViewServie)
     var types = new Map();
     for (var a of articles) {
-      types.set(a, await s.getArticleType(locator.locate(IConfigsService), type.Viewer, type.name, type.subTypeTag ? a.tagsDict?.get(type.subTypeTag!)?.value : undefined))
+      types.set(a, await s.getArticleType(locator.locate(IConfigsService), type, type.subTypeTag ? a.tagsDict?.get(type.subTypeTag!)?.value : undefined))
     }
     setArticleTypes(types)
     setArticles(articles)
   }
 
   const fetchType = async () => {
-    const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types)[0];
+    const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types).filter(p => user || !p.hiddenFromMenu)[0];
     setType(type);
   }
 

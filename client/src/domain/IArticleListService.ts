@@ -6,7 +6,11 @@ export interface IArticleListChangedListener {
 }
 
 export default class IArticleListService {
-    add(article: Article, type: ArticleContentType) {
+    add(article: Article, type: ArticleContentType, onRemoved: { (): void }) {
+        throw new Error('Method not implemented.')
+    }
+
+    getArticles(skip?: number, take?: number): Promise<[number, [Article, ArticleContentType][]]> {
         throw new Error('Method not implemented.')
     }
 
@@ -38,14 +42,20 @@ export default class IArticleListService {
 export class ArticleListSingletonService implements IArticleListService {
     private all_: Article[] = []
     private types_ = new Map<string, ArticleContentType>()
+    private onRemoveds = new Map<Article, { (): void }>();
     private listeners_ = new Set<IArticleListChangedListener>()
 
-    add(article: Article, type: ArticleContentType): void {
+    getArticles(skip: number, take: number): Promise<[number, [Article, ArticleContentType][]]> {
+        throw new Error('Method not implemented.')
+    }
+
+    add(article: Article, type: ArticleContentType, onRemoved: { (): void }): void {
         if (this.has(article)) {
             return
         }
         this.types_.set(article.id!, type)
         this.all_.push(article)
+        this.onRemoveds.set(article, onRemoved);
         this.raiseChange_()
     }
 
@@ -62,6 +72,10 @@ export class ArticleListSingletonService implements IArticleListService {
     clear(): void {
         this.types_ = new Map()
         this.all_ = []
+        this.onRemoveds.forEach((onRemoved) => {
+            onRemoved && onRemoved()
+        })
+        this.onRemoveds = new Map()
         this.raiseChange_()
     }
 

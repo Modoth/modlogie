@@ -185,7 +185,7 @@ export default function ArticleView(props: {
       tagsDict?.set(newTag.name!, newTag)
       if (newTag.name === props.type.subTypeTag) {
         setType(await locator.locate(IArticleViewServie)
-          .getArticleType(locator.locate(IConfigsService), props.type.Viewer, props.type.name, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined))
+          .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined))
       }
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -230,7 +230,7 @@ export default function ArticleView(props: {
   // } generateRandomStyle()
   useEffect(() => {
     locator.locate(IArticleViewServie)
-      .getArticleType(locator.locate(IConfigsService), props.type.Viewer, props.type.name, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type));
+      .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type));
   }, [])
   if (!type) {
     return <></>
@@ -251,7 +251,9 @@ export default function ArticleView(props: {
             }}
               key={LangKeys.RemoveFromArticleList}></Button> :
             <Button type="link" ghost icon={<PrinterOutlined />} onClick={() => {
-              articleListService.add(props.article, type)
+              articleListService.add(props.article, type, () => {
+                setInArticleList(false);
+              })
               setInArticleList(articleListService.has(props.article))
             }}
               key={LangKeys.AddToArticleList}></Button>,

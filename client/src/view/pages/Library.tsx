@@ -8,7 +8,7 @@ import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import { PlusOutlined, SearchOutlined, CloseOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
-import { ArticleType } from '../../plugins/IPluginInfo'
+import { ArticleType, ArticleContentType } from '../../plugins/IPluginInfo'
 import Article, { ArticleTag } from '../../domain/Article'
 import ArticleView from './ArticleView'
 import ArticleListSummary from './ArticleListSummary'
@@ -23,6 +23,8 @@ import ConfigKeys, { get_ARTICLE_TAGS } from '../../app/ConfigKeys'
 import IArticleService from '../../domain/IArticleService'
 import { Query, Condition } from '../../apis/files_pb'
 import SubjectViewModel from './SubjectViewModel'
+import IArticleListService from '../../domain/IArticleListService'
+import IArticleViewServie from '../services/IArticleViewService'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -114,30 +116,47 @@ export default function Library(props: LibraryProps) {
     return article
   }
 
+  const fetchArticlesInternal = async (skip: number, take: number): Promise<[number, Article[]]> => {
+    let selectedIds = selectedSubjectIds.length ? selectedSubjectIds : (rootSubjectId ? [rootSubjectId] : [])
+    var query = new Query()
+      .setWhere(new Condition()
+        .setType(Condition.ConditionType.AND)
+        .setChildrenList([
+          new Condition().setType(Condition.ConditionType.EQUAL)
+            .setProp('Type')
+            .setValue('0'),
+          ...selectedIds.length ? [
+            new Condition().setType(Condition.ConditionType.OR)
+              .setChildrenList(selectedIds.map(sid => new Condition().setType(Condition.ConditionType.STARTS_WITH)
+                .setProp('Path').setValue(subjectsIdDict.get(sid)!.path!)))
+          ] : [],
+          ...articleTags.filter(t => t.value).map(t =>
+            new Condition().setType(Condition.ConditionType.EQUAL)
+              .setProp(t.name).setValue(t.value!))
+        ])
+      )
+    return await locator.locate(IArticleService).query(query, skip, take)
+  }
+
+  locator.locate(IArticleListService).getArticles = async (skip: number, take: number): Promise<[number, [Article, ArticleContentType][]]> => {
+    var [total, articles] = await fetchArticlesInternal(skip, take);
+    var articlesWithType: [Article, ArticleContentType][] = [];
+    for (var a of articles) {
+      articlesWithType.push([a,
+        await locator.locate(IArticleViewServie)
+          .getArticleType(locator.locate(IConfigsService),
+            props.type,
+            props.type.subTypeTag ? a.tagsDict?.get(props.type.subTypeTag!)?.value : undefined)])
+    }
+    return [total, articlesWithType];
+  };
+
   const fetchArticles = async (page?: number) => {
     if (page === undefined) {
       page = currentPage
     }
-    let selectedIds = selectedSubjectIds.length ? selectedSubjectIds : (rootSubjectId ? [rootSubjectId] : [])
     try {
-      var query = new Query()
-        .setWhere(new Condition()
-          .setType(Condition.ConditionType.AND)
-          .setChildrenList([
-            new Condition().setType(Condition.ConditionType.EQUAL)
-              .setProp('Type')
-              .setValue('0'),
-            ...selectedIds.length ? [
-              new Condition().setType(Condition.ConditionType.OR)
-                .setChildrenList(selectedIds.map(sid => new Condition().setType(Condition.ConditionType.STARTS_WITH)
-                  .setProp('Path').setValue(subjectsIdDict.get(sid)!.path!)))
-            ] : [],
-            ...articleTags.filter(t => t.value).map(t =>
-              new Condition().setType(Condition.ConditionType.EQUAL)
-                .setProp(t.name).setValue(t.value!))
-          ])
-        )
-      var [total, articles] = await locator.locate(IArticleService).query(query, countPerPage * (page! - 1), countPerPage)
+      var [total, articles] = await fetchArticlesInternal(countPerPage * (page! - 1), countPerPage)
       setArticles(articles.map(convertArticle))
       setTotalCount(total)
       setCurrentPage(page)
@@ -269,7 +288,7 @@ export default function Library(props: LibraryProps) {
         placeholder={langs.get(LangKeys.Subject)}
         dropdownClassName={classNames("library-subjects-drop-down")}
       />
-      <Space className="articles" direction="vertical">
+      <div className="articles" >
         {
           articles.length ? null : <Table
             rowKey="name"
@@ -281,30 +300,31 @@ export default function Library(props: LibraryProps) {
           ></Table>
         }
         {articles.map((p) => (
-          <ArticleViewerMemo
-            key={(p as any)!.key}
-            article={p}
-            subjects={subjects}
-            tags={articleTags}
-            type={props.type}
-            articleHandlers={articleHandlers}
-            nodeTags={tags}
-          ></ArticleViewerMemo>
+          <div className="article-view-wraper" key={(p as any)!.key}>
+            <ArticleViewerMemo
+              article={p}
+              subjects={subjects}
+              tags={articleTags}
+              type={props.type}
+              articleHandlers={articleHandlers}
+              nodeTags={tags}
+            ></ArticleViewerMemo>
+          </div>
         ))}
-        {totalCount > countPerPage ? (
-          <>
-            <Pagination
-              className="pagination"
-              onChange={(page) => fetchArticles(page)}
-              pageSize={countPerPage}
-              current={currentPage}
-              total={totalCount}
-              showSizeChanger={false}
-            ></Pagination>
-          </>
-        ) : null}
         <div ref={bottomRef}></div>
-      </Space>
+      </div>
+      {totalCount > countPerPage ? (
+        <>
+          <Pagination
+            className="pagination"
+            onChange={(page) => fetchArticles(page)}
+            pageSize={countPerPage}
+            current={currentPage}
+            total={totalCount}
+            showSizeChanger={false}
+          ></Pagination>
+        </>
+      ) : null}
       <div className="float-menus">
         <ArticleListSummary></ArticleListSummary>
         {

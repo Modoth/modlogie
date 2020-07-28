@@ -179,9 +179,12 @@ namespace Modlogie.Api.Services
                 }
             }
             int? total = null;
-            if (request.Skip > 0)
+            if (request.Skip > 0 || request.Take > 0)
             {
                 total = await items.CountAsync();
+            }
+            if (request.Skip > 0)
+            {
                 items = items.Skip(request.Skip);
             }
             if (request.Take > 0)

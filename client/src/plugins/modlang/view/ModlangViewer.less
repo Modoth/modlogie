@@ -29,6 +29,30 @@
     }
 }
 
+.article-list{
+    counter-reset: modlang-print-article;     
+    .article-viewer.only-print{
+        counter-increment: modlang-print-article;
+        .article-title::before{
+            
+            content: counter(modlang-print-article) "、 ";
+        }
+    
+        .code{
+            padding: 10px;
+            margin: 10px 0;
+            // background-color: #00000005;
+            border: 1px solid #0002;
+            break-inside: avoid-column;
+            border-radius: 5px;
+        }
+    
+        pre{
+            background-color: transparent !important;
+        }
+    }
+}
+
 .library .article-viewer .ant-tabs-nav{
     transform: translate(0,-18px);
 }

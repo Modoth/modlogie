@@ -46,6 +46,12 @@
 .library {
   padding: 0 10px 40px 10px;
 
+  .article-view-wraper{
+    break-inside: avoid-column;
+    // margin-bottom: 10px;
+    padding: 5px 0;
+  }
+
   .search-subjects{
     position: sticky;
     background: white;
@@ -75,7 +81,7 @@
   }
 
   & .articles {
-    margin: 10px 0;
+    margin: 20px 0 10px 0;
     width: 100%;
 
     & .ant-table {
@@ -179,7 +185,9 @@
 
 @media (min-width: 780px) { 
   .library {
-
+    .articles{
+      column-count: 2;
+    }
     .search-subjects{
       margin: 10px 0 0 0;
       width: 100% !important;

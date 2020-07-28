@@ -15,12 +15,15 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
         : Array.from(existedSections.values())
 
     return props.print ? <div className={classNames('article-viewer', "only-print")}>
-        {
-            sections.map(section => <div className={classNames(section.name, "code")} key={section.name}>
-                <div>{section.name} </div>
-                <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
-            </div>)
-        }
+        <>
+            {props.showTitle ? <h4 className="article-title">{props.title}</h4> : null}
+            {
+                sections.map(section => <div className={classNames(section.name, "code")} key={section.name}>
+                    <h5>{section.name} </h5>
+                    <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
+                </div>)
+            }
+        </>
     </div> :
         <Tabs className={classNames('modlang-viewer', "no-print")}>{
             sections.map(section => <TabPane className={classNames(section.name, "code")} tab={section.name} key={section.name}>
