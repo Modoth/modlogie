@@ -17,8 +17,8 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     }
     console.log(props.article)
     return (
-        <div className={classNames("single-article", generateRandomStyle())}>
-            <div className={classNames("menus", generateRandomStyle())} onClick={e => e.stopPropagation()}>
+        <div className={classNames("single-article")}>
+            <div className={classNames("menus")} onClick={e => e.stopPropagation()}>
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>
                 <div className={classNames("title")}>{props.article.name}</div>
             </div>

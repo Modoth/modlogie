@@ -16,6 +16,7 @@ import {
   FileAddOutlined,
   FileExcelOutlined,
   ContainerOutlined,
+  ShareAltOutlined,
   PrinterOutlined,
   CloseOutlined,
   DeleteOutlined,
@@ -32,6 +33,7 @@ import IConfigsService from '../../domain/IConfigsSercice'
 import { title } from 'process'
 import { spawn } from 'child_process'
 import SubjectViewModel from './SubjectViewModel'
+import html2canvas from 'html2canvas';
 
 const { Option } = Select
 
@@ -72,25 +74,6 @@ export default function ArticleView(props: {
   const [inArticleList, setInArticleList] = useState(articleListService.has(props.article))
   const [content, setContent] = useState(props.article.content || {})
   const [name, setName] = useState(props.article.name)
-  // const deleteFile = async (file: ArticleFile) => {
-  //   try {
-  //     const idx = files!.indexOf(file)
-  //     if (idx < 0) {
-  //       return
-  //     }
-  //     const api = locator.locate(IArticleService)
-  //     files!.splice(idx, 1)
-  //     const newFiles = [...files!]
-  //     await api.updateContent(JSON.stringify({ content, files: newFiles }), props.article.id!)
-  //     // newFiles.map((f) => f.id!) todo: delete files from server
-  //     setFiles(newFiles)
-  //     editorRefs && editorRefs.remoteFile(file)
-  //     return true
-  //   } catch (e) {
-  //     viewService!.errorKey(langs, e.message)
-  //     return false
-  //   }
-  // }
 
   const addFile = (file?: File) => {
     viewService.prompt(
@@ -218,16 +201,7 @@ export default function ArticleView(props: {
       }
     )
   }
-  const ref = React.createRef<HTMLDivElement>()
-  // const shareArticle = async () => {
-  //   if (!ref.current) {
-  //     return
-  //   }
-  //   // const canvas = await html2canvas(ref.current)
-  //   // const imgUrl = canvas.toDataURL('image/png')
-  //   const imgUrl = await htmlToImage.toPng(ref.current)
-  //   viewService.previewImage(imgUrl)
-  // } generateRandomStyle()
+  // generateRandomStyle()
   useEffect(() => {
     locator.locate(IArticleViewServie)
       .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type));
@@ -262,7 +236,7 @@ export default function ArticleView(props: {
           ] : [])]} </div>)
         }
       </div>
-      <div ref={ref} className="article-body">
+      <div className="article-body">
         {editing ? (
           <props.type.Editor
             onpaste={addFile}

@@ -298,9 +298,10 @@ export default function ServiceView(props: {
       </Modal>
       {
         previewImgUrl ? <div className="img-preview" onClick={() => setPreviewImgUrl('')}>
-          <div className="img-panel" onClick={e => e.stopPropagation()}>
-            <img src={previewImgUrl}></img>
+          <div className="img-panel" onClick={() => setPreviewImgUrl('')}>
+            <img onClick={() => setPreviewImgUrl('')} src={previewImgUrl}></img>
           </div>
+          {/* onClick={e => e.stopPropagation()}  */}
         </div> : null
       }
       {

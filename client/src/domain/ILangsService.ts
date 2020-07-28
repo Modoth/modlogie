@@ -28,6 +28,7 @@ export class LangKeysInterface {
   Welcome = 'Welcome';
   AdmLogin = 'AdmLogin';
   Order = 'Order';
+  Share = 'Share';
 }
 
 export const LangKeys = new LangKeysInterface();

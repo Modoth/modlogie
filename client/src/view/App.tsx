@@ -12,6 +12,8 @@ import ServiceView from './pages/ServiceView'
 import ITextImageService from './services/ITextImageService'
 import IConfigsService from '../domain/IConfigsSercice'
 import ConfigKeys from '../app/ConfigKeys'
+import defaultAvatarImg from '../assets/avatar.png'
+
 
 let savedScrollTop = 0
 let savedScrollElement: HTMLElement | null = null
@@ -24,6 +26,17 @@ export default function App() {
   const [user, setUser] = useState<ILoginUser | undefined>(loginService.user)
   loginService.onUserChanged = setUser
   const ref = React.createRef<HTMLDivElement>()
+  const bgRef = React.createRef<HTMLDivElement>()
+  useEffect(() => {
+    (async () => {
+      const configService = locator.locate(IConfigsService)
+      var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultAvatarImg;
+      if (!bgRef.current) {
+        return;
+      }
+      bgRef.current.style.backgroundImage = `url("${logo}")`;
+    })()
+  }, [])
   return (
     <>
       <UserContext.Provider value={user}>
@@ -54,6 +67,7 @@ export default function App() {
         ></ServiceView>
         <div ref={ref}>
           <HashRouter >
+            <div ref={bgRef} className="background"></div>
             <Nav></Nav>
             <div className="nav-content-wrapper">
               <NavContent></NavContent>

@@ -21,6 +21,11 @@
     .ant-tabs-nav{
         // transform: translate(0,-18px);
         margin: 0 !important;
+        overflow-y: hidden;
+    }
+
+    .ant-tabs-nav::before{
+        border: none !important;
     }
 
     .ant-tabs-nav-list{
@@ -69,13 +74,21 @@
         border-radius: 2px;
     }
 
+    &.show-idx{
+        .modlang-viewer.only-print{
+            counter-increment: modlang-print-article;
+            .article-title{
+                margin-left: 5px;
+            }
+            .article-title::before{
+                content: counter(modlang-print-article) "、 ";
+            }
+        }
+    }
+
     .modlang-viewer.only-print{
-        counter-increment: modlang-print-article;
         .article-title{
             margin-left: 5px;
-        }
-        .article-title::before{
-            content: counter(modlang-print-article) "、 ";
         }
     }
 }

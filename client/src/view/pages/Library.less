@@ -54,14 +54,15 @@
 
   .search-subjects{
     position: sticky;
-    background: white;
+    background: #fffb;
+    backdrop-filter: blur(100px);
     z-index: 2;
     left: 0;
     right: 0;
-    top: 0;
     margin: 0px -10px;
     box-shadow: 0px 1px 1px #0003;
-    padding: 5px 0;
+    padding: 7px 0;
+    top: 0px;
     width: calc(100% + 20px) !important;
 
     .ant-select-selector {
@@ -83,6 +84,7 @@
   & .articles {
     margin: 5px 0 10px 0;
     width: 100%;
+    display: inline-block;
 
     & .ant-table {
       background: transparent;

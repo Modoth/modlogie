@@ -44,6 +44,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue {
   Value = '值';
   Welcome = '感谢使用';
   Order = '顺序';
+  Share = '分享';
 }
 
 const Langs = new LangKeysClass();

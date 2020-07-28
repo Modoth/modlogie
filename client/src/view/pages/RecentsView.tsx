@@ -19,7 +19,7 @@ import ISubjectsService from '../../domain/ISubjectsService'
 
 function RecentArticle(props: { article: Article, type: ArticleContentType, onClick?: MouseEventHandler<any>; }) {
   return (
-    <div className={classNames(generateRandomStyle(), "recent-article-wraper")}>
+    <div className={classNames( "recent-article-wraper")}>
       <div className="recent-article">
         <props.type.Viewer onClick={props.onClick} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
       </div>
