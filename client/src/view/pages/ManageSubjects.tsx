@@ -8,12 +8,30 @@ import {
   SisternodeOutlined,
   SubnodeOutlined,
   PictureOutlined,
-  OrderedListOutlined
+  OrderedListOutlined,
+  DragOutlined
 } from '@ant-design/icons'
 import Subject from '../../domain/Subject'
 import ISubjectsService from '../../domain/ISubjectsService'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
+import SubjectViewModel from './SubjectViewModel'
+
+var subjectsModelCache: SubjectViewModel[] = [];
+var subjectsCacheKey: Subject[] = [];
+var excludePathCacheKey: string | undefined = '';
+const convertToTreeData = (subjects: Subject[], excludePath: string) => {
+  if (subjects === subjectsCacheKey && excludePathCacheKey === excludePath) {
+    return subjectsModelCache
+  }
+  var subjectsModelDictCache = new Map<string, SubjectViewModel>()
+  subjectsModelCache = subjects.filter(s => s.path !== excludePath).map(
+    (s) => new SubjectViewModel(s, subjectsModelDictCache, excludePath)
+  )
+  subjectsCacheKey = subjects
+  excludePathCacheKey = excludePath
+  return subjectsModelCache;
+}
 
 export function ManageSubjects() {
   const user = useUser()
@@ -97,6 +115,30 @@ export function ManageSubjects() {
           subjects.push(subject)
         }
         setSubjects([...subjects!])
+        return true
+      }
+    )
+  }
+
+  const moveSubject = (subject: Subject) => {
+    if (!subject.parent) {
+      return
+    }
+    viewService.prompt(
+      langs.get(LangKeys.Create),
+      [{ type: 'TreeSelect', value: subject?.parent?.id, values: convertToTreeData(subjects, subject!.path!), hint: langs.get(LangKeys.Name) }],
+      async (parentId: string) => {
+        if (parentId === subject?.parent?.id) {
+          return
+        }
+        const service: ISubjectsService = locator.locate(ISubjectsService)
+        try {
+          subject = await service.move(subject!.id, parentId)
+        } catch (e) {
+          viewService!.errorKey(langs, e.message)
+          return
+        }
+        await fetchSubjects()
         return true
       }
     )
@@ -254,7 +296,7 @@ export function ManageSubjects() {
     return (
       subject.iconUrl ?
         <div onClick={() => resetIcon(subject)}>
-          <Avatar
+          <img
             src={subject.iconUrl}
           />
         </div> :
@@ -274,6 +316,17 @@ export function ManageSubjects() {
       />
     )
   }
+
+  const renderMove = (_: string, subject: Subject) => {
+    return (subject.parent ?
+      <Button
+        type="link"
+        onClick={() => moveSubject(subject)}
+        icon={<DragOutlined />}
+      /> : null
+    )
+  }
+
   const renderDelete = (_: string, subject: Subject) => {
     return (
       <Button
@@ -304,6 +357,11 @@ export function ManageSubjects() {
             key: 'icon',
             className: 'subject-icon-column',
             render: renderIcon
+          },
+          {
+            key: 'move',
+            className: 'subject-move-column',
+            render: renderMove
           },
           {
             key: 'create',

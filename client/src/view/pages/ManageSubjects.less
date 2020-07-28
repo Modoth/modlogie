@@ -1,12 +1,29 @@
 .manage-subjects {
   padding: 10px 10px 40px 10px;
 
+  .ant-btn-link{
+    color: rgba(0, 0, 0, 0.65) !important;
+  }
+
+  .ant-btn-link.ant-btn-dangerous{
+    color: #ff4d4f !important;
+  }
+
+  & .subject-move-column,
   & .subject-order-column,
   & .subject-icon-column,
   & .subject-create-column,
   & .subject-delete-column {
     width: 24px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  & .subject-icon-column img{
+    height: 20px;
+    max-width: 30px;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
   }
 }

@@ -20,7 +20,6 @@ import {
   CloseOutlined,
   DeleteOutlined,
 } from '@ant-design/icons'
-import { SubjectViewModel } from './Library'
 import './ArticleView.less'
 import IArticleListService from '../../domain/IArticleListService'
 import classNames from 'classnames'
@@ -32,6 +31,7 @@ import IArticleService from '../../domain/IArticleService'
 import IConfigsService from '../../domain/IConfigsSercice'
 import { title } from 'process'
 import { spawn } from 'child_process'
+import SubjectViewModel from './SubjectViewModel'
 
 const { Option } = Select
 

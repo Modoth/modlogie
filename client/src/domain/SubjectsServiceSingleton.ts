@@ -3,7 +3,7 @@ import ISubjectsService from './ISubjectsService'
 import { FilesServiceClient } from '../apis/FilesServiceClientPb'
 import { ClientRun } from '../common/GrpcUtils'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
-import { File, AddRequest, UpdateNameRequest, FilesReply, UpdateCommentRequest } from '../apis/files_pb'
+import { File, AddRequest, UpdateNameRequest, FilesReply, UpdateCommentRequest, MoveRequest } from '../apis/files_pb'
 import { StringId } from '../apis/messages_pb'
 import { BinaryReader } from 'google-protobuf'
 import FilesServiceBase from './FilesServiceBase'
@@ -112,6 +112,19 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     var newItem = await (await ClientRun(() => this.locate(FilesServiceClient).updateName(new UpdateNameRequest().setId(subject.id).setName(name), null))).getFile()!
     subject.name = newItem.getName();
     subject.path = newItem.getPath();
+    return subject.clone();
+  }
+
+  async move(subjectId: string, parentId: string): Promise<Subject> {
+    await this.loadCache();
+    var subject = this.allSubjects.get(subjectId)!;
+    var newParent = this.allSubjects.get(parentId)!;
+    var newItem = await (await ClientRun(() => this.locate(FilesServiceClient).move(new MoveRequest().setId(subject.id).setParentid(newParent.id), null))).getFile()!
+    subject.path = newItem.getPath();
+    subject.parent!.children = subject.parent!.children!.filter(c => c.id !== subject.id)
+    subject.parent = newParent;
+    subject.parent.children = subject.parent.children || []
+    subject.parent.children.push(subject)
     return subject.clone();
   }
 

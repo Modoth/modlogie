@@ -22,46 +22,9 @@ import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys, { get_ARTICLE_TAGS } from '../../app/ConfigKeys'
 import IArticleService from '../../domain/IArticleService'
 import { Query, Condition } from '../../apis/files_pb'
+import SubjectViewModel from './SubjectViewModel'
 
 const ArticleViewerMemo = memo(ArticleView)
-
-export class SubjectViewModel extends Subject {
-  get title() {
-    return <div className="library-subject-item">{this.iconUrl ? <img src={this.iconUrl}></img> : null}{this.name + (this.totalArticleCount ? `(${this.totalArticleCount})` : '')}</div>;
-  }
-
-  get key() {
-    return this.id
-  }
-
-  get value() {
-    return this.id
-  }
-
-  children?: SubjectViewModel[];
-
-  parent?: SubjectViewModel;
-
-  constructor(subject: Subject, allSubjects?: Map<string, SubjectViewModel>) {
-    super()
-    Object.assign(this, subject)
-    if (allSubjects) {
-      if (allSubjects.has(subject.path!)) {
-        console.log('Subject circle error.')
-        throw new Error(Langs[ErrorMessage.ENTITY_CONFLICT])
-      }
-      allSubjects.set(subject.path!, this)
-    }
-    if (subject.children && subject.children.length) {
-      this.children = []
-      for (const c of subject.children) {
-        const child = new SubjectViewModel(c, allSubjects)
-        child.parent = this
-        this.children.push(child)
-      }
-    }
-  }
-}
 
 const getTagEnums = (values?: string) => {
   return values

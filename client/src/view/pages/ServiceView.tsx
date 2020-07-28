@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import './ServiceView.less'
-import { Spin, message, Modal, Input, Space, Radio } from 'antd'
+import { Spin, message, Modal, Input, Space, Radio, TreeSelect } from 'antd'
 import IViewService, { IPromptField } from '../services/IViewService'
 import ILangsService from '../../domain/ILangsService'
 import ImageEditor from '../components/ImageEditor'
@@ -226,6 +226,20 @@ export default function ServiceView(props: {
         <Space direction="vertical" className="modal-fields">
           {modalFields.map((field, i) => {
             switch (field.type) {
+              case 'TreeSelect':
+                return (
+                  <TreeSelect
+                    key={i}
+                    autoFocus
+                    className="tree-select"
+                    onChange={(sid: string) => {
+                      updateField(i, field, sid);
+                    }}
+                    defaultValue={field.value}
+                    treeData={field.values}
+                    placeholder={field.hint}
+                  />
+                )
               case 'Text':
                 return (
                   field.multiline ?
