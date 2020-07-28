@@ -6,7 +6,7 @@ import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
 import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table } from 'antd'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import { PlusOutlined, SearchOutlined, CloseOutlined, UnorderedListOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined, CloseOutlined, DeploymentUnitOutlined } from '@ant-design/icons'
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
 import { ArticleType, ArticleContentType } from '../../plugins/IPluginInfo'
@@ -26,6 +26,7 @@ import { Query, Condition } from '../../apis/files_pb'
 import SubjectViewModel from './SubjectViewModel'
 import IArticleListService from '../../domain/IArticleListService'
 import IArticleViewServie from '../services/IArticleViewService'
+import IMmGenerator from '../../domain/IMmGenerator'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -256,6 +257,15 @@ export default function Library(props: LibraryProps) {
     })
   }
 
+  const exportMm = () => {
+    var mm = locator.locate(IMmGenerator).generate(subjects);
+    var name = subjects.length == 1 ? subjects[0].name : 'download'
+    var a = document.createElement('a')
+    a.href = `data:application/octet-stream;;charset=utf-8,${encodeURIComponent(mm)}`
+    a.download = `${name}.mm`;
+    a.click();
+  }
+
   articleHandlers.onDelete = deleteArticle
 
   const subjectTreeRef = React.createRef<TreeSelect<any>>()
@@ -332,11 +342,7 @@ export default function Library(props: LibraryProps) {
           articleTags && articleTags.length ? <Button onClick={() => setShowFilter(true)} type="default" size="large" shape="circle" icon={<SearchOutlined />} />
             : null
         }
-        {/* <Button onClick={() => {
-          if (subjectTreeRef && subjectTreeRef.current) {
-            subjectTreeRef.current.focus();
-          }
-        }} type="default" size="large" shape="circle" icon={<UnorderedListOutlined />} /> */}
+        <Button onClick={exportMm} type="default" size="large" shape="circle" icon={<DeploymentUnitOutlined />} />
         {user ? (
           <Button
             icon={<PlusOutlined />}
