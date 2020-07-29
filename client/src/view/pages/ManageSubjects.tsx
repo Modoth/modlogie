@@ -136,7 +136,7 @@ export function ManageSubjects() {
         if (!content) {
           return false;
         }
-        const subjects = locator.locate(IMmConverter).convertFromMmToSubjects(content, true);
+        const subjects = locator.locate(IMmConverter).convertFromMmToSubjects(content, parent != null);
         if (!subjects.length) {
           return false;
         }

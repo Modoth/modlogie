@@ -42,7 +42,7 @@ export default class MmConverter implements IMmConverter {
         }
         return [rootSubject];
     }
-    convertFromSubjectsToMm(subjects: Subject[]): string {
+    convertFromSubjectsToMm(subjects: Subject[], rootNodeName?: string): string {
         var xml = new DOMParser().parseFromString('<map version="1.0.0"></map>', 'application/xml')
         var root: Element = xml.getRootNode().childNodes[0] as Element;
         const handleSubject = (subject: Subject, parentNode: Node) => {
@@ -55,9 +55,11 @@ export default class MmConverter implements IMmConverter {
             parentNode.appendChild(node)
         }
         if (subjects.length > 1) {
-            root = xml.createElement('node');
-            root.setAttribute('ID', uuidv4())
-            root.setAttribute('TEXT', '')
+            var newRoot = xml.createElement('node');
+            newRoot.setAttribute('ID', uuidv4())
+            newRoot.setAttribute('TEXT', rootNodeName || '')
+            root.appendChild(newRoot)
+            root = newRoot
         }
         subjects.forEach(s => handleSubject(s, root));
         return new XMLSerializer().serializeToString(xml);

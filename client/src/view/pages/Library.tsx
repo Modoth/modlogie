@@ -286,7 +286,7 @@ export default function Library(props: LibraryProps) {
   }
 
   const exportMm = () => {
-    locator.locate(ISubjectsExporter).export(subjects);
+    locator.locate(ISubjectsExporter).export(effectiveSubjects);
   }
 
   articleHandlers.onDelete = deleteArticle

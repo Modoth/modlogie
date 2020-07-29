@@ -1,7 +1,7 @@
 import Subject from "./Subject";
 
 export default class IMmConverter {
-    convertFromSubjectsToMm(subjects: Subject[]): string {
+    convertFromSubjectsToMm(subjects: Subject[], rootNodeName?: string): string {
         throw new Error('Method not implemented.')
     }
 
