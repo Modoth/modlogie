@@ -7,7 +7,7 @@ export default class IArticleService extends IFilesServiceBase {
         throw new Error('Method not implemented.')
     }
 
-    query(query: Query, skip: number, take: number): Promise<[number, Article[]]> {
+    query(query: Query, filter: string | undefined, skip: number, take: number): Promise<[number, Article[]]> {
         throw new Error('Method not implemented.')
     }
 

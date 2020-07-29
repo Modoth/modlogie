@@ -55,8 +55,8 @@ export default class ArticleService extends FilesServiceBase implements IArticle
         return [total, articles];
     }
 
-    async query(query: Query, skip: number, take: number): Promise<[number, Article[]]> {
-        var res = await (await ClientRun(() => this.locate(FilesServiceClient).query(new QueryRequest().setQuery(query).setSkip(skip).setTake(take), null)));
+    async query(query: Query, filter: string | undefined, skip: number, take: number): Promise<[number, Article[]]> {
+        var res = await (await ClientRun(() => this.locate(FilesServiceClient).query(new QueryRequest().setQuery(query).setSkip(skip).setTake(take).setFilter(filter || ''), null)));
         var items = res.getFilesList();
         var total = res.getTotal();
         var articles = [];

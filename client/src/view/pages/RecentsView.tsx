@@ -19,7 +19,7 @@ import ISubjectsService from '../../domain/ISubjectsService'
 
 function RecentArticle(props: { article: Article, type: ArticleContentType, onClick?: MouseEventHandler<any>; }) {
   return (
-    <div className={classNames( "recent-article-wraper")}>
+    <div className={classNames("recent-article-wraper")}>
       <div className="recent-article">
         <props.type.Viewer onClick={props.onClick} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
       </div>
@@ -58,7 +58,7 @@ export default function RecentsView() {
               .setProp('Path').setValue(subjectId)] : [])
           ])
         )
-      var res = await locator.locate(IArticleService).query(query, 0, 5);
+      var res = await locator.locate(IArticleService).query(query, undefined, 0, 5);
       articles = res[1];
     } catch (e) {
       viewService!.errorKey(langs, e.message)

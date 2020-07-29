@@ -26,7 +26,7 @@ export default function App() {
   const [user, setUser] = useState<ILoginUser | undefined>(loginService.user)
   loginService.onUserChanged = setUser
   const ref = React.createRef<HTMLDivElement>()
-  const bgRef = React.createRef<HTMLDivElement>()
+  const bgRef = React.createRef<HTMLStyleElement>()
   useEffect(() => {
     (async () => {
       const configService = locator.locate(IConfigsService)
@@ -34,7 +34,9 @@ export default function App() {
       if (!bgRef.current) {
         return;
       }
-      bgRef.current.style.backgroundImage = `url("${logo}")`;
+      bgRef.current.innerText = `.background{
+        background-image: url("${logo}");
+      }`;
     })()
   }, [])
   return (
@@ -51,7 +53,6 @@ export default function App() {
               setTimeout(() => {
                 if (savedScrollElement) {
                   savedScrollElement.scrollTo({ top: savedScrollTop, behavior: undefined })
-                  console.log(savedScrollElement, savedScrollTop)
                 }
               }, 50);
             } else {
@@ -59,7 +60,6 @@ export default function App() {
               if (savedScrollElement) {
                 savedScrollTop = savedScrollElement?.scrollTop
                 savedScrollElement?.scrollTo(0, 0)
-                console.log(savedScrollElement, savedScrollTop)
               }
               ref.current!.classList.add('hidden')
             }
@@ -67,7 +67,10 @@ export default function App() {
         ></ServiceView>
         <div ref={ref}>
           <HashRouter >
-            <div ref={bgRef} className="background"></div>
+            <style ref={bgRef} >
+
+            </style>
+            <div className="background background-fixed"></div>
             <Nav></Nav>
             <div className="nav-content-wrapper">
               <NavContent></NavContent>

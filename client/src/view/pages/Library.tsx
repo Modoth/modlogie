@@ -4,7 +4,7 @@ import './Library.css'
 import Subject from '../../domain/Subject'
 import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
-import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table } from 'antd'
+import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input } from 'antd'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import { PlusOutlined, SearchOutlined, CloseOutlined, DeploymentUnitOutlined } from '@ant-design/icons'
 import IViewService from '../services/IViewService'
@@ -63,6 +63,8 @@ export default function Library(props: LibraryProps) {
     Map<string, SubjectViewModel>
   >(new Map())
   const [rootSubjectId, setRootSubjectId] = useState<string | undefined>(undefined);
+  const [filter, setFilter] = useState('');
+  const [effectiveSubjects, setEffectiveSubjects] = useState<SubjectViewModel[]>([]);
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>(params.subjectId ? [params.subjectId!] : [])
   const fetchSubjects = async () => {
     const subjectsDict = new Map<string, SubjectViewModel>()
@@ -70,11 +72,35 @@ export default function Library(props: LibraryProps) {
       (s) => new SubjectViewModel(s, subjectsDict)
     )
     setSubjectsDict(subjectsDict)
-    setSubjectsIdDict(new Map(Array.from(subjectsDict.values(), (s) => [s.id, s])))
+    var subjectsIdDict = new Map(Array.from(subjectsDict.values(), (s) => [s.id, s]))
+    setSubjectsIdDict(subjectsIdDict)
     var rootSubject = props.type.rootSubject ? (subjectsDict.get('/' + props.type.rootSubject)) : null
-    setRootSubjectId(rootSubject?.id);
     setSubjects(rootSubject ? [rootSubject] : sbjs)
-    setSelectedSubjectIds(params.subjectId ? [params.subjectId!] : [])
+    var rootSubjectId = rootSubject?.id
+    selectSubjects(params.subjectId ? [params.subjectId!] : [], rootSubjectId, subjectsIdDict)
+    setRootSubjectId(rootSubjectId);
+  }
+
+  const selectSubjects = (ids: string[], rootId?: any, allIds?: any) => {
+    rootId = rootId || rootSubjectId
+    allIds = allIds || subjectsIdDict
+    let selectedIds = ids.length ? ids : (rootId ? [rootId] : [])
+    let subjects = selectedIds.map(id => allIds.get(id)).filter(s => s).map(s => s!);
+    var effectiveSubjectsSet = new Set(subjects);
+    for (var s of subjects) {
+      let parent = s.parent
+      while (parent != null) {
+        if (effectiveSubjectsSet.has(parent)) {
+          effectiveSubjectsSet.delete(s)
+          break
+        }
+        parent = parent.parent
+      }
+    }
+    var effectiveSubjects = Array.from(effectiveSubjectsSet);
+    setSelectedSubjectIds(ids);
+    setEffectiveSubjects(effectiveSubjects)
+
   }
 
   const [articleTags, setArticleTags] = useState<ArticleTag[]>([])
@@ -93,9 +119,8 @@ export default function Library(props: LibraryProps) {
 
     setTags(tagsDict)
     setArticleTags(
-      tagNames.map((name) => {
-        const tag = tagsDict.get(name)
-        return new ArticleTag(name, tag?.values || [], tag!.id!)
+      tagNames.map(name => tagsDict.get(name)).filter(t => t).map((tag) => {
+        return new ArticleTag(tag!.name, tag!.values || [], tag!.id!)
       })
     )
   }
@@ -120,7 +145,6 @@ export default function Library(props: LibraryProps) {
   }
 
   const fetchArticlesInternal = async (skip: number, take: number): Promise<[number, Article[]]> => {
-    let selectedIds = selectedSubjectIds.length ? selectedSubjectIds : (rootSubjectId ? [rootSubjectId] : [])
     var query = new Query()
       .setWhere(new Condition()
         .setType(Condition.ConditionType.AND)
@@ -128,17 +152,20 @@ export default function Library(props: LibraryProps) {
           new Condition().setType(Condition.ConditionType.EQUAL)
             .setProp('Type')
             .setValue('0'),
-          ...selectedIds.length ? [
+          ...effectiveSubjects.length ? [
             new Condition().setType(Condition.ConditionType.OR)
-              .setChildrenList(selectedIds.map(sid => new Condition().setType(Condition.ConditionType.STARTS_WITH)
-                .setProp('Path').setValue(subjectsIdDict.get(sid)!.path!)))
+              .setChildrenList(effectiveSubjects.map(sbj => new Condition().setType(Condition.ConditionType.STARTS_WITH)
+                .setProp('Path').setValue(sbj!.path!)))
           ] : [],
           ...articleTags.filter(t => t.value).map(t =>
             new Condition().setType(Condition.ConditionType.EQUAL)
               .setProp(t.name).setValue(t.value!))
         ])
       )
-    return await locator.locate(IArticleService).query(query, skip, take)
+    if (filter) {
+
+    }
+    return await locator.locate(IArticleService).query(query, filter, skip, take)
   }
 
   locator.locate(IArticleListService).getArticles = async (skip: number, take: number): Promise<[number, [Article, ArticleContentType][]]> => {
@@ -275,26 +302,15 @@ export default function Library(props: LibraryProps) {
       return
     }
     fetchArticles(1)
-  }, [subjects, selectedSubjectIds])
+  }, [rootSubjectId])
 
   return (
     <div className="library">
-      <TreeSelect
-        multiple={false}
-        showSearch={false}
-        ref={subjectTreeRef}
-        treeDefaultExpandAll={true}
-        className="search-subjects"
-        onChange={(value) => setSelectedSubjectIds((typeof value === 'string') ? [value] : value)}
-        value={selectedSubjectIds}
-        treeData={subjects}
-        treeCheckable={false}
-        virtual={false}
-        showCheckedStrategy={'SHOW_PARENT'}
-        style={{ width: '100%' }}
-        placeholder={langs.get(LangKeys.Subject)}
-        dropdownClassName={classNames("library-subjects-drop-down")}
-      />
+      <div className="searched-subjects" >
+        <Button onClick={exportMm} type="default" size="large" icon={<DeploymentUnitOutlined />} />
+        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || props.type.rootSubject || ''}</span>
+        <Button onClick={() => setShowFilter(true)} type="default" size="large" icon={<SearchOutlined />} />
+      </div>
       <div className="articles" >
         {
           articles.length ? null : <Table
@@ -334,11 +350,6 @@ export default function Library(props: LibraryProps) {
       ) : null}
       <div className="float-menus">
         <ArticleListSummary></ArticleListSummary>
-        {
-          articleTags && articleTags.length ? <Button onClick={() => setShowFilter(true)} type="default" size="large" shape="circle" icon={<SearchOutlined />} />
-            : null
-        }
-        <Button onClick={exportMm} type="default" size="large" shape="circle" icon={<DeploymentUnitOutlined />} />
         {user ? (
           <Button
             icon={<PlusOutlined />}
@@ -349,9 +360,26 @@ export default function Library(props: LibraryProps) {
           </Button>
         ) : null}
       </div>
-      <Drawer closable={false} className={classNames(generateRandomStyle(), "filter-panel")} height="80%" visible={showFilter} placement="bottom" onClose={() => setShowFilter(false)}>
+      <Drawer closable={false} className={classNames("filter-panel")} height="100%" visible={showFilter} placement="bottom" onClose={() => setShowFilter(false)}>
         <Space className="filters" direction="vertical">
-
+          <div className="subjects">
+            {/* <div className="background background-fixed"></div> */}
+            <Tree
+              treeData={subjects}
+              checkable={true}
+              multiple={true}
+              selectable={true}
+              onCheck={(checked) => {
+                selectSubjects(checked as any)
+              }}
+              onSelect={(checked) => {
+                selectSubjects(checked as any)
+              }}
+              checkedKeys={selectedSubjectIds}
+              selectedKeys={selectedSubjectIds}
+              defaultExpandAll={true}
+            />
+          </div>
           {articleTags.map((tag, i) => (
             <Radio.Group
               className="tag-list"
@@ -374,21 +402,28 @@ export default function Library(props: LibraryProps) {
           <div className="filter-menus">
             <Button
               type="primary"
-              icon={<SearchOutlined />}
-              onClick={() => {
-                setShowFilter(false)
-                fetchArticles(1);
-              }}
-            >{langs.get(LangKeys.Ok)}</Button>
-
-            <Button
-              type="primary"
               danger
               icon={<CloseOutlined />}
               onClick={() => {
                 setShowFilter(false)
               }}
             >{langs.get(LangKeys.Cancle)}</Button>
+            {
+              props.type.noTitle ?
+                null :
+                <Input.Search allowClear={true} value={filter} onChange={e => setFilter(e.target.value)} onSearch={() => {
+                  setShowFilter(false)
+                  fetchArticles(1);
+                }}></Input.Search>
+            }
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={() => {
+                setShowFilter(false)
+                fetchArticles(1);
+              }}
+            >{langs.get(LangKeys.Ok)}</Button>
           </div>
         </Space>
       </Drawer>

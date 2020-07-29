@@ -5,13 +5,9 @@ import { Error as ErrorMessage } from '../../apis/messages_pb'
 
 
 export default class SubjectViewModel extends Subject {
-  get title() {
-    return <div className="library-subject-item">{this.iconUrl ? <img src={this.iconUrl}></img> : null}{this.name + (this.totalArticleCount ? `(${this.totalArticleCount})` : '')}</div>;
-  }
 
-  get key() {
-    return this.id
-  }
+  key: string;
+  title: any;
 
   get value() {
     return this.id
@@ -24,6 +20,8 @@ export default class SubjectViewModel extends Subject {
   constructor(subject: Subject, allSubjects?: Map<string, SubjectViewModel>, excludePath?: string) {
     super()
     Object.assign(this, subject)
+    this.key = this.id;
+    this.title = <div className="library-subject-item">{this.iconUrl ? <img src={this.iconUrl}></img> : null}{this.name + (this.totalArticleCount ? `(${this.totalArticleCount})` : '')}</div>;
     if (allSubjects) {
       if (allSubjects.has(subject.path!)) {
         console.log('Subject circle error.')

@@ -15,7 +15,6 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     const close = () => {
         locator.locate(IViewService).previewArticle()
     }
-    console.log(props.article)
     return (
         <div className={classNames("single-article")}>
             <div className={classNames("menus")} onClick={e => e.stopPropagation()}>
