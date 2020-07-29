@@ -3,6 +3,58 @@ import * as jspb from "google-protobuf"
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import * as messages_pb from './messages_pb';
 
+export class NewFolderItem extends jspb.Message {
+  getName(): string;
+  setName(value: string): NewFolderItem;
+
+  getChildrenList(): Array<NewFolderItem>;
+  setChildrenList(value: Array<NewFolderItem>): NewFolderItem;
+  clearChildrenList(): NewFolderItem;
+  addChildren(value?: NewFolderItem, index?: number): NewFolderItem;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewFolderItem.AsObject;
+  static toObject(includeInstance: boolean, msg: NewFolderItem): NewFolderItem.AsObject;
+  static serializeBinaryToWriter(message: NewFolderItem, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewFolderItem;
+  static deserializeBinaryFromReader(message: NewFolderItem, reader: jspb.BinaryReader): NewFolderItem;
+}
+
+export namespace NewFolderItem {
+  export type AsObject = {
+    name: string,
+    childrenList: Array<NewFolderItem.AsObject>,
+  }
+}
+
+export class AddFoldersRequest extends jspb.Message {
+  getParentId(): string;
+  setParentId(value: string): AddFoldersRequest;
+
+  getAutoFix(): boolean;
+  setAutoFix(value: boolean): AddFoldersRequest;
+
+  getFoldersList(): Array<NewFolderItem>;
+  setFoldersList(value: Array<NewFolderItem>): AddFoldersRequest;
+  clearFoldersList(): AddFoldersRequest;
+  addFolders(value?: NewFolderItem, index?: number): NewFolderItem;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddFoldersRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: AddFoldersRequest): AddFoldersRequest.AsObject;
+  static serializeBinaryToWriter(message: AddFoldersRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddFoldersRequest;
+  static deserializeBinaryFromReader(message: AddFoldersRequest, reader: jspb.BinaryReader): AddFoldersRequest;
+}
+
+export namespace AddFoldersRequest {
+  export type AsObject = {
+    parentId: string,
+    autoFix: boolean,
+    foldersList: Array<NewFolderItem.AsObject>,
+  }
+}
+
 export class FileTag extends jspb.Message {
   getTagId(): string;
   setTagId(value: string): FileTag;

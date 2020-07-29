@@ -20,12 +20,21 @@ namespace Modlogie.Infrastructure.Data
 
         public async Task<TEntity> Add(TEntity entity)
         {
-            this.Entities.Add(entity);
+            await this.Entities.AddAsync(entity);
             if (Context.CurrentTransaction == null)
             {
                 await DbContext.SaveChangesAsync();
             }
             return entity;
+        }
+
+        public async Task AddRange(IEnumerable<TEntity> entities)
+        {
+            await this.Entities.AddRangeAsync(entities);
+            if (Context.CurrentTransaction == null)
+            {
+                await DbContext.SaveChangesAsync();
+            }
         }
 
         public async Task<TEntity> Update(TEntity entity)

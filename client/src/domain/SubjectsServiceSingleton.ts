@@ -3,11 +3,13 @@ import ISubjectsService from './ISubjectsService'
 import { FilesServiceClient } from '../apis/FilesServiceClientPb'
 import { ClientRun } from '../common/GrpcUtils'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
-import { File, AddRequest, UpdateNameRequest, FilesReply, UpdateCommentRequest, MoveRequest } from '../apis/files_pb'
+import { File, AddRequest, UpdateNameRequest, FilesReply, UpdateCommentRequest, MoveRequest, AddFoldersRequest, NewFolderItem } from '../apis/files_pb'
 import { StringId } from '../apis/messages_pb'
 import { BinaryReader } from 'google-protobuf'
 import FilesServiceBase from './FilesServiceBase'
 import ITagsService, { TagNames, TagType } from './ITagsService'
+import ConfigKeys from '../app/ConfigKeys'
+import IConfigsService from './IConfigsSercice'
 
 export default class SubjectsServiceSingleton extends FilesServiceBase implements ISubjectsService {
   private cached: boolean;
@@ -97,6 +99,25 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     var sbj = await this.subjectFrom(res.getFile()!);
     this.addSubjectToCache(sbj, parentId);
     return sbj.clone()
+  }
+
+  async batchAdd(subjects: Subject[], parentId?: string) {
+    await this.loadCache();
+    var request = new AddFoldersRequest().setParentId(parentId || '')
+    var autoFixStr = await this.locate(IConfigsService).getValueOrDefault(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX);
+    request.setAutoFix(autoFixStr.toLocaleLowerCase() === 'true')
+    const subjectToNewFolderItem = (sbj: Subject): NewFolderItem => {
+      var item = new NewFolderItem();
+      item.setName(sbj.name);
+      if (sbj.children && sbj.children.length) {
+        var children = sbj.children.map(c => subjectToNewFolderItem(c));
+        item.setChildrenList(children)
+      }
+      return item;
+    }
+    request.setFoldersList(subjects.map(c => subjectToNewFolderItem(c)))
+    await (await ClientRun(() => this.locate(FilesServiceClient).addFolders(request, null))).getFilesList();
+    this.clearCache();
   }
 
   async delete(subjectId: string): Promise<void> {

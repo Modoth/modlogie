@@ -35,8 +35,10 @@ import BlogPluginInfo from './plugins/blog'
 import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG } from './app/ConfigKeys'
 // import './assets/images'
 import logoImg from './assets/logo.png'
-import IMmGenerator from './domain/IMmGenerator'
-import MmGenerator from './domain/MmGenerator'
+import IMmConverter from './domain/IMmConverter'
+import MmConverter from './domain/MmConverter'
+import ISubjectsExporter from './domain/ISubjectsExporter'
+import SubjectsExporter from './domain/SubjectsExporter'
 
 const dynamicSetHead = () => {
   let icon = document.createElement('link');
@@ -116,7 +118,8 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(IArticleViewServie, new ArticleViewServieSingleton())
   serviceLocator.registerInstance(ISubjectsService, new SubjectsServiceSingleton())
   serviceLocator.registerInstance(IArticleService, new ArticleService())
-  serviceLocator.registerInstance(IMmGenerator, new MmGenerator())
+  serviceLocator.registerInstance(IMmConverter, new MmConverter())
+  serviceLocator.registerInstance(ISubjectsExporter, new SubjectsExporter())
 
   var clientHost = window.origin + '/api';
   serviceLocator.registerFactory(LoginServiceClient, () => new LoginServiceClient(clientHost, null, null));

@@ -14,6 +14,10 @@ export default class ISubjectsService extends IFilesServiceBase {
     throw new Error('Method not implemented.')
   }
 
+  batchAdd(subjects: Subject[], parentId?: string) {
+    throw new Error('Method not implemented.')
+  }
+
   move(subjectId: string, parentId: string): Promise<Subject> {
     throw new Error('Method not implemented.')
   }

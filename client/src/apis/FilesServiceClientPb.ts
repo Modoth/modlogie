@@ -17,6 +17,7 @@ import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty
 import * as messages_pb from './messages_pb';
 
 import {
+  AddFoldersRequest,
   AddOrUpdateTagsReply,
   AddOrUpdateTagsRequest,
   AddRequest,
@@ -88,6 +89,45 @@ export class FilesServiceClient {
     request,
     metadata || {},
     this.methodInfoGetFolders);
+  }
+
+  methodInfoAddFolders = new grpcWeb.AbstractClientBase.MethodInfo(
+    FilesReply,
+    (request: AddFoldersRequest) => {
+      return request.serializeBinary();
+    },
+    FilesReply.deserializeBinary
+  );
+
+  addFolders(
+    request: AddFoldersRequest,
+    metadata: grpcWeb.Metadata | null): Promise<FilesReply>;
+
+  addFolders(
+    request: AddFoldersRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: FilesReply) => void): grpcWeb.ClientReadableStream<FilesReply>;
+
+  addFolders(
+    request: AddFoldersRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.Error,
+               response: FilesReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        new URL('/modlogie.file.FilesService/AddFolders', this.hostname_).toString(),
+        request,
+        metadata || {},
+        this.methodInfoAddFolders,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/modlogie.file.FilesService/AddFolders',
+    request,
+    metadata || {},
+    this.methodInfoAddFolders);
   }
 
   methodInfoGetFiles = new grpcWeb.AbstractClientBase.MethodInfo(

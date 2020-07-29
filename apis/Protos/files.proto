@@ -6,6 +6,7 @@ option csharp_namespace = "Modlogie.Api";
 
 service FilesService {
   rpc GetFolders(google.protobuf.Empty) returns (FilesReply);
+  rpc AddFolders(AddFoldersRequest) returns (FilesReply);
   rpc GetFiles(GetFilesRequest) returns (FilesReply);
   rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
   rpc Add(AddRequest) returns (FileReply);
@@ -17,6 +18,17 @@ service FilesService {
   rpc Query(QueryRequest) returns (FilesReply);
   rpc AddOrUpdateTags(AddOrUpdateTagsRequest) returns (AddOrUpdateTagsReply);
   rpc DeleteTags(DeleteTagsRequest) returns (modlogie.messages.Reply);
+}
+
+message NewFolderItem {
+  string name = 1;
+  repeated NewFolderItem children = 2;
+}
+
+message AddFoldersRequest {
+  string parent_id = 1;
+  bool auto_fix = 2;
+  repeated NewFolderItem folders = 3;
 }
 
 message FileTag {

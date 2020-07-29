@@ -30,6 +30,8 @@ namespace Modlogie.Domain
 
         Task<TEntity> Add(TEntity entity);
 
+        Task AddRange(IEnumerable<TEntity> entities);
+
         Task<int> UpdateRange(IEnumerable<TEntity> entities);
 
         Task<int> Delete(TEntity entity);

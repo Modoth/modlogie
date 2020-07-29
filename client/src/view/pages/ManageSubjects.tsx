@@ -9,13 +9,17 @@ import {
   SubnodeOutlined,
   PictureOutlined,
   OrderedListOutlined,
-  DragOutlined
+  DragOutlined,
+  UploadOutlined,
+  DownloadOutlined
 } from '@ant-design/icons'
 import Subject from '../../domain/Subject'
 import ISubjectsService from '../../domain/ISubjectsService'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
 import SubjectViewModel from './SubjectViewModel'
+import IMmConverter from '../../domain/IMmConverter'
+import ISubjectsExporter from '../../domain/ISubjectsExporter'
 
 var subjectsModelCache: SubjectViewModel[] = [];
 var subjectsCacheKey: Subject[] = [];
@@ -115,6 +119,35 @@ export function ManageSubjects() {
           subjects.push(subject)
         }
         setSubjects([...subjects!])
+        return true
+      }
+    )
+  }
+
+  const exportSubject = (subject?: Subject) => {
+    locator.locate(ISubjectsExporter).export(subject ? [subject] : subjects);
+  }
+
+  const importTo = (parent?: Subject) => {
+    viewService.prompt(
+      langs.get(LangKeys.Create),
+      [{ type: 'TextFile', value: '', hint: langs.get(LangKeys.Import), accept: '*.mm' }],
+      async (content: string) => {
+        if (!content) {
+          return false;
+        }
+        const subjects = locator.locate(IMmConverter).convertFromMmToSubjects(content, true);
+        if (!subjects.length) {
+          return false;
+        }
+        const service: ISubjectsService = locator.locate(ISubjectsService)
+        try {
+          await service.batchAdd(subjects, parent?.id)
+        } catch (e) {
+          viewService!.errorKey(langs, e.message)
+          return
+        }
+        await fetchSubjects();
         return true
       }
     )
@@ -317,6 +350,25 @@ export function ManageSubjects() {
     )
   }
 
+  const renderImport = (_: string, subject: Subject) => {
+    return (
+      <Button
+        type="link"
+        onClick={() => importTo(subject)}
+        icon={<UploadOutlined />}
+      />
+    )
+  }
+  const renderExport = (_: string, subject: Subject) => {
+    return (
+      <Button
+        type="link"
+        onClick={() => exportSubject(subject)}
+        icon={<DownloadOutlined />}
+      />
+    )
+  }
+
   const renderMove = (_: string, subject: Subject) => {
     return (subject.parent ?
       <Button
@@ -369,6 +421,16 @@ export function ManageSubjects() {
             render: renderCreate
           },
           {
+            key: 'import',
+            className: 'subject-import-column',
+            render: renderImport
+          },
+          {
+            key: 'export',
+            className: 'subject-export-column',
+            render: renderExport
+          },
+          {
             key: 'delete',
             className: 'subject-delete-column',
             render: renderDelete
@@ -384,6 +446,14 @@ export function ManageSubjects() {
         type="dashed"
       >
         {langs.get(LangKeys.Create)}
+      </Button>
+      <Button
+        icon={<UploadOutlined />}
+        onClick={() => importTo()}
+        className="btn-import"
+        type="dashed"
+      >
+        {langs.get(LangKeys.Import)}
       </Button>
     </div>
   )

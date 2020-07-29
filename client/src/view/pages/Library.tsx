@@ -26,7 +26,8 @@ import { Query, Condition } from '../../apis/files_pb'
 import SubjectViewModel from './SubjectViewModel'
 import IArticleListService from '../../domain/IArticleListService'
 import IArticleViewServie from '../services/IArticleViewService'
-import IMmGenerator from '../../domain/IMmGenerator'
+import IMmConverter from '../../domain/IMmConverter'
+import ISubjectsExporter from '../../domain/ISubjectsExporter'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -258,12 +259,7 @@ export default function Library(props: LibraryProps) {
   }
 
   const exportMm = () => {
-    var mm = locator.locate(IMmGenerator).generate(subjects);
-    var name = subjects.length == 1 ? subjects[0].name : 'download'
-    var a = document.createElement('a')
-    a.href = `data:application/octet-stream;;charset=utf-8,${encodeURIComponent(mm)}`
-    a.download = `${name}.mm`;
-    a.click();
+    locator.locate(ISubjectsExporter).export(subjects);
   }
 
   articleHandlers.onDelete = deleteArticle

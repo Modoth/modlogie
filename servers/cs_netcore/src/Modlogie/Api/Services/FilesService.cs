@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
@@ -267,6 +268,92 @@ namespace Modlogie.Api.Services
             {
                 reply.Total = total.Value;
             }
+            return reply;
+        }
+
+        private String DbcToSbc(String input)
+        {
+            return new String(input.Select(c => c == 32 ? (char)12288 : (c < 127 ? (char)(c + 65248) : c)).ToArray());
+        }
+
+        private bool AddFileFromNewFolderItem(HashSet<string> existedFiles, List<Modlogie.Domain.Models.File> files, NewFolderItem item, Modlogie.Domain.Models.File parent, DateTime created, bool autoFix)
+        {
+            if (!ValidateFileName(item.Name))
+            {
+                return autoFix || false;
+            }
+            if (autoFix)
+            {
+                var key = DbcToSbc(item.Name).ToLower();
+                if (existedFiles.Contains(key))
+                {
+                    return true;
+                }
+                existedFiles.Add(key);
+            }
+            var file = new Modlogie.Domain.Models.File { Type = (int)FileType.Folder, Name = item.Name, Created = created, Modified = created };
+            files.Add(file);
+            if (parent != null)
+            {
+                file.Parent = parent;
+                file.Path = JoinPath(parent.Path, file.Name);
+            }
+            else
+            {
+                file.Path = PATH_SEP + file.Name;
+            }
+            if (item.Children != null && item.Children.Count > 0)
+            {
+                var existedChildren = autoFix ? new HashSet<string>() : null;
+                foreach (var c in item.Children)
+                {
+                    if (!AddFileFromNewFolderItem(existedChildren, files, c, file, created, autoFix))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public override async Task<FilesReply> AddFolders(AddFoldersRequest request, ServerCallContext context)
+        {
+            var reply = new FilesReply();
+            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            {
+                reply.Error = Error.InvalidOperation;
+                return reply;
+            }
+            Modlogie.Domain.Models.File parent = null;
+            if (!string.IsNullOrWhiteSpace(request.ParentId))
+            {
+                if (!Guid.TryParse(request.ParentId, out Guid parentId))
+                {
+                    reply.Error = Error.NoSuchEntity;
+                    return reply;
+                }
+                parent = await _service.All().FirstOrDefaultAsync(f => f.Id == parentId && f.Type == (int)FileType.Folder);
+                if (parent == null)
+                {
+                    reply.Error = Error.NoSuchEntity;
+                    return reply;
+                }
+            }
+            var now = DateTime.Now;
+            var files = new List<Modlogie.Domain.Models.File>();
+            var autoFix = request.AutoFix;
+            var existedFiles = autoFix ? new HashSet<string>() : null;
+            foreach (var f in request.Folders)
+            {
+                if (!this.AddFileFromNewFolderItem(existedFiles, files, f, parent, now, autoFix))
+                {
+                    reply.Error = Error.InvalidArguments;
+                    return reply;
+                }
+            }
+            await _service.AddRange(files);
+            await ClearFolderVersionsCache();
+            reply.Files.AddRange(files.Select(_converter));
             return reply;
         }
 
