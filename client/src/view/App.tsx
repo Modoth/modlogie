@@ -65,16 +65,13 @@ export default function App() {
             }
           }}
         ></ServiceView>
-        <div ref={ref}>
+        <div ref={ref} className="nav-content-wrapper">
           <HashRouter >
             <style ref={bgRef} >
-
             </style>
             <div className="background background-fixed"></div>
             <Nav></Nav>
-            <div className="nav-content-wrapper">
-              <NavContent></NavContent>
-            </div>
+            <NavContent></NavContent>
           </HashRouter>
         </div>
       </UserContext.Provider>

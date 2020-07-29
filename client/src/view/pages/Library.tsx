@@ -311,17 +311,17 @@ export default function Library(props: LibraryProps) {
         <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || props.type.rootSubject || ''}</span>
         <Button onClick={() => setShowFilter(true)} type="default" size="large" icon={<SearchOutlined />} />
       </div>
+      {
+        articles.length ? null : <Table
+          rowKey="name"
+          showHeader={false}
+          columns={[
+          ]}
+          dataSource={[]}
+          pagination={false}
+        ></Table>
+      }
       <div className="articles" >
-        {
-          articles.length ? null : <Table
-            rowKey="name"
-            showHeader={false}
-            columns={[
-            ]}
-            dataSource={[]}
-            pagination={false}
-          ></Table>
-        }
         {articles.map((p) => (
           <div className="article-view-wraper" key={(p as any)!.key}>
             <ArticleViewerMemo

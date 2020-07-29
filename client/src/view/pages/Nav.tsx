@@ -100,7 +100,7 @@ function Nav() {
             <Link to="/account"></Link>
           </Menu.Item>
         ) : (
-            <Menu.Item className="nav-avatar-icon" icon={<UserOutlined />}>
+            <Menu.Item className="nav-logo-icon" icon={<UserOutlined />}>
               <Link to="/account"></Link>
             </Menu.Item>
           )}
