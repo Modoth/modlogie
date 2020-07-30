@@ -34,17 +34,18 @@ class LangKeysClass implements LangKeysInterface, IKeyValue {
   MSG_ERROR_USER_OR_PWD = '用户名或密码错误';
   Name = '名称';
   Ok = '确定';
+  Order = '顺序';
   Password = '密码';
   RemoveFromArticleList = '移除';
   Reset = '重置';
+  Search = '搜索';
+  Share = '分享';
   Subject = '主题';
   Tags = '标签';
   Type = '类型';
   UserName = '用户名';
   Value = '值';
   Welcome = '感谢使用';
-  Order = '顺序';
-  Share = '分享';
 }
 
 const Langs = new LangKeysClass();

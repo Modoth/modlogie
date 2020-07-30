@@ -1,9 +1,14 @@
 export class LangKeysInterface {
   AddToArticleList = 'AddToArticleList';
+  AdmLogin = 'AdmLogin';
+  Cancle = 'Cancle';
   Configs = 'Configs';
   Create = 'Create';
   DefaultValue = 'DefaultValue';
+  Delete = 'Delete';
+  EnumValue = 'EnumValue';
   Home = 'Home';
+  Import = 'Import';
   Latest = 'Latest';
   Login = 'Login';
   Logout = 'Logout';
@@ -11,24 +16,20 @@ export class LangKeysInterface {
   Modify = 'Modify';
   MSG_ERROR_NETWORK = 'MSG_ERROR_NETWORK';
   MSG_ERROR_USER_OR_PWD = 'MSG_ERROR_USER_OR_PWD';
+  Name = 'Name';
+  Ok = 'Ok';
+  Order = 'Order';
   Password = 'Password';
   RemoveFromArticleList = 'RemoveFromArticleList';
   Reset = 'Reset';
+  Search = 'Search';
+  Share = 'Share';
   Subject = 'Subject';
   Tags = 'Tags';
+  Type = 'Type';
   UserName = 'UserName';
   Value = 'Value';
-  EnumValue = 'EnumValue';
-  Delete = 'Delete';
-  Type = 'Type';
-  Name = 'Name';
-  Cancle = 'Cancle';
-  Ok = 'Ok';
-  Import = 'Import';
   Welcome = 'Welcome';
-  AdmLogin = 'AdmLogin';
-  Order = 'Order';
-  Share = 'Share';
 }
 
 export const LangKeys = new LangKeysInterface();

@@ -41,7 +41,7 @@ function Nav() {
     document.title = title
     setTitile(title)
     setLogoTitleImg(logoTitle!)
-    setLogo(logo || defaultAvatarImg);
+    setLogo(logo || defaultLogoImg);
   }
   useEffect(() => {
     onComponentDidMount()
@@ -84,7 +84,9 @@ function Nav() {
             src={logoTitleImg}
           />}>
             <Link to="/"></Link>
-          </Menu.Item> : (title ? <Menu.Item className="nav-home" icon={<HomeOutlined />}>
+          </Menu.Item> : (title ? <Menu.Item className="nav-home" icon={<img
+            src={logo}
+          />}>
             <Link to="/">{title}</Link>
           </Menu.Item> : null)
         }

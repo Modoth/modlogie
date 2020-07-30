@@ -75,7 +75,7 @@ export default function Library(props: LibraryProps) {
     var subjectsIdDict = new Map(Array.from(subjectsDict.values(), (s) => [s.id, s]))
     setSubjectsIdDict(subjectsIdDict)
     var rootSubject = props.type.rootSubject ? (subjectsDict.get('/' + props.type.rootSubject)) : null
-    setSubjects(rootSubject ? [rootSubject] : sbjs)
+    setSubjects(rootSubject ? [rootSubject] : [])
     var rootSubjectId = rootSubject?.id
     selectSubjects(params.subjectId ? [params.subjectId!] : [], rootSubjectId, subjectsIdDict)
     setRootSubjectId(rootSubjectId);
@@ -362,23 +362,33 @@ export default function Library(props: LibraryProps) {
       </div>
       <Drawer closable={false} className={classNames("filter-panel")} height="100%" visible={showFilter} placement="bottom" onClose={() => setShowFilter(false)}>
         <Space className="filters" direction="vertical">
-          <div className="subjects">
-            {/* <div className="background background-fixed"></div> */}
-            <Tree
-              treeData={subjects}
-              checkable={true}
-              multiple={true}
-              selectable={true}
-              onCheck={(checked) => {
-                selectSubjects(checked as any)
+          <div className="filter-menus">
+            <Button
+              type="primary"
+              danger
+              icon={<CloseOutlined />}
+              onClick={() => {
+                setShowFilter(false)
               }}
-              onSelect={(checked) => {
-                selectSubjects(checked as any)
+            >{langs.get(LangKeys.Cancle)}</Button>
+            {
+              props.type.noTitle ?
+                null :
+                <Input placeholder={langs.get(LangKeys.Search)} allowClear={true} value={filter} onChange={e => setFilter(e.target.value)} onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setShowFilter(false)
+                    fetchArticles(1);
+                  }
+                }}></Input>
+            }
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={() => {
+                setShowFilter(false)
+                fetchArticles(1);
               }}
-              checkedKeys={selectedSubjectIds}
-              selectedKeys={selectedSubjectIds}
-              defaultExpandAll={true}
-            />
+            >{langs.get(LangKeys.Ok)}</Button>
           </div>
           {articleTags.map((tag, i) => (
             <Radio.Group
@@ -399,31 +409,23 @@ export default function Library(props: LibraryProps) {
               ))}
             </Radio.Group>
           ))}
-          <div className="filter-menus">
-            <Button
-              type="primary"
-              danger
-              icon={<CloseOutlined />}
-              onClick={() => {
-                setShowFilter(false)
+          <div className="subjects">
+            <div className="background background-fixed"></div>
+            <Tree
+              treeData={subjects}
+              checkable={true}
+              multiple={true}
+              selectable={true}
+              onCheck={(checked) => {
+                selectSubjects(checked as any)
               }}
-            >{langs.get(LangKeys.Cancle)}</Button>
-            {
-              props.type.noTitle ?
-                null :
-                <Input.Search allowClear={true} value={filter} onChange={e => setFilter(e.target.value)} onSearch={() => {
-                  setShowFilter(false)
-                  fetchArticles(1);
-                }}></Input.Search>
-            }
-            <Button
-              type="primary"
-              icon={<SearchOutlined />}
-              onClick={() => {
-                setShowFilter(false)
-                fetchArticles(1);
+              onSelect={(checked) => {
+                selectSubjects(checked as any)
               }}
-            >{langs.get(LangKeys.Ok)}</Button>
+              checkedKeys={selectedSubjectIds}
+              selectedKeys={selectedSubjectIds}
+              defaultExpandAll={true}
+            />
           </div>
         </Space>
       </Drawer>
