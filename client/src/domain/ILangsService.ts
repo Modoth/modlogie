@@ -1,6 +1,7 @@
 export class LangKeysInterface {
   AddToArticleList = 'AddToArticleList';
   AdmLogin = 'AdmLogin';
+  All = 'All';
   Cancle = 'Cancle';
   Configs = 'Configs';
   Create = 'Create';

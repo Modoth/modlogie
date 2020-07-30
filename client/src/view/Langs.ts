@@ -17,6 +17,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue {
   [key: string]: string;
   AddToArticleList = '添加';
   AdmLogin = '管理登陆';
+  All = '全部';
   Cancle = '取消';
   Configs = '配置';
   Create = '创建';

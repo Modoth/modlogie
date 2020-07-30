@@ -3,7 +3,7 @@ import './ArticleList.less'
 import { useServicesLocator } from '../../app/Contexts'
 import IArticleListService from '../../domain/IArticleListService'
 import { Button } from 'antd';
-import { CloseOutlined, PrinterOutlined, ReadOutlined, BorderOuterOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
 import Article from '../../domain/Article';
 import { ArticleContentType } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
@@ -73,27 +73,26 @@ export default function ArticleList() {
         locator.locate(IViewService).previewArticleList(false)
     }
     return (
-        <>
-            <div className="article-list-wraper">
-                <div ref={ref} className={classNames(`column-count-${columnCount}`, showIdx ? 'show-idx' : '', `border-style-${borderStyle}`, "article-list")}>{items.filter(([article]) => article.content && article.content.sections).map(
-                    ([article, type]) =>
-                        article.lazyLoading ? <div></div> :
-                            <type.Viewer title={article.name} showTitle={!type.noTitle} print={true} className="article" content={article.content!} files={article.files} type={type}></type.Viewer>
-                )}
-                </div>
-            </div>
+        <div className="article-list-wraper">
             <div className="article-list-menus" onClick={e => e.stopPropagation()}>
-                <Button type="primary" size="large" shape="circle" icon={<OrderedListOutlined />} onClick={() => setShowIdx(!showIdx)} />
-                <Button type="primary" size="large" shape="circle" icon={<ReadOutlined />} onClick={() => setColumnCount(((columnCount) % maxColumn) + 1)} />
-                <Button type="primary" size="large" shape="circle" icon={<BorderOuterOutlined />} onClick={() => setBorderStyle(((borderStyle) % maxBorderStyle) + 1)} />
+                <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} />
+                <span className="spilter"></span>
+                <Button type="link" size="large" icon={<OrderedListOutlined />} onClick={() => setShowIdx(!showIdx)} />
+                <Button type="link" size="large" icon={<PicRightOutlined />} onClick={() => setColumnCount(((columnCount) % maxColumn) + 1)} />
+                <Button type="link" size="large" icon={<BorderBottomOutlined />} onClick={() => setBorderStyle(((borderStyle) % maxBorderStyle) + 1)} />
                 {
                     showIdx ?
                         null
-                        : <Button type="primary" size="large" shape="circle" icon={<PictureOutlined />} onClick={shareArticle} />
+                        : <Button type="link" size="large" icon={<PictureOutlined />} onClick={shareArticle} />
                 }
-                <Button type="primary" size="large" shape="circle" icon={<PrinterOutlined />} onClick={() => window.print()} />
-                <Button type="primary" size="large" danger shape="circle" icon={<CloseOutlined />} onClick={close} />
+                <Button type="link" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
             </div>
-        </>
+            <div ref={ref} className={classNames(`column-count-${columnCount}`, showIdx ? 'show-idx' : '', `border-style-${borderStyle}`, "article-list")}>{items.filter(([article]) => article.content && article.content.sections).map(
+                ([article, type]) =>
+                    article.lazyLoading ? <div></div> :
+                        <type.Viewer title={article.name} showTitle={!type.noTitle} print={true} className="article" content={article.content!} files={article.files} type={type}></type.Viewer>
+            )}
+            </div>
+        </div>
     )
 }

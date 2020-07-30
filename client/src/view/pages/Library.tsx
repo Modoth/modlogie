@@ -28,6 +28,7 @@ import IArticleListService from '../../domain/IArticleListService'
 import IArticleViewServie from '../services/IArticleViewService'
 import IMmConverter from '../../domain/IMmConverter'
 import ISubjectsExporter from '../../domain/ISubjectsExporter'
+import { MmIcon } from '../components/Icons'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -68,7 +69,7 @@ export default function Library(props: LibraryProps) {
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>(params.subjectId ? [params.subjectId!] : [])
   const fetchSubjects = async () => {
     const subjectsDict = new Map<string, SubjectViewModel>()
-    const sbjs = (await locator.locate(ISubjectsService).all()).map(
+    const _ = (await locator.locate(ISubjectsService).all()).map(
       (s) => new SubjectViewModel(s, subjectsDict)
     )
     setSubjectsDict(subjectsDict)
@@ -310,7 +311,7 @@ export default function Library(props: LibraryProps) {
   return (
     <div className="library">
       <div className="searched-subjects" >
-        <Button onClick={exportMm} type="default" size="large" icon={<DeploymentUnitOutlined />} />
+        <Button onClick={exportMm} type="default" size="large" icon={<MmIcon />} />
         <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || props.type.rootSubject || ''}</span>
         <Button onClick={() => setShowFilter(true)} type="default" size="large" icon={<SearchOutlined />} />
       </div>
@@ -403,7 +404,7 @@ export default function Library(props: LibraryProps) {
 
             >
               <Radio.Button className="tag-item" value={undefined}>
-                {'全部'}
+                {langs.get(LangKeys.All)}
               </Radio.Button>
               {...tag.values.map((value) => (
                 <Radio.Button className="tag-item" key={value} value={value}>
