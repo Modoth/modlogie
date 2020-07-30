@@ -40,22 +40,6 @@ import MmConverter from './domain/MmConverter'
 import ISubjectsExporter from './domain/ISubjectsExporter'
 import SubjectsExporter from './domain/SubjectsExporter'
 
-const dynamicSetHead = () => {
-  let icon = document.createElement('link');
-  icon.rel = 'icon'
-  icon.type = 'image/x-icon'
-  icon.href = logoImg;
-  document.head.appendChild(icon)
-
-  let appTouchIcon = document.createElement('link');
-  appTouchIcon.rel = 'apple-touch-icon'
-  appTouchIcon.href = logoImg;
-  document.head.appendChild(appTouchIcon)
-
-}
-dynamicSetHead();
-
-
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
   var tagsService = serviceLocator.locate(ITagsService)

@@ -6,8 +6,7 @@ import { Redirect, Link } from 'react-router-dom'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import ILoginService from '../../app/ILoginService'
 import IViewService from '../services/IViewService'
-import logoImg from '../../assets/logo.png'
-import avatarImg from '../../assets/avatar.png'
+import defaultLogo from '../../assets/logo.png'
 import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
 import ReactMarkdown from 'react-markdown'
@@ -20,15 +19,18 @@ export default function Account() {
   const viewService = locator.locate(IViewService)
   const [siteName, setSiteName] = useState('')
   const [siteDesc, setSiteDesc] = useState('')
-  const [logoImg, setLogoImg] = useState('')
+  const [logo, setLogo] = useState('')
+  const [avatar, setAvatar] = useState('')
   const onComponentDidMount = async () => {
     var configService = locator.locate(IConfigsService);
     var name = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
     var desc = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_DESCRIPTION)
-    var logoIcon = await configService.getResource(ConfigKeys.WEB_SITE_LOGO);
+    var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
+    var avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
     setSiteName(name)
     setSiteDesc(desc)
-    setLogoImg(logoIcon || avatarImg)
+    setLogo(logo)
+    setAvatar(avatar || logo)
   }
   useEffect(() => {
     onComponentDidMount()
@@ -38,7 +40,7 @@ export default function Account() {
     return (
       <div className="account">
         <div className="avatar-wraper">
-          {logoImg ? <Avatar className="avatar" src={logoImg} /> : null}
+          {logo ? <Avatar className="avatar" src={logo} /> : null}
         </div>
         {
           siteName ? <Button
@@ -73,7 +75,7 @@ export default function Account() {
   return (
     <div className="account">
       <div className="avatar-wraper">
-        {logoImg ? <Avatar className="avatar" src={logoImg} /> : null}
+        {logo ? <Avatar className="avatar" src={avatar} /> : null}
       </div>
       <Button
         className="user-name"

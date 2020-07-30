@@ -12,7 +12,7 @@ import ServiceView from './pages/ServiceView'
 import ITextImageService from './services/ITextImageService'
 import IConfigsService from '../domain/IConfigsSercice'
 import ConfigKeys from '../app/ConfigKeys'
-import defaultAvatarImg from '../assets/avatar.png'
+import defaultLogo from '../assets/logo.png'
 
 
 let savedScrollTop = 0
@@ -30,7 +30,7 @@ export default function App() {
   useEffect(() => {
     (async () => {
       const configService = locator.locate(IConfigsService)
-      var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultAvatarImg;
+      var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
       if (!bgRef.current) {
         return;
       }

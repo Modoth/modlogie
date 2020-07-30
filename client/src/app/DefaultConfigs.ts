@@ -8,6 +8,7 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
     PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, "");
     WEB_SITE_LOGO_TITLE = new Config(ConfigKeys.WEB_SITE_LOGO_TITLE, ConfigType.RESOURCE, "/配置/标题LOGO");
     WEB_SITE_LOGO = new Config(ConfigKeys.WEB_SITE_LOGO, ConfigType.RESOURCE, "/配置/LOGO");
+    WEB_SITE_AVATAR = new Config(ConfigKeys.WEB_SITE_AVATAR, ConfigType.RESOURCE, "/配置/AVATAR");
     MAX_PRINT_COUNT = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, "100");
     IMPORT_SUBJECTS_AUTOFIX = new Config(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX, ConfigType.BOOLEAN, "false");
 }

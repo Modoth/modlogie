@@ -19,8 +19,7 @@ import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
 import { PluginsConfig } from '../../plugins/IPluginInfo'
 
-import defaultLogoImg from '../../assets/logo.png'
-import defaultAvatarImg from '../../assets/avatar.png'
+import defaultLogo from '../../assets/logo.png'
 
 const { SubMenu } = Menu
 function Nav() {
@@ -32,16 +31,33 @@ function Nav() {
   const [title, setTitile] = useState('')
   const [logoTitleImg, setLogoTitleImg] = useState('')
   const [logo, setLogo] = useState('')
+  const [avatar, setAvatar] = useState('')
   const onComponentDidMount = async () => {
     const configService = locator.locate(IConfigsService)
     var nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
     var title = nameConfig?.value || nameConfig?.defaultValue || langs.get(LangKeys.Home)
     var logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE);
-    var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO);
+    var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
+    var avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
     document.title = title
     setTitile(title)
     setLogoTitleImg(logoTitle!)
-    setLogo(logo || defaultLogoImg);
+    setLogo(logo);
+    setAvatar(avatar || logo);
+    document.getElementById('icon')?.remove()
+    document.getElementById('apple-touch-icon')?.remove()
+    let icon = document.createElement('link');
+    icon.id = 'icon'
+    icon.rel = 'icon'
+    icon.type = 'image/x-icon'
+    icon.href = logo;
+    document.head.appendChild(icon)
+
+    let appTouchIcon = document.createElement('link');
+    appTouchIcon.id = 'apple-touch-icon'
+    appTouchIcon.rel = 'apple-touch-icon'
+    appTouchIcon.href = logo;
+    document.head.appendChild(appTouchIcon)
   }
   useEffect(() => {
     onComponentDidMount()
@@ -95,7 +111,7 @@ function Nav() {
             className="nav-avatar-icon"
             icon={
               <img
-                src={logo}
+                src={avatar}
               />
             }
           >
