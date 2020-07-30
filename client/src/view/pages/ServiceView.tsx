@@ -311,7 +311,7 @@ export default function ServiceView(props: {
                 <img ref={previewImgRef} src={previewImgUrl}></img>
               </div>
               <div className="menus" onClick={e => e.stopPropagation()}>
-                <Button type="default" size="large" shape="circle" icon={<SaveOutlined />} onClick={() => {
+                <Button type="primary" size="large" shape="circle" icon={<SaveOutlined />} onClick={() => {
                   var a = document.createElement('a')
                   a.target = '_blank'
                   a.href = previewImgUrl
@@ -319,7 +319,7 @@ export default function ServiceView(props: {
                   a.click();
                   setPreviewImgUrl('')
                 }} />
-                <Button type="default" size="large" shape="circle" icon={<CloseOutlined />} onClick={() => {
+                <Button type="primary" danger size="large" shape="circle" icon={<CloseOutlined />} onClick={() => {
                   setPreviewImgUrl('')
                 }} />
               </div>
