@@ -43,6 +43,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue {
   Subject = '主题';
   Tags = '标签';
   Type = '类型';
+  UnknownError = '失败了';
   UserName = '用户名';
   Value = '值';
   Welcome = '感谢使用';

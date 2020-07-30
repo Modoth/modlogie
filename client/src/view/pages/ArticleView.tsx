@@ -66,6 +66,7 @@ export default function ArticleView(props: {
   const [files, setFiles] = useState(props.article.files)
   const [tagsDict, setTagsDict] = useState(props.article.tagsDict)
   const [subjectId, setSubjectId] = useState(props.article.subjectId)
+  const [loaded, setLoaded] = useState(props.article.lazyLoading === undefined)
   const [editing, setEditing] = useState(props.articleHandlers.editingArticle === props.article)
   const [editorRefs, setEditorRefs] = useState<ArticleContentEditorCallbacks<ArticleContent>>(
     {} as any
@@ -203,6 +204,13 @@ export default function ArticleView(props: {
   }
   // generateRandomStyle()
   useEffect(() => {
+    if (!loaded) {
+      props.article.lazyLoading!().then(() => {
+        setContent(props.article.content!)
+        setFiles(props.article.files!)
+        setLoaded(true);
+      })
+    }
     locator.locate(IArticleViewServie)
       .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type));
   }, [])
@@ -235,22 +243,23 @@ export default function ArticleView(props: {
             key="edit"></Button>
           ] : [])]} </div>)
         }
-      </div>
-      <div className="article-body">
-        {editing ? (
-          <props.type.Editor
-            onpaste={addFile}
-            content={content}
-            files={files}
-            callbacks={editorRefs}
-            type={type}
-          />
-        ) : (
-            <props.type.Viewer content={content} files={files} type={type} onClick={() => {
-              locator.locate(IViewService).previewArticle({ name, content, files }, type)
-            }} />
-          )}
-      </div>
+      </div>{
+        loaded ? <div className="article-body">
+          {editing ? (
+            <props.type.Editor
+              onpaste={addFile}
+              content={content}
+              files={files}
+              callbacks={editorRefs}
+              type={type}
+            />
+          ) : (
+              <props.type.Viewer content={content} files={files} type={type} onClick={() => {
+                locator.locate(IViewService).previewArticle({ name, content, files }, type)
+              }} />
+            )}
+        </div> : null
+      }
       {editing ? (<div className="actions-tags-list">{[
         <TreeSelect
           key="subject"

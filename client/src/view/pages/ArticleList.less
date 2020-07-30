@@ -11,11 +11,15 @@
   }
 }
 
-.article-list {
-  padding: 20px;
-  // padding-top: 60px;
-  background: white;
+.article-list-wraper{
   min-height: 100vh;
+  background: white;
+  user-select: none;
+  padding: 10px;
+}
+
+.article-list {
+  padding: 10px;
 }
 
 .article-list.column-count-1 {
@@ -43,10 +47,14 @@
     display: none;
   }
 
+  .article-list-wraper{
+    padding: 0;
+    min-height: unset;
+    background: transparent;
+  }
+
   .article-list {
     padding: 0;
-    background: transparent;
-    min-height: unset;
   }
 
   .article-list.column-count-2 {

@@ -60,6 +60,7 @@ export default function RecentsView() {
         )
       var res = await locator.locate(IArticleService).query(query, undefined, 0, 5);
       articles = res[1];
+      await Promise.all(articles.filter(a => a.lazyLoading).map(a => a.lazyLoading!()))
     } catch (e) {
       viewService!.errorKey(langs, e.message)
       return false

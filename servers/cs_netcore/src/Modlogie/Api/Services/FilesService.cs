@@ -151,7 +151,7 @@ namespace Modlogie.Api.Services
             {
                 filter = filter!.Trim();
                 items = items.Where(n =>
-                n.Name!.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
+                n.Path!.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
             }
             if (query != null && !string.IsNullOrWhiteSpace(query.OrderBy))
             {

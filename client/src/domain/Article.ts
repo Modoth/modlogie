@@ -31,4 +31,5 @@ export default interface Article {
   files?: ArticleFile[];
   tags?: Array<ArticleTag>;
   tagsDict?: Map<string, ArticleTag>;
+  lazyLoading?: { (): Promise<void> }
 }

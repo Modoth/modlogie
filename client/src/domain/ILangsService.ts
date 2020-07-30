@@ -27,6 +27,7 @@ export class LangKeysInterface {
   Subject = 'Subject';
   Tags = 'Tags';
   Type = 'Type';
+  UnknownError = 'UnknownError';
   UserName = 'UserName';
   Value = 'Value';
   Welcome = 'Welcome';

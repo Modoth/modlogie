@@ -37,9 +37,12 @@ export default class ArticleService extends FilesServiceBase implements IArticle
             tagsDict: new Map(tags.map(t => [t.name, t]))
         };
         if (contentUrl) {
-            const { content, files } = await this.tryParseContent(contentUrl);
-            article.content = content;
-            article.files = files;
+            article.lazyLoading = async () => {
+                const { content, files } = await this.tryParseContent(contentUrl);
+                article.content = content;
+                article.files = files;
+                article.lazyLoading = undefined
+            }
         }
         return article;
     }

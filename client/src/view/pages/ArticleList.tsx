@@ -11,26 +11,41 @@ import IViewService from '../services/IViewService';
 import IConfigsService from '../../domain/IConfigsSercice';
 import ConfigKeys from '../../app/ConfigKeys';
 import html2canvas from 'html2canvas';
+import ILangsService, { LangKeys } from '../../domain/ILangsService';
 
 const maxColumn = 3;
 const maxBorderStyle = 4;
 
 export default function ArticleList() {
     const locator = useServicesLocator()
+    const viewService = locator.locate(IViewService)
     const articleListService = locator.locate(IArticleListService)
     const [items, setItems] = useState<[Article, ArticleContentType][]>([])
     const fetchArticles = async () => {
-        var all = articleListService.all()
-        let count = 0
-        if (!all.length) {
+        viewService.setLoading(true)
+        try {
+            var all = articleListService.all()
+            let count = 0
+            if (all.length) {
+                setItems(all)
+                viewService.setLoading(false)
+                return
+            }
             var maxCount = parseInt(await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.MAX_PRINT_COUNT))
             if (isNaN(maxCount)) {
                 [count, all] = await articleListService.getArticles();
             } else {
                 [count, all] = await articleListService.getArticles(0, maxCount);
             }
+            setItems(all);
+            await Promise.all(all.map(a => a[0]).filter(a => a.lazyLoading).map(a => a.lazyLoading!().then(() => {
+                setItems([...all])
+            })))
+            viewService.setLoading(false)
+        } catch (e) {
+            viewService!.errorKey(locator.locate(ILangsService), e.message)
+            viewService.setLoading(false)
         }
-        setItems(all)
     }
     const [columnCount, setColumnCount] = useState(2)
     const [borderStyle, setBorderStyle] = useState(2)
@@ -42,9 +57,16 @@ export default function ArticleList() {
         if (!ref.current) {
             return
         }
-        const canvas = await html2canvas(ref.current);
-        const imgUrl = canvas.toDataURL('image/png')
-        locator.locate(IViewService).previewImage(imgUrl)
+        try {
+            viewService.setLoading(true)
+            const canvas = await html2canvas(ref.current);
+            viewService.setLoading(false)
+            const imgUrl = canvas.toDataURL('image/png')
+            locator.locate(IViewService).previewImage(imgUrl)
+        } catch (e) {
+            viewService!.errorKey(locator.locate(ILangsService), LangKeys.UnknownError)
+            viewService.setLoading(false)
+        }
     }
     const ref = React.createRef<HTMLDivElement>()
     const close = () => {
@@ -52,12 +74,13 @@ export default function ArticleList() {
     }
     return (
         <>
-            <div ref={ref} className={classNames(`column-count-${columnCount}`, showIdx ? 'show-idx' : '', `border-style-${borderStyle}`, "article-list")}>{items.filter(([article]) => article.content && article.content.sections).map(
-                ([article, type]) =>
-                    <>
-                        <type.Viewer title={article.name} showTitle={!type.noTitle} print={true} className="article" content={article.content!} files={article.files} type={type}></type.Viewer>
-                    </>
-            )}
+            <div className="article-list-wraper">
+                <div ref={ref} className={classNames(`column-count-${columnCount}`, showIdx ? 'show-idx' : '', `border-style-${borderStyle}`, "article-list")}>{items.filter(([article]) => article.content && article.content.sections).map(
+                    ([article, type]) =>
+                        article.lazyLoading ? <div></div> :
+                            <type.Viewer title={article.name} showTitle={!type.noTitle} print={true} className="article" content={article.content!} files={article.files} type={type}></type.Viewer>
+                )}
+                </div>
             </div>
             <div className="article-list-menus" onClick={e => e.stopPropagation()}>
                 <Button type="primary" size="large" shape="circle" icon={<OrderedListOutlined />} onClick={() => setShowIdx(!showIdx)} />

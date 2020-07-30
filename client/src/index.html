@@ -25,22 +25,28 @@
     animation: loading-text 3s infinite;
   }
 
+  .loading-small,
   .loading {
     display: inline-block;
     position: relative;
   }
 
-  .loading:after {
+  .loading-small::after,
+  .loading::after {
     content: " ";
     display: block;
     border-radius: 50%;
     width: 0;
     height: 0;
-    margin: 8px;
     box-sizing: border-box;
     border: 18vmin solid #fff;
     border-color: #99ccccc0 #ffcccc00 #e9ae6ac0 #ccccff00;
     animation: loading 3s infinite;
+  }
+
+  .loading-small::after {
+    border-width: 6vmin;
+    animation: loading 0.5s infinite;
   }
 
   @keyframes loading-text {

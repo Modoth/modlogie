@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import './ServiceView.less'
-import { Spin, message, Modal, Input, Space, Radio, TreeSelect } from 'antd'
+import { Spin, message, Modal, Input, Space, Radio, TreeSelect, Button } from 'antd'
 import IViewService, { IPromptField } from '../services/IViewService'
 import ILangsService from '../../domain/ILangsService'
 import ImageEditor from '../components/ImageEditor'
@@ -9,6 +9,7 @@ import ArticleSingle from './ArticleSingle'
 import { ArticleContentType } from '../../plugins/IPluginInfo'
 import Article from '../../domain/Article'
 import TextArea from 'antd/lib/input/TextArea'
+import { CloseOutlined, SaveOutlined, CopyOutlined } from '@ant-design/icons'
 
 class ViewService implements IViewService {
   errorKey(langs: ILangsService, key: any, timeout?: number | undefined): void {
@@ -203,10 +204,14 @@ export default function ServiceView(props: {
   )
   props.provide && props.provide(viewService)
 
+  const previewImgRef = React.createRef<HTMLImageElement>();
+
   return (
     <>
       {
-        loading ? <Spin className='loading-spin' spinning={true} size="large"></Spin> : null
+        loading ? <div className="loading-panel ">
+          <div className="loading-small"></div>
+        </div> : null
       }
       <input type="file" className="hidden" ref={refFile}></input>
       <Modal
@@ -297,12 +302,31 @@ export default function ServiceView(props: {
         </Space>
       </Modal>
       {
-        previewImgUrl ? <div className="img-preview" onClick={() => setPreviewImgUrl('')}>
-          <div className="img-panel" onClick={() => setPreviewImgUrl('')}>
-            <img onClick={() => setPreviewImgUrl('')} src={previewImgUrl}></img>
-          </div>
-          {/* onClick={e => e.stopPropagation()}  */}
-        </div> : null
+        previewImgUrl ?
+
+          <>
+
+            <div className="img-preview" >
+              <div className="img-panel" >
+                <img ref={previewImgRef} src={previewImgUrl}></img>
+              </div>
+              <div className="menus" onClick={e => e.stopPropagation()}>
+                <Button type="default" size="large" shape="circle" icon={<SaveOutlined />} onClick={() => {
+                  var a = document.createElement('a')
+                  a.target = '_blank'
+                  a.href = previewImgUrl
+                  a.download = `download.png`;
+                  a.click();
+                  setPreviewImgUrl('')
+                }} />
+                <Button type="default" size="large" shape="circle" icon={<CloseOutlined />} onClick={() => {
+                  setPreviewImgUrl('')
+                }} />
+              </div>
+              {/* onClick={e => e.stopPropagation()}  */}
+            </div>
+          </>
+          : null
       }
       {
         previewArticleList ? <ArticleList></ArticleList> : null

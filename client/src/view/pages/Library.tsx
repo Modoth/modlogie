@@ -186,15 +186,18 @@ export default function Library(props: LibraryProps) {
       page = currentPage
     }
     try {
+      viewService.setLoading(true);
       var [total, articles] = await fetchArticlesInternal(countPerPage * (page! - 1), countPerPage)
       setArticles(articles.map(convertArticle))
       setTotalCount(total)
       setCurrentPage(page)
-      window.scrollTo(0, 0);
     } catch (e) {
       viewService!.errorKey(langs, e.message)
+      viewService.setLoading(false);
       return false
     }
+    viewService.setLoading(false);
+    window.scrollTo(0, 0);
   }
 
   const updateArticleTag = async (
