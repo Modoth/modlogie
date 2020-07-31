@@ -6,14 +6,14 @@ import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
 import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input } from 'antd'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import { PlusOutlined, SearchOutlined, CloseOutlined, DeploymentUnitOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
 import { ArticleType, ArticleContentType } from '../../plugins/IPluginInfo'
 import Article, { ArticleTag } from '../../domain/Article'
 import ArticleView from './ArticleView'
 import ArticleListSummary from './ArticleListSummary'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import ITagsService, { TagNames, Tag, TagType } from '../../domain/ITagsService'
 import { generateRandomStyle } from './common'
 import classNames from 'classnames'
@@ -297,8 +297,13 @@ export default function Library(props: LibraryProps) {
 
   const subjectTreeRef = React.createRef<TreeSelect<any>>()
 
+  viewService.setShowMenu(false)
   useEffect(() => {
+    viewService.setShowMenu(false)
     fetchSubjects().then(() => fetchTags())
+    return () => {
+      viewService.setShowMenu(true);
+    }
   }, [])
 
   useEffect(() => {
@@ -311,9 +316,10 @@ export default function Library(props: LibraryProps) {
   return (
     <div className="library">
       <div className="searched-subjects" >
-        <Button onClick={exportMm} type="default" size="large" icon={<MmIcon />} />
+        <Link to="/"><Button type="link" size="large" icon={<ArrowLeftOutlined />} /></Link>
+
         <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || props.type.rootSubject || ''}</span>
-        <Button onClick={() => setShowFilter(true)} type="default" size="large" icon={<SearchOutlined />} />
+        <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {
         articles.length ? null : <Table

@@ -1,30 +1,41 @@
 .recents-view {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 
-    & .recent-article-wraper {
-        border-radius: 10px;
-        box-shadow: 1px 1px 3px #0008;
-        padding: 10px;
-        margin: 10px;
-        background-color: #fff8;
+  & .recent-article-wraper {
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 10px;
+    margin: 10px;
+    background-color: #fff8;
 
-        & .recent-article {
-            overflow: hidden;
-            height: 12em;
-        }
+    & .recent-article {
+      overflow: hidden;
+      height: 12em;
     }
+  }
 
-    & .title {
-        color: #251202a0;
-        font-weight: bold;
-        margin: 10px 20px 0 20px;
-    }
+  & .title {
+    color: #251202a0;
+    font-weight: bold;
+    margin: 10px 20px 0 20px;
+  }
 }
 
-.ant-carousel .slick-dots li button {
+.ant-carousel .slick-dots li {
+  width: 5px;
+  height: 5px;
+  button {
     background: #f97241 !important;
+    opacity: 1 !important;
+    height: 5px;
+    border-radius: 5px;
+  }
+
+  &.slick-active {
+    width: 15px;
+  }
 }
 
 .ant-carousel {
-    touch-action: pan-x;
+  touch-action: pan-x;
 }

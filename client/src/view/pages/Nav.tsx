@@ -20,6 +20,7 @@ import ConfigKeys from '../../app/ConfigKeys'
 import { PluginsConfig } from '../../plugins/IPluginInfo'
 
 import defaultLogo from '../../assets/logo.png'
+import IViewService from '../services/IViewService'
 
 const { SubMenu } = Menu
 function Nav() {
@@ -62,6 +63,9 @@ function Nav() {
   useEffect(() => {
     onComponentDidMount()
   }, [])
+
+  const [showMenu, setShowMenu] = useState(locator.locate(IViewService).showMenu);
+  locator.locate(IViewService).onShowMenuChanged = (s) => s === showMenu || setShowMenu(s);
   return (
     <>
       <Drawer className="side-nav-panel" visible={showDrawer} onClose={() => setShowDrawer(false)} closable={false} placement="left">
@@ -92,7 +96,7 @@ function Nav() {
         </Menu>
       </Drawer>
 
-      <Menu mode="horizontal" className={classNames("nav")}>
+      <Menu mode="horizontal" className={classNames("nav", showMenu ? '' : 'hidden')}>
         <Menu.Item className="nav-open-menu" icon={<MenuOutlined />} onClick={() => setShowDrawer(true)}>
         </Menu.Item>
         {

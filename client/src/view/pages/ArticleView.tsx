@@ -223,23 +223,23 @@ export default function ArticleView(props: {
         {props.type.noTitle ? <div></div> : <div onClick={(user && !props.type.noTitle) ? updateArticleName : undefined}>{name}</div>}
         {
           editing ? null : (<div className={classNames("actions-list")}>{[...(user ? [
-            <Button type="link" danger ghost icon={<DeleteOutlined />} onClick={() =>
+            <Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
               props.articleHandlers.onDelete(props.article.id!)
             } key="delete"></Button>] : []),
           inArticleList ?
-            <Button type="link" ghost danger icon={<PrinterOutlined />} onClick={() => {
+            <Button type="link" danger icon={<PrinterOutlined />} onClick={() => {
               articleListService.remove(props.article)
               setInArticleList(articleListService.has(props.article))
             }}
               key={LangKeys.RemoveFromArticleList}></Button> :
-            <Button type="link" ghost icon={<PrinterOutlined />} onClick={() => {
+            <Button type="link" icon={<PrinterOutlined />} onClick={() => {
               articleListService.add(props.article, type, () => {
                 setInArticleList(false);
               })
               setInArticleList(articleListService.has(props.article))
             }}
               key={LangKeys.AddToArticleList}></Button>,
-          ...(user ? [<Button type="link" ghost icon={<EditOutlined />} onClick={toggleEditing}
+          ...(user ? [<Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
             key="edit"></Button>
           ] : [])]} </div>)
         }
@@ -258,7 +258,7 @@ export default function ArticleView(props: {
                 locator.locate(IViewService).previewArticle({ name, content, files }, type)
               }} />
             )}
-        </div> : null
+        </div> : <div className="article-body"></div>
       }
       {editing ? (<div className="actions-tags-list">{[
         <TreeSelect

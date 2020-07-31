@@ -14,7 +14,7 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
         props.type!.allSections, name => existedSections.get(name)!).filter(s => s && s.content)
         : Array.from(existedSections.values())
 
-    return props.print ? <div className={classNames('modlang-viewer', "only-print")}>
+    return props.print ? <div className={classNames(props.className,'modlang-viewer', "only-print")}>
         <>
             {props.showTitle ? <h4 className="article-title">{props.title}</h4> : null}
             {
@@ -25,7 +25,7 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
             }
         </>
     </div> :
-        <Tabs className={classNames('modlang-viewer', "no-print")}>{
+        <Tabs className={classNames(props.className,'modlang-viewer', "no-print")}>{
             sections.map(section => <TabPane className={classNames(section.name, "code")} tab={section.name} key={section.name}>
                 <div onClick={props.onClick}>
                     <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>

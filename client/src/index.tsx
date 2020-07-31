@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import 'antd/dist/antd.css'
+import 'antd/dist/antd.less'
+
 import App from './view/App'
 import LangsService from './domain/LangsService'
 import { ServicesLocatorProvider } from './app/Contexts'
@@ -39,6 +40,7 @@ import IMmConverter from './domain/IMmConverter'
 import MmConverter from './domain/MmConverter'
 import ISubjectsExporter from './domain/ISubjectsExporter'
 import SubjectsExporter from './domain/SubjectsExporter'
+
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)

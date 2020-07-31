@@ -17,6 +17,18 @@ export default class IViewService {
     throw new Error('Method not implemented.')
   }
 
+  get showMenu(): boolean {
+    throw new Error('Method not implemented.')
+  }
+
+  setShowMenu(showMenu: boolean): void {
+    throw new Error('Method not implemented.')
+  }
+
+  onShowMenuChanged?(showMenu: boolean): void {
+    throw new Error('Method not implemented.')
+  }
+
   error(msg: string, timeout?: number | undefined): void {
     throw new Error('Method not implemented.')
   }

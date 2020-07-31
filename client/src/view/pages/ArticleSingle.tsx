@@ -21,7 +21,9 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>
                 <div className={classNames("title")}>{props.article.name}</div>
             </div>
-            <props.type.Viewer className="article" showHiddens={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+            <div className="article">
+                <props.type.Viewer showHiddens={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+            </div>
         </div>
     )
 }

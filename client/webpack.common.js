@@ -43,8 +43,13 @@ module.exports = {
             loader: 'less-loader',
             options: {
               lessOptions: {
-                strictMath: true,
-                javascriptEnabled: true
+                // strictMath: true,
+                javascriptEnabled: true,
+                modifyVars: {
+                  'primary-color': '#e8912e',
+                  'link-color': '#e8912e',
+                  'error-color': '#29cccc',
+                }
               }
             }
           }

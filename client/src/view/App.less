@@ -1,5 +1,7 @@
 body {
   background-color: #f8f8f8;
+  --shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px,
+    rgba(0, 0, 0, 0.05) 0px 1px 4px 0px, rgba(0, 0, 0, 0.05) 0px 2px 8px 0px;
 }
 
 .hidden {
@@ -11,14 +13,14 @@ body {
   display: flex;
   flex-direction: column;
 
-  &>*:nth-child(4){
+  & > *:nth-child(4) {
     max-width: 780px;
     margin: 0 auto;
     width: 100%;
   }
 }
 
-.background-fixed{
+.background-fixed {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -27,8 +29,8 @@ body {
   z-index: -1;
 }
 
-.background{
-  filter: blur(50px) opacity(0.15);
+.background {
+  filter: blur(50px) opacity(0.08);
   user-select: none;
 }
 
@@ -80,7 +82,7 @@ body {
 }
 
 @media print {
-  body{
-    background-color: transparent; 
+  body {
+    background-color: transparent;
   }
 }
