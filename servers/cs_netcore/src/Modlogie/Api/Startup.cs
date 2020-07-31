@@ -17,12 +17,15 @@ namespace Modlogie.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            IsDevelopment = env.IsDevelopment();
         }
 
         public IConfiguration Configuration { get; }
+
+        private bool IsDevelopment { get; set; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -47,6 +50,14 @@ namespace Modlogie.Api
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule(new AutofacModule());
+            if (IsDevelopment)
+            {
+                builder.RegisterModule(new AutofacDevelopmentModule());
+            }
+            else
+            {
+                builder.RegisterModule(new AutofacProductionModule());
+            }
         }
 
         private bool UpdateDbAndExit(ILogger logger)
@@ -78,6 +89,7 @@ namespace Modlogie.Api
                 endpoints.MapGrpcService<Services.KeyValuesService>();
                 endpoints.MapGrpcService<Services.TagsService>();
                 endpoints.MapGrpcService<Services.FilesService>();
+                endpoints.MapGrpcService<Services.UsersService>();
 
                 endpoints.MapGet("/", async context =>
                 {

@@ -295,6 +295,9 @@ export class File extends jspb.Message {
   getComment(): string;
   setComment(value: string): File;
 
+  getPrivate(): boolean;
+  setPrivate(value: boolean): File;
+
   getTagsList(): Array<FileTag>;
   setTagsList(value: Array<FileTag>): File;
   clearTagsList(): File;
@@ -318,6 +321,7 @@ export namespace File {
     normalFilesCount: number,
     content: string,
     comment: string,
+    pb_private: boolean,
     tagsList: Array<FileTag.AsObject>,
   }
 
@@ -395,6 +399,12 @@ export class AddResourceRequest extends jspb.Message {
   getContent_asB64(): string;
   setContent(value: Uint8Array | string): AddResourceRequest;
 
+  getTextContent(): string;
+  setTextContent(value: string): AddResourceRequest;
+
+  getPrivate(): boolean;
+  setPrivate(value: boolean): AddResourceRequest;
+
   getParentId(): string;
   setParentId(value: string): AddResourceRequest;
 
@@ -410,6 +420,8 @@ export namespace AddResourceRequest {
   export type AsObject = {
     type: string,
     content: Uint8Array | string,
+    textContent: string,
+    pb_private: boolean,
     parentId: string,
   }
 }

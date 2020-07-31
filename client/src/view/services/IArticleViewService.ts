@@ -18,7 +18,7 @@ export class ArticleViewServieSingleton implements IArticleViewServie {
         if (this.typesCaches.has(key)) {
             return this.typesCaches.get(key)
         }
-        let parentType = subTypeName ? await this.getArticleType(configsService, articleType, typeName) : { hidenSections: new Set<string>(), allSections: new Set<string>() };
+        let parentType = subTypeName ? await this.getArticleType(configsService, articleType) : { hidenSections: new Set<string>(), allSections: new Set<string>() };
         let type: ArticleContentType = Object.assign({}, parentType, { noTitle: articleType.noTitle, articleType, Viewer: articleType.Viewer, name: typeName })
 
         var allsections = (await configsService.getValuesOrDefault(get_ARTICLE_SECTIONS(typeName, subTypeName)))

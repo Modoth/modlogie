@@ -39,7 +39,7 @@ const convertToTreeData = (subjects: Subject[], excludePath: string) => {
 
 export function ManageSubjects() {
   const user = useUser()
-  if (!user) {
+  if (!user.editingPermission) {
     return <Redirect to="/" />
   }
   const locator = useServicesLocator()

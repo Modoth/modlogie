@@ -21,6 +21,7 @@ namespace Modlogie.Infrastructure.Data
         public virtual DbSet<FileTag> FileTags { get; set; }
         public virtual DbSet<KeyValue> KeyValues { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -52,6 +53,8 @@ namespace Modlogie.Infrastructure.Data
 
                 entity.HasIndex(e => e.Path)
                     .IsUnique();
+
+                entity.HasIndex(e => e.Private);
 
                 entity.HasIndex(e => e.Type);
 
@@ -88,6 +91,10 @@ namespace Modlogie.Infrastructure.Data
                     .HasColumnType("varchar(255)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Private)
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValueSql("b'0'");
 
                 entity.Property(e => e.Type)
                     .HasColumnType("int(11)")
@@ -168,6 +175,50 @@ namespace Modlogie.Infrastructure.Data
                     .HasColumnType("varchar(128)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_general_ci");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("User");
+
+                entity.HasIndex(e => e.Authorised);
+
+                entity.HasIndex(e => e.AuthorisionExpired);
+
+                entity.HasIndex(e => e.Email)
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Status);
+
+                entity.Property(e => e.Id)
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Authorised)
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValueSql("b'0'");
+
+                entity.Property(e => e.Comment)
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Status)
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValueSql("b'0'");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -40,6 +40,9 @@ import IMmConverter from './domain/IMmConverter'
 import MmConverter from './domain/MmConverter'
 import ISubjectsExporter from './domain/ISubjectsExporter'
 import SubjectsExporter from './domain/SubjectsExporter'
+import IUsersService from './domain/IUsersService'
+import UsersService from './domain/UsersService'
+import { UsersServiceClient } from './apis/UsersServiceClientPb'
 
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
@@ -106,12 +109,14 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(IArticleService, new ArticleService())
   serviceLocator.registerInstance(IMmConverter, new MmConverter())
   serviceLocator.registerInstance(ISubjectsExporter, new SubjectsExporter())
+  serviceLocator.registerInstance(IUsersService, new UsersService())
 
   var clientHost = window.origin + '/api';
   serviceLocator.registerFactory(LoginServiceClient, () => new LoginServiceClient(clientHost, null, null));
   serviceLocator.registerFactory(KeyValuesServiceClient, () => new KeyValuesServiceClient(clientHost, null, null));
   serviceLocator.registerFactory(TagsServiceClient, () => new TagsServiceClient(clientHost, null, null));
   serviceLocator.registerFactory(FilesServiceClient, () => new FilesServiceClient(clientHost, null, null));
+  serviceLocator.registerFactory(UsersServiceClient, () => new UsersServiceClient(clientHost, null, null));
 
   let w = window as any;
   if (w.autoAccountService) {

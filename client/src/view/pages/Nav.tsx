@@ -5,7 +5,7 @@ import { useUser, useServicesLocator } from '../../app/Contexts'
 import { Menu, Avatar, Drawer } from 'antd'
 import {
   UserOutlined,
-  HomeOutlined,
+  UsergroupAddOutlined,
   ApiOutlined,
   MenuOutlined,
   SettingOutlined,
@@ -31,6 +31,7 @@ function Nav() {
   const user = useUser()
   const [title, setTitile] = useState('')
   const [logoTitleImg, setLogoTitleImg] = useState('')
+  const [allowLogin, setAllowLogin] = useState(false)
   const [logo, setLogo] = useState('')
   const [avatar, setAvatar] = useState('')
   const onComponentDidMount = async () => {
@@ -40,11 +41,14 @@ function Nav() {
     var logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE);
     var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
     var avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
+    var allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
+
     document.title = title
     setTitile(title)
     setLogoTitleImg(logoTitle!)
     setLogo(logo);
     setAvatar(avatar || logo);
+    setAllowLogin(allowLogin);
     document.getElementById('icon')?.remove()
     document.getElementById('apple-touch-icon')?.remove()
     let icon = document.createElement('link');
@@ -75,7 +79,7 @@ function Nav() {
               <Link to={'/' + t.route}>{t.name}</Link>
             </Menu.Item>)
           }
-          {user ? (
+          {user.editingPermission ? (
             <SubMenu
               icon={<SettingOutlined />}
               title={langs.get(LangKeys.Manage)}
@@ -90,6 +94,9 @@ function Nav() {
               </Menu.Item>
               <Menu.Item icon={<TagsOutlined />}>
                 <Link to="/manage/configs">{langs.get(LangKeys.Configs)}</Link>
+              </Menu.Item>
+              <Menu.Item icon={<UsergroupAddOutlined />}>
+                <Link to="/manage/users">{langs.get(LangKeys.User)}</Link>
               </Menu.Item>
             </SubMenu>
           ) : null}
@@ -110,7 +117,7 @@ function Nav() {
             <Link to="/">{title}</Link>
           </Menu.Item> : null)
         }
-        {user ? (
+        {user.name ? (
           <Menu.Item
             className="nav-avatar-icon"
             icon={
@@ -123,7 +130,7 @@ function Nav() {
           </Menu.Item>
         ) : (
             <Menu.Item className="nav-logo-icon" icon={<UserOutlined />}>
-              <Link to="/account"></Link>
+              <Link to={allowLogin ? "/login" : "/account"}></Link>
             </Menu.Item>
           )}
       </Menu>

@@ -2,12 +2,16 @@ syntax = "proto3";
 package modlogie.login;
 import "google/protobuf/empty.proto";
 import "messages.proto";
-option csharp_namespace = "Modlogie.Api";
+import "users.proto";
+
+option csharp_namespace = "Modlogie.Api.Login";
 
 service LoginService {
-  rpc Login(Account) returns (UserReply);
-  rpc CheckLogin(google.protobuf.Empty) returns (UserReply);
+  rpc Login(Account) returns (AccountReply);
+  rpc CheckLogin(google.protobuf.Empty) returns (AccountReply);
   rpc Logout(google.protobuf.Empty) returns (modlogie.messages.Reply);
+  rpc UpdateName(UpdateNameRequest) returns (modlogie.messages.Reply);
+  rpc UpdatePassword(UpdatePasswordRequest) returns (modlogie.messages.Reply);
 }
 
 message Account {
@@ -15,7 +19,19 @@ message Account {
   string pwd = 2;
 }
 
-message UserReply {
+message AccountReply {
   modlogie.messages.Error error = 1;
   string name = 2;
+  string email = 3;
+  users.User.Type type = 4;
+}
+
+message UpdateNameRequest{
+  string newName = 1;
+  string password = 2;
+}
+
+message UpdatePasswordRequest{
+  string password = 1;
+  string newPassword = 2;
 }

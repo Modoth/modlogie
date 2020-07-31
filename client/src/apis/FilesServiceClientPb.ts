@@ -247,6 +247,45 @@ export class FilesServiceClient {
     this.methodInfoAdd);
   }
 
+  methodInfoGetResourceById = new grpcWeb.AbstractClientBase.MethodInfo(
+    FileReply,
+    (request: messages_pb.StringId) => {
+      return request.serializeBinary();
+    },
+    FileReply.deserializeBinary
+  );
+
+  getResourceById(
+    request: messages_pb.StringId,
+    metadata: grpcWeb.Metadata | null): Promise<FileReply>;
+
+  getResourceById(
+    request: messages_pb.StringId,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: FileReply) => void): grpcWeb.ClientReadableStream<FileReply>;
+
+  getResourceById(
+    request: messages_pb.StringId,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.Error,
+               response: FileReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        new URL('/modlogie.file.FilesService/GetResourceById', this.hostname_).toString(),
+        request,
+        metadata || {},
+        this.methodInfoGetResourceById,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/modlogie.file.FilesService/GetResourceById',
+    request,
+    metadata || {},
+    this.methodInfoGetResourceById);
+  }
+
   methodInfoAddResource = new grpcWeb.AbstractClientBase.MethodInfo(
     ResourceReply,
     (request: AddResourceRequest) => {

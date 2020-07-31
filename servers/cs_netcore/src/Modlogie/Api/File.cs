@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Modlogie.Api
+namespace Modlogie.Api.Files
 {
     public partial class File
     {

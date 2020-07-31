@@ -104,8 +104,8 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
   async batchAdd(subjects: Subject[], parentId?: string) {
     await this.loadCache();
     var request = new AddFoldersRequest().setParentId(parentId || '')
-    var autoFixStr = await this.locate(IConfigsService).getValueOrDefault(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX);
-    request.setAutoFix(autoFixStr.toLocaleLowerCase() === 'true')
+    var autoFix = await this.locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX);
+    request.setAutoFix(autoFix)
     const subjectToNewFolderItem = (sbj: Subject): NewFolderItem => {
       var item = new NewFolderItem();
       item.setName(sbj.name);

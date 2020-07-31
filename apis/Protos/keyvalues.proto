@@ -2,7 +2,7 @@ syntax = "proto3";
 package modlogie.keyvalue;
 import "google/protobuf/empty.proto";
 import "messages.proto";
-option csharp_namespace = "Modlogie.Api";
+option csharp_namespace = "Modlogie.Api.KeyValues";
 
 service KeyValuesService {
   rpc GetAll(google.protobuf.Empty) returns (KeyValuesReply);

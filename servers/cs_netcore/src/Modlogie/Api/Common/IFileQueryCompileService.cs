@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Modlogie.Api.Files;
 
 namespace Modlogie.Api.Common
 {

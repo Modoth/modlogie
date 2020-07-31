@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
+using Modlogie.Api.Common;
+using Modlogie.Api.Tags;
 using Modlogie.Domain;
 
 namespace Modlogie.Api.Services
 {
-    public class TagsService : Modlogie.Api.TagsService.TagsServiceBase
+    public class TagsService : Modlogie.Api.Tags.TagsService.TagsServiceBase
     {
         private static Expression<Func<Domain.Models.Tag, Tag>> _selector = i =>
         new Tag
@@ -22,10 +24,12 @@ namespace Modlogie.Api.Services
         private static Func<Domain.Models.Tag, Tag> _converter = _selector.Compile();
 
         private readonly ITagsEntityService _service;
+        private readonly ILoginUserService _userService;
 
-        public TagsService(ITagsEntityService service)
+        public TagsService(ITagsEntityService service, ILoginUserService userService)
         {
             _service = service;
+            _userService = userService;
         }
         public async override Task<TagsReply> GetAll(Empty request, ServerCallContext context)
         {
@@ -39,6 +43,11 @@ namespace Modlogie.Api.Services
         public async override Task<TagReply> Add(Tag request, ServerCallContext context)
         {
             var reply = new TagReply();
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            {
+                reply.Error = Error.InvalidOperation;
+                return reply;
+            }
             if (string.IsNullOrWhiteSpace(request.Name))
             {
                 reply.Error = Error.InvalidArguments;
@@ -58,6 +67,11 @@ namespace Modlogie.Api.Services
         private async Task<Reply> UpdateFields(Tag request, ServerCallContext context, Func<Domain.Models.Tag, Task<Error>> updateField)
         {
             var reply = new Reply();
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            {
+                reply.Error = Error.InvalidOperation;
+                return reply;
+            }
             if (Guid.TryParse(request.Id, out Guid id))
             {
                 var item = await _service.All().Where(i => i.Id == id).FirstOrDefaultAsync();
@@ -102,6 +116,11 @@ namespace Modlogie.Api.Services
         public async override Task<Reply> Delete(StringId request, ServerCallContext context)
         {
             var reply = new Reply();
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            {
+                reply.Error = Error.InvalidOperation;
+                return reply;
+            }
             if (Guid.TryParse(request.Id, out Guid id))
             {
                 var item = await _service.All().Where(k => k.Id == id).FirstOrDefaultAsync();

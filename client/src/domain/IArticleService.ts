@@ -1,4 +1,4 @@
-import Article from "./Article"
+import Article, { ArticleContent, ArticleFile } from "./Article"
 import { Query } from "../apis/files_pb"
 import IFilesServiceBase from "./IFilesServiceBase"
 
@@ -27,7 +27,7 @@ export default class IArticleService extends IFilesServiceBase {
         throw new Error('Method not implemented.')
     }
 
-    updateContent(content: string, articleId: string, resourceIds?: string[]) {
+    updateArticleContent(article: Article, content: ArticleContent, hiddenSections?: Set<string>, files?: ArticleFile[]) {
         throw new Error('Method not implemented.')
     }
 }

@@ -11,7 +11,7 @@ import ITagsService, { Tag, TagType, TagNames } from '../../domain/ITagsService'
 
 export function ManageTags() {
   const user = useUser()
-  if (!user) {
+  if (!user.editingPermission) {
     return <Redirect to="/" />
   }
 

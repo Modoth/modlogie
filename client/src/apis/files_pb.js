@@ -2434,7 +2434,7 @@ proto.modlogie.file.Condition.prototype.clearChildrenList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.modlogie.file.File.repeatedFields_ = [9];
+proto.modlogie.file.File.repeatedFields_ = [10];
 
 
 
@@ -2475,6 +2475,7 @@ proto.modlogie.file.File.toObject = function(includeInstance, msg) {
     normalFilesCount: jspb.Message.getFieldWithDefault(msg, 6, 0),
     content: jspb.Message.getFieldWithDefault(msg, 7, ""),
     comment: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    pb_private: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
     tagsList: jspb.Message.toObjectList(msg.getTagsList(),
     proto.modlogie.file.FileTag.toObject, includeInstance)
   };
@@ -2546,6 +2547,10 @@ proto.modlogie.file.File.deserializeBinaryFromReader = function(msg, reader) {
       msg.setComment(value);
       break;
     case 9:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setPrivate(value);
+      break;
+    case 10:
       var value = new proto.modlogie.file.FileTag;
       reader.readMessage(value,proto.modlogie.file.FileTag.deserializeBinaryFromReader);
       msg.addTags(value);
@@ -2635,10 +2640,17 @@ proto.modlogie.file.File.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getPrivate();
+  if (f) {
+    writer.writeBool(
+      9,
+      f
+    );
+  }
   f = message.getTagsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      9,
+      10,
       f,
       proto.modlogie.file.FileTag.serializeBinaryToWriter
     );
@@ -2800,12 +2812,30 @@ proto.modlogie.file.File.prototype.setComment = function(value) {
 
 
 /**
- * repeated FileTag tags = 9;
+ * optional bool private = 9;
+ * @return {boolean}
+ */
+proto.modlogie.file.File.prototype.getPrivate = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 9, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.modlogie.file.File} returns this
+ */
+proto.modlogie.file.File.prototype.setPrivate = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 9, value);
+};
+
+
+/**
+ * repeated FileTag tags = 10;
  * @return {!Array<!proto.modlogie.file.FileTag>}
  */
 proto.modlogie.file.File.prototype.getTagsList = function() {
   return /** @type{!Array<!proto.modlogie.file.FileTag>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.modlogie.file.FileTag, 9));
+    jspb.Message.getRepeatedWrapperField(this, proto.modlogie.file.FileTag, 10));
 };
 
 
@@ -2814,7 +2844,7 @@ proto.modlogie.file.File.prototype.getTagsList = function() {
  * @return {!proto.modlogie.file.File} returns this
 */
 proto.modlogie.file.File.prototype.setTagsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 9, value);
+  return jspb.Message.setRepeatedWrapperField(this, 10, value);
 };
 
 
@@ -2824,7 +2854,7 @@ proto.modlogie.file.File.prototype.setTagsList = function(value) {
  * @return {!proto.modlogie.file.FileTag}
  */
 proto.modlogie.file.File.prototype.addTags = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 9, opt_value, proto.modlogie.file.FileTag, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 10, opt_value, proto.modlogie.file.FileTag, opt_index);
 };
 
 
@@ -3311,7 +3341,9 @@ proto.modlogie.file.AddResourceRequest.toObject = function(includeInstance, msg)
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, ""),
     content: msg.getContent_asB64(),
-    parentId: jspb.Message.getFieldWithDefault(msg, 3, "")
+    textContent: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    pb_private: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+    parentId: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -3358,6 +3390,14 @@ proto.modlogie.file.AddResourceRequest.deserializeBinaryFromReader = function(ms
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
+      msg.setTextContent(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setPrivate(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
       msg.setParentId(value);
       break;
     default:
@@ -3403,10 +3443,24 @@ proto.modlogie.file.AddResourceRequest.serializeBinaryToWriter = function(messag
       f
     );
   }
-  f = message.getParentId();
+  f = message.getTextContent();
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getPrivate();
+  if (f) {
+    writer.writeBool(
+      4,
+      f
+    );
+  }
+  f = message.getParentId();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -3474,10 +3528,10 @@ proto.modlogie.file.AddResourceRequest.prototype.setContent = function(value) {
 
 
 /**
- * optional string parent_id = 3;
+ * optional string text_content = 3;
  * @return {string}
  */
-proto.modlogie.file.AddResourceRequest.prototype.getParentId = function() {
+proto.modlogie.file.AddResourceRequest.prototype.getTextContent = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -3486,8 +3540,44 @@ proto.modlogie.file.AddResourceRequest.prototype.getParentId = function() {
  * @param {string} value
  * @return {!proto.modlogie.file.AddResourceRequest} returns this
  */
-proto.modlogie.file.AddResourceRequest.prototype.setParentId = function(value) {
+proto.modlogie.file.AddResourceRequest.prototype.setTextContent = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional bool private = 4;
+ * @return {boolean}
+ */
+proto.modlogie.file.AddResourceRequest.prototype.getPrivate = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.modlogie.file.AddResourceRequest} returns this
+ */
+proto.modlogie.file.AddResourceRequest.prototype.setPrivate = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+
+/**
+ * optional string parent_id = 5;
+ * @return {string}
+ */
+proto.modlogie.file.AddResourceRequest.prototype.getParentId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.modlogie.file.AddResourceRequest} returns this
+ */
+proto.modlogie.file.AddResourceRequest.prototype.setParentId = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 

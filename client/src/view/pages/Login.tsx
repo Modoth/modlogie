@@ -10,7 +10,7 @@ import IViewService from '../services/IViewService'
 
 export default function Login() {
   const user = useUser()
-  if (user) {
+  if (user.name) {
     return <Redirect to="/account" />
   }
   const locator = useServicesLocator()

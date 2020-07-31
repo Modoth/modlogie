@@ -19,7 +19,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
         <div className={classNames("single-article")}>
             <div className={classNames("menus")} onClick={e => e.stopPropagation()}>
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>
-                <div className={classNames("title")}>{props.article.name}</div>
+                {props.type.noTitle ? null : <div className={classNames("title")}>{props.article.name}</div>}
             </div>
             <div className="article">
                 <props.type.Viewer showHiddens={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>

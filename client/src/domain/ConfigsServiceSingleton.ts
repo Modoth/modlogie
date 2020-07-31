@@ -33,6 +33,14 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         return config.value || config.defaultValue || '';
     }
 
+    async getValueOrDefaultBoolean(key: string): Promise<boolean> {
+        return await this.getValueOrDefault(key) === 'true';
+    }
+
+    async getValueOrDefaultNumber(key: string): Promise<number> {
+        return parseInt(await this.getValueOrDefault(key));
+    }
+
     async getValuesOrDefault(key: string): Promise<string[]> {
         var value = await this.getValueOrDefault(key);
         if (!value) {

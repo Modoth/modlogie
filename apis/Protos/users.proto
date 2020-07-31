@@ -1,0 +1,80 @@
+syntax = "proto3";
+package modlogie.users;
+import "google/protobuf/timestamp.proto";
+import "messages.proto";
+option csharp_namespace = "Modlogie.Api.Users";
+
+service UsersService {
+  rpc GetAll(GetAllRequest) returns (UsersReply);
+  rpc Add(AddRequest) returns (UserReply);
+  rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
+  rpc UpdateType(UpdateTypeRequest) returns (modlogie.messages.Reply);
+  rpc UpdateAuthorisionExpired(UpdateAuthorisionExpiredRequest)
+      returns (modlogie.messages.Reply);
+  rpc UpdateStatus(UpdateStatusRequest) returns (modlogie.messages.Reply);
+  rpc UpdateComment(UpdateCommentRequest) returns (modlogie.messages.Reply);
+}
+
+message GetAllRequest {
+  string filter = 1;
+  int32 skip = 2;
+  int32 take = 3;
+}
+
+message User {
+  enum Type {
+    NORMAL = 0;
+    AUTHORISED = 1;
+    ADM = 2;
+  }
+
+  enum Status {
+    DISABLED = 0;
+    ENABLED = 1;
+  }
+
+  string id = 1;
+  string email = 2;
+  Type type = 3;
+  google.protobuf.Timestamp authorision_expired = 4;
+  Status status = 5;
+  string comment = 6;
+}
+
+message UsersReply {
+  modlogie.messages.Error error = 1;
+  int32 total = 2;
+  repeated User users = 3;
+}
+
+message UserReply {
+  modlogie.messages.Error error = 1;
+  int32 total = 2;
+  User user = 3;
+}
+
+message AddRequest {
+  string id = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message UpdateTypeRequest {
+  string id = 1;
+  User.Type user_type = 2;
+}
+
+message UpdateAuthorisionExpiredRequest {
+  string id = 1;
+  google.protobuf.Timestamp authorision_expired = 2;
+}
+
+message UpdateStatusRequest {
+  string id = 1;
+  User.Status user_status = 2;
+}
+
+message UpdateCommentRequest {
+  string id = 1;
+  string comment = 2;
+}

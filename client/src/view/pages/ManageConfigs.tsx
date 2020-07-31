@@ -11,7 +11,7 @@ import IConfigsService, { Config, ConfigType } from '../../domain/IConfigsSercic
 
 export function ManageConfigs() {
   const user = useUser()
-  if (!user) {
+  if (!user.editingPermission) {
     return <Redirect to="/" />
   }
 

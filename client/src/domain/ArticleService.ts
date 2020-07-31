@@ -1,11 +1,13 @@
-import Article, { ArticleTag } from "./Article"
+import Article, { ArticleTag, ArticleContent, ArticleFile } from "./Article"
 import IArticleService from "./IArticleService"
 import { ClientRun } from "../common/GrpcUtils"
 import { FilesServiceClient } from "../apis/FilesServiceClientPb"
 import { StringId } from "../apis/messages_pb"
-import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest } from "../apis/files_pb"
+import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest, AddResourceRequest, UpdateCommentRequest } from "../apis/files_pb"
 import ITagsService from "./ITagsService"
 import FilesServiceBase from "./FilesServiceBase"
+import IConfigsService from "./IConfigsSercice"
+import ConfigKeys from "../app/ConfigKeys"
 
 export default class ArticleService extends FilesServiceBase implements IArticleService {
 
@@ -19,6 +21,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
     }
     private async ArticleFrom(item: File): Promise<Article> {
         var contentUrl = item.getContent();
+        var additionId = item.getComment();
         var tagsService = this.locate(ITagsService);
         var tags = [];
         for (var t of item.getTagsList()) {
@@ -36,12 +39,52 @@ export default class ArticleService extends FilesServiceBase implements IArticle
             tags,
             tagsDict: new Map(tags.map(t => [t.name, t]))
         };
+        let loadingTask: Promise<void> | undefined
         if (contentUrl) {
-            article.lazyLoading = async () => {
-                const { content, files } = await this.tryParseContent(contentUrl);
-                article.content = content;
-                article.files = files;
-                article.lazyLoading = undefined
+            article.lazyLoading = () => {
+                if (loadingTask) {
+                    return loadingTask;
+                }
+                loadingTask = new Promise(async (resolve) => {
+                    const { content, files } = await this.tryParseContent(contentUrl);
+                    article.content = content;
+                    article.files = files;
+                    article.lazyLoading = undefined
+                    loadingTask = undefined;
+                    resolve()
+                })
+                return loadingTask;
+            }
+        }
+        let loadingAdditionTask: Promise<void> | undefined
+
+        if (additionId) {
+            article.additionId = additionId;
+            article.lazyLoadingAddition = () => {
+                if (loadingAdditionTask) {
+                    return loadingAdditionTask;
+                }
+                loadingAdditionTask = new Promise(async (resolve) => {
+                    try {
+                        if (article.lazyLoading) {
+                            await article.lazyLoading()
+                        }
+                        var additionalFile = await (await ClientRun(() => this.locate(FilesServiceClient).getResourceById(new StringId().setId(additionId), null))).getFile()
+                        if (additionalFile) {
+                            const additionalUrl = additionalFile.getContent();
+                            const { content }: { content: ArticleContent } = await this.tryParseContent(additionalUrl);
+                            if (content && content.sections && content.sections.length) {
+                                article.content!.sections!.push(...content.sections)
+                            }
+                        }
+                    }
+                    catch {
+                    }
+                    article.lazyLoadingAddition = undefined
+                    loadingAdditionTask = undefined
+                    resolve();
+                })
+                return loadingAdditionTask;
             }
         }
         return article;
@@ -88,7 +131,35 @@ export default class ArticleService extends FilesServiceBase implements IArticle
         return this.ArticleFrom(item.getFile()!);
     }
 
-    async updateContent(content: string, articleId: string, resourceIds?: string[]) {
-        await ClientRun(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(articleId).setContent(content), null))
+    async updateArticleContent(article: Article, content: ArticleContent, hiddenSections?: Set<string>, files?: ArticleFile[]) {
+        var resourceIds = files ? files.map((f) => f.id!) : undefined
+        var allSections = new Map((content?.sections || []).map(s => [s.name!, s!]))
+        var hiddenContent: ArticleContent = { sections: [] }
+        if (hiddenSections && hiddenSections.size) {
+            hiddenSections.forEach(name => {
+                if (allSections.has(name)) {
+                    hiddenContent.sections!.push(allSections.get(name)!)
+                    allSections.delete(name);
+                }
+            })
+        }
+        var normalContent: ArticleContent = { sections: Array.from(allSections.values()) };
+        if (hiddenContent.sections!.length) {
+            if (!article.additionId) {
+                var hiddenContentStr = JSON.stringify({ content: hiddenContent });
+                var shadowSectionPrivate = await this.locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.SHADOW_SECTION_PRIVATE);
+                var additionId = await (await ClientRun(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(article.id!).setTextContent(hiddenContentStr).setPrivate(shadowSectionPrivate), null))).getId();
+                await ClientRun(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(additionId), null));
+                article.additionId = additionId;
+            }
+            await ClientRun(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.additionId!).setContent(hiddenContentStr), null))
+        } else {
+            if (article.additionId) {
+                await ClientRun(() => this.locate(FilesServiceClient).delete(new StringId().setId(article.additionId!), null))
+                await ClientRun(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(''), null));
+                article.additionId = undefined;
+            }
+        }
+        await ClientRun(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.id!).setContent(JSON.stringify({ content: normalContent, files })).setResourceIdsList(resourceIds || []), null))
     }
 }

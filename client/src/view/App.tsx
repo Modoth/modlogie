@@ -23,7 +23,7 @@ export default function App() {
   const loginService: LoginService = (locator.locate(
     ILoginService
   ) as any) as LoginService
-  const [user, setUser] = useState<ILoginUser | undefined>(loginService.user)
+  const [user, setUser] = useState<ILoginUser>(loginService.user || {})
   loginService.onUserChanged = setUser
   const ref = React.createRef<HTMLDivElement>()
   const bgRef = React.createRef<HTMLStyleElement>()

@@ -2,7 +2,7 @@ syntax = "proto3";
 package modlogie.file;
 import "google/protobuf/empty.proto";
 import "messages.proto";
-option csharp_namespace = "Modlogie.Api";
+option csharp_namespace = "Modlogie.Api.Files";
 
 service FilesService {
   rpc GetFolders(google.protobuf.Empty) returns (FilesReply);
@@ -10,6 +10,7 @@ service FilesService {
   rpc GetFiles(GetFilesRequest) returns (FilesReply);
   rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
   rpc Add(AddRequest) returns (FileReply);
+  rpc GetResourceById(modlogie.messages.StringId) returns (FileReply);
   rpc AddResource(AddResourceRequest) returns (ResourceReply);
   rpc UpdateName(UpdateNameRequest) returns (FileReply);
   rpc Move(MoveRequest) returns (FileReply);
@@ -102,7 +103,8 @@ message File {
   int32 normal_files_count = 6;
   string content = 7;
   string comment = 8;
-  repeated FileTag tags = 9;
+  bool private = 9;
+  repeated FileTag tags = 10;
 }
 
 message FilesReply {
@@ -121,7 +123,9 @@ message AddRequest {
 message AddResourceRequest {
   string type = 1;
   bytes content = 2;
-  string parent_id = 3;
+  string text_content = 3;
+  bool private = 4;
+  string parent_id = 5;
 }
 
 message ResourceReply {

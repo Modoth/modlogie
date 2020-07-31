@@ -5,10 +5,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
+using Modlogie.Api.Files;
 
 namespace Modlogie.Api.Common
 {
-    using static Modlogie.Api.Condition.Types;
+    using static Modlogie.Api.Files.Condition.Types;
     using ExpNode = Expression<Func<Domain.Models.File, bool>>;
 
     public class ExpressionParameterReplacer : ExpressionVisitor

@@ -2,7 +2,7 @@ syntax = "proto3";
 package moglogie.tags;
 import "google/protobuf/empty.proto";
 import "messages.proto";
-option csharp_namespace = "Modlogie.Api";
+option csharp_namespace = "Modlogie.Api.Tags";
 
 service TagsService {
   rpc GetAll(google.protobuf.Empty) returns (TagsReply);

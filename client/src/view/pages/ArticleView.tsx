@@ -67,6 +67,7 @@ export default function ArticleView(props: {
   const [tagsDict, setTagsDict] = useState(props.article.tagsDict)
   const [subjectId, setSubjectId] = useState(props.article.subjectId)
   const [loaded, setLoaded] = useState(props.article.lazyLoading === undefined)
+  const [additionalLoaded, setAdditionalLoaded] = useState(props.article.lazyLoadingAddition === undefined)
   const [editing, setEditing] = useState(props.articleHandlers.editingArticle === props.article)
   const [editorRefs, setEditorRefs] = useState<ArticleContentEditorCallbacks<ArticleContent>>(
     {} as any
@@ -95,13 +96,11 @@ export default function ArticleView(props: {
           const newFileName = generateNewFileNames(file.name, new Set(newFiles.map(f => f.name!)))
           const newFile = { name: newFileName, id, url }
           newFiles.push(newFile)
-          await articleService.updateContent(
-            JSON.stringify({
-              content,
-              files: newFiles
-            }),
-            props.article.id!,
-            newFiles.map((f) => f.id!)
+          await articleService.updateArticleContent(
+            props.article,
+            content,
+            type?.hidenSections,
+            newFiles
           )
           setFiles(newFiles)
           editorRefs && editorRefs.addFile(newFile)
@@ -138,7 +137,7 @@ export default function ArticleView(props: {
         newContent.sections !== undefined &&
         newContent.sections !== content?.sections
       ) {
-        await service.updateContent(JSON.stringify({ content: newContent, files: files }), props.article.id!, files ? files.map((f) => f.id!) : undefined)
+        await service.updateArticleContent(props.article, newContent, type?.hidenSections, files,)
         setContent(newContent)
       }
       setEditing(false)
@@ -211,6 +210,12 @@ export default function ArticleView(props: {
         setLoaded(true);
       })
     }
+    if(!additionalLoaded){
+      props.article.lazyLoadingAddition!().then(() => {
+        setContent(props.article.content!)
+        setAdditionalLoaded(true);
+      })
+    }
     locator.locate(IArticleViewServie)
       .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type));
   }, [])
@@ -220,13 +225,13 @@ export default function ArticleView(props: {
   return (
     <Card className={classNames("article-view")}>
       <div className="article-title">
-        {props.type.noTitle ? <div></div> : <div onClick={(user && !props.type.noTitle) ? updateArticleName : undefined}>{name}</div>}
+        {props.type.noTitle ? <div></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : undefined}>{name}</div>}
         {
-          editing ? null : (<div className={classNames("actions-list")}>{[...(user ? [
+          editing ? null : (<div className={classNames("actions-list")}>{[...(user.editingPermission ? [
             <Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
               props.articleHandlers.onDelete(props.article.id!)
             } key="delete"></Button>] : []),
-          inArticleList ?
+          user.printPermission ? (inArticleList ?
             <Button type="link" danger icon={<PrinterOutlined />} onClick={() => {
               articleListService.remove(props.article)
               setInArticleList(articleListService.has(props.article))
@@ -238,8 +243,9 @@ export default function ArticleView(props: {
               })
               setInArticleList(articleListService.has(props.article))
             }}
-              key={LangKeys.AddToArticleList}></Button>,
-          ...(user ? [<Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
+              key={LangKeys.AddToArticleList}></Button>) : null
+            ,
+          ...(user.editingPermission ? [<Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
             key="edit"></Button>
           ] : [])]} </div>)
         }

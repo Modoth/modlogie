@@ -25,6 +25,7 @@ export interface ArticleContent {
 
 export default interface Article {
   id?: string;
+  additionId?: string,
   subjectId?: string;
   name?: string;
   content?: ArticleContent;
@@ -32,4 +33,5 @@ export default interface Article {
   tags?: Array<ArticleTag>;
   tagsDict?: Map<string, ArticleTag>;
   lazyLoading?: { (): Promise<void> }
+  lazyLoadingAddition?: { (): Promise<void> }
 }

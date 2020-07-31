@@ -33,6 +33,14 @@ export default class IConfigsService {
         throw new Error('Method not implemented')
     }
 
+    getValueOrDefaultBoolean(key: string): Promise<boolean> {
+        throw new Error('Method not implemented')
+    }
+
+    getValueOrDefaultNumber(key: string): Promise<number> {
+        throw new Error('Method not implemented')
+    }
+
     getValuesOrDefault(key: string): Promise<string[]> {
         throw new Error('Method not implemented')
     }

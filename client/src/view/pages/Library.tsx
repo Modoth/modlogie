@@ -359,8 +359,8 @@ export default function Library(props: LibraryProps) {
         </>
       ) : null}
       <div className="float-menus">
-        <ArticleListSummary></ArticleListSummary>
-        {user ? (
+        {user.printPermission ? <ArticleListSummary></ArticleListSummary> : null}
+        {user.editingPermission ? (
           <Button
             icon={<PlusOutlined />}
             type="default"

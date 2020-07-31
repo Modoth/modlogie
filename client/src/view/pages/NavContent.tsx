@@ -13,6 +13,7 @@ import { ManageConfigs } from './ManageConfigs'
 import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
 import ReactMarkdown from 'react-markdown'
+import { ManageUsers } from './ManageUsers'
 
 function NavContent() {
   const locator = useServicesLocator()
@@ -48,6 +49,9 @@ function NavContent() {
       </Route>
       <Route path="/manage/configs">
         <ManageConfigs />
+      </Route>
+      <Route path="/manage/users">
+        <ManageUsers />
       </Route>
       <Route path="/login">
         <Login />

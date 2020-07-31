@@ -2,11 +2,17 @@ export class LangKeysInterface {
   AddToArticleList = 'AddToArticleList';
   AdmLogin = 'AdmLogin';
   All = 'All';
+  AuthorisedUser = 'AuthorisedUser';
   Cancle = 'Cancle';
+  ChangeName = 'ChangeName';
+  ChangePassword = 'ChangePassword';
+  Comment = 'Comment';
   Configs = 'Configs';
   Create = 'Create';
   DefaultValue = 'DefaultValue';
   Delete = 'Delete';
+  Email = 'Email';
+  Enabled = 'Enabled';
   EnumValue = 'EnumValue';
   Home = 'Home';
   Import = 'Import';
@@ -17,7 +23,10 @@ export class LangKeysInterface {
   Modify = 'Modify';
   MSG_ERROR_NETWORK = 'MSG_ERROR_NETWORK';
   MSG_ERROR_USER_OR_PWD = 'MSG_ERROR_USER_OR_PWD';
+  MSG_ERROR_SITE_CONFIG = 'MSG_ERROR_SITE_CONFIG';
   Name = 'Name';
+  NewName = 'NewName';
+  NewPassword = 'NewPassword';
   Ok = 'Ok';
   Order = 'Order';
   Password = 'Password';
@@ -29,6 +38,7 @@ export class LangKeysInterface {
   Tags = 'Tags';
   Type = 'Type';
   UnknownError = 'UnknownError';
+  User = 'User';
   UserName = 'UserName';
   Value = 'Value';
   Welcome = 'Welcome';

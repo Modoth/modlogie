@@ -11,12 +11,33 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Modlogie.Api.Common;
+using Modlogie.Api.Files;
+using Modlogie.Api.Tags;
 using Modlogie.Domain;
-using static Modlogie.Api.File.Types;
+using static Modlogie.Api.Files.File.Types;
 
 namespace Modlogie.Api.Services
 {
-    public class FilesService : Api.FilesService.FilesServiceBase
+    public static class FilesServiceUtils
+    {
+        public static bool HasWritePermission(this LoginUser user)
+        {
+            if (user == null)
+            {
+                return false;
+            }
+            return user.Adm;
+        }
+        public static bool HasReadPrivatePermission(this LoginUser user)
+        {
+            if (user == null)
+            {
+                return false;
+            }
+            return user.Adm || user.Authorised;
+        }
+    }
+    public class FilesService : Api.Files.FilesService.FilesServiceBase
     {
         private const string PATH_SEP = "/";
 
@@ -87,6 +108,7 @@ namespace Modlogie.Api.Services
             ParentId = i.ParentId != null ? i.ParentId.ToString() : string.Empty,
             Content = i.Content ?? string.Empty,
             Comment = i.Comment ?? string.Empty,
+            Private = i.Private == 1ul,
             FileTagsForSelect = i.FileTags != null ? i.FileTags.Select(t => new FileTag { TagId = t.TagId.ToString(), Value = t.Value }) : null
         };
         private static Func<Domain.Models.File, File> _converter = _selector.Compile();
@@ -146,6 +168,11 @@ namespace Modlogie.Api.Services
                 return reply;
             }
             var items = _service.All().Where(queryFunc);
+            var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
+            if (!readPrivate)
+            {
+                items = items.Where(i => i.Private == 0ul);
+            }
             var filter = request.Filter;
             if (!string.IsNullOrWhiteSpace(filter))
             {
@@ -250,6 +277,11 @@ namespace Modlogie.Api.Services
                 var pathPrefix = folder.Path + PATH_SEP;
                 items = items.Where(f => f.Path.StartsWith(pathPrefix));
             }
+            var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
+            if (!readPrivate)
+            {
+                items = items.Where(i => i.Private == 0ul);
+            }
             int? total = null;
             if (request.Skip > 0)
             {
@@ -267,6 +299,35 @@ namespace Modlogie.Api.Services
             if (total.HasValue)
             {
                 reply.Total = total.Value;
+            }
+            return reply;
+        }
+
+
+        public async override Task<FileReply> GetResourceById(StringId request, ServerCallContext context)
+        {
+            var reply = new FileReply();
+            if (string.IsNullOrWhiteSpace(request.Id))
+            {
+                reply.Error = Error.InvalidArguments;
+                return reply;
+            }
+
+            if (!Guid.TryParse(request.Id, out Guid fileId))
+            {
+                reply.Error = Error.NoSuchEntity;
+                return reply;
+            }
+            var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
+            var items = _service.All().Where(f => f.Type == (int)FileType.Resource);
+            if (!readPrivate)
+            {
+                items = items.Where(i => i.Private == 0ul);
+            }
+            var file = await items.Where(k => k.Id == fileId).FirstOrDefaultAsync();
+            if (file != null)
+            {
+                reply.File = _converter(file);
             }
             return reply;
         }
@@ -319,7 +380,7 @@ namespace Modlogie.Api.Services
         public override async Task<FilesReply> AddFolders(AddFoldersRequest request, ServerCallContext context)
         {
             var reply = new FilesReply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -360,7 +421,7 @@ namespace Modlogie.Api.Services
         public async override Task<AddOrUpdateTagsReply> AddOrUpdateTags(AddOrUpdateTagsRequest request, ServerCallContext context)
         {
             var reply = new AddOrUpdateTagsReply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -455,7 +516,7 @@ namespace Modlogie.Api.Services
         public async override Task<Reply> DeleteTags(DeleteTagsRequest request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -497,7 +558,7 @@ namespace Modlogie.Api.Services
         public async override Task<FileReply> Add(AddRequest request, ServerCallContext context)
         {
             var reply = new FileReply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -552,7 +613,7 @@ namespace Modlogie.Api.Services
         public async override Task<FileReply> UpdateName(UpdateNameRequest request, ServerCallContext context)
         {
             var reply = new FileReply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -607,7 +668,7 @@ namespace Modlogie.Api.Services
         public async override Task<FileReply> Move(MoveRequest request, ServerCallContext context)
         {
             var reply = new FileReply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -677,7 +738,7 @@ namespace Modlogie.Api.Services
         public override async Task<Reply> UpdateContent(UpdateContentRequest request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -688,7 +749,7 @@ namespace Modlogie.Api.Services
                 return reply;
             }
 
-            var item = await _service.All().Where(i => i.Id == id).FirstOrDefaultAsync();
+            var item = await _service.All().Where(i => i.Id == id && i.Type != (int)FileType.Folder).FirstOrDefaultAsync();
             if (item == null)
             {
                 reply.Error = Error.NoSuchEntity;
@@ -708,7 +769,7 @@ namespace Modlogie.Api.Services
         public override async Task<Reply> UpdateComment(UpdateCommentRequest request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -753,13 +814,8 @@ namespace Modlogie.Api.Services
         {
             var reply = new ResourceReply();
             var type = GetContentType(request.Type);
-            if (string.IsNullOrWhiteSpace(type))
-            {
-                reply.Error = Error.InvalidArguments;
-                return reply;
-            }
 
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
@@ -777,12 +833,21 @@ namespace Modlogie.Api.Services
                 return reply;
             }
             var file = new Modlogie.Domain.Models.File { Type = (int)FileType.Resource, Name = Guid.NewGuid().ToString(), Parent = parent, Created = DateTime.Now, Modified = DateTime.Now };
+            file.Private = request.Private ? 1ul : 0; ;
             file.Path = JoinPath(parent.Path, file.Name);
-            file.Content = await _contentService.Add(_resourcesGroup, stream =>
+            if (string.IsNullOrWhiteSpace(type))
             {
-                request.Content.WriteTo(stream);
-                return Task.FromResult(true);
-            }, type);
+                file.Content = await _contentService.Add(_resourcesGroup, request.TextContent);
+            }
+            else
+            {
+                file.Content = await _contentService.Add(_resourcesGroup, stream =>
+                            {
+                                request.Content.WriteTo(stream);
+                                return Task.FromResult(true);
+                            }, type);
+            }
+
             file = await _service.Add(file);
             reply.Id = file.Id.ToString();
             reply.ContentId = file.Content;
@@ -792,7 +857,7 @@ namespace Modlogie.Api.Services
         public async override Task<Reply> Delete(StringId request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (string.IsNullOrWhiteSpace(await _userService.GetUser(context.GetHttpContext())))
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
             {
                 reply.Error = Error.InvalidOperation;
                 return reply;
