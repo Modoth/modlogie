@@ -374,13 +374,13 @@ export default function Library(props: LibraryProps) {
         <Space className="filters" direction="vertical">
           <div className="filter-menus">
             <Button
-              type="primary"
+              type="link"
               danger
               icon={<CloseOutlined />}
               onClick={() => {
                 setShowFilter(false)
               }}
-            >{langs.get(LangKeys.Cancle)}</Button>
+            ></Button>
             {
               props.type.noTitle ?
                 null :
@@ -392,13 +392,13 @@ export default function Library(props: LibraryProps) {
                 }}></Input>
             }
             <Button
-              type="primary"
+              type="link"
               icon={<SearchOutlined />}
               onClick={() => {
                 setShowFilter(false)
                 fetchArticles(1);
               }}
-            >{langs.get(LangKeys.Ok)}</Button>
+            ></Button>
           </div>
           {articleTags.map((tag, i) => (
             <Radio.Group
@@ -420,8 +420,9 @@ export default function Library(props: LibraryProps) {
             </Radio.Group>
           ))}
           <div className="subjects">
-            <div className="background background-fixed"></div>
+            {/* <div className="background background-fixed"></div> */}
             <Tree
+              showLine={true}
               treeData={subjects}
               checkable={true}
               multiple={true}
