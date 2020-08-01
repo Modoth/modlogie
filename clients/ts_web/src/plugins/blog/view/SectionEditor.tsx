@@ -8,11 +8,8 @@ import { FunctionOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 import IFormulaEditingService from '../IFormulaEditingService'
 import { getSlices, SliceType, SliceFile } from './SectionCommon'
+import SectionEditorProps from './SectionEditorProps'
 const TextArea = Input.TextArea
-
-export interface ArticleSectionVm extends ArticleSection {
-    callbacks: ArticleContentEditorCallbacks<string>
-}
 
 export class ILatexTranslator {
     test(slice: string): boolean {
@@ -87,14 +84,7 @@ const translateWordContent = (slice: string) => {
     return translator.translate(slice)
 }
 
-export default function SectionEditor(props: {
-    section: ArticleSectionVm,
-    filesDict: Map<string, ArticleFile>,
-    editing?: boolean
-    onpaste: (file: File) => void
-    onClick?: MouseEventHandler<any>
-    formulaEditor?: IFormulaEditingService
-}) {
+export default function SectionEditor(props: SectionEditorProps) {
     const [filesDict] = useState(props.filesDict || new Map())
     const [content, setContent] = useState(props.section.content)
     const [refs] = useState<{ textArea?: HTMLTextAreaElement }>({})
@@ -110,16 +100,16 @@ export default function SectionEditor(props: {
         const [start, end] = [textArea.selectionStart, textArea.selectionEnd]
         setContent(oldContent.slice(0, start) + text + oldContent.slice(end))
     }
-    props.section.callbacks.addFile = (file: ArticleFile) => {
+    props.callbacks.addFile = (file: ArticleFile) => {
         const text = `$$:${file.name}$$`
         filesDict.set(file.name!, file)
         insertContent(text)
     }
-    props.section.callbacks.remoteFile = (file: ArticleFile) => {
+    props.callbacks.remoteFile = (file: ArticleFile) => {
         setContent(content?.replace(`$$:${file.name}$$`, ''))
         filesDict.delete(file.name!)
     }
-    props.section.callbacks.getEditedContent = () => {
+    props.callbacks.getEditedContent = () => {
         return content
     }
     const getFormula = (): Formula | undefined => {
@@ -148,9 +138,9 @@ export default function SectionEditor(props: {
             textArea.focus()
         }
         const newFormula = (await props.formulaEditor!.edit(formula.content)) || ' '
-        if(formula.newFormula && (!newFormula || !newFormula.trim())){
+        if (formula.newFormula && (!newFormula || !newFormula.trim())) {
             return;
-        } 
+        }
         setContent(content.slice(0, formula.start) + (formula.newFormula ? `$${newFormula}$` : newFormula) + content.slice(formula.end))
         setTimeout(() => {
             if (!refs.textArea) {

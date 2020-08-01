@@ -5,6 +5,7 @@ import ArticleFileViewer from '../../../view/components/ArticleFileViewer'
 import './SectionViewer.less'
 import classNames from 'classnames'
 import { ArticleSlice, getSlices, SliceType, SliceFile } from './SectionCommon'
+import SectionViewerProps from './SectionViewerProps'
 
 class ArticleSectionVm {
     public slices: ArticleSlice[] = [];
@@ -38,12 +39,7 @@ const renderSlice = (slice: ArticleSlice, onClick?: any) => {
     }
 }
 
-export default function SectionViewer(props: {
-    section: ArticleSection,
-    filesDict: Map<string, ArticleFile>
-    onClick?: MouseEventHandler<any>
-    pureViewMode: boolean
-}) {
+export default function SectionViewer(props: SectionViewerProps) {
     const [section] = useState(new ArticleSectionVm(props.section.name!, props.section.content || '', props.filesDict))
     return <div onClick={props.onClick} className={classNames('section-viewer', section.name, props.pureViewMode ? 'view-mode' : 'edit-mode')} key={section.name}>
         <label className="section-name">{section.name}</label>

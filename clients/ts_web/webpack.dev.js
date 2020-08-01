@@ -14,7 +14,7 @@ module.exports = merge(common, {
         pathRewrite: { '^/api': '' }
       }
     },
-    contentBase: path.resolve("..", "dist"),
+    contentBase: path.resolve("../..", "dist"),
     port: 9080
   }
 });
