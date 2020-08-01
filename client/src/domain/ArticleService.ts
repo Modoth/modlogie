@@ -145,14 +145,16 @@ export default class ArticleService extends FilesServiceBase implements IArticle
         }
         var normalContent: ArticleContent = { sections: Array.from(allSections.values()) };
         if (hiddenContent.sections!.length) {
+            var hiddenContentStr = JSON.stringify({ content: hiddenContent });
             if (!article.additionId) {
-                var hiddenContentStr = JSON.stringify({ content: hiddenContent });
                 var shadowSectionPrivate = await this.locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.SHADOW_SECTION_PRIVATE);
                 var additionId = await (await ClientRun(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(article.id!).setTextContent(hiddenContentStr).setPrivate(shadowSectionPrivate), null))).getId();
                 await ClientRun(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(additionId), null));
                 article.additionId = additionId;
+            }else{
+                debugger
+                await ClientRun(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.additionId!).setContent(hiddenContentStr), null))
             }
-            await ClientRun(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.additionId!).setContent(hiddenContentStr), null))
         } else {
             if (article.additionId) {
                 await ClientRun(() => this.locate(FilesServiceClient).delete(new StringId().setId(article.additionId!), null))

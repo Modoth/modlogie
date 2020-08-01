@@ -47,7 +47,8 @@ export default function ArticleList() {
             viewService.setLoading(false)
         }
     }
-    const [columnCount, setColumnCount] = useState(2)
+    const smallScreen = window.matchMedia && window.matchMedia("(max-width: 780px)")
+    const [columnCount, setColumnCount] = useState(smallScreen ? 1 : 2)
     const [borderStyle, setBorderStyle] = useState(2)
     const [showIdx, setShowIdx] = useState(false)
     useEffect(() => {

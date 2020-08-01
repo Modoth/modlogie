@@ -1,8 +1,8 @@
 .section-viewer {
   margin: 5px 0;
   padding: 5px 10px;
-  font-size: initial;
-  line-height: 1.5em;
+  // font-size: initial;
+  // line-height: 1.5em;
   user-select: none;
   -webkit-user-select: none;
 
@@ -27,7 +27,7 @@
 .section-viewer.D {
   // background: #00000008;
   border-radius: 5px;
-  border:10x dashed #00000008;
+  border: 10x dashed #00000008;
 
   & .section-name {
     font-weight: normal;
@@ -55,7 +55,8 @@
 
 .section-viewer.view-mode.题干 {
   // padding: 5px 0;
-  color: #251202c0;
+  color: #251202;
+  // font-weight: 550;
 }
 
 .section-viewer.view-mode.标题 {
@@ -74,26 +75,27 @@
 
 .section-viewer.view-mode.解析,
 .section-viewer.view-mode.答案 {
-  border-radius: 5px;
-  background: #0001;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
   min-height: 6em;
+  margin: 20px 0;
 
   & .section-name {
-    background: #0001;
-    padding: 5px 10px;
+    // background: #0001;
+    padding: 10px;
     width: calc(100% + 20px);
     display: block;
-    border-radius: 5px 5px 0 0;
     margin: -3px -10px 10px -10px;
+    border-bottom: 1px solid #00000010;
   }
 }
 
 .article-list {
-  counter-reset: section;
+  counter-reset: blog-print-article;
 
-  & > .article > .section-viewer:first-child::before {
-    counter-increment: section;
-    content: counter(section) "、 ";
+  &.show-idx > .article > .section-viewer:first-child::before {
+    counter-increment: blog-print-article;
+    content: counter(blog-print-article) "、 ";
   }
 
   & > .article.problem-viewer {
@@ -101,5 +103,68 @@
     &.证明 {
       margin-bottom: 80px;
     }
+  }
+
+  &.border-style-1 {
+    .section-viewer.A.view-mode,
+    .section-viewer.B.view-mode,
+    .section-viewer.C.view-mode,
+    .section-viewer.D.view-mode {
+      padding: 0;
+      margin: 5px;
+      border-radius: 2px;
+    }
+  }
+
+  &.border-style-2 {
+    .section-viewer.A.view-mode,
+    .section-viewer.B.view-mode,
+    .section-viewer.C.view-mode,
+    .section-viewer.D.view-mode {
+      padding: 5px;
+      margin: 5px;
+      box-sizing: border-box;
+      border-width: 1px;
+      border-style: dashed;
+      border-color: rgba(0, 0, 0, 0.65);
+      break-inside: avoid-column;
+      border-radius: 2px;
+    }
+  }
+
+  &.border-style-3 {
+    .section-viewer.A.view-mode,
+    .section-viewer.B.view-mode,
+    .section-viewer.C.view-mode,
+    .section-viewer.D.view-mode {
+      padding: 5px;
+      margin: 5px;
+      box-sizing: border-box;
+      border-width: 1px;
+      border-color: rgba(0, 0, 0, 0.65);
+      border-style: solid;
+      break-inside: avoid-column;
+      border-radius: 2px;
+    }
+  }
+
+  &.border-style-4 {
+    .section-viewer.A.view-mode,
+    .section-viewer.B.view-mode,
+    .section-viewer.C.view-mode,
+    .section-viewer.D.view-mode {
+      padding: 5px 10px;
+      margin: 5px;
+      box-sizing: border-box;
+      background-color: #00000005;
+      border-radius: 2px;
+    }
+  }
+}
+
+@media (min-width: 780px) {
+  .section-viewer.view-mode.解析,
+  .section-viewer.view-mode.答案 {
+    box-shadow: 0 0 1px #0008;
   }
 }
