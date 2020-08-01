@@ -7,13 +7,13 @@
 			"path": "../../apis/Protos"
 		},
 		{
-			"path": "../../client"
-		},
-		{
 			"path": "../../db"
 		},
 		{
 			"path": "../../tools"
+		},
+		{
+			"path": "../../clients/ts_web"
 		}
 	],
 	"settings": {}

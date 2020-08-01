@@ -60,9 +60,9 @@
     "webpack-merge": "^4.2.2"
   },
   "scripts": {
-    "generate/apis": "rm -rf ./src/apis && mkdir ./src/apis && protoc -I=../apis/Protos ../apis/Protos/*.proto --js_out=import_style=commonjs,binary:./src/apis --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/apis",
-    "build/netcore": "cd ../servers/cs_netcore/src && dotnet build",
-    "run/netcore": "cd ../servers/cs_netcore/src/Modlogie/bin/Debug/netcoreapp3.1 && ASPNETCORE_ENVIRONMENT=Development dotnet Modlogie.dll",
+    "generate/apis": "rm -rf ./src/apis && mkdir ./src/apis && protoc -I=../../apis/Protos ../../apis/Protos/*.proto --js_out=import_style=commonjs,binary:./src/apis --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/apis",
+    "build/netcore": "cd ../../servers/cs_netcore/src && dotnet build",
+    "run/netcore": "cd ../../servers/cs_netcore/src/Modlogie/bin/Debug/netcoreapp3.1 && ASPNETCORE_ENVIRONMENT=Development dotnet Modlogie.dll",
     "run/proxy": "envoy -c envoy.yaml",
     "netcore": "npm run build/netcore && npm run run/netcore",
     "start": "webpack-dev-server --config webpack.dev.js",
