@@ -139,7 +139,7 @@ export default function Library(props: LibraryProps) {
     {} as any
   )
   const [totalCount, setTotalCount] = useState(0)
-  const countPerPage = 5
+  const countPerPage = 10
 
   const [favoriteService] = useState(locator.locate(IFavoritesServer))
   const [favorite, setFavorite] = useState(false)
