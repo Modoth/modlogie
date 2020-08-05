@@ -13,7 +13,7 @@ import { ArticleType, ArticleContentType } from '../../plugins/IPluginInfo'
 import Article, { ArticleTag } from '../../domain/Article'
 import ArticleView from './ArticleView'
 import ArticleListSummary from './ArticleListSummary'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import ITagsService, { TagNames, Tag, TagType } from '../../domain/ITagsService'
 import { generateRandomStyle } from './common'
 import classNames from 'classnames'
@@ -41,10 +41,6 @@ const getTagEnums = (values?: string) => {
     : []
 }
 
-interface Params {
-  subjectId?: string;
-}
-
 export class LibraryProps {
   type: ArticleType;
 }
@@ -53,9 +49,15 @@ export default function Library(props: LibraryProps) {
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
   const viewService = locator.locate(IViewService)
-
-  const params = useParams<Params>()
+  const location = useLocation();
+  const params:
+    {
+      subjectId?: string;
+      articleId?: string;
+    }
+    = location.state || {}
   const [showFilter, setShowFilter] = useState(false);
+  const [articleId, setArticleId] = useState(params.articleId)
   const [subjects, setSubjects] = useState<SubjectViewModel[]>([])
   const [subjectsDict, setSubjectsDict] = useState<
     Map<string, SubjectViewModel>
@@ -146,8 +148,20 @@ export default function Library(props: LibraryProps) {
   }
 
   const fetchArticlesInternal = async (skip: number, take: number): Promise<[number, Article[]]> => {
-    var query = new Query()
-      .setWhere(new Condition()
+    var query = new Query();
+    if (articleId) {
+      query.setWhere(new Condition()
+        .setType(Condition.ConditionType.AND)
+        .setChildrenList([
+          new Condition().setType(Condition.ConditionType.EQUAL)
+            .setProp('Type')
+            .setValue('0'),
+          new Condition().setType(Condition.ConditionType.EQUAL)
+            .setProp('Id')
+            .setValue(articleId),
+        ]))
+    } else {
+      query.setWhere(new Condition()
         .setType(Condition.ConditionType.AND)
         .setChildrenList([
           new Condition().setType(Condition.ConditionType.EQUAL)
@@ -163,9 +177,8 @@ export default function Library(props: LibraryProps) {
               .setProp(t.name).setValue(t.value!))
         ])
       )
-    if (filter) {
-
     }
+
     return await locator.locate(IArticleService).query(query, filter, skip, take)
   }
 
@@ -190,6 +203,9 @@ export default function Library(props: LibraryProps) {
       viewService.setLoading(true);
       var [total, articles] = await fetchArticlesInternal(countPerPage * (page! - 1), countPerPage)
       setArticles(articles.map(convertArticle))
+      if (articleId) {
+        setArticleId(undefined)
+      }
       setTotalCount(total)
       setCurrentPage(page)
     } catch (e) {

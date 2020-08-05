@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import './RecentsView.less'
 import { generateRandomStyle } from './common'
 import IPluginInfo, { ArticleContentType, PluginsConfig, ArticleType } from '../../plugins/IPluginInfo'
-import { useHistory } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import Article from '../../domain/Article'
 import ITagsService, { TagNames } from '../../domain/ITagsService'
 import { Carousel } from 'antd'
@@ -17,12 +17,12 @@ import ConfigKeys from '../../app/ConfigKeys'
 import { Query, Condition } from '../../apis/files_pb'
 import ISubjectsService from '../../domain/ISubjectsService'
 
-function RecentArticle(props: { article: Article, type: ArticleContentType, onClick?: MouseEventHandler<any>; }) {
+function RecentArticle(props: { article: Article, type: ArticleType, contentType: ArticleContentType, onClick?: MouseEventHandler<any>; }) {
   return (
     <div className={classNames("recent-article-wraper")}>
-      <div className="recent-article">
-        <props.type.Viewer onClick={props.onClick} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
-      </div>
+      <Link className="recent-article" to={{ pathname: '/' + props.type.route, state: { articleId: props.article.id } }}>
+        <props.contentType.Viewer content={props.article.content!} files={props.article.files} type={props.contentType}></props.contentType.Viewer>
+      </Link>
     </div>
   )
 }
@@ -95,7 +95,7 @@ export default function RecentsView() {
       <div className="title">{langs.get(LangKeys.Latest)}</div>
       <Carousel>
         {
-          articles.map(article => <RecentArticle article={article} key={article.id} type={articleTypes.get(article)!} onClick={() => {
+          articles.map(article => <RecentArticle article={article} key={article.id} type={type} contentType={articleTypes.get(article)!} onClick={() => {
             locator.locate(IViewService).previewArticle(article, articleTypes.get(article)!)
           }}></RecentArticle>)
         }

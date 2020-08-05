@@ -41,7 +41,7 @@ export default class TagsServiceSingleton extends IServicesLocator implements IT
     async add(name: string, type: TagType, values?: string[] | undefined): Promise<Tag> {
         await this.fetchCache();
         var req = new TagDto().setName(name).setType(type as number).setValues(values ? values.join(' ') : '');
-        var newItem = await (await ClientRun(() => this.locate(TagsServiceClient).add(req, null))).getTag()!;
+        var newItem = await (await ClientRun(this, ()=>this.locate(TagsServiceClient).add(req, null))).getTag()!;
         var tag = this.tagFrom(newItem);
         this.nameTags.set(tag.name, tag);
         this.idTags.set(tag.id, tag);
@@ -55,7 +55,7 @@ export default class TagsServiceSingleton extends IServicesLocator implements IT
         if (!tag) {
             throw new Error(Langs[ErrorMessage.NO_SUCH_ENTITY])
         }
-        await ClientRun(() => this.locate(TagsServiceClient).delete(new StringId().setId(tag!.id), null))
+        await ClientRun(this, ()=>this.locate(TagsServiceClient).delete(new StringId().setId(tag!.id), null))
         this.nameTags.delete(tag.name);
         this.idTags.delete(tag.id);
     }
@@ -66,7 +66,7 @@ export default class TagsServiceSingleton extends IServicesLocator implements IT
         if (!tag) {
             throw new Error(Langs[ErrorMessage.NO_SUCH_ENTITY])
         }
-        await ClientRun(() => this.locate(TagsServiceClient).updateName(new TagDto().setId(tag!.id).setName(name), null))
+        await ClientRun(this, ()=>this.locate(TagsServiceClient).updateName(new TagDto().setId(tag!.id).setName(name), null))
         this.nameTags.delete(tag.name);
         tag.name = name;
         this.nameTags.set(tag.name, tag);
@@ -78,7 +78,7 @@ export default class TagsServiceSingleton extends IServicesLocator implements IT
         if (!tag) {
             throw new Error(Langs[ErrorMessage.NO_SUCH_ENTITY])
         }
-        await ClientRun(() => this.locate(TagsServiceClient).updateValues(new TagDto().setId(tag!.id).setValues(values ? values.join(' ') : ''), null))
+        await ClientRun(this, ()=>this.locate(TagsServiceClient).updateValues(new TagDto().setId(tag!.id).setValues(values ? values.join(' ') : ''), null))
         tag.values = values;
     }
 
@@ -105,7 +105,7 @@ export default class TagsServiceSingleton extends IServicesLocator implements IT
         if (this.cached) {
             return
         }
-        var tags = (await ClientRun(() => this.locate(TagsServiceClient).getAll(new Empty(), null))).getTagsList();
+        var tags = (await ClientRun(this, ()=>this.locate(TagsServiceClient).getAll(new Empty(), null))).getTagsList();
         this.nameTags = new Map(tags.map(t => [t.getName(), this.tagFrom(t)]))
         this.idTags = new Map(tags.map(t => [t.getId(), this.tagFrom(t)]))
         this.cached = true;

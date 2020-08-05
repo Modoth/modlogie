@@ -7,5 +7,6 @@ namespace Modlogie.Domain.Models
     {
         public string Id { get; set; }
         public string Value { get; set; }
+        public int? Type { get; set; }
     }
 }

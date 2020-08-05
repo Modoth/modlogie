@@ -22,7 +22,7 @@ export function ManageConfigs() {
   const [configs, setConfigs] = useState<Config[] | undefined>()
 
   const fetchConfigs = async () => {
-    var configs = await (await locator.locate(IConfigsService).all()).sort((a, b) => a.key.localeCompare(b.key));
+    var configs = await (await locator.locate(IConfigsService).all(true)).sort((a, b) => a.key.localeCompare(b.key));
     setConfigs(configs)
   }
 
@@ -84,7 +84,7 @@ export function ManageConfigs() {
   }, [])
 
   const renderKey = (_: string, config: Config) => {
-    return <span>{config.key}</span>
+    return <span>{langs.getConfig(config.key)}</span>
   }
 
   const renderDefaultValue = (_: string, config: Config) => {

@@ -11,7 +11,6 @@ export const UserRoleKeys = {
 class DefaultConfigsClass implements ConfigKeysInterface<Config> {
     ALLOW_LOGIN = new Config(ConfigKeys.ALLOW_LOGIN, ConfigType.BOOLEAN, "false");
     ALLOW_PRINT = new Config(ConfigKeys.ALLOW_PRINT, ConfigType.ENUM, UserRoleKeys.UNLOGIN, "", [UserRoleKeys.UNLOGIN, UserRoleKeys.NORMAL, UserRoleKeys.AUTHORISED,UserRoleKeys.ADM]);
-    AUTHORISED_INCREASE = new Config(ConfigKeys.AUTHORISED_INCREASE, ConfigType.NUMBER, "365");
     IMPORT_SUBJECTS_AUTOFIX = new Config(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX, ConfigType.BOOLEAN, "false");
     MAX_PRINT_COUNT = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, "100");
     PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, "");

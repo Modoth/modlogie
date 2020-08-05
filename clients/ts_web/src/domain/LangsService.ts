@@ -15,4 +15,12 @@ export default class LangsService implements ILangsService {
     const key = name.toString()
     return this.langs[key] || key
   }
+
+  public getConfig(name: string): string {
+    if (name.indexOf(':') < 0) {
+      return this.get(name);
+    }
+    const [prefix, key] = name.split(':');
+    return `${prefix}:${this.langs[key] || key}`;
+  }
 }

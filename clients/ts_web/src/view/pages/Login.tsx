@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './Login.less'
 import { useUser, useServicesLocator } from '../../app/Contexts'
-import { Input, Space, Button } from 'antd'
+import { Input, Space, Button, Switch } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import ILoginService from '../../app/ILoginService'
 import IViewService from '../services/IViewService'
+import IPasswordStorage from '../../domain/IPasswordStorage'
 
 export default function Login() {
   const user = useUser()
@@ -17,8 +18,10 @@ export default function Login() {
   const langs = locator.locate(ILangsService)
   const loginService = locator.locate(ILoginService)
   const notify = locator.locate(IViewService)
-  const [name, setName] = useState('')
-  const [pwd, setPwd] = useState('')
+  const pwdStorage = locator.locate(IPasswordStorage);
+  const [name, setName] = useState(pwdStorage && pwdStorage.name || '')
+  const [pwd, setPwd] = useState(pwdStorage && pwdStorage.password || '')
+  const [autoLogin, setAutoLogin] = useState(pwdStorage && pwdStorage.autoLogin);
   const tryLogin = async () => {
     if (!name || !pwd) {
       console.log(LangKeys.MSG_ERROR_USER_OR_PWD)
@@ -32,6 +35,11 @@ export default function Login() {
     }
     notify!.setLoading(false)
   }
+  useEffect(()=>{
+    if(autoLogin){
+      tryLogin();
+    }
+  },[])
   return (
     <Space direction="vertical" className="login">
       <Input
@@ -50,6 +58,15 @@ export default function Login() {
         placeholder={langs.get(LangKeys.Password)}
         onPressEnter={tryLogin}
       />
+      {pwdStorage ?
+        <Switch className="auto-login" checked={autoLogin} onClick={(e) => {
+          pwdStorage.autoLogin = e;
+          setAutoLogin(pwdStorage.autoLogin);
+        }}
+          checkedChildren={<span>{langs.get(LangKeys.CancleAutoLogin)}</span>}
+          unCheckedChildren={<span>{langs.get(LangKeys.EnableAutoLogin)}</span>}
+          ></Switch>
+        : null}
       <Button className="login-btn" type="primary" onClick={tryLogin}>
         {langs.get(LangKeys.Login)}
       </Button>

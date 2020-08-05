@@ -1,7 +1,6 @@
 export class ConfigKeysInterface<T> {
     ALLOW_LOGIN: T = <any>'ALLOW_LOGIN';
     ALLOW_PRINT: T = <any>'ALLOW_PRINT';
-    AUTHORISED_INCREASE: T = <any>'AUTHORISED_INCREASE';
     IMPORT_SUBJECTS_AUTOFIX: T = <any>'IMPORT_SUBJECTS_AUTOFIX';
     MAX_PRINT_COUNT: T = <any>'MAX_PRINT_COUNT';
     PLUGINS: T = <any>'PLUGINS'
@@ -15,15 +14,15 @@ export class ConfigKeysInterface<T> {
 }
 
 export function get_ARTICLE_TAGS(typeName: string) {
-    return `${typeName}_ARTICLE_TAGS`
+    return `${typeName}:ARTICLE_TAGS`
 }
 
 export function get_SUB_TYPE_TAG(typeName: string) {
-    return `${typeName}_SUB_TYPE_TAG`
+    return `${typeName}:SUB_TYPE_TAG`
 }
 
 export function get_ARTICLE_SECTIONS(typeName: string, subTypeName?: string) {
-    return subTypeName ? `${typeName}_${subTypeName}_ARTICLE_SECTIONS` : `${typeName}_ARTICLE_SECTIONS`
+    return subTypeName ? `${typeName}_${subTypeName}:ARTICLE_SECTIONS` : `${typeName}:ARTICLE_SECTIONS`
 }
 
 const ConfigKeys = new ConfigKeysInterface<string>();

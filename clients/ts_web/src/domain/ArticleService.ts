@@ -69,7 +69,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
                         if (article.lazyLoading) {
                             await article.lazyLoading()
                         }
-                        var additionalFile = await (await ClientRun(() => this.locate(FilesServiceClient).getResourceById(new StringId().setId(additionId), null))).getFile()
+                        var additionalFile = await (await ClientRun(this, () => this.locate(FilesServiceClient).getResourceById(new StringId().setId(additionId), null))).getFile()
                         if (additionalFile) {
                             const additionalUrl = additionalFile.getContent();
                             const { content }: { content: ArticleContent } = await this.tryParseContent(additionalUrl);
@@ -91,7 +91,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
     }
 
     async all(subjectId: string, skip: number, take: number): Promise<[number, Article[]]> {
-        var res = await (await ClientRun(() => this.locate(FilesServiceClient).getFiles(new GetFilesRequest().setParentId(subjectId || '').setSkip(skip).setTake(take), null)));
+        var res = await (await ClientRun(this, () => this.locate(FilesServiceClient).getFiles(new GetFilesRequest().setParentId(subjectId || '').setSkip(skip).setTake(take), null)));
         var items = res.getFilesList();
         var total = res.getTotal();
         var articles = [];
@@ -102,7 +102,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
     }
 
     async query(query: Query, filter: string | undefined, skip: number, take: number): Promise<[number, Article[]]> {
-        var res = await (await ClientRun(() => this.locate(FilesServiceClient).query(new QueryRequest().setQuery(query).setSkip(skip).setTake(take).setFilter(filter || ''), null)));
+        var res = await (await ClientRun(this, () => this.locate(FilesServiceClient).query(new QueryRequest().setQuery(query).setSkip(skip).setTake(take).setFilter(filter || ''), null)));
         var items = res.getFilesList();
         var total = res.getTotal();
         var articles = [];
@@ -113,21 +113,21 @@ export default class ArticleService extends FilesServiceBase implements IArticle
     }
 
     async add(name: string, subjectId: string): Promise<Article> {
-        var item = await ClientRun(() => this.locate(FilesServiceClient).add(new AddRequest().setName(name).setFileType(File.FileType.NORMAL).setParentId(subjectId), null))
+        var item = await ClientRun(this, () => this.locate(FilesServiceClient).add(new AddRequest().setName(name).setFileType(File.FileType.NORMAL).setParentId(subjectId), null))
         return this.ArticleFrom(item.getFile()!);
     }
 
     async delete(articleId: string): Promise<void> {
-        await ClientRun(() => this.locate(FilesServiceClient).delete(new StringId().setId(articleId), null))
+        await ClientRun(this, () => this.locate(FilesServiceClient).delete(new StringId().setId(articleId), null))
     }
 
     async rename(name: string, articleId: string): Promise<Article> {
-        var item = await ClientRun(() => this.locate(FilesServiceClient).updateName(new UpdateNameRequest().setName(name).setId(articleId), null))
+        var item = await ClientRun(this, () => this.locate(FilesServiceClient).updateName(new UpdateNameRequest().setName(name).setId(articleId), null))
         return this.ArticleFrom(item.getFile()!);
     }
 
     async move(articleId: string, subjectId: string): Promise<Article> {
-        var item = await ClientRun(() => this.locate(FilesServiceClient).move(new MoveRequest().setId(articleId).setParentid(subjectId), null))
+        var item = await ClientRun(this, () => this.locate(FilesServiceClient).move(new MoveRequest().setId(articleId).setParentid(subjectId), null))
         return this.ArticleFrom(item.getFile()!);
     }
 
@@ -148,20 +148,20 @@ export default class ArticleService extends FilesServiceBase implements IArticle
             var hiddenContentStr = JSON.stringify({ content: hiddenContent });
             if (!article.additionId) {
                 var shadowSectionPrivate = await this.locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.SHADOW_SECTION_PRIVATE);
-                var additionId = await (await ClientRun(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(article.id!).setTextContent(hiddenContentStr).setPrivate(shadowSectionPrivate), null))).getId();
-                await ClientRun(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(additionId), null));
+                var additionId = await (await ClientRun(this, () => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(article.id!).setTextContent(hiddenContentStr).setPrivate(shadowSectionPrivate), null))).getId();
+                await ClientRun(this, () => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(additionId), null));
                 article.additionId = additionId;
-            }else{
+            } else {
                 debugger
-                await ClientRun(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.additionId!).setContent(hiddenContentStr), null))
+                await ClientRun(this, () => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.additionId!).setContent(hiddenContentStr), null))
             }
         } else {
             if (article.additionId) {
-                await ClientRun(() => this.locate(FilesServiceClient).delete(new StringId().setId(article.additionId!), null))
-                await ClientRun(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(''), null));
+                await ClientRun(this, () => this.locate(FilesServiceClient).delete(new StringId().setId(article.additionId!), null))
+                await ClientRun(this, () => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(''), null));
                 article.additionId = undefined;
             }
         }
-        await ClientRun(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.id!).setContent(JSON.stringify({ content: normalContent, files })).setResourceIdsList(resourceIds || []), null))
+        await ClientRun(this, () => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.id!).setContent(JSON.stringify({ content: normalContent, files })).setResourceIdsList(resourceIds || []), null))
     }
 }

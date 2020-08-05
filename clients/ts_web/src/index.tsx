@@ -43,6 +43,8 @@ import SubjectsExporter from './domain/SubjectsExporter'
 import IUsersService from './domain/IUsersService'
 import UsersService from './domain/UsersService'
 import { UsersServiceClient } from './apis/UsersServiceClientPb'
+import IPasswordStorage from './domain/IPasswordStorage'
+import LocalPasswordStorage from './domain/LocalPasswordStorage'
 
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
@@ -110,6 +112,7 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(IMmConverter, new MmConverter())
   serviceLocator.registerInstance(ISubjectsExporter, new SubjectsExporter())
   serviceLocator.registerInstance(IUsersService, new UsersService())
+  serviceLocator.registerInstance(IPasswordStorage, new LocalPasswordStorage())
 
   var clientHost = window.origin + '/api';
   serviceLocator.registerFactory(LoginServiceClient, () => new LoginServiceClient(clientHost, null, null));

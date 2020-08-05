@@ -200,6 +200,8 @@ namespace Modlogie.Api.Common
         {
             switch (prop)
             {
+                case nameof(Domain.Models.File.Id):
+                    return file => file.Id == (Guid.Parse(value));
                 case nameof(Domain.Models.File.Name):
                     return file => file.Name == value;
                 case nameof(Domain.Models.File.Type):

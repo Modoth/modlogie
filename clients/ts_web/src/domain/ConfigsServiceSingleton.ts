@@ -1,4 +1,4 @@
-import IConfigsSercice, { Config } from "./IConfigsSercice";
+import IConfigsSercice, { Config, ConfigType } from "./IConfigsSercice";
 import { KeyValuesServiceClient } from "../apis/KeyvaluesServiceClientPb";
 import IServicesLocator from "../common/IServicesLocator";
 import { ClientRun } from "../common/GrpcUtils";
@@ -11,7 +11,9 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
     private configs: Map<string, Config>
     private cached = false;
     private defaultConfigs: Config[]
+    private defaultServerConfigs: Config[] | undefined
     private customConfigs?: Map<string, string>;
+    private includeServerConfigs = false;
     constructor(...defaultConfigs: Config[][]) {
         super()
         this.defaultConfigs = defaultConfigs.flat();
@@ -57,7 +59,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         if (this.cached) {
             return
         }
-        this.customConfigs = this.customConfigs || new Map((await ClientRun(() => this.locate(KeyValuesServiceClient).getAll(new Empty(), null))).getKeyValuesList().map(c => [c.getId(), c.getValue()]))
+        this.customConfigs = this.customConfigs || new Map((await ClientRun(this, ()=>this.locate(KeyValuesServiceClient).getAll(new Empty(), null))).getKeyValuesList().map(c => [c.getId(), c.getValue()]))
         this.customConfigs!.forEach((value, key) => {
             var config = this.configs.get(key);
             if (config) {
@@ -68,14 +70,19 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         this.cached = true;
     }
 
-    async all(): Promise<Config[]> {
+    async all(includeServerConfig?: boolean): Promise<Config[]> {
+        this.includeServerConfigs = includeServerConfig === true;
+        if (this.includeServerConfigs && this.defaultServerConfigs === undefined) {
+            this.defaultServerConfigs = await (await ClientRun(this, ()=>this.locate(KeyValuesServiceClient).getAllServerKeys(new Empty(), null))).getKeysList().map(k => new Config(k.getKey(), ConfigType.STRING))
+            this.clearCache(true);
+            console.log(this.defaultServerConfigs);
+        }
         await this.loadCache();
         return Array.from(this.configs.values(), this.cloneConfig);
     }
 
     async get(key: string): Promise<Config | undefined> {
         await this.loadCache();
-
         var config = this.configs.get(key);
         if (!config) {
             return
@@ -104,7 +111,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         var req = new KeyValue();
         req.setId(key);
         req.setValue(value);
-        await ClientRun(() => this.locate(KeyValuesServiceClient).addOrUpdate(req, null))
+        await ClientRun(this, ()=>this.locate(KeyValuesServiceClient).addOrUpdate(req, null))
         config.value = value;
         this.customConfigs?.set(key, value);
         return this.cloneConfig(config);
@@ -118,16 +125,18 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         }
         var req = new StringId();
         req.setId(key);
-        await ClientRun(() => this.locate(KeyValuesServiceClient).delete(req, null))
+        await ClientRun(this, ()=>this.locate(KeyValuesServiceClient).delete(req, null))
         config.value = undefined;
         this.customConfigs?.delete(key);
         return this.cloneConfig(config);
     }
 
     clearCache(keepRemoteCache = false) {
-        this.configs = new Map(this.defaultConfigs.map(c => [c.key, c]))
+        this.configs = new Map(this.defaultConfigs.concat(this.includeServerConfigs && this.defaultServerConfigs ? this.defaultServerConfigs! : []).map(c => [c.key, c]))
         if (!keepRemoteCache) {
             this.customConfigs = undefined;
+            this.includeServerConfigs = false;
+            this.defaultServerConfigs = undefined;
         }
         this.cached = false;
     }

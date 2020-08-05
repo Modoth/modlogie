@@ -13,7 +13,7 @@ export class Config {
 }
 
 export default class IConfigsService {
-    all(): Promise<Array<Config>> {
+    all(includeServerConfig?: boolean): Promise<Array<Config>> {
         throw new Error('Method not implemented')
     }
 

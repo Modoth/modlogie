@@ -380,9 +380,15 @@ namespace Modlogie.Api.Services
         public override async Task<FilesReply> AddFolders(AddFoldersRequest request, ServerCallContext context)
         {
             var reply = new FilesReply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             Modlogie.Domain.Models.File parent = null;
@@ -421,9 +427,15 @@ namespace Modlogie.Api.Services
         public async override Task<AddOrUpdateTagsReply> AddOrUpdateTags(AddOrUpdateTagsRequest request, ServerCallContext context)
         {
             var reply = new AddOrUpdateTagsReply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (!Guid.TryParse(request.Id, out Guid id))
@@ -516,9 +528,15 @@ namespace Modlogie.Api.Services
         public async override Task<Reply> DeleteTags(DeleteTagsRequest request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
 
@@ -558,9 +576,15 @@ namespace Modlogie.Api.Services
         public async override Task<FileReply> Add(AddRequest request, ServerCallContext context)
         {
             var reply = new FileReply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (!ValidateFileName(request.Name))
@@ -613,9 +637,15 @@ namespace Modlogie.Api.Services
         public async override Task<FileReply> UpdateName(UpdateNameRequest request, ServerCallContext context)
         {
             var reply = new FileReply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (!ValidateFileName(request.Name))
@@ -668,9 +698,15 @@ namespace Modlogie.Api.Services
         public async override Task<FileReply> Move(MoveRequest request, ServerCallContext context)
         {
             var reply = new FileReply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (!Guid.TryParse(request.Id, out Guid id) || !Guid.TryParse(request.ParentId, out Guid parentId))
@@ -738,9 +774,15 @@ namespace Modlogie.Api.Services
         public override async Task<Reply> UpdateContent(UpdateContentRequest request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (!Guid.TryParse(request.Id, out Guid id))
@@ -769,9 +811,15 @@ namespace Modlogie.Api.Services
         public override async Task<Reply> UpdateComment(UpdateCommentRequest request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (!Guid.TryParse(request.Id, out Guid id))
@@ -814,10 +862,15 @@ namespace Modlogie.Api.Services
         {
             var reply = new ResourceReply();
             var type = GetContentType(request.Type);
-
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (!Guid.TryParse(request.ParentId, out Guid id))
@@ -857,9 +910,15 @@ namespace Modlogie.Api.Services
         public async override Task<Reply> Delete(StringId request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (Guid.TryParse(request.Id, out Guid id))

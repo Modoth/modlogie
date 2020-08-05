@@ -73,3 +73,56 @@ export namespace KeyValuesReply {
   }
 }
 
+export class ServerKey extends jspb.Message {
+  getKey(): string;
+  setKey(value: string): ServerKey;
+
+  getType(): ServerKey.Type;
+  setType(value: ServerKey.Type): ServerKey;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ServerKey.AsObject;
+  static toObject(includeInstance: boolean, msg: ServerKey): ServerKey.AsObject;
+  static serializeBinaryToWriter(message: ServerKey, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ServerKey;
+  static deserializeBinaryFromReader(message: ServerKey, reader: jspb.BinaryReader): ServerKey;
+}
+
+export namespace ServerKey {
+  export type AsObject = {
+    key: string,
+    type: ServerKey.Type,
+  }
+
+  export enum Type { 
+    STRING = 0,
+    ENUM = 1,
+    NUMBER = 2,
+    BOOLEAN = 3,
+  }
+}
+
+export class ServerKeysReply extends jspb.Message {
+  getError(): messages_pb.Error;
+  setError(value: messages_pb.Error): ServerKeysReply;
+
+  getKeysList(): Array<ServerKey>;
+  setKeysList(value: Array<ServerKey>): ServerKeysReply;
+  clearKeysList(): ServerKeysReply;
+  addKeys(value?: ServerKey, index?: number): ServerKey;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ServerKeysReply.AsObject;
+  static toObject(includeInstance: boolean, msg: ServerKeysReply): ServerKeysReply.AsObject;
+  static serializeBinaryToWriter(message: ServerKeysReply, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ServerKeysReply;
+  static deserializeBinaryFromReader(message: ServerKeysReply, reader: jspb.BinaryReader): ServerKeysReply;
+}
+
+export namespace ServerKeysReply {
+  export type AsObject = {
+    error: messages_pb.Error,
+    keysList: Array<ServerKey.AsObject>,
+  }
+}
+

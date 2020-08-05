@@ -6,11 +6,15 @@ export interface ILoginUser {
 }
 
 export default class ILoginService {
-  login(name: string, pwd: string): Promise<ILoginUser | undefined> {
+  login(name: string, pwd: string, stopWhenFailed = false): Promise<boolean> {
     throw new Error('Method not implemented.')
   }
 
-  checkLogin(): Promise<ILoginUser | undefined> {
+  tryAutoLogin(stopWhenFailed = false): Promise<boolean> {
+    throw new Error('Method not implemented.')
+  }
+
+  checkLogin(): Promise<boolean> {
     throw new Error('Method not implemented.')
   }
 

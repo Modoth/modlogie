@@ -8,7 +8,7 @@ import Langs from "../view/Langs";
 
 export default class FilesServiceBase extends IServicesLocator implements IFilesServiceBase {
     async updateTags(articleId: string, ...tags: { id: string; value: string | Uint8Array; contentType?: string }[]): Promise<string[]> {
-        var res = await ClientRun(() => this.locate(FilesServiceClient).addOrUpdateTags(
+        var res = await ClientRun(this, ()=>this.locate(FilesServiceClient).addOrUpdateTags(
             new AddOrUpdateTagsRequest()
                 .setId(articleId)
                 .setTagsList(tags.map(t => {
@@ -27,7 +27,7 @@ export default class FilesServiceBase extends IServicesLocator implements IFiles
         return res.getTagContentsList();
     }
     async deleteTag(articleId: string, tagId: string): Promise<void> {
-        await ClientRun(() => this.locate(FilesServiceClient).deleteTags(
+        await ClientRun(this, ()=>this.locate(FilesServiceClient).deleteTags(
             new DeleteTagsRequest()
                 .setId(articleId)
                 .setTagsList([new FileTag().setTagId(tagId)])
@@ -35,11 +35,11 @@ export default class FilesServiceBase extends IServicesLocator implements IFiles
     }
 
     async addFile(parentId: string, type: string, content: Uint8Array): Promise<[string, string]> {
-        var res = await ClientRun(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(parentId).setType(type).setContent(content), null))
+        var res = await ClientRun(this, ()=>this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(parentId).setType(type).setContent(content), null))
         return [res.getId(), res.getContentId()];
     }
 
     async deleteFile(_: string, fileId: string): Promise<void> {
-        await ClientRun(() => this.locate(FilesServiceClient).delete(new StringId().setId(fileId), null))
+        await ClientRun(this, ()=>this.locate(FilesServiceClient).delete(new StringId().setId(fileId), null))
     }
 }

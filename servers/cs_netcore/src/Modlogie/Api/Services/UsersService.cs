@@ -38,9 +38,15 @@ namespace Modlogie.Api.Services
         public async override Task<UsersReply> GetAll(Users.GetAllRequest request, ServerCallContext context)
         {
             var reply = new UsersReply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             var users = _service.All();
@@ -75,9 +81,15 @@ namespace Modlogie.Api.Services
                 reply.Error = Error.InvalidArguments;
                 return reply;
             }
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             var existed = await _service.All().FirstOrDefaultAsync(u => u.Id == request.Id || u.Email == request.Email);
@@ -88,7 +100,7 @@ namespace Modlogie.Api.Services
             }
             var password = string.IsNullOrWhiteSpace(request.Password) ? Guid.NewGuid().ToString().Replace("-", "").Substring(0, 8) : request.Password;
             await _emailService.Send(request.Email, "User register", $"{password}");
-            var user = new Modlogie.Domain.Models.User
+            var newUser = new Modlogie.Domain.Models.User
             {
                 Id = request.Id,
                 Email = request.Email,
@@ -98,8 +110,8 @@ namespace Modlogie.Api.Services
                 AuthorisionExpired = DateTime.Now,
                 Password = PwdEncrypter.Encrypt(password)
             };
-            user = await _service.Add(user);
-            reply.User = _converter(user);
+            newUser = await _service.Add(newUser);
+            reply.User = _converter(newUser);
             return reply;
         }
 
@@ -107,9 +119,15 @@ namespace Modlogie.Api.Services
         {
 
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             await _userService.ClearUser(request.Id);
@@ -126,9 +144,15 @@ namespace Modlogie.Api.Services
         private async Task<Reply> UpdateFields(string id, ServerCallContext context, Func<Domain.Models.User, Task<Error>> updateField)
         {
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (string.IsNullOrWhiteSpace(id))

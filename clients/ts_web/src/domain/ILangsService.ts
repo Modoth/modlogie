@@ -4,6 +4,7 @@ export class LangKeysInterface {
   All = 'All';
   AuthorisedUser = 'AuthorisedUser';
   Cancle = 'Cancle';
+  CancleAutoLogin = 'CancleAutoLogin';
   ChangeName = 'ChangeName';
   ChangePassword = 'ChangePassword';
   Comment = 'Comment';
@@ -12,6 +13,7 @@ export class LangKeysInterface {
   DefaultValue = 'DefaultValue';
   Delete = 'Delete';
   Email = 'Email';
+  EnableAutoLogin = 'EnableAutoLogin';
   Enabled = 'Enabled';
   EnumValue = 'EnumValue';
   Home = 'Home';
@@ -22,8 +24,8 @@ export class LangKeysInterface {
   Manage = 'Manage';
   Modify = 'Modify';
   MSG_ERROR_NETWORK = 'MSG_ERROR_NETWORK';
-  MSG_ERROR_USER_OR_PWD = 'MSG_ERROR_USER_OR_PWD';
   MSG_ERROR_SITE_CONFIG = 'MSG_ERROR_SITE_CONFIG';
+  MSG_ERROR_USER_OR_PWD = 'MSG_ERROR_USER_OR_PWD';
   Name = 'Name';
   NewName = 'NewName';
   NewPassword = 'NewPassword';
@@ -52,6 +54,10 @@ export default class ILangsService {
   }
 
   public get(name: string): string {
+    throw new Error()
+  }
+
+  public getConfig(name: string): string {
     throw new Error()
   }
 }

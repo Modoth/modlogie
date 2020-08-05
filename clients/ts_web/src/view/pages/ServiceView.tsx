@@ -47,6 +47,7 @@ export default function ServiceView(props: {
   const [modalTitle, setModalTitle] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
   const [modalImageField, setModalImageField] = useState(false)
+  const [modalPromise, setModalPromise] = useState({ resolve: null as any, reject: null as any })
   const [modalFileFieldData, setModalFileFieldData] = useState<
     File | undefined
   >(undefined)
@@ -71,11 +72,20 @@ export default function ServiceView(props: {
 
   const applyModal = async () => {
     if (await onModalOk!.onOk(...modalFields.map((f) => f.value))) {
-      cancleModal()
+      cancleModal(true)
     }
   }
 
-  const cancleModal = () => {
+  const resolveModalPromise = (value: boolean) => {
+    let resolve = modalPromise.resolve;
+    modalPromise.resolve = null;
+    modalPromise.reject = null;
+    if (resolve) {
+      resolve(value);
+    }
+  }
+
+  const cancleModal = (success = false) => {
     refFile.current!.onchange = null
     refFile.current!.value = ''
     setModalTitle('')
@@ -84,116 +94,123 @@ export default function ServiceView(props: {
     setOnModalOk(undefined)
     setModalImageField(false)
     setModalFileFieldData(undefined)
+    resolveModalPromise(success);
   }
 
   const viewService = new ViewService(
     setLoading,
-    (
+    async (
       title: string,
       fields: IPromptField<any, any>[],
       onOk: (...paras: any) => Promise<boolean | undefined>
-    ): void => {
-      const setStates = () => {
-        setModalTitle(title)
-        setModalFileds(fields)
-        setOnModalOk({ onOk })
-        setModalVisible(true)
-        setModalFileFieldData(undefined)
-      }
-      const singleField = fields.length === 1 ? fields[0] : undefined
-      if (!singleField) {
-        setStates()
-        return
-      }
-      const imageField = singleField.type === 'Image'
-      const textFileField = singleField.type === 'TextFile'
-      const videoFileField = singleField.type === 'Video'
-      let fileField = singleField.type === 'File'
-      fileField = fileField || imageField || textFileField || videoFileField
-
-      if (!fileField) {
-        setStates()
-        return
-      }
-      let accept = '*/*'
-      let onchange: (file: File) => void
-
-      const handleImage = (file: File) => {
-        setStates()
-        setModalFileFieldData(file)
-        setModalImageField(true)
-      }
-      const handleText = (file: File) => {
-        const reader = new FileReader()
-        reader.onload = () => {
+    ): Promise<boolean> => {
+      return new Promise(resolve => {
+        resolveModalPromise(false);
+        modalPromise.resolve = resolve;
+        const setStates = () => {
+          setModalTitle(title)
+          setModalFileds(fields)
+          setOnModalOk({ onOk })
+          setModalVisible(true)
+          setModalFileFieldData(undefined)
+        }
+        const singleField = fields.length === 1 ? fields[0] : undefined
+        if (!singleField) {
           setStates()
-          setModalFileds([{ ...fields[0], value: reader.result }])
+          return
         }
-        reader.readAsText(file)
-      }
-      const handleVideo = (file: File) => {
-        onOk(file)
-      }
+        const imageField = singleField.type === 'Image'
+        const textFileField = singleField.type === 'TextFile'
+        const videoFileField = singleField.type === 'Video'
+        let fileField = singleField.type === 'File'
+        fileField = fileField || imageField || textFileField || videoFileField
 
-      if (imageField) {
-        accept = 'image/*'
-        onchange = handleImage
-      } else if (textFileField) {
-        accept = 'text/*'
-        onchange = handleText
-      } else if (videoFileField) {
-        accept = 'video/*'
-        onchange = handleVideo
-      }
+        if (!fileField) {
+          setStates()
+          return
+        }
+        let accept = '*/*'
+        let onchange: (file: File) => void
 
-      const handleFile = (file: File, e?: any) => {
-        if (onchange) {
-          onchange(file)
-          return
+        const handleImage = (file: File) => {
+          setStates()
+          setModalFileFieldData(file)
+          setModalImageField(true)
         }
-        const startsWith = (s: string) => file.type.startsWith(s)
-        if (
-          startsWith('text/') ||
-          startsWith('application/json') ||
-          startsWith('application/x-yaml')
-        ) {
-          singleField.type = 'TextFile'
-          handleText(file)
-          return
+        const handleText = (file: File) => {
+          const reader = new FileReader()
+          reader.onload = () => {
+            setStates()
+            setModalFileds([{ ...fields[0], value: reader.result }])
+          }
+          reader.readAsText(file)
         }
-        if (startsWith('image/')) {
-          singleField.type = 'Image'
-          handleImage(file)
-          return
+        const handleVideo = (file: File) => {
+          onOk(file)
+          resolveModalPromise(true);
         }
-        if (startsWith('video/')) {
-          singleField.type = 'Video'
-          handleVideo(file)
+
+        if (imageField) {
+          accept = 'image/*'
+          onchange = handleImage
+        } else if (textFileField) {
+          accept = 'text/*'
+          onchange = handleText
+        } else if (videoFileField) {
+          accept = 'video/*'
+          onchange = handleVideo
+        }
+
+        const handleFile = (file: File, e?: any) => {
+          if (onchange) {
+            onchange(file)
+            return
+          }
+          const startsWith = (s: string) => file.type.startsWith(s)
+          if (
+            startsWith('text/') ||
+            startsWith('application/json') ||
+            startsWith('application/x-yaml')
+          ) {
+            singleField.type = 'TextFile'
+            handleText(file)
+            return
+          }
+          if (startsWith('image/')) {
+            singleField.type = 'Image'
+            handleImage(file)
+            return
+          }
+          if (startsWith('video/')) {
+            singleField.type = 'Video'
+            handleVideo(file)
+            if (e) {
+              e.target.value = ''
+            }
+            return
+          }
+          onOk(file)
+          resolveModalPromise(true);
           if (e) {
             e.target.value = ''
           }
+        }
+
+        if (singleField.value) {
+          handleFile(singleField.value)
           return
         }
-        onOk(file)
-        if (e) {
-          e.target.value = ''
-        }
-      }
 
-      if (singleField.value) {
-        handleFile(singleField.value)
-        return
-      }
-
-      refFile.current!.accept = fields[0].accept || accept
-      refFile.current!.onchange = (e: any) => {
-        const file: File = e.target.files && e.target.files![0]
-        if (!file) {
-          return
+        refFile.current!.accept = fields[0].accept || accept
+        refFile.current!.onchange = (e: any) => {
+          const file: File = e.target.files && e.target.files![0]
+          if (!file) {
+            return
+          }
+          handleFile(file, e)
         }
-        handleFile(file, e)
-      }
-      refFile.current!.click()
+        refFile.current!.click()
+      })
     },
     (url: string) => {
       setPreviewImgUrl(url)
@@ -232,7 +249,7 @@ export default function ServiceView(props: {
         title={modalTitle}
         visible={modalVisible}
         onOk={applyModal}
-        onCancel={cancleModal}
+        onCancel={() => cancleModal(false)}
         footer={modalImageField ? null : undefined}
         bodyStyle={
           modalFields.length

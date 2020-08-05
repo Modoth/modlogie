@@ -19,7 +19,8 @@ import * as messages_pb from './messages_pb';
 import {
   KeyValue,
   KeyValueReply,
-  KeyValuesReply} from './keyvalues_pb';
+  KeyValuesReply,
+  ServerKeysReply} from './keyvalues_pb';
 
 export class KeyValuesServiceClient {
   client_: grpcWeb.AbstractClientBase;
@@ -155,6 +156,45 @@ export class KeyValuesServiceClient {
     request,
     metadata || {},
     this.methodInfoAddOrUpdate);
+  }
+
+  methodInfoGetAllServerKeys = new grpcWeb.AbstractClientBase.MethodInfo(
+    ServerKeysReply,
+    (request: google_protobuf_empty_pb.Empty) => {
+      return request.serializeBinary();
+    },
+    ServerKeysReply.deserializeBinary
+  );
+
+  getAllServerKeys(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null): Promise<ServerKeysReply>;
+
+  getAllServerKeys(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: ServerKeysReply) => void): grpcWeb.ClientReadableStream<ServerKeysReply>;
+
+  getAllServerKeys(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.Error,
+               response: ServerKeysReply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        new URL('/modlogie.keyvalue.KeyValuesService/GetAllServerKeys', this.hostname_).toString(),
+        request,
+        metadata || {},
+        this.methodInfoGetAllServerKeys,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/modlogie.keyvalue.KeyValuesService/GetAllServerKeys',
+    request,
+    metadata || {},
+    this.methodInfoGetAllServerKeys);
   }
 
 }

@@ -8,6 +8,7 @@ service KeyValuesService {
   rpc GetAll(google.protobuf.Empty) returns (KeyValuesReply);
   rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
   rpc AddOrUpdate(KeyValue) returns (KeyValueReply);
+  rpc GetAllServerKeys(google.protobuf.Empty) returns (ServerKeysReply);
 }
 
 message KeyValue {
@@ -23,4 +24,20 @@ message KeyValueReply {
 message KeyValuesReply {
   modlogie.messages.Error error = 1;
   repeated KeyValue key_values = 2;
+}
+
+message ServerKey {
+  string key = 1;
+  enum Type {
+    STRING = 0;
+    ENUM = 1;
+    NUMBER = 2;
+    BOOLEAN = 3;
+  }
+  Type type = 2;
+}
+
+message ServerKeysReply {
+  modlogie.messages.Error error = 1;
+  repeated ServerKey keys = 2;
 }

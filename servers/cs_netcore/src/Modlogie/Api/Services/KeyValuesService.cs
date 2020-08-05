@@ -19,10 +19,16 @@ namespace Modlogie.Api.Services
             _service = service;
             _userService = userService;
         }
+
         public async override Task<KeyValuesReply> GetAll(Empty request, ServerCallContext context)
         {
             var reply = new KeyValuesReply();
-            reply.KeyValues.AddRange(await _service.All()
+            var items = _service.All();
+            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            {
+                items = items.Where(i => i.Type != 1);
+            }
+            reply.KeyValues.AddRange(await items
                 .Select(i => new KeyValue { Id = i.Id, Value = i.Value })
                 .ToArrayAsync());
             return reply;
@@ -31,9 +37,15 @@ namespace Modlogie.Api.Services
         public async override Task<KeyValueReply> AddOrUpdate(KeyValue request, ServerCallContext context)
         {
             var reply = new KeyValueReply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (string.IsNullOrWhiteSpace(request.Id))
@@ -59,9 +71,15 @@ namespace Modlogie.Api.Services
         public async override Task<Reply> Delete(StringId request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             var item = await _service.All().Where(k => k.Id == request.Id).FirstOrDefaultAsync();
@@ -69,6 +87,24 @@ namespace Modlogie.Api.Services
             {
                 await _service.Delete(item);
             }
+            return reply;
+        }
+
+        public async override Task<ServerKeysReply> GetAllServerKeys(Empty request, ServerCallContext context)
+        {
+            var reply = new ServerKeysReply();
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
+            {
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
+                return reply;
+            }
+            reply.Keys.AddRange(Domain.ServerKeys.All.Select(k => new KeyValues.ServerKey { Key = k.Key, Type = (KeyValues.ServerKey.Types.Type)(int)k.Type }));
             return reply;
         }
     }

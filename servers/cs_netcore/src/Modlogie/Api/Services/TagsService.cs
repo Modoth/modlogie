@@ -43,9 +43,15 @@ namespace Modlogie.Api.Services
         public async override Task<TagReply> Add(Tag request, ServerCallContext context)
         {
             var reply = new TagReply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (string.IsNullOrWhiteSpace(request.Name))
@@ -67,9 +73,15 @@ namespace Modlogie.Api.Services
         private async Task<Reply> UpdateFields(Tag request, ServerCallContext context, Func<Domain.Models.Tag, Task<Error>> updateField)
         {
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (Guid.TryParse(request.Id, out Guid id))
@@ -116,9 +128,15 @@ namespace Modlogie.Api.Services
         public async override Task<Reply> Delete(StringId request, ServerCallContext context)
         {
             var reply = new Reply();
-            if (!(await _userService.GetUser(context.GetHttpContext())).HasWritePermission())
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
             {
-                reply.Error = Error.InvalidOperation;
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
                 return reply;
             }
             if (Guid.TryParse(request.Id, out Guid id))

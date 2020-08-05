@@ -141,10 +141,16 @@ namespace Modlogie.Infrastructure.Data
             {
                 entity.ToTable("KeyValue");
 
+                entity.HasIndex(e => e.Type);
+
                 entity.Property(e => e.Id)
                     .HasColumnType("varchar(128)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_general_ci");
+
+                entity.Property(e => e.Type)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'0'");
 
                 entity.Property(e => e.Value)
                     .HasColumnType("varchar(128)")
