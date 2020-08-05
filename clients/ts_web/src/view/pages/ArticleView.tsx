@@ -8,7 +8,8 @@ import Article, { ArticleFile, ArticleContent, ArticleTag } from '../../domain/A
 import { useUser, useServicesLocator } from '../../app/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
-import { Card, Button, Select, TreeSelect, Badge } from 'antd'
+import { Card, Button, Select, TreeSelect, Badge, Menu } from 'antd'
+const { SubMenu } = Menu
 import {
   UploadOutlined,
   CheckOutlined,
@@ -35,6 +36,7 @@ import { title } from 'process'
 import { spawn } from 'child_process'
 import SubjectViewModel from './SubjectViewModel'
 import html2canvas from 'html2canvas';
+import MenuItem from 'antd/lib/menu/MenuItem'
 
 const { Option } = Select
 
@@ -228,12 +230,12 @@ export default function ArticleView(props: {
       <div className="article-title">
         {props.type.noTitle ? <div></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : undefined}>{name}</div>}
         {
-          editing ? null : (<div className={classNames("actions-list")}>{[...(user.editingPermission ? [
-            <Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
+          editing ? null : (<Menu mode="horizontal" className={classNames("actions-list")}>{[...(user.editingPermission ? [
+            <MenuItem><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
               props.articleHandlers.onDelete(props.article.id!)
-            } key="delete"></Button>] : []),
+            } key="delete"></Button></MenuItem>] : []),
           user.printPermission ? (inArticleList ?
-            <Badge className="printer-icons" count={<MinusOutlined onClick={() => {
+            <MenuItem><Badge className="printer-icons" count={<MinusOutlined onClick={() => {
               articleListService.remove(props.article)
               setInArticleList(articleListService.has(props.article))
             }} />} >
@@ -242,9 +244,9 @@ export default function ArticleView(props: {
                 setInArticleList(articleListService.has(props.article))
               }}
                 key={LangKeys.RemoveFromArticleList}></Button>
-            </Badge>
+            </Badge></MenuItem>
             :
-            <Badge className="printer-icons" count={<PlusOutlined onClick={() => {
+            <MenuItem><Badge className="printer-icons" count={<PlusOutlined onClick={() => {
               articleListService.add(props.article, type, () => {
                 setInArticleList(false);
               })
@@ -257,18 +259,18 @@ export default function ArticleView(props: {
                 setInArticleList(articleListService.has(props.article))
               }}
                 key={LangKeys.AddToArticleList}></Button>
-            </Badge>
+            </Badge></MenuItem>
           ) : null
             ,
           ...(user.editingPermission ? [
-            <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
-              key="edit"></Button>
+            <MenuItem> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
+              key="edit"></Button></MenuItem>
           ] : [])]}
-            <Button type="link" icon={<ExpandOutlined />} onClick={() => {
+            <MenuItem><Button type="link" icon={<ExpandOutlined />} onClick={() => {
               locator.locate(IViewService).previewArticle({ name, content, files }, type)
             }}
-              key="fullscreen"></Button>
-          </div>)
+              key="fullscreen"></Button></MenuItem>
+          </Menu>)
         }
       </div>{
         loaded ? <div className="article-body">
