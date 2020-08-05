@@ -15,9 +15,10 @@ import {
   CheckOutlined,
   EditOutlined,
   PlusOutlined,
-  FileExcelOutlined,
-  ContainerOutlined,
-  ShareAltOutlined,
+  HeartOutlined,
+  HeartFilled,
+  LikeOutlined,
+  DislikeOutlined,
   ExpandOutlined,
   PrinterOutlined,
   MinusOutlined,
@@ -37,6 +38,7 @@ import { spawn } from 'child_process'
 import SubjectViewModel from './SubjectViewModel'
 import html2canvas from 'html2canvas';
 import MenuItem from 'antd/lib/menu/MenuItem'
+import IFavoritesServer from '../../domain/IFavoritesServer'
 
 const { Option } = Select
 
@@ -79,6 +81,8 @@ export default function ArticleView(props: {
   const [inArticleList, setInArticleList] = useState(articleListService.has(props.article))
   const [content, setContent] = useState(props.article.content || {})
   const [name, setName] = useState(props.article.name)
+  const [favoriteService] = useState(locator.locate(IFavoritesServer))
+  const [favorite, setFavorite] = useState(false)
 
   const addFile = (file?: File) => {
     viewService.prompt(
@@ -213,6 +217,13 @@ export default function ArticleView(props: {
         setLoaded(true);
       })
     }
+    if (favoriteService) {
+      favoriteService.has(props.type.name, props.article.id!).then(f => {
+        if (f !== favorite) {
+          setFavorite(f)
+        }
+      })
+    }
     if (!additionalLoaded) {
       props.article.lazyLoadingAddition!().then(() => {
         setContent(props.article.content!)
@@ -225,51 +236,73 @@ export default function ArticleView(props: {
   if (!type) {
     return <></>
   }
+  const openDetail = () => {
+    locator.locate(IViewService).previewArticle({ name, content, files }, type)
+  }
+  const toogleFavorite = async () => {
+    try {
+      var nextFav = !favorite;
+      if (nextFav) {
+        await favoriteService.add(props.type.name, props.article.id!);
+      } else {
+        await favoriteService.remote(props.type.name, props.article.id!);
+      }
+      setFavorite(nextFav);
+    } catch (e) {
+      viewService!.errorKey(langs, e.message)
+    }
+  }
   return (
     <Card className={classNames("article-view")}>
       <div className="article-title">
-        {props.type.noTitle ? <div></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : undefined}>{name}</div>}
+        {props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : openDetail}>{name}</div>}
         {
-          editing ? null : (<Menu mode="horizontal" className={classNames("actions-list")}>{[...(user.editingPermission ? [
-            <MenuItem><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
-              props.articleHandlers.onDelete(props.article.id!)
-            } key="delete"></Button></MenuItem>] : []),
-          user.printPermission ? (inArticleList ?
-            <MenuItem><Badge className="printer-icons" count={<MinusOutlined onClick={() => {
-              articleListService.remove(props.article)
-              setInArticleList(articleListService.has(props.article))
-            }} />} >
-              <Button type="link" icon={<PrinterOutlined />} onClick={() => {
+          editing ? null : (<Menu mode="horizontal" className={classNames("actions-list")}>{[
+            ...(user.editingPermission ? [
+              <MenuItem><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
+                key="fullscreen"><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>] : []),
+            favoriteService ? <MenuItem><Badge className="printer-icons" count={favorite ? <MinusOutlined className="add-to-printer" onClick={toogleFavorite} /> : <PlusOutlined className="add-to-printer" onClick={toogleFavorite} />}>
+              <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
+                key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
+            </Badge></MenuItem> : null,
+            user.printPermission ? (inArticleList ?
+              <MenuItem><Badge className="printer-icons" count={<MinusOutlined className="add-to-printer" onClick={() => {
                 articleListService.remove(props.article)
                 setInArticleList(articleListService.has(props.article))
-              }}
-                key={LangKeys.RemoveFromArticleList}></Button>
-            </Badge></MenuItem>
-            :
-            <MenuItem><Badge className="printer-icons" count={<PlusOutlined onClick={() => {
-              articleListService.add(props.article, type, () => {
-                setInArticleList(false);
-              })
-              setInArticleList(articleListService.has(props.article))
-            }} />}>
-              <Button type="link" icon={<PrinterOutlined />} onClick={() => {
+              }} />} >
+                <Button type="link" icon={<PrinterOutlined />} onClick={() => {
+                  articleListService.remove(props.article)
+                  setInArticleList(articleListService.has(props.article))
+                }}
+                  key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
+              </Badge></MenuItem>
+              :
+              <MenuItem><Badge className="printer-icons" count={<PlusOutlined className="add-to-printer" onClick={() => {
                 articleListService.add(props.article, type, () => {
                   setInArticleList(false);
                 })
                 setInArticleList(articleListService.has(props.article))
-              }}
-                key={LangKeys.AddToArticleList}></Button>
-            </Badge></MenuItem>
-          ) : null
-            ,
-          ...(user.editingPermission ? [
-            <MenuItem> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
-              key="edit"></Button></MenuItem>
-          ] : [])]}
-            <MenuItem><Button type="link" icon={<ExpandOutlined />} onClick={() => {
-              locator.locate(IViewService).previewArticle({ name, content, files }, type)
-            }}
-              key="fullscreen"></Button></MenuItem>
+              }} />}>
+                <Button type="link" icon={<PrinterOutlined />} onClick={() => {
+                  articleListService.add(props.article, type, () => {
+                    setInArticleList(false);
+                  })
+                  setInArticleList(articleListService.has(props.article))
+                }}
+                  key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
+              </Badge></MenuItem>
+            ) : null,
+            // <MenuItem><Button type="link" icon={<LikeOutlined />}
+            //   key="like"><span className="action-name">{langs.get(LangKeys.Like)}</span></Button></MenuItem>,
+            // <MenuItem><Button type="link" icon={<DislikeOutlined />}
+            //   key="dislike"><span className="action-name">{langs.get(LangKeys.Dislike)}</span></Button></MenuItem>,
+            ...(user.editingPermission ? [
+              <MenuItem> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
+                key="edit"><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,
+              <MenuItem ><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
+                props.articleHandlers.onDelete(props.article.id!)
+              } key="delete"><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>
+            ] : [])]}
           </Menu>)
         }
       </div>{
@@ -287,47 +320,49 @@ export default function ArticleView(props: {
             )}
         </div> : <div className="article-body"></div>
       }
-      {editing ? (<div className="actions-tags-list">{[
-        <TreeSelect
-          key="subject"
-          onChange={updateSubjectId}
-          defaultValue={subjectId}
-          treeData={props.subjects}
-          placeholder={langs.get(LangKeys.Subject)}
-        />,
-        ...props.tags.map((tag) => (
-          <Select
-            key={tag.name}
-            onChange={(value) => updateTag(tag, value)}
-            defaultValue={
-              tagsDict?.get(tag.name)?.value || `(${tag.name})`
-            }
-          >
-            <Option value={undefined!}>{`(${tag.name})`}</Option>
-            {...tag.values.map((v) => (
-              <Option key={v} value={v}>
-                {v}
-              </Option>
-            ))}
-          </Select>
-        ))
-      ]}</div>) : null
+      {
+        editing ? (<div className="actions-tags-list">{[
+          <TreeSelect
+            key="subject"
+            onChange={updateSubjectId}
+            defaultValue={subjectId}
+            treeData={props.subjects}
+            placeholder={langs.get(LangKeys.Subject)}
+          />,
+          ...props.tags.map((tag) => (
+            <Select
+              key={tag.name}
+              onChange={(value) => updateTag(tag, value)}
+              defaultValue={
+                tagsDict?.get(tag.name)?.value || `(${tag.name})`
+              }
+            >
+              <Option value={undefined!}>{`(${tag.name})`}</Option>
+              {...tag.values.map((v) => (
+                <Option key={v} value={v}>
+                  {v}
+                </Option>
+              ))}
+            </Select>
+          ))
+        ]}</div>) : null
       }
-      {editing ? (
-        <>
-          <div className="files-list">
+      {
+        editing ? (
+          <>
+            <div className="files-list">
+              <Button
+                type="link"
+                onClick={toggleEditing}
+                key="endEdit"
+                icon={<CheckOutlined />}
+              >{langs.get(LangKeys.Ok)}</Button>,
             <Button
-              type="link"
-              onClick={toggleEditing}
-              key="endEdit"
-              icon={<CheckOutlined />}
-            >{langs.get(LangKeys.Ok)}</Button>,
-            <Button
-              type="link"
-              icon={<UploadOutlined />}
-              onClick={() => addFile()}
-            >{langs.get(LangKeys.Import)}</Button>
-            {/* {files?.length
+                type="link"
+                icon={<UploadOutlined />}
+                onClick={() => addFile()}
+              >{langs.get(LangKeys.Import)}</Button>
+              {/* {files?.length
               ? files!.map((file) => (
                 <ArticleFileViewer
                   key={file.url}
@@ -337,9 +372,10 @@ export default function ArticleView(props: {
                 ></ArticleFileViewer>
               ))
               : null} */}
-          </div>
-        </>
-      ) : null}
-    </Card>
+            </div>
+          </>
+        ) : null
+      }
+    </Card >
   )
 }

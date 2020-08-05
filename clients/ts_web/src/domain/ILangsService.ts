@@ -3,6 +3,7 @@ export class LangKeysInterface {
   AdmLogin = 'AdmLogin';
   All = 'All';
   AuthorisedUser = 'AuthorisedUser';
+  BeyondMaxFavorites = 'BeyondMaxFavorites';
   Cancle = 'Cancle';
   CancleAutoLogin = 'CancleAutoLogin';
   ChangeName = 'ChangeName';
@@ -12,13 +13,18 @@ export class LangKeysInterface {
   Create = 'Create';
   DefaultValue = 'DefaultValue';
   Delete = 'Delete';
+  Detail = '详情';
+  Dislike = 'Dislike';
+  Edit = 'Edit';
   Email = 'Email';
   EnableAutoLogin = 'EnableAutoLogin';
   Enabled = 'Enabled';
   EnumValue = 'EnumValue';
+  Favorite = 'Favorite';
   Home = 'Home';
   Import = 'Import';
   Latest = 'Latest';
+  Like = 'Like';
   Login = 'Login';
   Logout = 'Logout';
   Manage = 'Manage';

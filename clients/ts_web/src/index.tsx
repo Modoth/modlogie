@@ -46,6 +46,10 @@ import UsersService from './domain/UsersService'
 import { UsersServiceClient } from './apis/UsersServiceClientPb'
 import IPasswordStorage from './domain/IPasswordStorage'
 import LocalPasswordStorage from './domain/LocalPasswordStorage'
+import IFavoritesStorage from './domain/IFavoritesStorage'
+import LocalFavoritesStorage from './domain/LocalFavoritesStorage'
+import IFavoritesServer from './domain/IFavoritesServer'
+import FavoritesServerSingleton from './domain/FavoritesServerSingleton'
 
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
@@ -116,7 +120,11 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(IMmConverter, new MmConverter())
   serviceLocator.registerInstance(ISubjectsExporter, new SubjectsExporter())
   serviceLocator.registerInstance(IUsersService, new UsersService())
-  serviceLocator.registerInstance(IPasswordStorage, new LocalPasswordStorage())
+  if (window.localStorage) {
+    serviceLocator.registerInstance(IPasswordStorage, new LocalPasswordStorage())
+    serviceLocator.registerInstance(IFavoritesStorage, new LocalFavoritesStorage())
+  }
+  serviceLocator.registerInstance(IFavoritesServer, new FavoritesServerSingleton())
 
   var clientHost = window.origin + '/api';
   serviceLocator.registerFactory(LoginServiceClient, () => new LoginServiceClient(clientHost, null, null));

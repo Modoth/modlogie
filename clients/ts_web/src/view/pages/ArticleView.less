@@ -19,7 +19,7 @@
   .article-title {
     word-break: break-all;
     border-bottom: 1px groove #0000000c;
-    padding: 10px 15px 5px 20px;
+    padding: 10px 10px 5px 20px;
     color: #251202a0;
     font-weight: 550;
     margin: -1px -1px 0px -1px;
@@ -32,23 +32,29 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+      & > .empty-title {
+        min-height: 3em;
+      }
     }
 
     .printer-icons {
       span.anticon.ant-scroll-number-custom-component {
         top: unset;
-        bottom: 2px;
+        bottom: 5px;
+        right: 0px;
         border-radius: 100%;
         background-color: #86817e;
         color: white;
-        right: 2px;
         transform: scale(0.75);
+        transition: none !important;
+        --webkit-transition: none !important;
       }
     }
 
     & button {
       opacity: 1;
-      margin-left: 10px;
+      margin: 0 3px;
+      padding: 0;
       color: #251202a5;
       &.ant-btn-dangerous {
         color: rgb(120, 20, 20, 0.65) !important;
@@ -79,10 +85,30 @@
 
   .actions-list {
     border: none;
-    max-width: 80%;
+    max-width: 40%;
     background: transparent;
+
     li.ant-menu-item {
       padding: 0;
+      border-bottom: none !important;
+      top: 0;
+      .action-name {
+        display: none;
+      }
+    }
+
+    .ant-menu-submenu-title {
+      padding: 0 10px;
+    }
+  }
+
+  .ant-menu-submenu-popup {
+    li.ant-menu-item.ant-menu-item-only-child .action-name {
+      display: unset;
+    }
+
+    .add-to-printer {
+      display: none !important;
     }
   }
 

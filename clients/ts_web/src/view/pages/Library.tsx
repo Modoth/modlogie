@@ -6,7 +6,7 @@ import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
 import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input } from 'antd'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowLeftOutlined, HeartFilled } from '@ant-design/icons'
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
 import { ArticleType, ArticleContentType } from '../../plugins/IPluginInfo'
@@ -29,6 +29,7 @@ import IArticleViewServie from '../services/IArticleViewService'
 import IMmConverter from '../../domain/IMmConverter'
 import ISubjectsExporter from '../../domain/ISubjectsExporter'
 import { MmIcon } from '../components/Icons'
+import IFavoritesServer from '../../domain/IFavoritesServer'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -138,7 +139,10 @@ export default function Library(props: LibraryProps) {
     {} as any
   )
   const [totalCount, setTotalCount] = useState(0)
-  const countPerPage = 10
+  const countPerPage = 5
+
+  const [favoriteService] = useState(locator.locate(IFavoritesServer))
+  const [favorite, setFavorite] = useState(false)
 
   const bottomRef = React.createRef<HTMLDivElement>();
 
@@ -149,6 +153,25 @@ export default function Library(props: LibraryProps) {
 
   const fetchArticlesInternal = async (skip: number, take: number): Promise<[number, Article[]]> => {
     var query = new Query();
+    if (favorite) {
+      var [ids, count] = await favoriteService.get(props.type.name, skip, take)
+      var order = new Map(ids.map((id, idx) => [id, idx]))
+      if (ids.length === 0 || count === 0) {
+        return [0, []]
+      }
+      query.setWhere(new Condition()
+        .setType(Condition.ConditionType.AND)
+        .setChildrenList([
+          new Condition().setType(Condition.ConditionType.EQUAL)
+            .setProp('Type')
+            .setValue('0'),
+          new Condition().setType(Condition.ConditionType.OR).setChildrenList(ids.map(id => new Condition().setType(Condition.ConditionType.EQUAL)
+            .setProp('Id')
+            .setValue(id)))
+        ]))
+      var res = await locator.locate(IArticleService).query(query, undefined, 0, 0)
+      return [count, res[1].sort((r1, r2) => order.get(r1.id!)! - order.get(r2.id!)!)]
+    }
     if (articleId) {
       query.setWhere(new Condition()
         .setType(Condition.ConditionType.AND)
@@ -327,7 +350,7 @@ export default function Library(props: LibraryProps) {
       return
     }
     fetchArticles(1)
-  }, [rootSubjectId])
+  }, [rootSubjectId, favorite])
 
   return (
     <div className="library">
@@ -376,6 +399,15 @@ export default function Library(props: LibraryProps) {
       ) : null}
       <div className="float-menus">
         {user.printPermission ? <ArticleListSummary></ArticleListSummary> : null}
+        {favoriteService ?
+          <Button
+            icon={<HeartFilled />}
+            type={favorite ? "primary" : "default"}
+            size="large" shape="circle"
+            onClick={() => {
+              setFavorite(!favorite)
+            }}></Button>
+          : null}
         {user.editingPermission ? (
           <Button
             icon={<PlusOutlined />}
