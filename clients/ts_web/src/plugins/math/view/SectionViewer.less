@@ -91,11 +91,11 @@
 }
 
 .article-list {
-  counter-reset: blog-print-article;
+  counter-reset: math-print-article;
 
   &.show-idx > .article > .section-viewer:first-child::before {
-    counter-increment: blog-print-article;
-    content: counter(blog-print-article) "、 ";
+    counter-increment: math-print-article;
+    content: counter(math-print-article) "、 ";
   }
 
   & > .article.problem-viewer {

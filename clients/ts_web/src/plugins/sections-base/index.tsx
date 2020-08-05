@@ -1,17 +1,20 @@
 import React, { memo } from 'react'
 import IPluginInfo, { ArticleType } from '../IPluginInfo'
-import BlogViewer from './view/BlogViewer'
-import BlogEditor from './view/BlogEditor'
+import SectionsBaseViewer from './view/SectionsBaseViewer'
+import SectionsBaseEditor from './view/SectionsBaseEditor'
 import { ApiOutlined, BookOutlined } from '@ant-design/icons'
 import Langs from './Langs'
 import IConfigsService, { Config } from '../../domain/IConfigsSercice'
-import BlogConfigKeys from './BlogConfigKeys'
-import BlogDefaultConfigs from './BlogDefaultConfigs'
+import SectionsBaseDefaultConfigs from './SectionsBaseDefaultConfigs'
+import SectionEditorProps from './view/SectionEditorProps'
+import SectionViewerProps from './view/SectionViewerProps'
 
-export default class BlogPluginInfo implements IPluginInfo {
+export default class SectionsBasePluginInfo {
   private articleTypes: ArticleType[] = [];
 
-  constructor(typeNames: string[]) {
+  constructor(TSectionViewer: { (props: SectionViewerProps): JSX.Element }
+    , TSectionEditor: { (props: SectionEditorProps): JSX.Element },
+    typeNames: string[]) {
     this.articleTypes = typeNames.map(name => {
       var noTitle = name.startsWith('_');
       if (noTitle) {
@@ -23,8 +26,8 @@ export default class BlogPluginInfo implements IPluginInfo {
         rootSubject: name,
         noTitle,
         icon: <BookOutlined />,
-        Viewer: memo(BlogViewer) as any,
-        Editor: memo(BlogEditor) as any,
+        Viewer: memo(SectionsBaseViewer(TSectionViewer)) as any,
+        Editor: memo(SectionsBaseEditor(TSectionEditor)) as any,
       }
     })
   }
@@ -33,7 +36,7 @@ export default class BlogPluginInfo implements IPluginInfo {
     return this.articleTypes;
   }
   get defaultConfigs(): Config[] {
-    return BlogDefaultConfigs;
+    return SectionsBaseDefaultConfigs;
   }
 
   async init(configs: IConfigsService): Promise<any> {

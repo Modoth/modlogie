@@ -36,9 +36,11 @@ export default class LoginService extends IServicesLocator implements ILoginServ
     }
 
     set user(value: ILoginUser) {
-        if (this.sameUser(this._user, value))
-            this._user = value;
-        this.raiseUpdate();
+        var raiseUpdate = !this.sameUser(this._user, value)
+        this._user = value;
+        if (raiseUpdate) {
+            this.raiseUpdate();
+        }
     }
 
     private async checkAllowPrint(role: string): Promise<boolean> {

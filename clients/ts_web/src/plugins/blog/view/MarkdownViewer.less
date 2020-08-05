@@ -1,0 +1,36 @@
+.md-viewer {
+  margin: 5px 0;
+  padding: 5px 10px;
+  user-select: none;
+  -webkit-user-select: none;
+
+  & .md-name {
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 1.15em;
+    margin: 10px 0 25px 0;
+    display: block;
+  }
+}
+
+.md-viewer.view-mode video {
+  border: 1px solid #0004;
+  border-radius: 5px;
+}
+
+.md-viewer img {
+  width: 100%;
+}
+
+.article-list {
+  counter-reset: blog-print-article;
+
+  &.show-idx > .article > .md-viewer:first-child .md-name::before {
+    counter-increment: blog-print-article;
+    content: counter(blog-print-article) "、 ";
+  }
+}
+
+.MarkdownViewer.sections-base-viewer {
+  padding: 0 10px 10px 10px;
+}

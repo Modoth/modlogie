@@ -6,9 +6,8 @@ import SectionViewer from './SectionViewer'
 import { Input, Button } from 'antd'
 import { FunctionOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
-import IFormulaEditingService from '../IFormulaEditingService'
 import { getSlices, SliceType, SliceFile } from './SectionCommon'
-import SectionEditorProps from './SectionEditorProps'
+import SectionEditorProps from '../../sections-base/view/SectionEditorProps'
 const TextArea = Input.TextArea
 
 export class ILatexTranslator {

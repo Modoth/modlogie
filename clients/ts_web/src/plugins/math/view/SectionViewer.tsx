@@ -5,7 +5,7 @@ import ArticleFileViewer from '../../../view/components/ArticleFileViewer'
 import './SectionViewer.less'
 import classNames from 'classnames'
 import { ArticleSlice, getSlices, SliceType, SliceFile } from './SectionCommon'
-import SectionViewerProps from './SectionViewerProps'
+import SectionViewerProps from '../../sections-base/view/SectionViewerProps'
 
 class ArticleSectionVm {
     public slices: ArticleSlice[] = [];

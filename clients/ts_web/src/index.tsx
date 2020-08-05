@@ -33,6 +33,7 @@ import { FilesServiceClient } from './apis/FilesServiceClientPb'
 import IArticleService from './domain/IArticleService'
 import ArticleService from './domain/ArticleService'
 import BlogPluginInfo from './plugins/blog'
+import MathPluginInfo from './plugins/math'
 import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG } from './app/ConfigKeys'
 // import './assets/images'
 import logoImg from './assets/logo.png'
@@ -66,6 +67,9 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
         break
       case 'Blog':
         plugin = new BlogPluginInfo(names);
+        break
+      case 'Math':
+        plugin = new MathPluginInfo(names);
         break
     }
     if (plugin) {
