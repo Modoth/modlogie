@@ -1,6 +1,7 @@
 export class LangKeysInterface {
   AddToArticleList = 'AddToArticleList';
   AdmLogin = 'AdmLogin';
+  AlreadyLiked = 'AlreadyLiked';
   All = 'All';
   AuthorisedUser = 'AuthorisedUser';
   BeyondMaxFavorites = 'BeyondMaxFavorites';

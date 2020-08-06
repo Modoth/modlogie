@@ -14,7 +14,7 @@ import {
   UploadOutlined,
   CheckOutlined,
   EditOutlined,
-  PlusOutlined,
+  PrinterFilled,
   HeartOutlined,
   HeartFilled,
   LikeOutlined,
@@ -278,6 +278,7 @@ export default function ArticleView(props: {
   }
   const touchLike = async () => {
     if (!canLike) {
+      viewService.errorKey(langs, LangKeys.AlreadyLiked);
       return
     }
     try {
@@ -293,6 +294,7 @@ export default function ArticleView(props: {
 
   const touchDislike = async () => {
     if (!canDislike) {
+      viewService.errorKey(langs, LangKeys.AlreadyLiked);
       return
     }
     try {
@@ -323,28 +325,20 @@ export default function ArticleView(props: {
             ...(user.editingPermission ? [
               <MenuItem><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
                 key="fullscreen"><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>] : []),
-            favoriteService ? <MenuItem><Badge count={favorite ? <MinusOutlined className="icon-badges" onClick={toogleFavorite} /> : <PlusOutlined className="icon-badges" onClick={toogleFavorite} />}>
+            favoriteService ? <MenuItem><Badge>
               <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
                 key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
             </Badge></MenuItem> : null,
             user.printPermission ? (inArticleList ?
-              <MenuItem><Badge count={<MinusOutlined className="icon-badges" onClick={() => {
-                articleListService.remove(props.article)
-                setInArticleList(articleListService.has(props.article))
-              }} />} >
-                <Button type="link" icon={<PrinterOutlined />} onClick={() => {
+              <MenuItem><Badge >
+                <Button type="link" icon={<PrinterFilled />} onClick={() => {
                   articleListService.remove(props.article)
                   setInArticleList(articleListService.has(props.article))
                 }}
                   key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
               </Badge></MenuItem>
               :
-              <MenuItem><Badge className="printer-icons" count={<PlusOutlined className="icon-badges" onClick={() => {
-                articleListService.add(props.article, type, () => {
-                  setInArticleList(false);
-                })
-                setInArticleList(articleListService.has(props.article))
-              }} />}>
+              <MenuItem><Badge className="printer-icons">
                 <Button type="link" icon={<PrinterOutlined />} onClick={() => {
                   articleListService.add(props.article, type, () => {
                     setInArticleList(false);

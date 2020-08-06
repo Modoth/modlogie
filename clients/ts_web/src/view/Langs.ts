@@ -38,6 +38,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   [key: string]: string;
   AddToArticleList = '添加';
   AdmLogin = '管理员登陆';
+  AlreadyLiked = '已经点过了';
   All = '全部';
   AuthorisedUser = 'VIP';
   BeyondMaxFavorites = '超出最大收藏';
