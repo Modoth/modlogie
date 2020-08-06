@@ -16,6 +16,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
     this[ErrorMessage.NO_SUCH_ENTITY] = "无此数据";
   }
   ALLOW_LOGIN = '允许登陆';
+  ALLOW_LIKES = '允许点赞';
   ALLOW_PRINT = '允许打印';
   ARTICLE_SECTIONS = '文章段';
   ARTICLE_TAGS = '文章标签';

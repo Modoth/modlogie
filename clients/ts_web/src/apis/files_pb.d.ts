@@ -3,6 +3,28 @@ import * as jspb from "google-protobuf"
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import * as messages_pb from './messages_pb';
 
+export class IncDecTagRequest extends jspb.Message {
+  getFileId(): string;
+  setFileId(value: string): IncDecTagRequest;
+
+  getTagId(): string;
+  setTagId(value: string): IncDecTagRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): IncDecTagRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: IncDecTagRequest): IncDecTagRequest.AsObject;
+  static serializeBinaryToWriter(message: IncDecTagRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): IncDecTagRequest;
+  static deserializeBinaryFromReader(message: IncDecTagRequest, reader: jspb.BinaryReader): IncDecTagRequest;
+}
+
+export namespace IncDecTagRequest {
+  export type AsObject = {
+    fileId: string,
+    tagId: string,
+  }
+}
+
 export class NewFolderItem extends jspb.Message {
   getName(): string;
   setName(value: string): NewFolderItem;

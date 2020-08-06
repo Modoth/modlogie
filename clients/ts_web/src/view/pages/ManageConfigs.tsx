@@ -6,7 +6,7 @@ import { Table, Button } from 'antd'
 import { ClearOutlined, EditOutlined } from '@ant-design/icons'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
-import IConfigsService, { Config, ConfigType } from '../../domain/IConfigsSercice'
+import IConfigsService, { Config, ConfigType, ConfigNames } from '../../domain/IConfigsSercice'
 
 
 export function ManageConfigs() {
@@ -22,7 +22,7 @@ export function ManageConfigs() {
   const [configs, setConfigs] = useState<Config[] | undefined>()
 
   const fetchConfigs = async () => {
-    var configs = await (await locator.locate(IConfigsService).all(true)).sort((a, b) => a.key.localeCompare(b.key));
+    var configs = await (await locator.locate(IConfigsService).all(true)).filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => a.key.localeCompare(b.key));
     setConfigs(configs)
   }
 

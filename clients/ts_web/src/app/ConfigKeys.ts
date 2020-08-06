@@ -1,5 +1,6 @@
 export class ConfigKeysInterface<T> {
     ALLOW_LOGIN: T = <any>'ALLOW_LOGIN';
+    ALLOW_LIKES: T = <any>'ALLOW_LIKES';
     ALLOW_PRINT: T = <any>'ALLOW_PRINT';
     IMPORT_SUBJECTS_AUTOFIX: T = <any>'IMPORT_SUBJECTS_AUTOFIX';
     MAX_FAVORITES_PER_TYPE: T = <any>'MAX_FAVORITES_PER_TYPE';

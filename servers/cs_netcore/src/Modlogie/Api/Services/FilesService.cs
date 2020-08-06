@@ -120,6 +120,7 @@ namespace Modlogie.Api.Services
         private readonly IFileContentService _contentService;
         private readonly IFileQueryCompileService _queryCompiler;
         private readonly ILoginUserService _userService;
+        private readonly IKeyValuesEntityService _keyValueService;
         private readonly IDistributedCache _cahce;
 
         public FilesService(IConfiguration configuration,
@@ -127,6 +128,7 @@ namespace Modlogie.Api.Services
         ITagsEntityService tagsService,
         IFileContentService contentService,
         ILoginUserService userService,
+        IKeyValuesEntityService keyValueService,
         Common.IFileQueryCompileService queryCompiler,
         IDistributedCache cahce)
         {
@@ -138,6 +140,7 @@ namespace Modlogie.Api.Services
             _contentService = contentService;
             _queryCompiler = queryCompiler;
             _userService = userService;
+            _keyValueService = keyValueService;
             _cahce = cahce;
         }
 
@@ -967,5 +970,74 @@ namespace Modlogie.Api.Services
 
             return reply;
         }
+
+
+        public async Task<Reply> IncreaseOrDecreaseTag(IncDecTagRequest request, ServerCallContext context, int inc)
+        {
+            var reply = new Reply();
+            if (!Guid.TryParse(request.TagId, out Guid tagId) || !Guid.TryParse(request.FileId, out Guid fileId))
+            {
+                reply.Error = Error.InvalidArguments;
+                return reply;
+            }
+            var tag = await _tagsService.All().FirstOrDefaultAsync(t => t.Id == tagId);
+            if (tag == null)
+            {
+                reply.Error = Error.NoSuchEntity;
+                return reply;
+            }
+            var file = await _service.All().Include(f => f.FileTags).FirstOrDefaultAsync(f => f.Id == fileId);
+            if (file == null)
+            {
+                reply.Error = Error.NoSuchEntity;
+                return reply;
+            }
+            var editableTags = await _keyValueService.All().FirstOrDefaultAsync(kv => kv.Id == Modlogie.Domain.ServerKeys.__IncreasableTags.Key);
+            if (editableTags == null || string.IsNullOrWhiteSpace(editableTags.Value))
+            {
+                reply.Error = Error.InvalidOperation;
+                return reply;
+            }
+            var canEdit = editableTags.Value.Split(' ').Any(s => s.Trim() == tag.Name);
+            if (!canEdit)
+            {
+                reply.Error = Error.InvalidOperation;
+                return reply;
+            }
+            if (file.FileTags == null)
+            {
+                file.FileTags = new List<Modlogie.Domain.Models.FileTag>();
+            }
+            var fileTag = file.FileTags.FirstOrDefault(t => t.TagId == tagId);
+            if (fileTag == null)
+            {
+                fileTag = new Domain.Models.FileTag
+                {
+                    TagId = tagId,
+                    FileId = fileId,
+                    Value = Math.Max(inc, 0).ToString()
+                };
+                file.FileTags.Add(fileTag);
+            }
+            else
+            {
+                if (!int.TryParse(fileTag.Value, out int cur))
+                {
+                    cur = 0;
+                }
+                fileTag.Value = Math.Max(cur + inc, 0).ToString();
+            }
+            await _service.Update(file);
+            return reply;
+        }
+        public override Task<Reply> IncreaseTag(IncDecTagRequest request, ServerCallContext context)
+        {
+            return IncreaseOrDecreaseTag(request, context, 1);
+        }
+
+        // public override Task<Reply> DecreaseTag(IncDecTagRequest request, ServerCallContext context)
+        // {
+        //     return IncreaseOrDecreaseTag(request, context, -1);
+        // }
     }
 }

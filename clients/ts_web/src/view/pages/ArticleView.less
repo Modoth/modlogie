@@ -37,18 +37,21 @@
       }
     }
 
-    .printer-icons {
-      span.anticon.ant-scroll-number-custom-component {
-        top: unset;
-        bottom: 5px;
-        right: 0px;
-        border-radius: 100%;
-        background-color: #86817e;
-        color: white;
-        transform: scale(0.75);
-        transition: none !important;
-        --webkit-transition: none !important;
-      }
+    .icon-badges {
+      display: block;
+      height: 1.2em;
+      min-width: 1.2em;
+      max-width: 3em;
+      text-align: center;
+      left: 10px;
+      right: unset;
+      border-radius: 1.2em;
+      background-color: #86817e60;
+      color: white;
+      padding: 0.1em;
+      transform: scale(0.75);
+      transition: none !important;
+      --webkit-transition: none !important;
     }
 
     & button {
@@ -102,16 +105,6 @@
     }
   }
 
-  .ant-menu-submenu-popup {
-    li.ant-menu-item.ant-menu-item-only-child .action-name {
-      display: unset;
-    }
-
-    .add-to-printer {
-      display: none !important;
-    }
-  }
-
   & .actions-tags-list {
     display: flex;
     box-sizing: border-box;
@@ -133,5 +126,15 @@
     & > * {
       margin-right: 8px;
     }
+  }
+}
+
+.ant-menu-submenu-popup {
+  li.ant-menu-item.ant-menu-item-only-child .action-name {
+    display: unset;
+  }
+
+  .icon-badges {
+    display: none !important;
   }
 }

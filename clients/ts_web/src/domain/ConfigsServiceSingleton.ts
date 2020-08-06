@@ -1,4 +1,4 @@
-import IConfigsSercice, { Config, ConfigType } from "./IConfigsSercice";
+import IConfigsSercice, { Config, ConfigType, ConfigNames } from "./IConfigsSercice";
 import { KeyValuesServiceClient } from "../apis/KeyvaluesServiceClientPb";
 import IServicesLocator from "../common/IServicesLocator";
 import { ClientRun } from "../common/GrpcUtils";
@@ -6,6 +6,8 @@ import { Empty } from "google-protobuf/google/protobuf/empty_pb";
 import { KeyValue } from "../apis/keyvalues_pb";
 import { StringId } from "../apis/messages_pb";
 import ISubjectsService from "./ISubjectsService";
+import ConfigKeys from "../app/ConfigKeys";
+import ITagsService, { TagNames, TagType } from "./ITagsService";
 
 export class ConfigsServiceSingleton extends IServicesLocator implements IConfigsSercice {
     private configs: Map<string, Config>
@@ -59,7 +61,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         if (this.cached) {
             return
         }
-        this.customConfigs = this.customConfigs || new Map((await ClientRun(this, ()=>this.locate(KeyValuesServiceClient).getAll(new Empty(), null))).getKeyValuesList().map(c => [c.getId(), c.getValue()]))
+        this.customConfigs = this.customConfigs || new Map((await ClientRun(this, () => this.locate(KeyValuesServiceClient).getAll(new Empty(), null))).getKeyValuesList().map(c => [c.getId(), c.getValue()]))
         this.customConfigs!.forEach((value, key) => {
             var config = this.configs.get(key);
             if (config) {
@@ -73,7 +75,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
     async all(includeServerConfig?: boolean): Promise<Config[]> {
         this.includeServerConfigs = includeServerConfig === true;
         if (this.includeServerConfigs && this.defaultServerConfigs === undefined) {
-            this.defaultServerConfigs = await (await ClientRun(this, ()=>this.locate(KeyValuesServiceClient).getAllServerKeys(new Empty(), null))).getKeysList().map(k => new Config(k.getKey(), ConfigType.STRING))
+            this.defaultServerConfigs = await (await ClientRun(this, () => this.locate(KeyValuesServiceClient).getAllServerKeys(new Empty(), null))).getKeysList().map(k => new Config(k.getKey(), ConfigType.STRING))
             this.clearCache(true);
             console.log(this.defaultServerConfigs);
         }
@@ -111,9 +113,26 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         var req = new KeyValue();
         req.setId(key);
         req.setValue(value);
-        await ClientRun(this, ()=>this.locate(KeyValuesServiceClient).addOrUpdate(req, null))
+        await ClientRun(this, () => this.locate(KeyValuesServiceClient).addOrUpdate(req, null))
         config.value = value;
         this.customConfigs?.set(key, value);
+        if (key === ConfigKeys.ALLOW_LIKES) {
+            var tags = [TagNames.LIKE_TAG_NAME, TagNames.DISLIKE_TAG_NAME];
+            var tagsDict = new Set(tags);
+            var values = await this.getValuesOrDefault(ConfigNames.INCREASABLE_TAGS);
+            values = values.filter(v => !tagsDict.has(v));
+            if (value === 'true') {
+                values.push(...tags);
+                var tagServer = this.locate(ITagsService);
+                for (var tagName of tags) {
+                    var tag = await tagServer.get(tagName);
+                    if (!tag) {
+                        await tagServer.add(tagName, TagType.NUMBER)
+                    }
+                }
+            }
+            await this.set(ConfigNames.INCREASABLE_TAGS, values.join(' '));
+        }
         return this.cloneConfig(config);
     }
 
@@ -125,7 +144,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         }
         var req = new StringId();
         req.setId(key);
-        await ClientRun(this, ()=>this.locate(KeyValuesServiceClient).delete(req, null))
+        await ClientRun(this, () => this.locate(KeyValuesServiceClient).delete(req, null))
         config.value = undefined;
         this.customConfigs?.delete(key);
         return this.cloneConfig(config);

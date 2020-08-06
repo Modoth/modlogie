@@ -1,6 +1,8 @@
 export const TagNames = {
     HidenSectionPrefix: '_',
-    RESERVED_PREFIX : '__'
+    RESERVED_PREFIX: '__',
+    LIKE_TAG_NAME: '__LIKE',
+    DISLIKE_TAG_NAME: '__DISLIKE'
 }
 
 export enum TagType {

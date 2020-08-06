@@ -39,6 +39,7 @@ import SubjectViewModel from './SubjectViewModel'
 import html2canvas from 'html2canvas';
 import MenuItem from 'antd/lib/menu/MenuItem'
 import IFavoritesServer from '../../domain/IFavoritesServer'
+import ILikesService from '../../domain/ILikesService'
 
 const { Option } = Select
 
@@ -83,6 +84,11 @@ export default function ArticleView(props: {
   const [name, setName] = useState(props.article.name)
   const [favoriteService] = useState(locator.locate(IFavoritesServer))
   const [favorite, setFavorite] = useState(false)
+  const [likesService, setLikesService] = useState<ILikesService | undefined>(undefined);
+  const [canLike, setCanLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [canDislike, setCanDislike] = useState(false);
+  const [dislikeCount, setDislikeCount] = useState(0);
 
   const addFile = (file?: File) => {
     viewService.prompt(
@@ -224,6 +230,24 @@ export default function ArticleView(props: {
         }
       })
     }
+    (async () => {
+      var likesService = locator.locate(ILikesService);
+      if (likesService) {
+        var enablded = await likesService.enabled();
+        if (!enablded) {
+          return;
+        }
+        var canLike = await likesService.canLike(props.article.id!);
+        var canDislike = await likesService.canDislike(props.article.id!);
+        var likeCount = canLike ? await likesService.likeCount(props.article) : 0;
+        var dislikeCount = canDislike ? await likesService.dislikeCount(props.article) : 0;
+        setLikesService(likesService);
+        setCanLike(canLike)
+        setCanDislike(canDislike)
+        setLikeCount(likeCount)
+        setDislikeCount(dislikeCount);
+      }
+    })()
     if (!additionalLoaded) {
       props.article.lazyLoadingAddition!().then(() => {
         setContent(props.article.content!)
@@ -252,6 +276,44 @@ export default function ArticleView(props: {
       viewService!.errorKey(langs, e.message)
     }
   }
+  const touchLike = async () => {
+    if (!canLike) {
+      return
+    }
+    try {
+      await likesService?.addLike(props.article.id!)
+      setLikeCount((likeCount || 0) + 1)
+      setCanDislike(false);
+      setCanLike(false);
+    }
+    catch (e) {
+      viewService!.errorKey(langs, e.message)
+    }
+  }
+
+  const touchDislike = async () => {
+    if (!canDislike) {
+      return
+    }
+    try {
+      await likesService?.addDislike(props.article.id!)
+      setDislikeCount((dislikeCount || 0) + 1)
+      setCanLike(false);
+      setCanDislike(false);
+    }
+    catch (e) {
+      viewService!.errorKey(langs, e.message)
+    }
+  }
+  const shortNumber = (num: number): string => {
+    var s = num.toString();
+    var max = 3;
+    if (s.length < max) {
+      return s;
+    }
+    var h = Math.floor(num / Math.pow(10, s.length - 1));
+    return `${h}${["", "", "", "k", "0k", "00k"][s.length - max + 1]}+`
+  }
   return (
     <Card className={classNames("article-view")}>
       <div className="article-title">
@@ -261,12 +323,12 @@ export default function ArticleView(props: {
             ...(user.editingPermission ? [
               <MenuItem><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
                 key="fullscreen"><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>] : []),
-            favoriteService ? <MenuItem><Badge className="printer-icons" count={favorite ? <MinusOutlined className="add-to-printer" onClick={toogleFavorite} /> : <PlusOutlined className="add-to-printer" onClick={toogleFavorite} />}>
+            favoriteService ? <MenuItem><Badge count={favorite ? <MinusOutlined className="icon-badges" onClick={toogleFavorite} /> : <PlusOutlined className="icon-badges" onClick={toogleFavorite} />}>
               <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
                 key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
             </Badge></MenuItem> : null,
             user.printPermission ? (inArticleList ?
-              <MenuItem><Badge className="printer-icons" count={<MinusOutlined className="add-to-printer" onClick={() => {
+              <MenuItem><Badge count={<MinusOutlined className="icon-badges" onClick={() => {
                 articleListService.remove(props.article)
                 setInArticleList(articleListService.has(props.article))
               }} />} >
@@ -277,7 +339,7 @@ export default function ArticleView(props: {
                   key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
               </Badge></MenuItem>
               :
-              <MenuItem><Badge className="printer-icons" count={<PlusOutlined className="add-to-printer" onClick={() => {
+              <MenuItem><Badge className="printer-icons" count={<PlusOutlined className="icon-badges" onClick={() => {
                 articleListService.add(props.article, type, () => {
                   setInArticleList(false);
                 })
@@ -292,10 +354,11 @@ export default function ArticleView(props: {
                   key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
               </Badge></MenuItem>
             ) : null,
-            // <MenuItem><Button type="link" icon={<LikeOutlined />}
-            //   key="like"><span className="action-name">{langs.get(LangKeys.Like)}</span></Button></MenuItem>,
-            // <MenuItem><Button type="link" icon={<DislikeOutlined />}
-            //   key="dislike"><span className="action-name">{langs.get(LangKeys.Dislike)}</span></Button></MenuItem>,
+            ...(likesService ? [<MenuItem><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
+              <Button onClick={touchLike} type="link" icon={<LikeOutlined />}
+                key="like"><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
+            <MenuItem><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
+              key="dislike"><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
             ...(user.editingPermission ? [
               <MenuItem> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
                 key="edit"><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,

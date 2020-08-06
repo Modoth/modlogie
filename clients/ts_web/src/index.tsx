@@ -50,6 +50,8 @@ import IFavoritesStorage from './domain/IFavoritesStorage'
 import LocalFavoritesStorage from './domain/LocalFavoritesStorage'
 import IFavoritesServer from './domain/IFavoritesServer'
 import FavoritesServerSingleton from './domain/FavoritesServerSingleton'
+import ILikesService from './domain/ILikesService'
+import LikesService from './domain/LikesService'
 
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
@@ -125,6 +127,7 @@ const buildServicesLocator = () => {
     serviceLocator.registerInstance(IFavoritesStorage, new LocalFavoritesStorage())
   }
   serviceLocator.registerInstance(IFavoritesServer, new FavoritesServerSingleton())
+  serviceLocator.register(ILikesService, LikesService);
 
   var clientHost = window.origin + '/api';
   serviceLocator.registerFactory(LoginServiceClient, () => new LoginServiceClient(clientHost, null, null));

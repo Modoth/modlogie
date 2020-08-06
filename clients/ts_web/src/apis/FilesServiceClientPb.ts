@@ -26,6 +26,7 @@ import {
   FileReply,
   FilesReply,
   GetFilesRequest,
+  IncDecTagRequest,
   MoveRequest,
   QueryRequest,
   ResourceReply,
@@ -596,6 +597,45 @@ export class FilesServiceClient {
     request,
     metadata || {},
     this.methodInfoDeleteTags);
+  }
+
+  methodInfoIncreaseTag = new grpcWeb.AbstractClientBase.MethodInfo(
+    messages_pb.Reply,
+    (request: IncDecTagRequest) => {
+      return request.serializeBinary();
+    },
+    messages_pb.Reply.deserializeBinary
+  );
+
+  increaseTag(
+    request: IncDecTagRequest,
+    metadata: grpcWeb.Metadata | null): Promise<messages_pb.Reply>;
+
+  increaseTag(
+    request: IncDecTagRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: messages_pb.Reply) => void): grpcWeb.ClientReadableStream<messages_pb.Reply>;
+
+  increaseTag(
+    request: IncDecTagRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.Error,
+               response: messages_pb.Reply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        new URL('/modlogie.file.FilesService/IncreaseTag', this.hostname_).toString(),
+        request,
+        metadata || {},
+        this.methodInfoIncreaseTag,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/modlogie.file.FilesService/IncreaseTag',
+    request,
+    metadata || {},
+    this.methodInfoIncreaseTag);
   }
 
 }

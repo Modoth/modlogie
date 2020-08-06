@@ -21,6 +21,8 @@ namespace Modlogie.Domain
     {
         public static ServerKey WechatApiToken = new ServerKey { Key = nameof(WechatApiToken) };
 
-        public static ServerKey[] All = new ServerKey[] { WechatApiToken };
+        public static ServerKey __IncreasableTags = new ServerKey { Key = nameof(__IncreasableTags) };
+
+        public static ServerKey[] All = new ServerKey[] { WechatApiToken, __IncreasableTags };
     }
 }

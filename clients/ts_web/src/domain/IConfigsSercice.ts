@@ -8,6 +8,11 @@ export enum ConfigType {
     TEXT,
 }
 
+export const ConfigNames = {
+    RESERVED_PREFIX: '__',
+    INCREASABLE_TAGS: '__IncreasableTags',
+}
+
 export class Config {
     constructor(public key: string, public type: ConfigType, public defaultValue?: string, public value?: string, public values?: string[]) { }
 }
