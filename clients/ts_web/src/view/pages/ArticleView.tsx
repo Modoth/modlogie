@@ -4,7 +4,7 @@ import {
   ArticleContentEditorCallbacks,
   ArticleContentType,
 } from '../../plugins/IPluginInfo'
-import Article, { ArticleFile, ArticleContent, ArticleTag } from '../../domain/Article'
+import Article, { ArticleFile, ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/Article'
 import { useUser, useServicesLocator } from '../../app/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
@@ -15,6 +15,8 @@ import {
   CheckOutlined,
   EditOutlined,
   PrinterFilled,
+  UpSquareOutlined,
+  UpSquareFilled,
   HeartOutlined,
   HeartFilled,
   LikeOutlined,
@@ -40,6 +42,7 @@ import html2canvas from 'html2canvas';
 import MenuItem from 'antd/lib/menu/MenuItem'
 import IFavoritesServer from '../../domain/IFavoritesServer'
 import ILikesService from '../../domain/ILikesService'
+import ConfigKeys from '../../app/ConfigKeys'
 
 const { Option } = Select
 
@@ -62,7 +65,8 @@ export default function ArticleView(props: {
   type: ArticleType;
   subjects: SubjectViewModel[];
   tags: ArticleTag[];
-  nodeTags: Map<string, Tag>
+  nodeTags: Map<string, Tag>,
+  recommendView?: boolean,
 }) {
   const user = useUser()
   const locator = useServicesLocator()
@@ -89,6 +93,9 @@ export default function ArticleView(props: {
   const [likeCount, setLikeCount] = useState(0);
   const [canDislike, setCanDislike] = useState(false);
   const [dislikeCount, setDislikeCount] = useState(0);
+  const [recommendView, setRecommendView] = useState(props.recommendView || false)
+  const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend);
+  const [recommendTitle, setRecommendTitle] = useState('');
 
   const addFile = (file?: File) => {
     viewService.prompt(
@@ -231,6 +238,12 @@ export default function ArticleView(props: {
       })
     }
     (async () => {
+      var recommendTitle = (await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECOMMENT_TITLE))?.trim();
+      if (recommendTitle) {
+        setRecommendTitle(recommendTitle)
+      }
+    })();
+    (async () => {
       var likesService = locator.locate(ILikesService);
       if (likesService) {
         var enablded = await likesService.enabled();
@@ -259,6 +272,15 @@ export default function ArticleView(props: {
   }, [])
   if (!type) {
     return <></>
+  }
+  const toogleRecommend = async () => {
+    var next = !recommend;
+    try {
+      await locator.locate(IArticleService).updateAdditionalType(props.article.id!, next ? ArticleAdditionalType.Recommend : ArticleAdditionalType.Normal)
+      setRecommend(next)
+    } catch (e) {
+      viewService.errorKey(langs, e.message)
+    }
   }
   const openDetail = () => {
     locator.locate(IViewService).previewArticle({ name, content, files }, type)
@@ -317,14 +339,12 @@ export default function ArticleView(props: {
     return `${h}${["", "", "", "k", "0k", "00k"][s.length - max + 1]}+`
   }
   return (
-    <Card className={classNames("article-view")}>
+    <Card className={classNames("article-view", recommendView ? '' : '')}>
       <div className="article-title">
-        {props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : openDetail}>{name}</div>}
+        {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
+        }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : openDetail}>{name}</div>}
         {
-          editing ? null : (<Menu mode="horizontal" className={classNames("actions-list")}>{[
-            ...(user.editingPermission ? [
-              <MenuItem><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
-                key="fullscreen"><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>] : []),
+          (editing || recommendView) ? null : (<Menu mode="horizontal" className={classNames("actions-list")}>{[
             favoriteService ? <MenuItem><Badge>
               <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
                 key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
@@ -354,8 +374,12 @@ export default function ArticleView(props: {
             <MenuItem><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
               key="dislike"><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
             ...(user.editingPermission ? [
+              <MenuItem> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />} onClick={toogleRecommend}
+                key="edit"><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
               <MenuItem> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
                 key="edit"><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,
+              <MenuItem><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
+                key="fullscreen"><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>,
               <MenuItem ><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
                 props.articleHandlers.onDelete(props.article.id!)
               } key="delete"><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>

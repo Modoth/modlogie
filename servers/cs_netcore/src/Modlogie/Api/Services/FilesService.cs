@@ -109,6 +109,7 @@ namespace Modlogie.Api.Services
             Content = i.Content ?? string.Empty,
             Comment = i.Comment ?? string.Empty,
             Private = i.Private == 1ul,
+            AdditionalType = i.AdditionalType ?? 0,
             FileTagsForSelect = i.FileTags != null ? i.FileTags.Select(t => new FileTag { TagId = t.TagId.ToString(), Value = t.Value }) : null
         };
         private static Func<Domain.Models.File, File> _converter = _selector.Compile();
@@ -183,45 +184,61 @@ namespace Modlogie.Api.Services
                 items = items.Where(n =>
                 n.Path!.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
             }
-            if (query != null && !string.IsNullOrWhiteSpace(query.OrderBy))
-            {
-                Expression<Func<Modlogie.Domain.Models.File, Object>> orderBy = default;
-                switch (query.OrderBy)
-                {
-                    case nameof(Modlogie.Domain.Models.File.Name):
-                        orderBy = node => node.Name!;
-                        break;
-                    case nameof(Modlogie.Domain.Models.File.Created):
-                        orderBy = node => node.Created;
-                        break;
-                }
-                if (orderBy == null)
-                {
-                    reply.Error = Error.InvalidArguments;
-                    return reply;
-                }
-                if (query.OrderByDesc == true)
-                {
-                    items = items.OrderByDescending(orderBy);
-                }
-                else
-                {
-                    items = items.OrderBy(orderBy);
-                }
-            }
+            var randomOrder = query.OrderBy == "Random";
             int? total = null;
-            if (request.Skip > 0 || request.Take > 0)
+            if (randomOrder)
             {
                 total = await items.CountAsync();
+                var skip = new Random().Next(total.Value - request.Take);
+                items = items.Skip(skip);
+                if (request.Take > 0)
+                {
+                    items = items.Take(request.Take);
+                }
             }
-            if (request.Skip > 0)
+            else
             {
-                items = items.Skip(request.Skip);
+                if (query != null && !string.IsNullOrWhiteSpace(query.OrderBy))
+                {
+                    Expression<Func<Modlogie.Domain.Models.File, Object>> orderBy = default;
+                    switch (query.OrderBy)
+                    {
+                        case nameof(Modlogie.Domain.Models.File.Name):
+                            orderBy = node => node.Name!;
+                            break;
+                        case nameof(Modlogie.Domain.Models.File.Created):
+                            orderBy = node => node.Created;
+                            break;
+                    }
+                    if (orderBy == null)
+                    {
+                        reply.Error = Error.InvalidArguments;
+                        return reply;
+                    }
+                    if (query.OrderByDesc == true)
+                    {
+                        items = items.OrderByDescending(orderBy);
+                    }
+                    else
+                    {
+                        items = items.OrderBy(orderBy);
+                    }
+                }
+
+                if (request.Skip > 0 || request.Take > 0)
+                {
+                    total = await items.CountAsync();
+                }
+                if (request.Skip > 0)
+                {
+                    items = items.Skip(request.Skip);
+                }
+                if (request.Take > 0)
+                {
+                    items = items.Take(request.Take);
+                }
             }
-            if (request.Take > 0)
-            {
-                items = items.Take(request.Take);
-            }
+
             var files = await items
                             .Select(_selector)
                             .ToArrayAsync();
@@ -811,6 +828,7 @@ namespace Modlogie.Api.Services
             return reply;
         }
 
+
         public override async Task<Reply> UpdateComment(UpdateCommentRequest request, ServerCallContext context)
         {
             var reply = new Reply();
@@ -838,6 +856,40 @@ namespace Modlogie.Api.Services
                 return reply;
             }
             item.Comment = request.Comment;
+            item = await _service.Update(item);
+            if (item.Type == (int)FileType.Folder)
+            {
+                await ClearFolderVersionsCache();
+            }
+            return reply;
+        }
+        public override async Task<Reply> UpdateAdditionalType(UpdateAdditionalTypeRequest request, ServerCallContext context)
+        {
+            var reply = new Reply();
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
+            {
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
+                return reply;
+            }
+            if (!Guid.TryParse(request.Id, out Guid id))
+            {
+                reply.Error = Error.InvalidArguments;
+                return reply;
+            }
+
+            var item = await _service.All().Where(i => i.Id == id).FirstOrDefaultAsync();
+            if (item == null)
+            {
+                reply.Error = Error.NoSuchEntity;
+                return reply;
+            }
+            item.AdditionalType = request.AdditionalType;
             item = await _service.Update(item);
             if (item.Type == (int)FileType.Folder)
             {

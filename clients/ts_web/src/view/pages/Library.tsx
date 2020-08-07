@@ -10,7 +10,7 @@ import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowLeftOutlined, HeartFi
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
 import { ArticleType, ArticleContentType } from '../../plugins/IPluginInfo'
-import Article, { ArticleTag } from '../../domain/Article'
+import Article, { ArticleTag, ArticleAdditionalType } from '../../domain/Article'
 import ArticleView from './ArticleView'
 import ArticleListSummary from './ArticleListSummary'
 import { useParams, Link, useLocation } from 'react-router-dom'
@@ -30,6 +30,7 @@ import IMmConverter from '../../domain/IMmConverter'
 import ISubjectsExporter from '../../domain/ISubjectsExporter'
 import { MmIcon } from '../components/Icons'
 import IFavoritesServer from '../../domain/IFavoritesServer'
+import { shuffle } from '../../common/shuffle'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -55,10 +56,12 @@ export default function Library(props: LibraryProps) {
     {
       subjectId?: string;
       articleId?: string;
+      recommendView?: boolean;
     }
     = location.state || {}
   const [showFilter, setShowFilter] = useState(false);
   const [articleId, setArticleId] = useState(params.articleId)
+  const [articleRecommendView] = useState(params.recommendView || false)
   const [subjects, setSubjects] = useState<SubjectViewModel[]>([])
   const [subjectsDict, setSubjectsDict] = useState<
     Map<string, SubjectViewModel>
@@ -75,6 +78,7 @@ export default function Library(props: LibraryProps) {
     const _ = (await locator.locate(ISubjectsService).all()).map(
       (s) => new SubjectViewModel(s, subjectsDict)
     )
+    const newRecommendCount = await locator.locate(IConfigsService).getValueOrDefaultNumber(ConfigKeys.RECOMMENT_COUNT) || 0
     setSubjectsDict(subjectsDict)
     var subjectsIdDict = new Map(Array.from(subjectsDict.values(), (s) => [s.id, s]))
     setSubjectsIdDict(subjectsIdDict)
@@ -82,6 +86,9 @@ export default function Library(props: LibraryProps) {
     setSubjects(rootSubject ? [rootSubject] : [])
     var rootSubjectId = rootSubject?.id
     selectSubjects(params.subjectId ? [params.subjectId!] : [], rootSubjectId, subjectsIdDict)
+    if (newRecommendCount !== recommendCount) {
+      setRecommendCount(newRecommendCount)
+    }
     setRootSubjectId(rootSubjectId);
   }
 
@@ -134,6 +141,9 @@ export default function Library(props: LibraryProps) {
   }
 
   const [articles, setArticles] = useState<Article[]>([])
+  const [recommendsArticles, setRecommendsArticles] = useState<Article[]>([])
+  const [recommendCount, setRecommendCount] = useState(0);
+
   const [currentPage, setCurrentPage] = useState(0)
   const [articleHandlers] = useState<{ onDelete: { (id: string): void }, editingArticle?: Article }>(
     {} as any
@@ -173,6 +183,9 @@ export default function Library(props: LibraryProps) {
       return [count, res[1].sort((r1, r2) => order.get(r1.id!)! - order.get(r2.id!)!)]
     }
     if (articleId) {
+      if (articleRecommendView) {
+        return [0, []]
+      }
       query.setWhere(new Condition()
         .setType(Condition.ConditionType.AND)
         .setChildrenList([
@@ -190,6 +203,9 @@ export default function Library(props: LibraryProps) {
           new Condition().setType(Condition.ConditionType.EQUAL)
             .setProp('Type')
             .setValue('0'),
+          ...(!user?.editingPermission ? [new Condition().setType(Condition.ConditionType.EQUAL)
+            .setProp('AdditionalType')
+            .setValue(ArticleAdditionalType.Normal.toString())] : []),
           ...effectiveSubjects.length ? [
             new Condition().setType(Condition.ConditionType.OR)
               .setChildrenList(effectiveSubjects.map(sbj => new Condition().setType(Condition.ConditionType.STARTS_WITH)
@@ -217,6 +233,42 @@ export default function Library(props: LibraryProps) {
     }
     return [total, articlesWithType];
   };
+
+  const fetchRecommendArticles = async () => {
+    if (articleId && !articleRecommendView) {
+      return;
+    }
+    var query = articleId ? new Query().setWhere(new Condition()
+      .setType(Condition.ConditionType.AND)
+      .setChildrenList([
+        new Condition().setType(Condition.ConditionType.EQUAL)
+          .setProp('Type')
+          .setValue('0'),
+        new Condition().setType(Condition.ConditionType.EQUAL)
+          .setProp('Id')
+          .setValue(articleId),
+      ])) : new Query().setWhere(new Condition()
+        .setType(Condition.ConditionType.AND)
+        .setChildrenList([
+          new Condition().setType(Condition.ConditionType.EQUAL)
+            .setProp('Type')
+            .setValue('0'),
+          new Condition().setType(Condition.ConditionType.EQUAL)
+            .setProp('AdditionalType')
+            .setValue(ArticleAdditionalType.Recommend.toString()),
+          new Condition().setType(Condition.ConditionType.STARTS_WITH)
+            .setProp('Path').setValue(subjectsIdDict.get(rootSubjectId!)?.path!)
+        ])).setOrderBy('Random')
+    var [_, articles] = await locator.locate(IArticleService).query(query, '', 0, recommendCount)
+    shuffle(articles);
+    setRecommendsArticles(articles);
+  }
+
+  useEffect(() => {
+    if (recommendCount) {
+      fetchRecommendArticles()
+    }
+  }, [rootSubjectId])
 
   const fetchArticles = async (page?: number) => {
     if (page === undefined) {
@@ -361,7 +413,7 @@ export default function Library(props: LibraryProps) {
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {
-        articles.length ? null : <Table
+        articles.length || recommendsArticles.length ? null : <Table
           rowKey="name"
           showHeader={false}
           columns={[
@@ -371,6 +423,19 @@ export default function Library(props: LibraryProps) {
         ></Table>
       }
       <div className="articles" >
+        {recommendsArticles.map((p) => (
+          <div className="article-view-wraper" key={(p as any)!.key + '_recommend'}>
+            <ArticleViewerMemo
+              article={p}
+              subjects={subjects}
+              tags={articleTags}
+              type={props.type}
+              articleHandlers={articleHandlers}
+              nodeTags={tags}
+              recommendView={true}
+            ></ArticleViewerMemo>
+          </div>
+        ))}
         {articles.map((p) => (
           <div className="article-view-wraper" key={(p as any)!.key}>
             <ArticleViewerMemo

@@ -206,6 +206,8 @@ namespace Modlogie.Api.Common
                     return file => file.Name == value;
                 case nameof(Domain.Models.File.Type):
                     return file => file.Type == (int.Parse(value));
+                case nameof(Domain.Models.File.AdditionalType):
+                    return file => file.AdditionalType == (int.Parse(value));
                 case nameof(Domain.Models.File.Parent) + "Id":
                     return file => (file.Parent != null) && (file.Parent.Id == Guid.Parse(value));
             }

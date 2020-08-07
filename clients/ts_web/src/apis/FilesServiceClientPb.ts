@@ -30,6 +30,7 @@ import {
   MoveRequest,
   QueryRequest,
   ResourceReply,
+  UpdateAdditionalTypeRequest,
   UpdateCommentRequest,
   UpdateContentRequest,
   UpdateNameRequest} from './files_pb';
@@ -441,6 +442,45 @@ export class FilesServiceClient {
     request,
     metadata || {},
     this.methodInfoUpdateContent);
+  }
+
+  methodInfoUpdateAdditionalType = new grpcWeb.AbstractClientBase.MethodInfo(
+    messages_pb.Reply,
+    (request: UpdateAdditionalTypeRequest) => {
+      return request.serializeBinary();
+    },
+    messages_pb.Reply.deserializeBinary
+  );
+
+  updateAdditionalType(
+    request: UpdateAdditionalTypeRequest,
+    metadata: grpcWeb.Metadata | null): Promise<messages_pb.Reply>;
+
+  updateAdditionalType(
+    request: UpdateAdditionalTypeRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: messages_pb.Reply) => void): grpcWeb.ClientReadableStream<messages_pb.Reply>;
+
+  updateAdditionalType(
+    request: UpdateAdditionalTypeRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.Error,
+               response: messages_pb.Reply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        new URL('/modlogie.file.FilesService/UpdateAdditionalType', this.hostname_).toString(),
+        request,
+        metadata || {},
+        this.methodInfoUpdateAdditionalType,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/modlogie.file.FilesService/UpdateAdditionalType',
+    request,
+    metadata || {},
+    this.methodInfoUpdateAdditionalType);
   }
 
   methodInfoUpdateComment = new grpcWeb.AbstractClientBase.MethodInfo(

@@ -5,6 +5,7 @@ CREATE TABLE `File` (
   `Name` varchar(255) NOT NULL,
   `ParentId` char(36) DEFAULT NULL,
   `Type` int(11) DEFAULT 0,
+  `AdditionalType` int(11) DEFAULT 0,
   `Path` varchar(255) NOT NULL,
   `Content` varchar(255) DEFAULT NULL,
   `Comment` varchar(255) DEFAULT NULL,
@@ -16,6 +17,7 @@ CREATE TABLE `File` (
   KEY `IX_File_Name` (`Name`),
   KEY `IX_File_ParentId` (`ParentId`),
   KEY `IX_File_Type` (`Type`),
+  KEY `IX_File_AdditionalType` (`AdditionalType`),
   KEY `IX_File_Private` (`Private`),
   CONSTRAINT `FK_File_File_ParentId` FOREIGN KEY (`ParentId`) REFERENCES `File` (`Id`) ON DELETE
   SET NULL

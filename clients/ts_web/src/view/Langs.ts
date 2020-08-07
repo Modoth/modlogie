@@ -24,6 +24,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   MAX_PRINT_COUNT = '最大打印文章数';
   MAX_FAVORITES_PER_TYPE = "每种文章最大收藏数";
   PLUGINS = '插件';
+  RECOMMENT_COUNT = '推荐数量';
+  RECOMMENT_TITLE = '推荐标题';
   SHADOW_SECTION_PRIVATE = '保存隐藏段为私有';
   SUB_TYPE_TAG = '文章子类标签';
   WEB_SITE_AVATAR = '站长头像';
@@ -38,12 +40,13 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   [key: string]: string;
   AddToArticleList = '添加';
   AdmLogin = '管理员登陆';
-  AlreadyLiked = '已经点过了';
   All = '全部';
+  AlreadyLiked = '已经点过了';
   AuthorisedUser = 'VIP';
   BeyondMaxFavorites = '超出最大收藏';
   Cancle = '取消';
   CancleAutoLogin = '自动登录';
+  CancleRecommend = '取消推荐';
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
   Comment = '备注';
@@ -76,6 +79,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Ok = '确定';
   Order = '顺序';
   Password = '密码';
+  Recommend = '推荐';
   RemoveFromArticleList = '移除';
   Reset = '重置';
   Search = '搜索';

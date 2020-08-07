@@ -1,9 +1,9 @@
-import Article, { ArticleTag, ArticleContent, ArticleFile } from "./Article"
+import Article, { ArticleTag, ArticleContent, ArticleFile, ArticleAdditionalType } from "./Article"
 import IArticleService from "./IArticleService"
 import { ClientRun } from "../common/GrpcUtils"
 import { FilesServiceClient } from "../apis/FilesServiceClientPb"
 import { StringId } from "../apis/messages_pb"
-import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest, AddResourceRequest, UpdateCommentRequest } from "../apis/files_pb"
+import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest, AddResourceRequest, UpdateCommentRequest, UpdateAdditionalTypeRequest } from "../apis/files_pb"
 import ITagsService from "./ITagsService"
 import FilesServiceBase from "./FilesServiceBase"
 import IConfigsService from "./IConfigsSercice"
@@ -36,6 +36,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
             name: item.getName(),
             id: item.getId(),
             subjectId: item.getParentId(),
+            additionalType: item.getAdditionalType() as ArticleAdditionalType,
             tags,
             tagsDict: new Map(tags.map(t => [t.name, t]))
         };
@@ -124,6 +125,10 @@ export default class ArticleService extends FilesServiceBase implements IArticle
     async rename(name: string, articleId: string): Promise<Article> {
         var item = await ClientRun(this, () => this.locate(FilesServiceClient).updateName(new UpdateNameRequest().setName(name).setId(articleId), null))
         return this.ArticleFrom(item.getFile()!);
+    }
+
+    async updateAdditionalType(id: string, type: ArticleAdditionalType): Promise<void> {
+        await ClientRun(this, () => this.locate(FilesServiceClient).updateAdditionalType(new UpdateAdditionalTypeRequest().setId(id).setAdditionalType(type), null))
     }
 
     async move(articleId: string, subjectId: string): Promise<Article> {

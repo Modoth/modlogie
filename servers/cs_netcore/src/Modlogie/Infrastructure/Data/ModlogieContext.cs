@@ -45,6 +45,8 @@ namespace Modlogie.Infrastructure.Data
             {
                 entity.ToTable("File");
 
+                entity.HasIndex(e => e.AdditionalType);
+
                 entity.HasIndex(e => e.Modified);
 
                 entity.HasIndex(e => e.Name);
@@ -61,6 +63,10 @@ namespace Modlogie.Infrastructure.Data
                 entity.Property(e => e.Id)
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.AdditionalType)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'0'");
 
                 entity.Property(e => e.Comment)
                     .HasColumnType("varchar(255)")

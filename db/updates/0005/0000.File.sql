@@ -1,0 +1,1 @@
+ALTER TABLE `File` ADD `AdditionalType` int(11) DEFAULT 0, ADD KEY `IX_File_AdditionalType` (`AdditionalType`);

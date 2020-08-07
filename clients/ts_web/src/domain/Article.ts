@@ -23,11 +23,17 @@ export interface ArticleContent {
   sections?: ArticleSection[]
 }
 
+export enum ArticleAdditionalType {
+  Normal = 0,
+  Recommend = 1
+}
+
 export default interface Article {
   id?: string;
   additionId?: string,
   subjectId?: string;
   name?: string;
+  additionalType?: ArticleAdditionalType,
   content?: ArticleContent;
   files?: ArticleFile[];
   tags?: Array<ArticleTag>;

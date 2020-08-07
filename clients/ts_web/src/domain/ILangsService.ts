@@ -1,12 +1,13 @@
 export class LangKeysInterface {
   AddToArticleList = 'AddToArticleList';
   AdmLogin = 'AdmLogin';
-  AlreadyLiked = 'AlreadyLiked';
   All = 'All';
+  AlreadyLiked = 'AlreadyLiked';
   AuthorisedUser = 'AuthorisedUser';
   BeyondMaxFavorites = 'BeyondMaxFavorites';
   Cancle = 'Cancle';
   CancleAutoLogin = 'CancleAutoLogin';
+  CancleRecommend = 'CancleRecommend';
   ChangeName = 'ChangeName';
   ChangePassword = 'ChangePassword';
   Comment = 'Comment';
@@ -39,6 +40,7 @@ export class LangKeysInterface {
   Ok = 'Ok';
   Order = 'Order';
   Password = 'Password';
+  Recommend = 'Recommend';
   RemoveFromArticleList = 'RemoveFromArticleList';
   Reset = 'Reset';
   Search = 'Search';

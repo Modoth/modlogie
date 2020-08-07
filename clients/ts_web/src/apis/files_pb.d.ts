@@ -320,6 +320,9 @@ export class File extends jspb.Message {
   getPrivate(): boolean;
   setPrivate(value: boolean): File;
 
+  getAdditionalType(): number;
+  setAdditionalType(value: number): File;
+
   getTagsList(): Array<FileTag>;
   setTagsList(value: Array<FileTag>): File;
   clearTagsList(): File;
@@ -344,6 +347,7 @@ export namespace File {
     content: string,
     comment: string,
     pb_private: boolean,
+    additionalType: number,
     tagsList: Array<FileTag.AsObject>,
   }
 
@@ -571,6 +575,28 @@ export namespace UpdateContentRequest {
     id: string,
     content: string,
     resourceIdsList: Array<string>,
+  }
+}
+
+export class UpdateAdditionalTypeRequest extends jspb.Message {
+  getId(): string;
+  setId(value: string): UpdateAdditionalTypeRequest;
+
+  getAdditionalType(): number;
+  setAdditionalType(value: number): UpdateAdditionalTypeRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateAdditionalTypeRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateAdditionalTypeRequest): UpdateAdditionalTypeRequest.AsObject;
+  static serializeBinaryToWriter(message: UpdateAdditionalTypeRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateAdditionalTypeRequest;
+  static deserializeBinaryFromReader(message: UpdateAdditionalTypeRequest, reader: jspb.BinaryReader): UpdateAdditionalTypeRequest;
+}
+
+export namespace UpdateAdditionalTypeRequest {
+  export type AsObject = {
+    id: string,
+    additionalType: number,
   }
 }
 
