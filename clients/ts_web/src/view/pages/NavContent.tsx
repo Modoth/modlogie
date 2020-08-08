@@ -29,7 +29,7 @@ function NavContent() {
   return (
     <Switch>
       {
-        plugins.Plugins.flatMap(p => p.types).map(t => <Route key={t.route} path={'/' + t.route + '/:subjectId?'}>
+        plugins.Plugins.flatMap(p => p.types).map(t => <Route key={t.route} path={'/' + t.route}>
           <Library type={t} />
         </Route>)
       }

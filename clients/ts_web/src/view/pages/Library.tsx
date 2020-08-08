@@ -82,7 +82,7 @@ export default function Library(props: LibraryProps) {
     setSubjectsDict(subjectsDict)
     var subjectsIdDict = new Map(Array.from(subjectsDict.values(), (s) => [s.id, s]))
     setSubjectsIdDict(subjectsIdDict)
-    var rootSubject = props.type.rootSubjectId ? (subjectsDict.get('/' + props.type.rootSubjectId)) : null
+    var rootSubject = props.type.rootSubjectId ? (subjectsIdDict.get(props.type.rootSubjectId)) : null
     setSubjects(rootSubject ? [rootSubject] : [])
     selectSubjects(params.subjectId ? [params.subjectId!] : [], subjectsIdDict)
     if (newRecommendCount !== recommendCount) {
