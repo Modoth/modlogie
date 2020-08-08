@@ -21,7 +21,7 @@ export default class SectionsBasePluginInfo {
         name = name.slice(1)
       }
       return {
-        route: encodeURIComponent(name),
+        route: name,
         name: name,
         rootSubject: name,
         noTitle,
