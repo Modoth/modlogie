@@ -7,9 +7,10 @@ export interface ArticleType {
   name: string;
   subTypes?: string[];
   subTypeTag?: string;
-  rootSubject?: string;
+  rootSubjectId?: string;
+  iconUrl?: string;
   noTitle?: boolean;
-  hiddenFromMenu?: boolean;
+  admOnly?: boolean;
   icon: React.ReactNode;
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
   Editor: (props: ArticleContentEditorProps) => JSX.Element;
@@ -71,8 +72,22 @@ export default class IPluginInfo {
 }
 
 export class PluginsConfig {
-  constructor(private _plugins: IPluginInfo[]) { };
+  constructor(private _plugins: IPluginInfo[]) {
+    this._allTypes = this._plugins.flatMap(p => p.types).filter(t => t.rootSubjectId);
+    this._normalTypes = this._allTypes.filter(t => t.admOnly);
+  };
   public get Plugins() {
     return Array.from(this._plugins);
+  }
+
+  private _allTypes: ArticleType[];
+  private _normalTypes: ArticleType[];
+
+  public get AllTypes() {
+    return this._allTypes;
+  }
+
+  public get NormalTypes() {
+    return this._normalTypes;
   }
 }

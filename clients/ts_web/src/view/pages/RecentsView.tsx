@@ -51,7 +51,7 @@ export default function RecentsView() {
     if (!type) {
       return
     }
-    const subject = type.rootSubject ? (await locator.locate(ISubjectsService).all(type.rootSubject))?.[0] : null;
+    const subject = type.rootSubjectId ? (await locator.locate(ISubjectsService).get(type.rootSubjectId)) : null;
     if (!subject) {
       return
     }
@@ -122,7 +122,8 @@ export default function RecentsView() {
   }
 
   const fetchType = async () => {
-    const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types).filter(p => user?.editingPermission || !p.hiddenFromMenu)[0];
+    var plugins = locator.locate(PluginsConfig);
+    const type = ((user?.editingPermission ? plugins.AllTypes : plugins.NormalTypes))[0];
     setType(type);
   }
 

@@ -80,7 +80,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     }
     if (plugin) {
       if (hiddenPlugin) {
-        plugin.types.forEach(t => t.hiddenFromMenu = true)
+        plugin.types.forEach(t => t.admOnly = true)
       }
       plugins.push(plugin);
     }
@@ -94,11 +94,16 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING),
     ]))
   var types = plugins.flatMap(p => p.types)
-
+  const subjectServices = serviceLocator.locate(ISubjectsService);
   for (var type of types) {
     type.subTypeTag = await configsService.getValueOrDefault(get_SUB_TYPE_TAG(type.name))
     if (type.subTypeTag) {
       type.subTypes = (await tagsService.get(type.subTypeTag))?.values
+    }
+    var rootSubject = await subjectServices.getByPath('/' + type.name)
+    if (rootSubject) {
+      type.rootSubjectId = rootSubject.id;
+      type.iconUrl = rootSubject.resourceUrl;
     }
   }
 

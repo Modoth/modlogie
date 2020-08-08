@@ -31,10 +31,14 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     return [parent.clone()];
   }
 
+  async get(id: string): Promise<Subject | undefined> {
+    await this.loadCache();
+    return this.allSubjects.get(id)?.clone()
+  }
 
   async getByPath(path: string): Promise<Subject | undefined> {
     await this.loadCache();
-    return this.pathSubjects.get(path)
+    return this.pathSubjects.get(path)?.clone()
   }
 
 
@@ -71,31 +75,31 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
   }
 
 
-  async setIcon(subjectId: string, type: string, content: Uint8Array): Promise<string> {
+  async setResource(subjectId: string, type: string, content: Uint8Array | string): Promise<string> {
     await this.loadCache();
     var subject = this.allSubjects.get(subjectId)!;
     var iconTagId = await this.getIconTag(true);
     var res = await this.updateTags(subjectId, { id: iconTagId!, value: content, contentType: type })
-    subject.iconUrl = res[0];
-    return subject.iconUrl;
+    subject.resourceUrl = res[0];
+    return subject.resourceUrl;
   }
 
-  async resetIcon(subjectId: string): Promise<void> {
+  async resetResource(subjectId: string): Promise<void> {
     await this.loadCache();
     var subject = this.allSubjects.get(subjectId)!;
     var iconTagId = await this.getIconTag(true);
-    if (subject.iconUrl && iconTagId) {
+    if (subject.resourceUrl && iconTagId) {
       await this.deleteTag(subjectId, iconTagId)
     }
 
-    subject.iconUrl = undefined;
+    subject.resourceUrl = undefined;
     return;
   }
 
 
   async add(name: string, parentId?: string | undefined): Promise<Subject> {
     await this.loadCache();
-    var res = await ClientRun(this, ()=>this.locate(FilesServiceClient).add(new AddRequest().setFileType(File.FileType.FOLDER).setName(name).setParentId(parentId || ''), null))
+    var res = await ClientRun(this, () => this.locate(FilesServiceClient).add(new AddRequest().setFileType(File.FileType.FOLDER).setName(name).setParentId(parentId || ''), null))
     var sbj = await this.subjectFrom(res.getFile()!);
     this.addSubjectToCache(sbj, parentId);
     return sbj.clone()
@@ -116,21 +120,21 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
       return item;
     }
     request.setFoldersList(subjects.map(c => subjectToNewFolderItem(c)))
-    await (await ClientRun(this, ()=>this.locate(FilesServiceClient).addFolders(request, null))).getFilesList();
+    await (await ClientRun(this, () => this.locate(FilesServiceClient).addFolders(request, null))).getFilesList();
     this.clearCache();
   }
 
   async delete(subjectId: string): Promise<void> {
     await this.loadCache();
     var subject = this.allSubjects.get(subjectId)!;
-    await ClientRun(this, ()=>this.locate(FilesServiceClient).delete(new StringId().setId(subject.id), null))
+    await ClientRun(this, () => this.locate(FilesServiceClient).delete(new StringId().setId(subject.id), null))
     this.removeSubjectFromCache(subject);
   }
 
   async rename(name: string, subjectId: string): Promise<Subject> {
     await this.loadCache();
     var subject = this.allSubjects.get(subjectId)!;
-    var newItem = await (await ClientRun(this, ()=>this.locate(FilesServiceClient).updateName(new UpdateNameRequest().setId(subject.id).setName(name), null))).getFile()!
+    var newItem = await (await ClientRun(this, () => this.locate(FilesServiceClient).updateName(new UpdateNameRequest().setId(subject.id).setName(name), null))).getFile()!
     subject.name = newItem.getName();
     subject.path = newItem.getPath();
     return subject.clone();
@@ -140,7 +144,7 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     await this.loadCache();
     var subject = this.allSubjects.get(subjectId)!;
     var newParent = this.allSubjects.get(parentId)!;
-    var newItem = await (await ClientRun(this, ()=>this.locate(FilesServiceClient).move(new MoveRequest().setId(subject.id).setParentid(newParent.id), null))).getFile()!
+    var newItem = await (await ClientRun(this, () => this.locate(FilesServiceClient).move(new MoveRequest().setId(subject.id).setParentid(newParent.id), null))).getFile()!
     subject.path = newItem.getPath();
     subject.parent!.children = subject.parent!.children!.filter(c => c.id !== subject.id)
     subject.parent = newParent;
@@ -152,7 +156,7 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
   async setOrder(subjectId: string, order: number): Promise<void> {
     await this.loadCache();
     var subject = this.allSubjects.get(subjectId)!;
-    await (await ClientRun(this, ()=>this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(subject.id).setComment(Infinity === order ? '' : order.toString()), null)))!
+    await (await ClientRun(this, () => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(subject.id).setComment(Infinity === order ? '' : order.toString()), null)))!
     subject.order = order;
     return;
   }
@@ -170,7 +174,7 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
   }
 
   async loadCacheInternal(): Promise<any> {
-    var res = (await ClientRun(this, ()=>this.locate(FilesServiceClient).getFolders(new Empty(), null)));
+    var res = (await ClientRun(this, () => this.locate(FilesServiceClient).getFolders(new Empty(), null)));
     var folders = res.getFilesList();
     var version = res.getVersion()
     if (!(folders && folders.length) && version) {
@@ -219,6 +223,7 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
       updateTotalArticleCount(sbj);
     }
     this.subjects.sort((a, b) => a.order - b.order)
+    console.log(this.allSubjects);
   }
 
   private async subjectFrom(item: File): Promise<Subject> {
@@ -238,7 +243,7 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     }
     var iconTagId = await this.getIconTag();
     if (iconTagId) {
-      sbj.iconUrl = tags.find(t => t.getTagId() == iconTagId)?.getValue();
+      sbj.resourceUrl = tags.find(t => t.getTagId() == iconTagId)?.getValue();
     }
     return sbj;
   }

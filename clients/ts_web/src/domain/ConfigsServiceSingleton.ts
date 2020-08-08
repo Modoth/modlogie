@@ -100,7 +100,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
             return
         }
         var resourceFile = await this.locate(ISubjectsService).getByPath(path)
-        return resourceFile?.iconUrl;
+        return resourceFile?.resourceUrl;
     }
 
     async set(key: string, value: string): Promise<Config | undefined> {

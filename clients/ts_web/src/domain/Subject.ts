@@ -5,7 +5,7 @@ export default class Subject {
     public totalArticleCount: number;
     public articleCount: number;
     public order:number;
-    public iconUrl?: string;
+    public resourceUrl?: string;
     public parent?: Subject;
     public children?: Subject[]
     public clone(parent?: Subject): Subject {

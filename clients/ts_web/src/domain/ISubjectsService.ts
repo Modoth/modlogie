@@ -6,6 +6,10 @@ export default class ISubjectsService extends IFilesServiceBase {
     throw new Error('Method not implemented.')
   }
 
+  get(id: string): Promise<Subject | undefined> {
+    throw new Error('Method not implemented.')
+  }
+
   getByPath(path: string): Promise<Subject | undefined> {
     throw new Error('Method not implemented.')
   }
@@ -39,11 +43,11 @@ export default class ISubjectsService extends IFilesServiceBase {
   }
 
 
-  setIcon(subjectId: string, type: string, content: Uint8Array): Promise<string> {
+  setResource(subjectId: string, type: string, content: Uint8Array | string): Promise<string> {
     throw new Error('Method not implemented.')
   }
 
-  resetIcon(subjectId: string): Promise<void> {
+  resetResource(subjectId: string): Promise<void> {
     throw new Error('Method not implemented.')
   }
 }

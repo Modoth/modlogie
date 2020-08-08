@@ -8,6 +8,8 @@ import {
   SisternodeOutlined,
   SubnodeOutlined,
   PictureOutlined,
+  FileAddOutlined,
+  FileOutlined,
   OrderedListOutlined,
   DragOutlined,
   UploadOutlined,
@@ -35,6 +37,12 @@ const convertToTreeData = (subjects: Subject[], excludePath: string) => {
   subjectsCacheKey = subjects
   excludePathCacheKey = excludePath
   return subjectsModelCache;
+}
+
+const isImage = (url: string) => {
+  url = url.toLowerCase();
+  const imgs = ['.png', '.jpeg', '.jpg', 'gif', '.svg']
+  return imgs.some(i => url.endsWith(i));
 }
 
 export function ManageSubjects() {
@@ -259,21 +267,25 @@ export function ManageSubjects() {
           value: undefined
         }
       ],
-      async (file: File) => {
-        if (!file) {
+      async (data: File | string) => {
+        if (!data) {
           return
         }
         viewService.setLoading(true)
         const service: ISubjectsService = locator.locate(ISubjectsService)
-        var iconUrl
+        var resourceUrl
         try {
-          iconUrl = await service.setIcon(subject.id, file.type, new Uint8Array(await file.arrayBuffer()))
+          if (typeof data === 'string') {
+            resourceUrl = await service.setResource(subject.id, 'text/plain', new TextEncoder().encode(data))
+          } else {
+            resourceUrl = await service.setResource(subject.id, data.type, new Uint8Array(await data.arrayBuffer()))
+          }
         } catch (e) {
           viewService!.errorKey(langs, e.message)
           viewService.setLoading(false)
           return
         }
-        subject.iconUrl = iconUrl
+        subject.resourceUrl = resourceUrl
         if (subject.parent) {
           updateSubjectAncestors(subject)
         } else {
@@ -290,13 +302,13 @@ export function ManageSubjects() {
   const resetIcon = async (subject: Subject) => {
     const service: ISubjectsService = locator.locate(ISubjectsService)
     try {
-      await service.resetIcon(subject.id)
+      await service.resetResource(subject.id)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
       return
     }
-    subject.iconUrl = undefined
-    subject.iconUrl = undefined
+    subject.resourceUrl = undefined
+    subject.resourceUrl = undefined
     if (subject.parent) {
       updateSubjectAncestors(subject)
     } else {
@@ -325,18 +337,22 @@ export function ManageSubjects() {
       ></Button>
     )
   }
-  const renderIcon = (_: string, subject: Subject) => {
+  const renderResouce = (_: string, subject: Subject) => {
     return (
-      subject.iconUrl ?
-        <div onClick={() => resetIcon(subject)}>
-          <img
-            src={subject.iconUrl}
-          />
-        </div> :
-        <Button
+      subject.resourceUrl ? (isImage(subject.resourceUrl) ? <div onClick={() => resetIcon(subject)}>
+        <img
+          src={subject.resourceUrl}
+        />
+      </div> : < Button
           type="link"
-          onClick={() => setIcon(subject)}
-          icon={<PictureOutlined />}
+          onClick={() => resetIcon(subject)}
+          icon={< FileOutlined />}
+        />) :
+        < Button
+          type="link"
+          onClick={() => setIcon(subject)
+          }
+          icon={< FileAddOutlined />}
         />
     )
   }
@@ -408,7 +424,7 @@ export function ManageSubjects() {
           {
             key: 'icon',
             className: 'subject-icon-column',
-            render: renderIcon
+            render: renderResouce
           },
           {
             key: 'move',

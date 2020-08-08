@@ -69,7 +69,7 @@ export default function Library(props: LibraryProps) {
   const [subjectsIdDict, setSubjectsIdDict] = useState<
     Map<string, SubjectViewModel>
   >(new Map())
-  const [rootSubjectId, setRootSubjectId] = useState<string | undefined>(undefined);
+  const [rootSubject, setRootSubject] = useState<Subject | null>(null);
   const [filter, setFilter] = useState('');
   const [effectiveSubjects, setEffectiveSubjects] = useState<SubjectViewModel[]>([]);
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>(params.subjectId ? [params.subjectId!] : [])
@@ -82,18 +82,17 @@ export default function Library(props: LibraryProps) {
     setSubjectsDict(subjectsDict)
     var subjectsIdDict = new Map(Array.from(subjectsDict.values(), (s) => [s.id, s]))
     setSubjectsIdDict(subjectsIdDict)
-    var rootSubject = props.type.rootSubject ? (subjectsDict.get('/' + props.type.rootSubject)) : null
+    var rootSubject = props.type.rootSubjectId ? (subjectsDict.get('/' + props.type.rootSubjectId)) : null
     setSubjects(rootSubject ? [rootSubject] : [])
-    var rootSubjectId = rootSubject?.id
-    selectSubjects(params.subjectId ? [params.subjectId!] : [], rootSubjectId, subjectsIdDict)
+    selectSubjects(params.subjectId ? [params.subjectId!] : [], subjectsIdDict)
     if (newRecommendCount !== recommendCount) {
       setRecommendCount(newRecommendCount)
     }
-    setRootSubjectId(rootSubjectId);
+    setRootSubject(rootSubject!);
   }
 
-  const selectSubjects = (ids: string[], rootId?: any, allIds?: any) => {
-    rootId = rootId || rootSubjectId
+  const selectSubjects = (ids: string[], allIds?: any) => {
+    var rootId = props.type.rootSubjectId!;
     allIds = allIds || subjectsIdDict
     let selectedIds = ids.length ? ids : (rootId ? [rootId] : [])
     let subjects = selectedIds.map(id => allIds.get(id)).filter(s => s).map(s => s!);
@@ -257,7 +256,7 @@ export default function Library(props: LibraryProps) {
             .setProp('AdditionalType')
             .setValue(ArticleAdditionalType.Recommend.toString()),
           new Condition().setType(Condition.ConditionType.STARTS_WITH)
-            .setProp('Path').setValue(subjectsIdDict.get(rootSubjectId!)?.path!)
+            .setProp('Path').setValue(rootSubject?.path!)
         ])).setOrderBy('Random')
     var [_, articles] = await locator.locate(IArticleService).query(query, '', 0, recommendCount)
     shuffle(articles);
@@ -268,7 +267,7 @@ export default function Library(props: LibraryProps) {
     if (recommendCount) {
       fetchRecommendArticles()
     }
-  }, [rootSubjectId])
+  }, [rootSubject])
 
   const fetchArticles = async (page?: number) => {
     if (page === undefined) {
@@ -329,7 +328,7 @@ export default function Library(props: LibraryProps) {
     try {
       const parentId = selectedSubjectIds.length
         ? selectedSubjectIds[selectedSubjectIds.length - 1]
-        : rootSubjectId
+        : rootSubject?.id
       const service = locator.locate(IArticleService)
       const newArticle = convertArticle(
         (await service.add(name, parentId || ''))!
@@ -398,18 +397,18 @@ export default function Library(props: LibraryProps) {
   }, [])
 
   useEffect(() => {
-    if (!subjects.length || (!rootSubjectId && props.type.rootSubject)) {
+    if (!subjects.length || (!rootSubject)) {
       return
     }
     fetchArticles(1)
-  }, [rootSubjectId, favorite])
+  }, [rootSubject, favorite])
 
   return (
     <div className="library">
       <div className="searched-subjects" >
         <Link to="/"><Button type="link" size="large" icon={<ArrowLeftOutlined />} /></Link>
 
-        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || props.type.rootSubject || ''}</span>
+        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''}</span>
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {

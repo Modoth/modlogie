@@ -22,7 +22,7 @@ function SubjectView(props: { type: ArticleType, subject: Subject, deepth: numbe
     const path = props.parentPath ? (props.parentPath + "/" + props.subject.name) : props.subject.name
     return (
       <div className={classNames("category", `subject-${props.deepth}`)}>
-        <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("category-title")}>{props.subject.iconUrl ? <img src={props.subject.iconUrl}></img> : null}<span>{displayName || path}</span></Link>
+        <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("category-title")}>{props.subject.resourceUrl ? <img src={props.subject.resourceUrl}></img> : null}<span>{displayName || path}</span></Link>
         <div className="category-content">{sortSubjectByChildrenCount(props.subject.children).map(subject => <SubjectView key={subject.id} type={props.type} subject={subject} parentPath={path} rootPath={props.rootPath} deepth={props.deepth + 1}></SubjectView>)}</div>
       </div>
     )
@@ -31,7 +31,7 @@ function SubjectView(props: { type: ArticleType, subject: Subject, deepth: numbe
     <Badge count={props.subject.totalArticleCount} className={classNames("subject-content-wraper", `subject-${props.deepth}`)}>
       <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("subject-content", generateRandomStyle())}>
         {
-          props.subject.iconUrl ? <img src={props.subject.iconUrl}></img> : <span>{props.subject.name}</span>
+          props.subject.resourceUrl ? <img src={props.subject.resourceUrl}></img> : <span>{props.subject.name}</span>
         }
       </Link>
     </Badge>
@@ -49,7 +49,7 @@ function SingleTypeSubjectsView(props: { type: ArticleType }) {
   const fetchSubjects = async () => {
     const service = locator.locate(ISubjectsService)
     try {
-      setSubjects(await service.all(type.rootSubject))
+      setSubjects([(await service.get(type.rootSubjectId!))!])
     } catch (e) {
       viewService!.errorKey(langs, e.message)
     }
@@ -69,7 +69,7 @@ export default function SubjectsView() {
   const locator = useServicesLocator()
   const plugins = locator.locate(PluginsConfig)
   const user = useUser();
-  const types = plugins.Plugins.flatMap(p => p.types).filter(p => user?.editingPermission || !p.hiddenFromMenu);
+  const types = user?.editingPermission ? plugins.AllTypes : plugins.NormalTypes;
   return (<Tabs className="subjects-view">
     {
       types.map(type => <TabPane tab={type.name} key={type.name}>
