@@ -74,7 +74,7 @@ export default class IPluginInfo {
 export class PluginsConfig {
   constructor(private _plugins: IPluginInfo[]) {
     this._allTypes = this._plugins.flatMap(p => p.types).filter(t => t.rootSubjectId);
-    this._normalTypes = this._allTypes.filter(t => t.admOnly);
+    this._normalTypes = this._allTypes.filter(t => !t.admOnly);
   };
   public get Plugins() {
     return Array.from(this._plugins);
