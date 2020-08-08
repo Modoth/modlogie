@@ -223,7 +223,6 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
       updateTotalArticleCount(sbj);
     }
     this.subjects.sort((a, b) => a.order - b.order)
-    console.log(this.allSubjects);
   }
 
   private async subjectFrom(item: File): Promise<Subject> {

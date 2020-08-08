@@ -189,8 +189,12 @@ namespace Modlogie.Api.Services
             if (randomOrder)
             {
                 total = await items.CountAsync();
-                var skip = new Random().Next(total.Value - request.Take);
-                items = items.Skip(skip);
+                var skip = total.Value - request.Take;
+                if (skip > 0)
+                {
+                    skip = new Random().Next();
+                    items = items.Skip(skip);
+                }
                 if (request.Take > 0)
                 {
                     items = items.Take(request.Take);

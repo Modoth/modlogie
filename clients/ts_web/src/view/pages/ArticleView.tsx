@@ -345,12 +345,12 @@ export default function ArticleView(props: {
         }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : openDetail}>{name}</div>}
         {
           (editing || recommendView) ? null : (<Menu mode="horizontal" className={classNames("actions-list")}>{[
-            favoriteService ? <MenuItem><Badge>
+            favoriteService ? <MenuItem key="toogle-fav"><Badge>
               <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
                 key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
             </Badge></MenuItem> : null,
             user.printPermission ? (inArticleList ?
-              <MenuItem><Badge >
+              <MenuItem key='remove-print'><Badge >
                 <Button type="link" icon={<PrinterFilled />} onClick={() => {
                   articleListService.remove(props.article)
                   setInArticleList(articleListService.has(props.article))
@@ -358,7 +358,7 @@ export default function ArticleView(props: {
                   key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
               </Badge></MenuItem>
               :
-              <MenuItem><Badge className="printer-icons">
+              <MenuItem key="add-print"><Badge className="printer-icons">
                 <Button type="link" icon={<PrinterOutlined />} onClick={() => {
                   articleListService.add(props.article, type, () => {
                     setInArticleList(false);
@@ -368,21 +368,21 @@ export default function ArticleView(props: {
                   key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
               </Badge></MenuItem>
             ) : null,
-            ...(likesService ? [<MenuItem><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
+            ...(likesService ? [<MenuItem key="like"><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
               <Button onClick={touchLike} type="link" icon={<LikeOutlined />}
-                key="like"><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
-            <MenuItem><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
-              key="dislike"><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
+              ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
+            <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
+            ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
             ...(user.editingPermission ? [
-              <MenuItem> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />} onClick={toogleRecommend}
-                key="edit"><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
-              <MenuItem> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
-                key="edit"><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,
-              <MenuItem><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
-                key="fullscreen"><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>,
-              <MenuItem ><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
+              <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />} onClick={toogleRecommend}
+              ><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
+              <MenuItem key="edit"> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
+              ><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,
+              <MenuItem key="fullscreen"><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
+              ><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>,
+              <MenuItem key="delete"><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
                 props.articleHandlers.onDelete(props.article.id!)
-              } key="delete"><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>
+              } ><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>
             ] : [])]}
           </Menu>)
         }
