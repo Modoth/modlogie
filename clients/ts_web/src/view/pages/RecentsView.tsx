@@ -122,7 +122,7 @@ export default function RecentsView() {
   }
 
   const fetchType = async () => {
-    const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types).filter(p => user || !p.hiddenFromMenu)[0];
+    const type = locator.locate(PluginsConfig).Plugins.flatMap(p => p.types).filter(p => user?.editingPermission || !p.hiddenFromMenu)[0];
     setType(type);
   }
 
@@ -134,12 +134,12 @@ export default function RecentsView() {
     fetchType()
   }, [])
 
-  if (!type) {
+  if (!type || !articles?.length) {
     return <></>
   }
   return (
     <div className="recents-view">
-      <div className="title">{langs.get(LangKeys.Latest)}</div>
+      <Button type="link" className="title">{langs.get(LangKeys.Latest)}</Button>
       <Carousel>
         {
           recommendsArticles.map(article => <RecentArticle recommendView={true} recommendTitle={recommandTitle} article={article} key={article.id + "_rec"} type={type} contentType={articleTypes.get(article)!} onClick={() => {

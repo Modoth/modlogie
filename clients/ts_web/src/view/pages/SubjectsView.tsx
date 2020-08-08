@@ -69,7 +69,7 @@ export default function SubjectsView() {
   const locator = useServicesLocator()
   const plugins = locator.locate(PluginsConfig)
   const user = useUser();
-  const types = plugins.Plugins.flatMap(p => p.types).filter(p => user || !p.hiddenFromMenu);
+  const types = plugins.Plugins.flatMap(p => p.types).filter(p => user?.editingPermission || !p.hiddenFromMenu);
   return (<Tabs className="subjects-view">
     {
       types.map(type => <TabPane tab={type.name} key={type.name}>

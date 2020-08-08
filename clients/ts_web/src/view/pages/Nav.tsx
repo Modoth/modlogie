@@ -75,7 +75,7 @@ function Nav() {
       <Drawer className="side-nav-panel" visible={showDrawer} onClose={() => setShowDrawer(false)} closable={false} placement="left">
         <Menu className="side-nav" mode="inline" onClick={() => setShowDrawer(false)} >
           {
-            plugins.Plugins.flatMap(p => p.types).filter(t => (!t.hiddenFromMenu) || user).map(t => <Menu.Item key={t.route} icon={t.icon}>
+            plugins.Plugins.flatMap(p => p.types).filter(t => (!t.hiddenFromMenu) || user?.editingPermission).map(t => <Menu.Item key={t.route} icon={t.icon}>
               <Link to={'/' + t.route}>{t.name}</Link>
             </Menu.Item>)
           }
