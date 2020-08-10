@@ -38,7 +38,7 @@ export default function MarkdownEditor(props: SectionEditorProps) {
         return content
     }
     return (props.editing ?
-        <div className={classNames('md-editor', props.section.name)}>
+        <div className={classNames('md-editor', props.section.name?.match(/(^.*?)(\(|（|$)/)![1])}>
             <label className="md-name">{props.section.name}</label>
             <TextArea
                 autoFocus

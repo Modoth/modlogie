@@ -20,7 +20,7 @@ export default function MarkdownViewer(props: SectionViewerProps) {
             }
         }
     }
-    return <div onClick={props.onClick} className={classNames('md-viewer', props.section.name, props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
+    return <div onClick={props.onClick} className={classNames('md-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
         <span ref={ref} ></span>
         <label className="md-name">{props.section.name}</label>
         <ReactMarkdown source={props.section?.content} linkTarget="_blank"></ReactMarkdown>
