@@ -38,9 +38,10 @@ export default function SectionsBaseViewer(TSectionViewer: { (props: SectionView
       <div className={classNames(props.className, props.type?.name, TSectionViewer.name, "sections-base-viewer")} onClick={(e) => {
         if (props.onClick) {
           props.onClick(e)
-        } else {
-          setShowHidden(!showHidden)
         }
+        // else {
+        //   setShowHidden(!showHidden)
+        // }
       }
       }>
         {sections.filter(s => s.content && s.content.match(/\S/)).filter(s => showHidden || !props.type?.hidenSections.has(s.name!)).map((section) => (
