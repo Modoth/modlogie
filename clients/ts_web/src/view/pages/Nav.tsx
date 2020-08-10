@@ -45,15 +45,15 @@ function Nav() {
     var allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
     var additionalStylePath = await configService.getValueOrDefault(ConfigKeys.ADDITIONAL_STYLE)
     var additionalStyleUrl = (await locator.locate(ISubjectsService).getByPath(additionalStylePath))?.resourceUrl;
-    // var additionalStyleContent = '';
-    // if (additionalStyleUrl) {
-    //   try {
-    //     additionalStyleContent = await (await fetch(additionalStyleUrl)).text()
-    //   }
-    //   catch (e) {
-    //     console.log('Invalid style')
-    //   }
-    // }
+    var additionalStyleContent = '';
+    if (additionalStyleUrl) {
+      try {
+        additionalStyleContent = await (await fetch(additionalStyleUrl)).text()
+      }
+      catch (e) {
+        console.log('Invalid style')
+      }
+    }
     document.title = title
     setTitile(title)
     setLogoTitleImg(logoTitle!)
@@ -76,11 +76,11 @@ function Nav() {
     appTouchIcon.href = logo;
     document.head.appendChild(appTouchIcon)
 
-    if (additionalStyleUrl) {
-      let additionalStyle = document.createElement('link')
+    if (additionalStyleContent) {
+      let additionalStyle = document.createElement('style')
       additionalStyle.id = 'additional-style'
-      additionalStyle.type = 'text/css'
-      additionalStyle.href = additionalStyleUrl;
+      // additionalStyle.type = 'text/css'
+      additionalStyle.innerText = additionalStyleContent;
       document.head.appendChild(additionalStyle)
     }
   }
