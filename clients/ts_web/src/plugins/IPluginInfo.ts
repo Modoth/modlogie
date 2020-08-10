@@ -31,6 +31,12 @@ export interface ArticleContentType {
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
 }
 
+export interface ArticleContentViewerCallbacks {
+  gotoSection(section: string): void;
+  onSection(section: string): void;
+  onSections(sections: string[]): void
+};
+
 export class ArticleContentViewerProps {
   title?: string
   showTitle?: boolean
@@ -41,6 +47,7 @@ export class ArticleContentViewerProps {
   className?: string
   onClick?: MouseEventHandler<any>;
   showHiddens?: boolean;
+  viewerCallbacks?: ArticleContentViewerCallbacks;
   print?: boolean;
 }
 
