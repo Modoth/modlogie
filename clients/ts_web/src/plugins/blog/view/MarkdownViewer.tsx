@@ -7,6 +7,6 @@ import ReactMarkdown from 'react-markdown'
 export default function MarkdownViewer(props: SectionViewerProps) {
     return <div onClick={props.onClick} className={classNames('md-viewer', props.section.name, props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
         <label className="md-name">{props.section.name}</label>
-        <ReactMarkdown source={props.section?.content}></ReactMarkdown>
+        <ReactMarkdown source={props.section?.content} linkTarget="_blank"></ReactMarkdown>
     </div>
 }
