@@ -397,7 +397,7 @@ export default function ArticleView(props: {
               type={type}
             />
           ) : (
-              <props.type.Viewer content={content} files={files} type={type} />
+              <props.type.Viewer onClick={openDetail} content={content} files={files} type={type} />
             )}
         </div> : <div className="article-body"></div>
       }

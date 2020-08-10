@@ -157,7 +157,6 @@ export default class ArticleService extends FilesServiceBase implements IArticle
                 await ClientRun(this, () => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(additionId), null));
                 article.additionId = additionId;
             } else {
-                debugger
                 await ClientRun(this, () => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.additionId!).setContent(hiddenContentStr), null))
             }
         } else {
