@@ -27,6 +27,8 @@ import {
   EllipsisOutlined,
   DownOutlined,
   DoubleLeftOutlined,
+  CaretLeftOutlined,
+  LeftOutlined,
   DownSquareOutlined,
   DeleteOutlined,
 } from '@ant-design/icons'
@@ -403,7 +405,7 @@ export default function ArticleView(props: {
           ) : (
               <props.type.Viewer content={content} files={files} type={type} />
             )}
-          <div className="show-more"><Button type="link" size="small" icon={<DoubleLeftOutlined />} onClick={openDetail}></Button></div>
+          <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div>
         </div> : <div className="article-body"></div>
       }
       {
