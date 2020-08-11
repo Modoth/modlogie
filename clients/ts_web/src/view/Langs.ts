@@ -15,7 +15,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
     this[ErrorMessage.NO_PERMISSION] = "没有权限";
     this[ErrorMessage.NO_SUCH_ENTITY] = "无此数据";
   }
-  ADDITIONAL_STYLE = '附加样式';
+  ADDITIONAL_STYLE = '附加样式目录';
   ALLOW_LOGIN = '允许登陆';
   ALLOW_LIKES = '允许点赞';
   ALLOW_PRINT = '允许打印';

@@ -17,7 +17,7 @@ import classNames from 'classnames'
 import ITagsService, { TagNames } from '../../domain/ITagsService'
 import IConfigsService from '../../domain/IConfigsSercice'
 import ConfigKeys from '../../app/ConfigKeys'
-import { PluginsConfig } from '../../plugins/IPluginInfo'
+import IPluginInfo, { PluginsConfig } from '../../plugins/IPluginInfo'
 
 import defaultLogo from '../../assets/logo.png'
 import IViewService from '../services/IViewService'
@@ -43,17 +43,6 @@ function Nav() {
     var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
     var avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
     var allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
-    var additionalStylePath = await configService.getValueOrDefault(ConfigKeys.ADDITIONAL_STYLE)
-    var additionalStyleUrl = (await locator.locate(ISubjectsService).getByPath(additionalStylePath))?.resourceUrl;
-    var additionalStyleContent = '';
-    if (additionalStyleUrl) {
-      try {
-        additionalStyleContent = await (await fetch(additionalStyleUrl)).text()
-      }
-      catch (e) {
-        console.log('Invalid style')
-      }
-    }
     document.title = title
     setTitile(title)
     setLogoTitleImg(logoTitle!)
@@ -62,7 +51,6 @@ function Nav() {
     setAllowLogin(allowLogin);
     document.getElementById('icon')?.remove()
     document.getElementById('apple-touch-icon')?.remove()
-    document.getElementById('additional-style')?.remove()
     let icon = document.createElement('link');
     icon.id = 'icon'
     icon.rel = 'icon'
@@ -75,13 +63,27 @@ function Nav() {
     appTouchIcon.rel = 'apple-touch-icon'
     appTouchIcon.href = logo;
     document.head.appendChild(appTouchIcon)
+    for (var type of locator.locate(PluginsConfig).AllTypes) {
+      var styleId = 'additional-style-' + type.name;
+      document.getElementById(styleId)?.remove()
 
-    if (additionalStyleContent) {
-      let additionalStyle = document.createElement('style')
-      additionalStyle.id = 'additional-style'
-      // additionalStyle.type = 'text/css'
-      additionalStyle.innerText = additionalStyleContent;
-      document.head.appendChild(additionalStyle)
+      var additionalStylePath = await configService.getValueOrDefault(ConfigKeys.ADDITIONAL_STYLE) + '/' + type.name
+      var additionalStyleUrl = (await locator.locate(ISubjectsService).getByPath(additionalStylePath))?.resourceUrl;
+      var additionalStyleContent = '';
+      if (additionalStyleUrl) {
+        try {
+          additionalStyleContent = await (await fetch(additionalStyleUrl)).text()
+        }
+        catch (e) {
+          console.log('Invalid style')
+        }
+      }
+      if (additionalStyleContent) {
+        let additionalStyle = document.createElement('style')
+        additionalStyle.id = styleId
+        additionalStyle.innerText = additionalStyleContent;
+        document.head.appendChild(additionalStyle)
+      }
     }
   }
   useEffect(() => {
