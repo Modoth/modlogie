@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './ArticleSingle.less'
 import { useServicesLocator } from '../../app/Contexts'
 import { Button, Menu, Dropdown } from 'antd';
-import { ArrowLeftOutlined, OrderedListOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, MenuOutlined } from '@ant-design/icons'
 import Article from '../../domain/Article';
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
@@ -37,7 +37,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                             }}>{section}</Menu.Item>)
                         }</Menu>}>
                             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                <OrderedListOutlined />
+                                {langs.get(LangKeys.Sections)}<MenuOutlined className="sections-icon" />
                             </a>
                         </Dropdown>
                         : null

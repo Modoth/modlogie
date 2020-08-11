@@ -31,6 +31,7 @@ import ISubjectsExporter from '../../domain/ISubjectsExporter'
 import { MmIcon } from '../components/Icons'
 import IFavoritesServer from '../../domain/IFavoritesServer'
 import { shuffle } from '../../common/shuffle'
+import defaultLogo from '../../assets/logo.png'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -63,6 +64,7 @@ export default function Library(props: LibraryProps) {
   const [articleId, setArticleId] = useState(params.articleId)
   const [articleRecommendView] = useState(params.recommendView || false)
   const [subjects, setSubjects] = useState<SubjectViewModel[]>([])
+  const [logo, setLogo] = useState('')
   const [subjectsDict, setSubjectsDict] = useState<
     Map<string, SubjectViewModel>
   >(new Map())
@@ -391,6 +393,10 @@ export default function Library(props: LibraryProps) {
   useEffect(() => {
     viewService.setShowMenu(false)
     fetchSubjects().then(() => fetchTags())
+      ; (async () => {
+        var logo = await locator.locate(IConfigsService).getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
+        setLogo(logo);
+      })()
     return () => {
       viewService.setShowMenu(true);
     }
@@ -406,9 +412,11 @@ export default function Library(props: LibraryProps) {
   return (
     <div className="library">
       <div className="searched-subjects" >
-        <Link to="/"><Button type="link" size="large" icon={<ArrowLeftOutlined />} /></Link>
+        <Link to="/"><Button type="link" size="large" icon={logo ? <img className="home-icon"
+          src={logo}
+        /> : null} /></Link>
 
-        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''}</span>
+        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''}<Button className="search-icon" type="link" size="small" icon={<SearchOutlined />}></Button></span>
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {
@@ -449,18 +457,20 @@ export default function Library(props: LibraryProps) {
         ))}
         <div ref={bottomRef}></div>
       </div>
-      {totalCount > countPerPage ? (
-        <>
-          <Pagination
-            className="pagination"
-            onChange={(page) => fetchArticles(page)}
-            pageSize={countPerPage}
-            current={currentPage}
-            total={totalCount}
-            showSizeChanger={false}
-          ></Pagination>
-        </>
-      ) : null}
+      {
+        totalCount > countPerPage ? (
+          <>
+            <Pagination
+              className="pagination"
+              onChange={(page) => fetchArticles(page)}
+              pageSize={countPerPage}
+              current={currentPage}
+              total={totalCount}
+              showSizeChanger={false}
+            ></Pagination>
+          </>
+        ) : null
+      }
       <div className="float-menus">
         {user.printPermission ? <ArticleListSummary></ArticleListSummary> : null}
         {favoriteService ?
@@ -552,6 +562,6 @@ export default function Library(props: LibraryProps) {
           </div>
         </Space>
       </Drawer>
-    </div>
+    </div >
   )
 }

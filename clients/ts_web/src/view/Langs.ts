@@ -84,6 +84,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   RemoveFromArticleList = '移除';
   Reset = '重置';
   Search = '搜索';
+  Sections = '章节';
   Share = '分享';
   Subject = '主题';
   Tags = '标签';

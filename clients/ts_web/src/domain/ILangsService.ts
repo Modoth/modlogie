@@ -44,6 +44,7 @@ export class LangKeysInterface {
   RemoveFromArticleList = 'RemoveFromArticleList';
   Reset = 'Reset';
   Search = 'Search';
+  Sections = 'Sections';
   Share = 'Share';
   Subject = 'Subject';
   Tags = 'Tags';
