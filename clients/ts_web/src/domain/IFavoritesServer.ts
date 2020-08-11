@@ -1,4 +1,10 @@
 export default class IFavoritesServer {
+    setCountChangedHandler(type: string, handler: { (count: number): void }) {
+        throw new Error('Method not implemented.')
+    }
+    unsetCountChangedHandler(type: string) {
+        throw new Error('Method not implemented.')
+    }
     add(type: string, id: string): Promise<void> {
         throw new Error('Method not implemented.')
     }
@@ -7,13 +13,17 @@ export default class IFavoritesServer {
         throw new Error('Method not implemented.')
     }
 
-    remote(type: string, id: string): Promise<void> {
+    remove(type: string, id: string): Promise<void> {
         throw new Error('Method not implemented.')
     }
 
     get(type: string, skip?: number, take?: number): Promise<[string[], number]> {
         throw new Error('Method not implemented.')
 
+    }
+
+    count(type: string): Promise<number> {
+        throw new Error('Method not implemented.')
     }
 
     removeAll(type: string): Promise<void> {

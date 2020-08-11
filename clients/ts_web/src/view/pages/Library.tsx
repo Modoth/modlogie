@@ -4,7 +4,7 @@ import './Library.css'
 import Subject from '../../domain/Subject'
 import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
-import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input } from 'antd'
+import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowLeftOutlined, HeartFilled } from '@ant-design/icons'
 import IViewService from '../services/IViewService'
@@ -154,6 +154,7 @@ export default function Library(props: LibraryProps) {
 
   const [favoriteService] = useState(locator.locate(IFavoritesServer))
   const [favorite, setFavorite] = useState(false)
+  const [favoriteCount, setFavoriteCount] = useState(0)
 
   const bottomRef = React.createRef<HTMLDivElement>();
 
@@ -397,8 +398,13 @@ export default function Library(props: LibraryProps) {
         var logo = await locator.locate(IConfigsService).getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
         setLogo(logo);
       })()
+    if (favoriteService) {
+      favoriteService.count(props.type.name).then(c => setFavoriteCount(c));
+      favoriteService.setCountChangedHandler(props.type.name, setFavoriteCount);
+    }
     return () => {
       viewService.setShowMenu(true);
+      favoriteService.unsetCountChangedHandler(props.type.name);
     }
   }, [])
 
@@ -473,14 +479,16 @@ export default function Library(props: LibraryProps) {
       }
       <div className="float-menus">
         {user.printPermission ? <ArticleListSummary></ArticleListSummary> : null}
-        {favoriteService ?
-          <Button
-            icon={<HeartFilled />}
-            type={favorite ? "primary" : "default"}
-            size="large" shape="circle"
-            onClick={() => {
-              setFavorite(!favorite)
-            }}></Button>
+        {favoriteService && favoriteCount ?
+          <Badge count={favoriteCount}>
+            <Button
+              icon={<HeartFilled />}
+              type={favorite ? "primary" : "default"}
+              size="large" shape="circle"
+              onClick={() => {
+                setFavorite(!favorite)
+              }}></Button>
+          </Badge>
           : null}
         {user.editingPermission ? (
           <Button

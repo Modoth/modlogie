@@ -291,7 +291,7 @@ export default function ArticleView(props: {
       if (nextFav) {
         await favoriteService.add(props.type.name, props.article.id!);
       } else {
-        await favoriteService.remote(props.type.name, props.article.id!);
+        await favoriteService.remove(props.type.name, props.article.id!);
       }
       setFavorite(nextFav);
     } catch (e) {
@@ -397,8 +397,9 @@ export default function ArticleView(props: {
               type={type}
             />
           ) : (
-              <props.type.Viewer onClick={openDetail} content={content} files={files} type={type} />
+              <props.type.Viewer content={content} files={files} type={type} />
             )}
+          <div className="show-more"><Button type="link" size="small" onClick={openDetail}>{langs.get(LangKeys.ShowMore)}</Button></div>
         </div> : <div className="article-body"></div>
       }
       {

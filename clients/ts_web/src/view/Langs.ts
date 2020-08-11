@@ -86,6 +86,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Search = '搜索';
   Sections = '章节';
   Share = '分享';
+  ShowMore = '更多...'
   Subject = '主题';
   Tags = '标签';
   Type = '类型';

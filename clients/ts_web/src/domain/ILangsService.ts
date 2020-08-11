@@ -46,6 +46,7 @@ export class LangKeysInterface {
   Search = 'Search';
   Sections = 'Sections';
   Share = 'Share';
+  ShowMore = 'ShowMore';
   Subject = 'Subject';
   Tags = 'Tags';
   Type = 'Type';
