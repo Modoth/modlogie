@@ -90,8 +90,8 @@ export default function ArticleList() {
             </div>
             <div ref={ref} className={classNames(`column-count-${columnCount}`, showIdx ? 'show-idx' : '', `border-style-${borderStyle}`, "article-list")}>{items.filter(([article]) => article.content && article.content.sections).map(
                 ([article, type]) =>
-                    article.lazyLoading ? <div></div> :
-                        <type.Viewer title={article.name} showTitle={!type.noTitle} print={true} className="article" content={article.content!} files={article.files} type={type}></type.Viewer>
+                    article.lazyLoading ? <div key={article.name + '_ept'}></div> :
+                        <type.Viewer title={article.name} key={article.name} showTitle={!type.noTitle} print={true} className="article" content={article.content!} files={article.files} type={type}></type.Viewer>
             )}
             </div>
         </div>

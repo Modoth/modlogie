@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './ArticleSingle.less'
 import { useServicesLocator } from '../../app/Contexts'
 import { Button, Menu, Dropdown } from 'antd';
@@ -8,11 +8,6 @@ import { ArticleContentType, ArticleContentViewerCallbacks } from '../../plugins
 import classNames from 'classnames';
 import IViewService from '../services/IViewService';
 import ILangsService, { LangKeys } from '../../domain/ILangsService';
-const Configs = {} as any;
-import { generateRandomStyle } from './common';
-import MenuItem from 'antd/lib/menu/MenuItem';
-import { MenuIcon } from '../components/Icons';
-const { SubMenu } = Menu;
 export default function ArticleSingle(props: { article: Article, type: ArticleContentType }) {
     const locator = useServicesLocator()
     const [sections, setSections] = useState<string[]>([])
@@ -37,7 +32,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                             }}>{section}</Menu.Item>)
                         }</Menu>}>
                             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                {langs.get(LangKeys.Sections)}<MenuOutlined className="sections-icon" />
+                                {langs.get(LangKeys.Sections)}
                             </a>
                         </Dropdown>
                         : null

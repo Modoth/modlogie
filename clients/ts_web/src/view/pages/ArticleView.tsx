@@ -153,6 +153,13 @@ export default function ArticleView(props: {
 
   const toggleEditing = async () => {
     if (!editing) {
+      if (!additionalLoaded) {
+        viewService.setLoading(true);
+        await props.article.lazyLoadingAddition!();
+        setContent(props.article.content!)
+        setAdditionalLoaded(true);
+        viewService.setLoading(false);
+      }
       setEditing(true)
       return
     }
@@ -267,12 +274,6 @@ export default function ArticleView(props: {
         setDislikeCount(dislikeCount);
       }
     })()
-    if (!additionalLoaded) {
-      props.article.lazyLoadingAddition!().then(() => {
-        setContent(props.article.content!)
-        setAdditionalLoaded(true);
-      })
-    }
     locator.locate(IArticleViewServie)
       .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type));
   }, [])
@@ -288,7 +289,14 @@ export default function ArticleView(props: {
       viewService.errorKey(langs, e.message)
     }
   }
-  const openDetail = () => {
+  const openDetail = async () => {
+    if (!additionalLoaded) {
+      viewService.setLoading(true);
+      await props.article.lazyLoadingAddition!();
+      setContent(props.article.content!)
+      setAdditionalLoaded(true);
+      viewService.setLoading(false);
+    }
     locator.locate(IViewService).previewArticle({ name, content, files }, type)
   }
   const toogleFavorite = async () => {

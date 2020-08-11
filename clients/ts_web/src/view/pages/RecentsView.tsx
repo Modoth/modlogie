@@ -143,14 +143,10 @@ export default function RecentsView() {
       <Button type="link" className="title">{langs.get(LangKeys.Latest)}</Button>
       <Carousel>
         {
-          recommendsArticles.map(article => <RecentArticle recommendView={true} recommendTitle={recommandTitle} article={article} key={article.id + "_rec"} type={type} contentType={articleTypes.get(article)!} onClick={() => {
-            locator.locate(IViewService).previewArticle(article, articleTypes.get(article)!)
-          }}></RecentArticle>)
+          recommendsArticles.map(article => <RecentArticle recommendView={true} recommendTitle={recommandTitle} article={article} key={article.id + "_rec"} type={type} contentType={articleTypes.get(article)!} ></RecentArticle>)
         }
         {
-          articles.map(article => <RecentArticle article={article} key={article.id} type={type} contentType={articleTypes.get(article)!} onClick={() => {
-            locator.locate(IViewService).previewArticle(article, articleTypes.get(article)!)
-          }}></RecentArticle>)
+          articles.map(article => <RecentArticle article={article} key={article.id} type={type} contentType={articleTypes.get(article)!} ></RecentArticle>)
         }
       </Carousel>
     </div>
