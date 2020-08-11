@@ -24,6 +24,10 @@ import {
   ExpandOutlined,
   PrinterOutlined,
   MinusOutlined,
+  EllipsisOutlined,
+  DownOutlined,
+  DoubleLeftOutlined,
+  DownSquareOutlined,
   DeleteOutlined,
 } from '@ant-design/icons'
 import './ArticleView.less'
@@ -399,7 +403,7 @@ export default function ArticleView(props: {
           ) : (
               <props.type.Viewer content={content} files={files} type={type} />
             )}
-          <div className="show-more"><Button type="link" size="small" onClick={openDetail}>{langs.get(LangKeys.ShowMore)}</Button></div>
+          <div className="show-more"><Button type="link" size="small" icon={<DoubleLeftOutlined />} onClick={openDetail}></Button></div>
         </div> : <div className="article-body"></div>
       }
       {
