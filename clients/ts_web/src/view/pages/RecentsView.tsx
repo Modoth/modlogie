@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import './RecentsView.less'
 import { generateRandomStyle } from './common'
 import IPluginInfo, { ArticleContentType, PluginsConfig, ArticleType } from '../../plugins/IPluginInfo'
-import { useHistory, Link } from 'react-router-dom'
+import { useHistory, Link, Redirect } from 'react-router-dom'
 import Article, { ArticleAdditionalType } from '../../domain/Article'
 import ITagsService, { TagNames } from '../../domain/ITagsService'
 import { Carousel } from 'antd'
@@ -19,9 +19,14 @@ import ISubjectsService from '../../domain/ISubjectsService'
 import Button from 'antd/es/button'
 
 function RecentArticle(props: { article: Article, type: ArticleType, contentType: ArticleContentType, onClick?: MouseEventHandler<any>; recommendView?: boolean, recommendTitle?: string }) {
+  const [redirect, setRedirect] = useState(false)
+  if (redirect) {
+    return <Redirect to={{ pathname: '/' + props.type.route, state: { articleId: props.article.id, recommendView: props.recommendView } }}></Redirect>
+  }
+  const goto = () => setRedirect(true)
   return (
     <div className={classNames("recent-article-wraper")}>
-      <Link className="recent-article" to={{ pathname: '/' + props.type.route, state: { articleId: props.article.id, recommendView: props.recommendView } }}>
+      <div className="recent-article" onClick={goto}>
         {
           ((props.recommendView && props.recommendTitle) || !props.type.noTitle) ?
             <div className="article-title">
@@ -31,7 +36,7 @@ function RecentArticle(props: { article: Article, type: ArticleType, contentType
             : null
         }
         <props.contentType.Viewer content={props.article.content!} files={props.article.files} type={props.contentType}></props.contentType.Viewer>
-      </Link>
+      </div>
     </div>
   )
 }

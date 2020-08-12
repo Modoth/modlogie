@@ -422,7 +422,7 @@ export default function Library(props: LibraryProps) {
           src={logo}
         /> : null} /></Link>
 
-        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''}<Button className="search-icon" type="link" size="small" icon={<SearchOutlined />}></Button></span>
+        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''}</span>
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {
@@ -490,6 +490,8 @@ export default function Library(props: LibraryProps) {
               }}></Button>
           </Badge>
           : null}
+        <Button type="default"
+          size="large" shape="circle" onClick={() => setShowFilter(true)} icon={<SearchOutlined />}></Button>
         {user.editingPermission ? (
           <Button
             icon={<PlusOutlined />}
