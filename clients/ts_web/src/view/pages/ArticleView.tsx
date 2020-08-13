@@ -290,6 +290,9 @@ export default function ArticleView(props: {
     }
   }
   const openDetail = async () => {
+    if (!props.article.additionId) {
+      return
+    }
     if (!additionalLoaded) {
       viewService.setLoading(true);
       await props.article.lazyLoadingAddition!();
@@ -413,7 +416,9 @@ export default function ArticleView(props: {
           ) : (
               <props.type.Viewer content={content} files={files} type={type} />
             )}
-          <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div>
+          {
+            (props.article.additionId) ? <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div> : null
+          }
         </div> : <div className="article-body"></div>
       }
       {
