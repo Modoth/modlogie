@@ -23,7 +23,7 @@ function SubjectView(props: { type: ArticleType, subject: Subject, deepth: numbe
     return (
       <div className={classNames("category", `subject-${props.deepth}`)}>
         <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("category-title")}>{props.subject.resourceUrl ? <img src={props.subject.resourceUrl}></img> : null}<span>{displayName || path}</span></Link>
-        <div className="category-content">{sortSubjectByChildrenCount(props.subject.children).map(subject => <SubjectView key={subject.id} type={props.type} subject={subject} parentPath={path} rootPath={props.rootPath} deepth={props.deepth + 1}></SubjectView>)}</div>
+        <div className="category-content">{sortSubjectByChildrenCount(props.subject.children).filter(s => s.totalArticleCount).map(subject => <SubjectView key={subject.id} type={props.type} subject={subject} parentPath={path} rootPath={props.rootPath} deepth={props.deepth + 1}></SubjectView>)}</div>
       </div>
     )
   }
@@ -60,7 +60,7 @@ function SingleTypeSubjectsView(props: { type: ArticleType }) {
   }, [])
   return (<>
     {
-      subjects.map(subject => <SubjectView key={subject.id} type={type} subject={subject} parentPath="" rootPath={subject.path! + '/'} deepth={0}></SubjectView>)
+      subjects.filter(s => s.totalArticleCount).map(subject => <SubjectView key={subject.id} type={type} subject={subject} parentPath="" rootPath={subject.path! + '/'} deepth={0}></SubjectView>)
     }
   </>)
 }

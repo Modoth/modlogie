@@ -8,6 +8,7 @@ export interface ArticleType {
   subTypes?: string[];
   subTypeTag?: string;
   rootSubjectId?: string;
+  initArticleCount?: number;
   iconUrl?: string;
   noTitle?: boolean;
   admOnly?: boolean;
@@ -81,7 +82,7 @@ export default class IPluginInfo {
 export class PluginsConfig {
   constructor(private _plugins: IPluginInfo[]) {
     this._allTypes = this._plugins.flatMap(p => p.types).filter(t => t.rootSubjectId);
-    this._normalTypes = this._allTypes.filter(t => !t.admOnly);
+    this._normalTypes = this._allTypes.filter(t => !t.admOnly && t.initArticleCount);
   };
   public get Plugins() {
     return Array.from(this._plugins);

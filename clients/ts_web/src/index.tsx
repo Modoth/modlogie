@@ -103,6 +103,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     var rootSubject = await subjectServices.getByPath('/' + type.name)
     if (rootSubject) {
       type.rootSubjectId = rootSubject.id;
+      type.initArticleCount = rootSubject.totalArticleCount;
       type.iconUrl = rootSubject.resourceUrl;
     }
   }
