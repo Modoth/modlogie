@@ -30,9 +30,17 @@
   }
 
   .category {
-    width: 100%;
+    width: calc(100% + var(--shift));
     display: flex;
     flex-direction: column;
+    margin-left: var(--minus-shift);
+  }
+
+  .ant-tabs-tabpane {
+    --shift: 2rem;
+    --minus-shift: -2rem;
+    margin-left: var(--shift);
+    width: calc(100% - var(--shift));
   }
 
   .category-title {
@@ -60,8 +68,9 @@
 
   .category-content {
     display: flex;
-    width: 100%;
+    width: calc(100% - var(--shift));
     flex-wrap: wrap;
+    margin-left: var(--shift);
   }
 
   .ant-tabs-nav {
