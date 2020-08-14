@@ -422,7 +422,11 @@ export default function Library(props: LibraryProps) {
           src={logo}
         /> : null} /></Link>
 
-        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''}</span>
+        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{
+          rootSubject && effectiveSubjects.length < 2 ?
+            <><img className="subject-icon" src={(effectiveSubjects[0] || rootSubject).resourceUrl}></img><span>{(effectiveSubjects[0] || rootSubject).name}</span></> :
+            effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''
+        }</span>
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {

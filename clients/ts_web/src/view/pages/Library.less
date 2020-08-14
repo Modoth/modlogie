@@ -49,11 +49,23 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      text-overflow: ellipsis;
+      overflow-x: hidden;
+      white-space: nowrap;
+      display: inline-block;
+
+      .subject-icon {
+        height: 1.3em;
+        padding-right: 10px;
+        margin-top: -0.1em;
+        display: none;
+      }
     }
 
     .home-icon {
       object-fit: contain;
-      height: 1.1em;
+      height: 1.2em;
+      // margin-top: 0.1em;
     }
 
     button {
