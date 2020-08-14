@@ -9,7 +9,7 @@ import './SubjectsView.less'
 import { generateRandomStyle } from './common'
 import { PluginsConfig, ArticleType } from '../../plugins/IPluginInfo'
 import { useHistory, Link } from 'react-router-dom'
-import { Badge, Tabs, Tooltip } from 'antd'
+import { Badge, Tabs } from 'antd'
 const { TabPane } = Tabs;
 
 function sortSubjectByChildrenCount(subjects: Subject[]) {
@@ -32,7 +32,7 @@ function SubjectView(props: { type: ArticleType, subject: Subject, deepth: numbe
       <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("subject-content", generateRandomStyle())}>
         {
           props.subject.resourceUrl ?
-            <Tooltip className="img-wraper" title={props.subject.name}><img src={props.subject.resourceUrl} /></Tooltip> :
+            <img src={props.subject.resourceUrl} /> :
             <span>{props.subject.name}</span>
         }
       </Link>
