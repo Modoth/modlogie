@@ -83,6 +83,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Recommend = '推荐';
   RemoveFromArticleList = '移除';
   Reset = '重置';
+  ScreenShot = '截图';
   Search = '搜索';
   Sections = '章节';
   Share = '分享';

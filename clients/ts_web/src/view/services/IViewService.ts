@@ -52,4 +52,8 @@ export default class IViewService {
   previewArticle(article?: Article, type?: ArticleContentType): void {
     throw new Error('Method not implemented.')
   }
+
+  captureElement(element: HTMLElement | undefined): void {
+    throw new Error('Method not implemented.')
+  }
 }

@@ -10,8 +10,7 @@ import classNames from 'classnames';
 import IViewService from '../services/IViewService';
 import IConfigsService from '../../domain/IConfigsSercice';
 import ConfigKeys from '../../app/ConfigKeys';
-import html2canvas from 'html2canvas';
-import ILangsService, { LangKeys } from '../../domain/ILangsService';
+import ILangsService from '../../domain/ILangsService';
 
 const maxColumn = 3;
 const maxBorderStyle = 4;
@@ -54,21 +53,6 @@ export default function ArticleList() {
     useEffect(() => {
         fetchArticles()
     }, [])
-    const shareArticle = async () => {
-        if (!ref.current) {
-            return
-        }
-        try {
-            viewService.setLoading(true)
-            const canvas = await html2canvas(ref.current);
-            viewService.setLoading(false)
-            const imgUrl = canvas.toDataURL('image/png')
-            locator.locate(IViewService).previewImage(imgUrl)
-        } catch (e) {
-            viewService!.errorKey(locator.locate(ILangsService), LangKeys.UnknownError)
-            viewService.setLoading(false)
-        }
-    }
     const ref = React.createRef<HTMLDivElement>()
     const close = () => {
         locator.locate(IViewService).previewArticleList(false)
@@ -84,7 +68,7 @@ export default function ArticleList() {
                 {
                     showIdx ?
                         null
-                        : <Button type="link" size="large" icon={<PictureOutlined />} onClick={shareArticle} />
+                        : <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} />
                 }
                 <Button type="link" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
             </div>

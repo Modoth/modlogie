@@ -43,6 +43,7 @@ export class LangKeysInterface {
   Recommend = 'Recommend';
   RemoveFromArticleList = 'RemoveFromArticleList';
   Reset = 'Reset';
+  ScreenShot = 'ScreenShot';
   Search = 'Search';
   Sections = 'Sections';
   Share = 'Share';

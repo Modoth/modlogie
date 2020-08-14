@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import './ServiceView.less'
 import { Spin, message, Modal, Input, Space, Radio, TreeSelect, Button } from 'antd'
 import IViewService, { IPromptField } from '../services/IViewService'
-import ILangsService from '../../domain/ILangsService'
+import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import ImageEditor from '../components/ImageEditor'
 import ArticleList from './ArticleList'
 import ArticleSingle from './ArticleSingle'
@@ -10,6 +10,8 @@ import { ArticleContentType } from '../../plugins/IPluginInfo'
 import Article from '../../domain/Article'
 import TextArea from 'antd/lib/input/TextArea'
 import { CloseOutlined, SaveOutlined, CopyOutlined } from '@ant-design/icons'
+import html2canvas from 'html2canvas';
+
 
 class ViewService implements IViewService {
   errorKey(langs: ILangsService, key: any, timeout?: number | undefined): void {
@@ -34,6 +36,9 @@ class ViewService implements IViewService {
   }
 
   constructor(public setLoading: any, public prompt: any, public previewImage: any, public previewArticleList: any, public previewArticle: any,
+    public captureElement: {
+      (element: HTMLElement): void
+    },
     public onShowMenuChanged?: { (showMenu: boolean): void }) { }
 
 }
@@ -231,7 +236,21 @@ export default function ServiceView(props: {
         props.setContentVisiable(true)
         setPreviewArticle(undefined)
       }
-    }
+    }, async (element: HTMLElement | undefined): Promise<void> => {
+      if (!element) {
+        return
+      }
+      try {
+        viewService.setLoading(true)
+        const canvas = await html2canvas(element);
+        viewService.setLoading(false)
+        const imgUrl = canvas.toDataURL('image/png')
+        viewService.previewImage(imgUrl)
+      } catch (e) {
+        // viewService!.errorKey(locator.locate(ILangsService), LangKeys.UnknownError)
+        viewService.setLoading(false)
+      }
+    },
   )
   props.provide && props.provide(viewService)
 
@@ -239,11 +258,6 @@ export default function ServiceView(props: {
 
   return (
     <>
-      {
-        loading ? <div className="loading-panel ">
-          <div className="loading-small"></div>
-        </div> : null
-      }
       <input type="file" className="hidden" ref={refFile}></input>
       <Modal
         title={modalTitle}
@@ -364,6 +378,11 @@ export default function ServiceView(props: {
       }
       {
         previewArticle ? <ArticleSingle {...previewArticle}></ArticleSingle> : null
+      }
+      {
+        loading ? <div className="loading-panel ">
+          <div className="loading-small"></div>
+        </div> : null
       }
     </>
   )
