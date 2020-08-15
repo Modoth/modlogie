@@ -9,10 +9,12 @@ export interface ArticleType {
   subTypeTag?: string;
   rootSubjectId?: string;
   initArticleCount?: number;
+  defaultSections?: string;
   iconUrl?: string;
   noTitle?: boolean;
   admOnly?: boolean;
   icon: React.ReactNode;
+  loadAdditionalsSync?: boolean;
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
   Editor: (props: ArticleContentEditorProps) => JSX.Element;
 }

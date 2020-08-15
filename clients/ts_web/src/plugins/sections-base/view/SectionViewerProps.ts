@@ -6,6 +6,12 @@ export interface SectionViewerCallbacks {
     onfocus?(): void
 }
 
+export interface AdditionalSectionsViewerProps {
+    sections: ArticleSection[],
+    filesDict: Map<string, ArticleFile>
+    onClick?: MouseEventHandler<any>
+}
+
 export default interface SectionViewerProps {
     section: ArticleSection,
     filesDict: Map<string, ArticleFile>

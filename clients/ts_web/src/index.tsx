@@ -52,6 +52,7 @@ import IFavoritesServer from './domain/IFavoritesServer'
 import FavoritesServerSingleton from './domain/FavoritesServerSingleton'
 import ILikesService from './domain/ILikesService'
 import LikesService from './domain/LikesService'
+import H5PluginInfo from './plugins/h5'
 
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
@@ -77,6 +78,9 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       case 'Math':
         plugin = new MathPluginInfo(names);
         break
+      case 'H5':
+        plugin = new H5PluginInfo(names);
+        break
     }
     if (plugin) {
       if (hiddenPlugin) {
@@ -91,7 +95,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     [
       new Config(get_ARTICLE_TAGS(t.name), ConfigType.STRING),
       new Config(get_SUB_TYPE_TAG(t.name), ConfigType.STRING),
-      new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING),
+      new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING, t.defaultSections),
     ]))
   var types = plugins.flatMap(p => p.types)
   const subjectServices = serviceLocator.locate(ISubjectsService);

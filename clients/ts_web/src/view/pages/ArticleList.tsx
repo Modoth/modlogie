@@ -26,6 +26,9 @@ export default function ArticleList() {
             var all = articleListService.all()
             let count = 0
             if (all.length) {
+                await Promise.all(all.filter(a => a[1].articleType.loadAdditionalsSync).map(a => a[0]).filter(a => a.lazyLoadingAddition).map(a => a.lazyLoadingAddition!().then(() => {
+                    setItems([...all])
+                })))
                 setItems(all)
                 viewService.setLoading(false)
                 return
@@ -37,9 +40,20 @@ export default function ArticleList() {
                 [count, all] = await articleListService.getArticles(0, maxCount);
             }
             setItems(all);
-            await Promise.all(all.map(a => a[0]).filter(a => a.lazyLoading).map(a => a.lazyLoading!().then(() => {
-                setItems([...all])
-            })))
+            await Promise.all(all.map(async ([a, t]) => {
+                var tasks = []
+                if (a.lazyLoading) {
+                    tasks.push(a.lazyLoading())
+                }
+                if (t.articleType.loadAdditionalsSync && a.lazyLoadingAddition) {
+                    tasks.push(a.lazyLoadingAddition())
+                }
+                if (tasks.length) {
+                    return Promise.all(tasks).then(() => {
+                        setItems([...all])
+                    })
+                }
+            }))
             viewService.setLoading(false)
         } catch (e) {
             viewService!.errorKey(locator.locate(ILangsService), e.message)

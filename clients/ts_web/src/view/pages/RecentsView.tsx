@@ -80,7 +80,7 @@ export default function RecentsView() {
         )
       var res = await locator.locate(IArticleService).query(query, undefined, 0, 5);
       articles = res[1];
-      await Promise.all(articles.filter(a => a.lazyLoading).map(a => a.lazyLoading!()))
+      await Promise.all(articles.filter(a => a.lazyLoading).map(a => a.lazyLoading!()).concat(type.loadAdditionalsSync ? articles.filter(a => a.lazyLoadingAddition).map(a => a.lazyLoadingAddition!()) : []))
     } catch (e) {
       viewService!.errorKey(langs, e.message)
     }
@@ -104,7 +104,7 @@ export default function RecentsView() {
           ).setOrderBy('Random')
         var res = await locator.locate(IArticleService).query(query, undefined, 0, count);
         recommendsArticles = res[1];
-        await Promise.all(recommendsArticles.filter(a => a.lazyLoading).map(a => a.lazyLoading!()))
+        await Promise.all(recommendsArticles.filter(a => a.lazyLoading).map(a => a.lazyLoading!()).concat(type.loadAdditionalsSync ? recommendsArticles.filter(a => a.lazyLoadingAddition).map(a => a.lazyLoadingAddition!()) : []))
         recommandTitle = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECOMMENT_TITLE)!;
       }
     } catch (e) {

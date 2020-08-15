@@ -7,14 +7,16 @@ import Langs from './Langs'
 import IConfigsService, { Config } from '../../domain/IConfigsSercice'
 import SectionsBaseDefaultConfigs from './SectionsBaseDefaultConfigs'
 import SectionEditorProps from './view/SectionEditorProps'
-import SectionViewerProps from './view/SectionViewerProps'
+import SectionViewerProps, { AdditionalSectionsViewerProps } from './view/SectionViewerProps'
 
 export default class SectionsBasePluginInfo {
   private articleTypes: ArticleType[] = [];
 
   constructor(TSectionViewer: { (props: SectionViewerProps): JSX.Element }
     , TSectionEditor: { (props: SectionEditorProps): JSX.Element },
-    typeNames: string[]) {
+    typeNames: string[],
+    additionOptions?: Partial<ArticleType>,
+    TAdditionalSectionsViewer?: { (props: AdditionalSectionsViewerProps): JSX.Element }) {
     this.articleTypes = typeNames.map(name => {
       var noTitle = name.startsWith('_');
       if (noTitle) {
@@ -26,8 +28,9 @@ export default class SectionsBasePluginInfo {
         rootSubject: name,
         noTitle,
         icon: <BookOutlined />,
-        Viewer: memo(SectionsBaseViewer(TSectionViewer)) as any,
+        Viewer: memo(SectionsBaseViewer(TSectionViewer, TAdditionalSectionsViewer)) as any,
         Editor: memo(SectionsBaseEditor(TSectionEditor)) as any,
+        ...(additionOptions || {})
       }
     })
   }

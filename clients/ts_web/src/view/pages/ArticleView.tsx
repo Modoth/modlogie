@@ -237,11 +237,23 @@ export default function ArticleView(props: {
   // generateRandomStyle()
   useEffect(() => {
     if (!loaded) {
-      props.article.lazyLoading!().then(() => {
-        setContent(props.article.content!)
-        setFiles(props.article.files!)
-        setLoaded(true);
-      })
+      if (props.type.loadAdditionalsSync && !additionalLoaded) {
+        Promise.all([
+          props.article.lazyLoading!(),
+          props.article.lazyLoadingAddition!()
+        ]).then(()=>{
+          setContent(props.article.content!)
+          setFiles(props.article.files!)
+          setAdditionalLoaded(true);
+          setLoaded(true);
+        })
+      } else {
+        props.article.lazyLoading!().then(() => {
+          setContent(props.article.content!)
+          setFiles(props.article.files!)
+          setLoaded(true);
+        })
+      }
     }
     if (favoriteService) {
       favoriteService.has(props.type.name, props.article.id!).then(f => {
