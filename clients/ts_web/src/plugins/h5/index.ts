@@ -7,7 +7,7 @@ import H5LiveViewer from './view/H5LiveViewer'
 
 export default class H5PluginInfo extends SectionsBasePluginInfo implements IPluginInfo {
     constructor(typeNames: string[]) {
-        super(H5Viewer, H5Editor, typeNames,
+        super(H5Viewer, 'H5Viewer', H5Editor, typeNames,
             {
                 defaultSections: `_${SectionNames.html} _${SectionNames.css} _${SectionNames.js}`,
                 loadAdditionalsSync: true

@@ -12,8 +12,8 @@ import SectionViewerProps, { AdditionalSectionsViewerProps } from './view/Sectio
 export default class SectionsBasePluginInfo {
   private articleTypes: ArticleType[] = [];
 
-  constructor(TSectionViewer: { (props: SectionViewerProps): JSX.Element }
-    , TSectionEditor: { (props: SectionEditorProps): JSX.Element },
+  constructor(TSectionViewer: { (props: SectionViewerProps): JSX.Element }, viewerName: string,
+    TSectionEditor: { (props: SectionEditorProps): JSX.Element },
     typeNames: string[],
     additionOptions?: Partial<ArticleType>,
     TAdditionalSectionsViewer?: { (props: AdditionalSectionsViewerProps): JSX.Element }) {
@@ -28,7 +28,7 @@ export default class SectionsBasePluginInfo {
         rootSubject: name,
         noTitle,
         icon: <BookOutlined />,
-        Viewer: memo(SectionsBaseViewer(TSectionViewer, TAdditionalSectionsViewer)) as any,
+        Viewer: memo(SectionsBaseViewer(TSectionViewer, viewerName, TAdditionalSectionsViewer)) as any,
         Editor: memo(SectionsBaseEditor(TSectionEditor)) as any,
         ...(additionOptions || {})
       }

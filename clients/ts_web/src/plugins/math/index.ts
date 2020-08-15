@@ -5,6 +5,6 @@ import IPluginInfo from '../IPluginInfo'
 
 export default class MathPluginInfo extends SectionsBasePluginInfo implements IPluginInfo {
     constructor(typeNames: string[]) {
-        super(SectionViewer, SectionEditor, typeNames)
+        super(SectionViewer, 'SectionViewer', SectionEditor, typeNames)
     }
 }

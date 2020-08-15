@@ -10,7 +10,7 @@ const getSections = (allSections: Set<string>, sections?: ArticleSection[]) => {
   return Array.from(allSections, (name) => existedSections.get(name) || { name, content: '' } as ArticleSection)
 }
 
-export default function SectionsBaseViewer(TSectionViewer: { (props: SectionViewerProps): JSX.Element },
+export default function SectionsBaseViewer(TSectionViewer: { (props: SectionViewerProps): JSX.Element }, viewerName: string,
   TAdditionalSectionsViewer?: { (props: AdditionalSectionsViewerProps): JSX.Element }) {
   const TAdditionalSectionsViewerMemo = TAdditionalSectionsViewer ? memo(TAdditionalSectionsViewer) : null
   return (props: ArticleContentViewerProps) => {
@@ -37,7 +37,7 @@ export default function SectionsBaseViewer(TSectionViewer: { (props: SectionView
       }
     }, [sections])
     return (
-      <div className={classNames(props.className, props.type?.name, TSectionViewer.name, "sections-base-viewer")} onClick={(e) => {
+      <div className={classNames(props.className, props.type?.name, viewerName, "sections-base-viewer")} onClick={(e) => {
         if (props.onClick) {
           props.onClick(e)
         }

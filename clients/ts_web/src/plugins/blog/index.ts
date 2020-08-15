@@ -5,6 +5,6 @@ import IPluginInfo from '../IPluginInfo'
 
 export default class BlogPluginInfo extends SectionsBasePluginInfo implements IPluginInfo {
     constructor(typeNames: string[]) {
-        super(MarkdownViewer, MarkdownEditor, typeNames)
+        super(MarkdownViewer, 'MarkdownViewer', MarkdownEditor, typeNames)
     }
 }
