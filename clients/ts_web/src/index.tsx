@@ -34,7 +34,7 @@ import IArticleService from './domain/IArticleService'
 import ArticleService from './domain/ArticleService'
 import BlogPluginInfo from './plugins/blog'
 import MathPluginInfo from './plugins/math'
-import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG } from './app/ConfigKeys'
+import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG, get_ROOT_SUBJECT } from './app/ConfigKeys'
 // import './assets/images'
 import logoImg from './assets/logo.png'
 import IMmConverter from './domain/IMmConverter'
@@ -53,7 +53,10 @@ import FavoritesServerSingleton from './domain/FavoritesServerSingleton'
 import ILikesService from './domain/ILikesService'
 import LikesService from './domain/LikesService'
 import H5PluginInfo from './plugins/h5'
-
+import INavigationService from './view/services/INavigationService'
+import NavigationService from './view/services/NavigationService'
+import IKeywordsService from './domain/IKeywordsService'
+import KeywordsService from './domain/KeywordsService'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
@@ -96,6 +99,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       new Config(get_ARTICLE_TAGS(t.name), ConfigType.STRING),
       new Config(get_SUB_TYPE_TAG(t.name), ConfigType.STRING),
       new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING, t.defaultSections),
+      new Config(get_ROOT_SUBJECT(t.name), ConfigType.STRING, '/' + t.name),
     ]))
   var types = plugins.flatMap(p => p.types)
   const subjectServices = serviceLocator.locate(ISubjectsService);
@@ -104,7 +108,11 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     if (type.subTypeTag) {
       type.subTypes = (await tagsService.get(type.subTypeTag))?.values
     }
-    var rootSubject = await subjectServices.getByPath('/' + type.name)
+    var rootSubjectPath = await configsService.getValueOrDefault(get_ROOT_SUBJECT(type.name))
+    if (!rootSubjectPath) {
+      continue;
+    }
+    var rootSubject = await subjectServices.getByPath(rootSubjectPath)
     if (rootSubject) {
       type.rootSubjectId = rootSubject.id;
       type.initArticleCount = rootSubject.totalArticleCount;
@@ -137,7 +145,9 @@ const buildServicesLocator = () => {
     serviceLocator.registerInstance(IFavoritesStorage, new LocalFavoritesStorage())
   }
   serviceLocator.registerInstance(IFavoritesServer, new FavoritesServerSingleton())
+  serviceLocator.registerInstance(IKeywordsService, new KeywordsService());
   serviceLocator.register(ILikesService, LikesService);
+  serviceLocator.register(INavigationService, NavigationService);
 
   var clientHost = window.origin + '/api';
   serviceLocator.registerFactory(LoginServiceClient, () => new LoginServiceClient(clientHost, null, null));

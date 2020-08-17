@@ -315,6 +315,10 @@ export default function ServiceView(props: {
                     }
                   </Radio.Group>
                 )
+              case 'Label':
+                return (
+                  <label >{field.value}</label>
+                )
               case 'Password':
                 return (
                   <Input.Password

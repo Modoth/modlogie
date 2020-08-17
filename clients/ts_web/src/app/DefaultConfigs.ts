@@ -19,6 +19,7 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
     PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, "");
     RECOMMENT_COUNT = new Config(ConfigKeys.RECOMMENT_COUNT, ConfigType.NUMBER, "");
     RECOMMENT_TITLE = new Config(ConfigKeys.RECOMMENT_TITLE, ConfigType.STRING, "推荐");
+    SEARCH_URL = new Config(ConfigKeys.SEARCH_URL, ConfigType.STRING, "https://www.google.com/search?q=${keyword}");
     SHADOW_SECTION_PRIVATE = new Config(ConfigKeys.SHADOW_SECTION_PRIVATE, ConfigType.BOOLEAN, "false");
     WEB_SITE_AVATAR = new Config(ConfigKeys.WEB_SITE_AVATAR, ConfigType.RESOURCE, "/配置/AVATAR");
     WEB_SITE_DESCRIPTION = new Config(ConfigKeys.WEB_SITE_DESCRIPTION, ConfigType.TEXT, "");

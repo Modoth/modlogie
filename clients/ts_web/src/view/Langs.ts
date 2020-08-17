@@ -27,8 +27,10 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   PLUGINS = '插件';
   RECOMMENT_COUNT = '推荐数量';
   RECOMMENT_TITLE = '推荐标题';
+  SEARCH_URL = '搜索地址';
   SHADOW_SECTION_PRIVATE = '保存隐藏段为私有';
   SUB_TYPE_TAG = '文章子类标签';
+  ROOT_SUBJECT = '根目录';
   WEB_SITE_AVATAR = '站长头像';
   WEB_SITE_DESCRIPTION = '网站描述';
   WEB_SITE_FOOTER = '网站脚注';
@@ -52,6 +54,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   CancleRecommend = '取消推荐';
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
+  ComfireJump = '即将打开其他网站';
   Comment = '备注';
   Configs = '配置';
   Create = '创建';

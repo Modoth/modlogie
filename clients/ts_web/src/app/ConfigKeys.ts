@@ -9,6 +9,7 @@ export class ConfigKeysInterface<T> {
     PLUGINS: T = <any>'PLUGINS'
     RECOMMENT_COUNT: T = <any>'RECOMMENT_COUNT';
     RECOMMENT_TITLE: T = <any>'RECOMMENT_TITLE';
+    SEARCH_URL: T = <any>'SEARCH_URL';
     SHADOW_SECTION_PRIVATE: T = <any>'SHADOW_SECTION_PRIVATE';
     WEB_SITE_AVATAR: T = <any>'WEB_SITE_AVATAR';
     WEB_SITE_DESCRIPTION: T = <any>'WEB_SITE_DESCRIPTION';
@@ -24,6 +25,10 @@ export function get_ARTICLE_TAGS(typeName: string) {
 
 export function get_SUB_TYPE_TAG(typeName: string) {
     return `${typeName}:SUB_TYPE_TAG`
+}
+
+export function get_ROOT_SUBJECT(typeName: string) {
+    return `${typeName}:ROOT_SUBJECT`
 }
 
 export function get_ARTICLE_SECTIONS(typeName: string, subTypeName?: string) {

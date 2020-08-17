@@ -10,6 +10,7 @@ export class LangKeysInterface {
   CancleRecommend = 'CancleRecommend';
   ChangeName = 'ChangeName';
   ChangePassword = 'ChangePassword';
+  ComfireJump = 'ComfireJump';
   Comment = 'Comment';
   Configs = 'Configs';
   Create = 'Create';

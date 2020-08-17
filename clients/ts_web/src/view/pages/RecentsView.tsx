@@ -77,7 +77,7 @@ export default function RecentsView() {
               .setProp('AdditionalType')
               .setValue(ArticleAdditionalType.Normal.toString())
           ])
-        )
+        ).setOrderBy('Modified').setOrderByDesc(true)
       var res = await locator.locate(IArticleService).query(query, undefined, 0, 5);
       articles = res[1];
       await Promise.all(articles.filter(a => a.lazyLoading).map(a => a.lazyLoading!()).concat(type.loadAdditionalsSync ? articles.filter(a => a.lazyLoadingAddition).map(a => a.lazyLoadingAddition!()) : []))
