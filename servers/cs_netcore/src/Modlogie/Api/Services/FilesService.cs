@@ -213,6 +213,9 @@ namespace Modlogie.Api.Services
                         case nameof(Modlogie.Domain.Models.File.Created):
                             orderBy = node => node.Created;
                             break;
+                        case nameof(Modlogie.Domain.Models.File.Modified):
+                            orderBy = node => node.Modified;
+                            break;
                     }
                     if (orderBy == null)
                     {
