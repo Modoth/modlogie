@@ -11,7 +11,9 @@ export enum TagType {
     NUMBER,
     BOOLEAN,
     ARTICLE,
-    RESOURCE
+    RESOURCE,
+    DATE,
+    LINK
 }
 
 export class Tag {

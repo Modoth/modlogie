@@ -31,7 +31,7 @@ export function ManageTags() {
   }
 
   const addTag = () => {
-    var tagTypes = [TagType.STRING, TagType.ENUM];
+    var tagTypes = [TagType.STRING, TagType.ENUM, TagType.DATE, TagType.LINK];
     const tagTypeNames = tagTypes.map(type => langs.get(TagType[type]))
     viewService.prompt(
       langs.get(LangKeys.Create),

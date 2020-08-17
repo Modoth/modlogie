@@ -46,6 +46,7 @@ export default function SectionsBaseViewer(TSectionViewer: { (props: SectionView
         // }
       }
       }>
+        {props.showTitle ? <h4 className="article-title">{props.title}</h4> : null}
         {
           TAdditionalSectionsViewerMemo ?
             <TAdditionalSectionsViewerMemo sections={sections} filesDict={filesDict} ></TAdditionalSectionsViewerMemo> :

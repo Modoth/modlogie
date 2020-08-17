@@ -38,6 +38,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   //
   STRING = '字符串';
   ENUM = '枚举';
+  DATE = '日期';
+  LINK = '链接';
   [key: string]: string;
   AddToArticleList = '添加';
   AdmLogin = '管理员登陆';
