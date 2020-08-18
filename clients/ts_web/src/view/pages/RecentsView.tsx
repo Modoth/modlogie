@@ -29,10 +29,10 @@ function RecentArticle(props: { article: Article, type: ArticleType, contentType
       <div className="recent-article" onClick={goto}>
         {
           ((props.recommendView && props.recommendTitle) || !props.type.noTitle) ?
-            <div className="article-title">
+            <span className="article-title">
               {props.recommendView && props.recommendTitle ? <Button className="recommend-button" danger type="link" >{props.recommendTitle}</Button> : <span></span>
               }{props.type.noTitle ? null : <div>{props.article.name}</div>}
-            </div>
+            </span>
             : null
         }
         <props.contentType.Viewer content={props.article.content!} files={props.article.files} type={props.contentType}></props.contentType.Viewer>
