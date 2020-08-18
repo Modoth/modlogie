@@ -54,7 +54,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   CancleRecommend = '取消推荐';
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
-  ComfireJump = '即将打开其他网站';
+  ComfireJump = '点击确定继续:\t';
   Comment = '备注';
   Configs = '配置';
   Create = '创建';

@@ -29,26 +29,25 @@ export default class NavigationService extends IServicesLocator implements INavi
                 })
             ])
         }
-        if (!url) {
-            return
-        }
-        var u = new URL(url)
-        var newTab = u.hostname !== window.location.hostname
 
+        var newTab = new URL(url || '').hostname !== window.location.hostname
         const open = () => {
+            if (!url) {
+                return
+            }
             if (!newTab) {
                 window.location.href = url!;
             } else {
                 window.open(url, '_blank');
             }
         }
-        console.log({ async, newTab })
-        if (async && newTab) {
-            this.locate(IViewService).prompt(this.locate(ILangsService).get(LangKeys.ComfireJump), [
-                {
-                    type: 'Label',
-                    value: url
-                },
+        if ((async && newTab) || desc) {
+            this.locate(IViewService).prompt(
+                url ? { title, subTitle: this.locate(ILangsService).get(LangKeys.ComfireJump) + url } : title, [
+                ...(desc ? [{
+                    type: 'Markdown',
+                    value: desc
+                }] : [])
             ], async () => {
                 open();
                 return true;

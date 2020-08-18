@@ -11,6 +11,7 @@ import Article from '../../domain/Article'
 import TextArea from 'antd/lib/input/TextArea'
 import { CloseOutlined, SaveOutlined, CopyOutlined } from '@ant-design/icons'
 import html2canvas from 'html2canvas';
+import ReactMarkdown from 'react-markdown'
 
 
 class ViewService implements IViewService {
@@ -50,6 +51,7 @@ export default function ServiceView(props: {
   const refFile = useRef<HTMLInputElement | null>(null)
   const [loading, setLoading] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
+  const [modalSubTitle, setModalSubTitle] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
   const [modalImageField, setModalImageField] = useState(false)
   const [modalPromise, setModalPromise] = useState({ resolve: null as any, reject: null as any })
@@ -94,6 +96,7 @@ export default function ServiceView(props: {
     refFile.current!.onchange = null
     refFile.current!.value = ''
     setModalTitle('')
+    setModalSubTitle('')
     setModalVisible(false)
     setModalFileds([])
     setOnModalOk(undefined)
@@ -105,7 +108,7 @@ export default function ServiceView(props: {
   const viewService = new ViewService(
     setLoading,
     async (
-      title: string,
+      title: string | { title: string, subTitle: string },
       fields: IPromptField<any, any>[],
       onOk: (...paras: any) => Promise<boolean | undefined>
     ): Promise<boolean> => {
@@ -113,7 +116,13 @@ export default function ServiceView(props: {
         resolveModalPromise(false);
         modalPromise.resolve = resolve;
         const setStates = () => {
-          setModalTitle(title)
+          if (typeof title == 'string') {
+
+            setModalTitle(title)
+          } else {
+            setModalTitle(title.title)
+            setModalSubTitle(title.subTitle)
+          }
           setModalFileds(fields)
           setOnModalOk({ onOk })
           setModalVisible(true)
@@ -260,7 +269,14 @@ export default function ServiceView(props: {
     <>
       <input type="file" className="hidden" ref={refFile}></input>
       <Modal
-        title={modalTitle}
+        title={modalSubTitle ? <><div className='title'>
+          {modalTitle}
+        </div>
+          <div className='sub-title'>
+            {modalSubTitle}
+          </div></> : <div className='title'>
+            {modalTitle}
+          </div>}
         visible={modalVisible}
         onOk={applyModal}
         onCancel={() => cancleModal(false)}
@@ -319,6 +335,10 @@ export default function ServiceView(props: {
               case 'Label':
                 return (
                   <label >{field.value}</label>
+                )
+              case 'Markdown':
+                return (
+                  <ReactMarkdown source={field.value} linkTarget="_blank"></ReactMarkdown>
                 )
               case 'Password':
                 return (

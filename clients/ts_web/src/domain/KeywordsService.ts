@@ -65,7 +65,7 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
         if (this._caches) {
             this._caches = undefined
         }
-        await ClientRun(this, () => this.locate(KeywordsServiceClient).updateUrl(
+        await ClientRun(this, () => this.locate(KeywordsServiceClient).updateDescription(
             new KeywordDto().setId(id).setDescription(description || ''), null))
     }
 

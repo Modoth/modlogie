@@ -2,7 +2,7 @@ import ILangsService from '../../domain/ILangsService'
 import { ArticleContentType } from '../../plugins/IPluginInfo'
 import Article from '../../domain/Article'
 
-export interface IPromptField<TValue, TType extends 'Label' | 'Text' | 'TreeSelect' | 'Password' | 'Enum' | 'File' | 'Image' | 'TextFile' | 'Video'> {
+export interface IPromptField<TValue, TType extends 'Markdown' | 'Label' | 'Text' | 'TreeSelect' | 'Password' | 'Enum' | 'File' | 'Image' | 'TextFile' | 'Video'> {
   type: TType;
   hint?: string;
   value: TValue;
@@ -37,7 +37,7 @@ export default class IViewService {
     throw new Error('Method not implemented.')
   }
 
-  prompt(title: string, fields: IPromptField<any, any>[], onOk: (...paras: any) => Promise<boolean | undefined>): Promise<boolean> {
+  prompt(title: string | { title: string, subTitle: string }, fields: IPromptField<any, any>[], onOk: (...paras: any) => Promise<boolean | undefined>): Promise<boolean> {
     throw new Error('Method not implemented.')
   }
 
