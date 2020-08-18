@@ -12,6 +12,7 @@ export default class NavigationService extends IServicesLocator implements INavi
         }
         var keywordsService = this.locate(IKeywordsService)
         var async: boolean | undefined = undefined;
+        var desc = '';
         if (!url || url === window.origin || url === `${window.origin}/`) {
             await Promise.all([
                 sleep(200).then(() => {
@@ -19,8 +20,9 @@ export default class NavigationService extends IServicesLocator implements INavi
                         async = true;
                     }
                 }),
-                keywordsService.getUrl(title).then((s) => {
-                    url = s;
+                keywordsService.get(title).then((s) => {
+                    url = s.url;
+                    desc = s.description || '';
                     if (async === undefined) {
                         async = false;
                     }

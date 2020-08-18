@@ -81,6 +81,22 @@ body {
   background: #ffcccc40 !important;
 }
 
+.float-menus {
+  position: fixed;
+  right: 0;
+  margin: 10px;
+  z-index: 2;
+  display: flex;
+  bottom: 1em;
+  flex-direction: column;
+  opacity: 0.8;
+
+  & button {
+    box-shadow: 1px 1px 3px #0008;
+    margin-block-end: 10px;
+  }
+}
+
 @media print {
   body {
     background-color: transparent;

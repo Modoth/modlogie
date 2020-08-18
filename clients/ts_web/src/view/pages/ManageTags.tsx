@@ -220,14 +220,15 @@ export function ManageTags() {
         dataSource={tags}
         pagination={false}
       ></Table>
-      <Button
-        icon={<PlusOutlined />}
-        className="btn-create"
-        type="dashed"
-        onClick={addTag}
-      >
-        {langs.get(LangKeys.Create)}
-      </Button>
+      <div className="float-menus">
+        <Button
+          icon={<PlusOutlined />}
+          type="default"
+          size="large" shape="circle"
+          onClick={addTag}
+        >
+        </Button>
+      </div>
     </div>
   )
 }

@@ -272,6 +272,7 @@ export default function ServiceView(props: {
               : {}
             : { display: 'None' }
         }
+        className={modalFields.length ? '' : 'empty-modal'}
       >
         <Space direction="vertical" className="modal-fields">
           {modalFields.map((field, i) => {

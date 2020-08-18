@@ -90,6 +90,7 @@ namespace Modlogie.Api
                 endpoints.MapGrpcService<Services.TagsService>();
                 endpoints.MapGrpcService<Services.FilesService>();
                 endpoints.MapGrpcService<Services.UsersService>();
+                endpoints.MapGrpcService<Services.KeywordsService>();
 
                 endpoints.MapGet("/", async context =>
                 {

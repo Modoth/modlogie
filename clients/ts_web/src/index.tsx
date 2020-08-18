@@ -57,6 +57,7 @@ import INavigationService from './view/services/INavigationService'
 import NavigationService from './view/services/NavigationService'
 import IKeywordsService from './domain/IKeywordsService'
 import KeywordsService from './domain/KeywordsService'
+import { KeywordsServiceClient } from './apis/KeywordsServiceClientPb'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
@@ -155,6 +156,7 @@ const buildServicesLocator = () => {
   serviceLocator.registerFactory(TagsServiceClient, () => new TagsServiceClient(clientHost, null, null));
   serviceLocator.registerFactory(FilesServiceClient, () => new FilesServiceClient(clientHost, null, null));
   serviceLocator.registerFactory(UsersServiceClient, () => new UsersServiceClient(clientHost, null, null));
+  serviceLocator.registerFactory(KeywordsServiceClient, () => new KeywordsServiceClient(clientHost, null, null));
 
   let w = window as any;
   if (w.autoAccountService) {

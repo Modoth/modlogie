@@ -60,6 +60,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Create = '创建';
   DefaultValue = '默认值';
   Delete = '删除';
+  Description = '描述';
   Detail = '详情';
   Dislike = '踩';
   Edit = '编辑';
@@ -70,6 +71,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Favorite = '收藏';
   Home = '首页';
   Import = '导入';
+  Keyword = '关键字';
   Latest = '最近更新';
   Like = '赞';
   Login = '登陆';
@@ -97,6 +99,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Tags = '标签';
   Type = '类型';
   UnknownError = '失败了';
+  Url = 'Url';
   User = '用户';
   UserName = '用户名';
   Value = '值';

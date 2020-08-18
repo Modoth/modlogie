@@ -120,6 +120,9 @@ function Nav() {
               <Menu.Item icon={<TagsOutlined />}>
                 <Link to="/manage/configs">{langs.get(LangKeys.Configs)}</Link>
               </Menu.Item>
+              <Menu.Item icon={<TagsOutlined />}>
+                <Link to="/manage/keywords">{langs.get(LangKeys.Keyword)}</Link>
+              </Menu.Item>
               <Menu.Item icon={<UsergroupAddOutlined />}>
                 <Link to="/manage/users">{langs.get(LangKeys.User)}</Link>
               </Menu.Item>

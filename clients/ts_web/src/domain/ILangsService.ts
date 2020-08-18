@@ -16,7 +16,8 @@ export class LangKeysInterface {
   Create = 'Create';
   DefaultValue = 'DefaultValue';
   Delete = 'Delete';
-  Detail = '详情';
+  Description = 'Description';
+  Detail = 'Detail';
   Dislike = 'Dislike';
   Edit = 'Edit';
   Email = 'Email';
@@ -26,6 +27,7 @@ export class LangKeysInterface {
   Favorite = 'Favorite';
   Home = 'Home';
   Import = 'Import';
+  Keyword = 'Keyword';
   Latest = 'Latest';
   Like = 'Like';
   Login = 'Login';
@@ -53,6 +55,7 @@ export class LangKeysInterface {
   Tags = 'Tags';
   Type = 'Type';
   UnknownError = 'UnknownError';
+  Url = 'Url';
   User = 'User';
   UserName = 'UserName';
   Value = 'Value';

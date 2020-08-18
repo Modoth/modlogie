@@ -23,7 +23,7 @@ export function ManageUsers() {
   const [filter, setFilter] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
-  const countPerPage = 2
+  const countPerPage = 10
   const fetchUsers = async (page: number) => {
     if (page === undefined) {
       page = currentPage
@@ -249,14 +249,15 @@ export function ManageUsers() {
           ></Pagination>
         </>
       ) : null}
-      <Button
-        icon={<PlusOutlined />}
-        className="btn-create"
-        type="dashed"
-        onClick={addUser}
-      >
-        {langs.get(LangKeys.Create)}
-      </Button>
+      <div className="float-menus">
+        <Button
+          icon={<PlusOutlined />}
+          type="default"
+          size="large" shape="circle"
+          onClick={addUser}
+        >
+        </Button>
+      </div>
     </div>
   )
 }

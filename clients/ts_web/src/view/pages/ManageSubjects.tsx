@@ -455,22 +455,22 @@ export function ManageSubjects() {
         dataSource={subjects}
         pagination={false}
       ></Table>
-      <Button
-        icon={<SisternodeOutlined />}
-        onClick={() => addSubject()}
-        className="btn-create"
-        type="dashed"
-      >
-        {langs.get(LangKeys.Create)}
-      </Button>
-      <Button
-        icon={<UploadOutlined />}
-        onClick={() => importTo()}
-        className="btn-import"
-        type="dashed"
-      >
-        {langs.get(LangKeys.Import)}
-      </Button>
+      <div className="float-menus">
+        <Button
+          icon={<SisternodeOutlined />}
+          type="default"
+          size="large" shape="circle"
+          onClick={() => addSubject()}
+        >
+        </Button>
+        <Button
+          icon={<UploadOutlined />}
+          type="default"
+          size="large" shape="circle"
+          onClick={() => importTo()}
+        >
+        </Button>
+      </div>
     </div>
   )
 }
