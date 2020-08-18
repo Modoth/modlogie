@@ -144,7 +144,28 @@ export function ManageKeywords() {
   }, [filter])
 
   const renderId = (_: string, keyword: Keyword) => {
-    return <span >{keyword.id}</span>
+    return <span onClick={() => {
+      const title = keyword.id
+      const url = keyword.url
+      const desc = keyword.description;
+      locator.locate(IViewService).prompt(
+        url ? { title, subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url } : title, [
+        ...(desc ? [{
+          type: 'Markdown',
+          value: desc
+        }] : [])
+      ], async () => {
+        if (!url) {
+          return
+        }
+        if (new URL(url!).hostname === window.location.hostname) {
+          window.location.href = url!;
+        } else {
+          window.open(url, '_blank');
+        }
+        return true;
+      })
+    }}>{keyword.id}</span>
   }
 
   const renderUrl = (_: string, keyword: Keyword) => {
@@ -155,7 +176,7 @@ export function ManageKeywords() {
     return <span onClick={() => updateDescription(keyword)}><Button
       type="link"
       icon={<EditOutlined />}
-    />{keyword.description || ''}</span>
+    /><span className='description'>{keyword.description || ''}</span></span>
   }
 
   const renderDelete = (_: string, keyword: Keyword) => {
@@ -169,7 +190,7 @@ export function ManageKeywords() {
     )
   }
   return (
-    <div className="manage-users">
+    <div className="manage-keywords">
       <Table
         rowKey="id"
         columns={[

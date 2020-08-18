@@ -338,7 +338,7 @@ export default function ServiceView(props: {
                 )
               case 'Markdown':
                 return (
-                  <ReactMarkdown source={field.value} linkTarget="_blank"></ReactMarkdown>
+                  <ReactMarkdown className="md" source={field.value} linkTarget="_blank"></ReactMarkdown>
                 )
               case 'Password':
                 return (
