@@ -1,0 +1,1 @@
+ALTER TABLE `File` ADD `Published` datetime(6) DEFAULT NULL, ADD KEY `IX_File_Published` (`Published`);

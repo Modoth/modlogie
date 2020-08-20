@@ -109,6 +109,7 @@ namespace Modlogie.Api.Services
             Content = i.Content ?? string.Empty,
             Comment = i.Comment ?? string.Empty,
             Private = i.Private == 1ul,
+            Published = i.Published.HasValue ? i.Published.Value.ToUniversalTime().ToTimestamp() : new Timestamp(),
             AdditionalType = i.AdditionalType ?? 0,
             FileTagsForSelect = i.FileTags != null ? i.FileTags.Select(t => new FileTag { TagId = t.TagId.ToString(), Value = t.Value }) : null
         };
@@ -215,6 +216,9 @@ namespace Modlogie.Api.Services
                             break;
                         case nameof(Modlogie.Domain.Models.File.Modified):
                             orderBy = node => node.Modified;
+                            break;
+                        case nameof(Modlogie.Domain.Models.File.Published):
+                            orderBy = node => node.Published;
                             break;
                     }
                     if (orderBy == null)
@@ -379,7 +383,7 @@ namespace Modlogie.Api.Services
                 }
                 existedFiles.Add(key);
             }
-            var file = new Modlogie.Domain.Models.File { Type = (int)FileType.Folder, Name = item.Name, Created = created, Modified = created };
+            var file = new Modlogie.Domain.Models.File { Type = (int)FileType.Folder, Name = item.Name, Created = created, Modified = created, Published = created };
             files.Add(file);
             if (parent != null)
             {
@@ -549,6 +553,36 @@ namespace Modlogie.Api.Services
             {
                 await ClearFolderVersionsCache();
             }
+            return reply;
+        }
+        public async override Task<Reply> UpdatePublished(UpdatePublishedRequest request, ServerCallContext context)
+        {
+            var reply = new Reply();
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
+            {
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
+                return reply;
+            }
+            if (!Guid.TryParse(request.Id, out Guid id))
+            {
+                reply.Error = Error.InvalidArguments;
+                return reply;
+            }
+
+            var item = await _service.All().Where(i => i.Id == id).Include(i => i.FileTags).ThenInclude(t => t.Tag).FirstOrDefaultAsync();
+            if (item == null)
+            {
+                reply.Error = Error.NoSuchEntity;
+                return reply;
+            }
+            item.Published = request.Published.ToDateTime().ToUniversalTime();
+            await _service.Update(item);
             return reply;
         }
 
@@ -947,7 +981,7 @@ namespace Modlogie.Api.Services
                 reply.Error = Error.NoSuchEntity;
                 return reply;
             }
-            var file = new Modlogie.Domain.Models.File { Type = (int)FileType.Resource, Name = Guid.NewGuid().ToString(), Parent = parent, Created = DateTime.Now, Modified = DateTime.Now };
+            var file = new Modlogie.Domain.Models.File { Type = (int)FileType.Resource, Name = Guid.NewGuid().ToString(), Parent = parent, Created = DateTime.Now, Modified = DateTime.Now, Published = DateTime.Now };
             file.Private = request.Private ? 1ul : 0; ;
             file.Path = JoinPath(parent.Path, file.Name);
             if (string.IsNullOrWhiteSpace(type))

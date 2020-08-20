@@ -47,6 +47,7 @@ export default function SectionsBaseViewer(TSectionViewer: { (props: SectionView
       }
       }>
         {props.showTitle ? <h4 className="article-title">{props.title}</h4> : null}
+        {props.tags && props.tags.length ? props.tags.map(t => <span key={t.name}></span>) : null}
         {
           TAdditionalSectionsViewerMemo ?
             <TAdditionalSectionsViewerMemo sections={sections} filesDict={filesDict} ></TAdditionalSectionsViewerMemo> :

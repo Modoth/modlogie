@@ -14,6 +14,7 @@
 import * as grpcWeb from 'grpc-web';
 
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
+import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb';
 import * as messages_pb from './messages_pb';
 
 import {
@@ -33,7 +34,8 @@ import {
   UpdateAdditionalTypeRequest,
   UpdateCommentRequest,
   UpdateContentRequest,
-  UpdateNameRequest} from './files_pb';
+  UpdateNameRequest,
+  UpdatePublishedRequest} from './files_pb';
 
 export class FilesServiceClient {
   client_: grpcWeb.AbstractClientBase;
@@ -364,6 +366,45 @@ export class FilesServiceClient {
     request,
     metadata || {},
     this.methodInfoUpdateName);
+  }
+
+  methodInfoUpdatePublished = new grpcWeb.AbstractClientBase.MethodInfo(
+    messages_pb.Reply,
+    (request: UpdatePublishedRequest) => {
+      return request.serializeBinary();
+    },
+    messages_pb.Reply.deserializeBinary
+  );
+
+  updatePublished(
+    request: UpdatePublishedRequest,
+    metadata: grpcWeb.Metadata | null): Promise<messages_pb.Reply>;
+
+  updatePublished(
+    request: UpdatePublishedRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: messages_pb.Reply) => void): grpcWeb.ClientReadableStream<messages_pb.Reply>;
+
+  updatePublished(
+    request: UpdatePublishedRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.Error,
+               response: messages_pb.Reply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        new URL('/modlogie.file.FilesService/UpdatePublished', this.hostname_).toString(),
+        request,
+        metadata || {},
+        this.methodInfoUpdatePublished,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/modlogie.file.FilesService/UpdatePublished',
+    request,
+    metadata || {},
+    this.methodInfoUpdatePublished);
   }
 
   methodInfoMove = new grpcWeb.AbstractClientBase.MethodInfo(

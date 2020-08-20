@@ -3,11 +3,12 @@ import IArticleService from "./IArticleService"
 import { ClientRun } from "../common/GrpcUtils"
 import { FilesServiceClient } from "../apis/FilesServiceClientPb"
 import { StringId } from "../apis/messages_pb"
-import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest, AddResourceRequest, UpdateCommentRequest, UpdateAdditionalTypeRequest } from "../apis/files_pb"
+import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest, AddResourceRequest, UpdateCommentRequest, UpdateAdditionalTypeRequest, UpdatePublishedRequest } from "../apis/files_pb"
 import ITagsService from "./ITagsService"
 import FilesServiceBase from "./FilesServiceBase"
 import IConfigsService from "./IConfigsSercice"
 import ConfigKeys from "../app/ConfigKeys"
+import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb"
 
 export default class ArticleService extends FilesServiceBase implements IArticleService {
 
@@ -36,6 +37,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
             name: item.getName(),
             id: item.getId(),
             subjectId: item.getParentId(),
+            published: item.getPublished()!.toDate(),
             additionalType: item.getAdditionalType() as ArticleAdditionalType,
             tags,
             tagsDict: new Map(tags.map(t => [t.name, t]))
@@ -129,6 +131,12 @@ export default class ArticleService extends FilesServiceBase implements IArticle
 
     async updateAdditionalType(id: string, type: ArticleAdditionalType): Promise<void> {
         await ClientRun(this, () => this.locate(FilesServiceClient).updateAdditionalType(new UpdateAdditionalTypeRequest().setId(id).setAdditionalType(type), null))
+    }
+
+    async updatePublished(id: string, published: Date): Promise<void> {
+        var publishedDate = new Timestamp();
+        publishedDate.fromDate(published)
+        await ClientRun(this, () => this.locate(FilesServiceClient).updatePublished(new UpdatePublishedRequest().setId(id).setPublished(publishedDate), null))
     }
 
     async move(articleId: string, subjectId: string): Promise<Article> {

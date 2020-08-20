@@ -8,6 +8,8 @@ export interface ArticleType {
   subTypes?: string[];
   subTypeTag?: string;
   rootSubjectId?: string;
+  orderBy?: string,
+  orderByDesc?: boolean,
   initArticleCount?: number;
   defaultSections?: string;
   iconUrl?: string;

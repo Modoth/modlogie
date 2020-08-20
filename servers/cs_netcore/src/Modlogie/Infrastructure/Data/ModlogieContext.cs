@@ -59,6 +59,8 @@ namespace Modlogie.Infrastructure.Data
 
                 entity.HasIndex(e => e.Private);
 
+                entity.HasIndex(e => e.Published);
+
                 entity.HasIndex(e => e.Type);
 
                 entity.Property(e => e.Id)

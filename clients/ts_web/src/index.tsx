@@ -72,6 +72,11 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       hiddenPlugin = true;
       pluginName = pluginName.slice(1);
     }
+    let orderByPublishedDesc = false
+    if (pluginName.startsWith('^')) {
+      orderByPublishedDesc = true;
+      pluginName = pluginName.slice(1);
+    }
     switch (pluginName) {
       case 'Modlang':
         plugin = new ModlangPluginInfo(names);
@@ -88,7 +93,15 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     }
     if (plugin) {
       if (hiddenPlugin) {
-        plugin.types.forEach(t => t.admOnly = true)
+        plugin.types.forEach(t => {
+          t.admOnly = true
+        })
+      }
+      if (orderByPublishedDesc) {
+        plugin.types.forEach(t => {
+          t.orderBy = 'Published'
+          t.orderByDesc = true
+        })
       }
       plugins.push(plugin);
     }

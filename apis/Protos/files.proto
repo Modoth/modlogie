@@ -1,6 +1,7 @@
 syntax = "proto3";
 package modlogie.file;
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "messages.proto";
 option csharp_namespace = "Modlogie.Api.Files";
 
@@ -13,6 +14,7 @@ service FilesService {
   rpc GetResourceById(modlogie.messages.StringId) returns (FileReply);
   rpc AddResource(AddResourceRequest) returns (ResourceReply);
   rpc UpdateName(UpdateNameRequest) returns (FileReply);
+  rpc UpdatePublished(UpdatePublishedRequest) returns (modlogie.messages.Reply);
   rpc Move(MoveRequest) returns (FileReply);
   rpc UpdateContent(UpdateContentRequest) returns (modlogie.messages.Reply);
   rpc UpdateAdditionalType(UpdateAdditionalTypeRequest)
@@ -114,7 +116,8 @@ message File {
   string comment = 8;
   bool private = 9;
   int32 additional_type = 10;
-  repeated FileTag tags = 11;
+  google.protobuf.Timestamp published = 11;
+  repeated FileTag tags = 12;
 }
 
 message FilesReply {
@@ -158,6 +161,11 @@ message FileReply {
 message UpdateNameRequest {
   string id = 1;
   string name = 2;
+}
+
+message UpdatePublishedRequest {
+  string id = 1;
+  google.protobuf.Timestamp published = 2;
 }
 
 message UpdateContentRequest {

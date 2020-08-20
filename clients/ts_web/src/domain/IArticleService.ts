@@ -34,4 +34,8 @@ export default class IArticleService extends IFilesServiceBase {
     updateAdditionalType(id: string, type: ArticleAdditionalType): Promise<void> {
         throw new Error('Method not implemented.')
     }
+
+    updatePublished(id: string, published: Date): Promise<void> {
+        throw new Error('Method not implemented.')
+    }
 }

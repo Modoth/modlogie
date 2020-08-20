@@ -35,6 +35,7 @@ export default interface Article {
   name?: string;
   additionalType?: ArticleAdditionalType,
   content?: ArticleContent;
+  published?: Date,
   files?: ArticleFile[];
   tags?: Array<ArticleTag>;
   tagsDict?: Map<string, ArticleTag>;

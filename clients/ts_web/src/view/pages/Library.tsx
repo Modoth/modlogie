@@ -218,6 +218,12 @@ export default function Library(props: LibraryProps) {
               .setProp(t.name).setValue(t.value!))
         ])
       )
+      if (props.type.orderBy) {
+        query.setOrderBy(props.type.orderBy)
+        if (props.type.orderByDesc) {
+          query.setOrderByDesc(true)
+        }
+      }
     }
 
     return await locator.locate(IArticleService).query(query, filter, skip, take)

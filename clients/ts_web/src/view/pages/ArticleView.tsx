@@ -8,7 +8,7 @@ import Article, { ArticleFile, ArticleContent, ArticleTag, ArticleAdditionalType
 import { useUser, useServicesLocator } from '../../app/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
-import { Card, Button, Select, TreeSelect, Badge, Menu } from 'antd'
+import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker } from 'antd'
 const { SubMenu } = Menu
 import {
   UploadOutlined,
@@ -49,6 +49,7 @@ import MenuItem from 'antd/lib/menu/MenuItem'
 import IFavoritesServer from '../../domain/IFavoritesServer'
 import ILikesService from '../../domain/ILikesService'
 import ConfigKeys from '../../app/ConfigKeys'
+import moment from 'moment'
 
 const { Option } = Select
 
@@ -91,6 +92,7 @@ export default function ArticleView(props: {
   const [type, setType] = useState<ArticleContentType | undefined>(undefined)
   const [inArticleList, setInArticleList] = useState(articleListService.has(props.article))
   const [content, setContent] = useState(props.article.content || {})
+  const [published, setPublished] = useState(props.article.published)
   const [name, setName] = useState(props.article.name)
   const [favoriteService] = useState(locator.locate(IFavoritesServer))
   const [favorite, setFavorite] = useState(false)
@@ -241,7 +243,7 @@ export default function ArticleView(props: {
         Promise.all([
           props.article.lazyLoading!(),
           props.article.lazyLoadingAddition!()
-        ]).then(()=>{
+        ]).then(() => {
           setContent(props.article.content!)
           setFiles(props.article.files!)
           setAdditionalLoaded(true);
@@ -458,7 +460,18 @@ export default function ArticleView(props: {
               ))}
             </Select>
           ))
-        ]}</div>) : null
+        ]}
+          <DatePicker showToday={true} clearIcon={false} value={moment(published)} onChange={async e => {
+            try {
+              var date = e!.toDate()
+              await locator.locate(IArticleService).updatePublished(props.article.id!, date);
+              setPublished(date)
+              return true
+            } catch (e) {
+              viewService!.errorKey(langs, e.message)
+            }
+          }} />
+        </div>) : null
       }
       {
         editing ? (

@@ -1,6 +1,7 @@
 import * as jspb from "google-protobuf"
 
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
+import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb';
 import * as messages_pb from './messages_pb';
 
 export class IncDecTagRequest extends jspb.Message {
@@ -323,6 +324,11 @@ export class File extends jspb.Message {
   getAdditionalType(): number;
   setAdditionalType(value: number): File;
 
+  getPublished(): google_protobuf_timestamp_pb.Timestamp | undefined;
+  setPublished(value?: google_protobuf_timestamp_pb.Timestamp): File;
+  hasPublished(): boolean;
+  clearPublished(): File;
+
   getTagsList(): Array<FileTag>;
   setTagsList(value: Array<FileTag>): File;
   clearTagsList(): File;
@@ -348,6 +354,7 @@ export namespace File {
     comment: string,
     pb_private: boolean,
     additionalType: number,
+    published?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     tagsList: Array<FileTag.AsObject>,
   }
 
@@ -547,6 +554,30 @@ export namespace UpdateNameRequest {
   export type AsObject = {
     id: string,
     name: string,
+  }
+}
+
+export class UpdatePublishedRequest extends jspb.Message {
+  getId(): string;
+  setId(value: string): UpdatePublishedRequest;
+
+  getPublished(): google_protobuf_timestamp_pb.Timestamp | undefined;
+  setPublished(value?: google_protobuf_timestamp_pb.Timestamp): UpdatePublishedRequest;
+  hasPublished(): boolean;
+  clearPublished(): UpdatePublishedRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdatePublishedRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdatePublishedRequest): UpdatePublishedRequest.AsObject;
+  static serializeBinaryToWriter(message: UpdatePublishedRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdatePublishedRequest;
+  static deserializeBinaryFromReader(message: UpdatePublishedRequest, reader: jspb.BinaryReader): UpdatePublishedRequest;
+}
+
+export namespace UpdatePublishedRequest {
+  export type AsObject = {
+    id: string,
+    published?: google_protobuf_timestamp_pb.Timestamp.AsObject,
   }
 }
 

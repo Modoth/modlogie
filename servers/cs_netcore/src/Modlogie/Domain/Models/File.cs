@@ -23,6 +23,7 @@ namespace Modlogie.Domain.Models
         public string Comment { get; set; }
         public ulong? Private { get; set; }
         public int? AdditionalType { get; set; }
+        public DateTime? Published { get; set; }
 
         public virtual File Parent { get; set; }
         public virtual ICollection<FileTag> FileTags { get; set; }
