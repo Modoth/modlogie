@@ -127,7 +127,7 @@ export default function ArticleView(props: {
           await articleService.updateArticleContent(
             props.article,
             content,
-            type?.hidenSections,
+            type?.additionalSections,
             newFiles
           )
           setFiles(newFiles)
@@ -172,7 +172,7 @@ export default function ArticleView(props: {
         newContent.sections !== undefined &&
         newContent.sections !== content?.sections
       ) {
-        await service.updateArticleContent(props.article, newContent, type?.hidenSections, files,)
+        await service.updateArticleContent(props.article, newContent, type?.additionalSections, files,)
         setContent(newContent)
       }
       setEditing(false)
@@ -314,7 +314,7 @@ export default function ArticleView(props: {
       setAdditionalLoaded(true);
       viewService.setLoading(false);
     }
-    locator.locate(IViewService).previewArticle({ name, content, files }, type)
+    locator.locate(IViewService).previewArticle(Object.assign({}, props.article, { name, content, files }), type)
   }
   const toogleFavorite = async () => {
     try {

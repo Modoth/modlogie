@@ -30,7 +30,7 @@ export interface ArticleContentEditorCallbacks<T> {
 export interface ArticleContentType {
   name: string,
   noTitle?: boolean;
-  hidenSections: Set<string>,
+  additionalSections: Set<string>,
   allSections: Set<string>,
   articleType: ArticleType,
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
@@ -45,6 +45,7 @@ export interface ArticleContentViewerCallbacks {
 export class ArticleContentViewerProps {
   title?: string
   showTitle?: boolean
+  published?: Date
   content: ArticleContent
   files?: ArticleFile[]
   tags?: Tag[]

@@ -45,7 +45,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                 }
             </div>
             <div ref={ref} className="article">
-                <props.type.Viewer viewerCallbacks={callbacks} showHiddens={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+                <props.type.Viewer published={props.article.published} viewerCallbacks={callbacks} showHiddens={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
             </div>
         </div>
     )

@@ -18,4 +18,5 @@ export default interface SectionViewerProps {
     onClick?: MouseEventHandler<any>
     callbacks?: SectionViewerCallbacks
     pureViewMode: boolean
+    className?: string;
 }
