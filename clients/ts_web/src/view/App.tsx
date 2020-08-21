@@ -13,6 +13,8 @@ import ITextImageService from './services/ITextImageService'
 import IConfigsService from '../domain/IConfigsSercice'
 import ConfigKeys from '../app/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
+import { uriTransformer } from 'react-markdown'
+import INavigationService from './services/INavigationService'
 
 
 let savedScrollTop = 0
@@ -39,6 +41,16 @@ export default function App() {
       }`;
     })()
   }, [])
+  const navigateTo = async (title: string | undefined, url: string | undefined) => {
+    var viewService = locator.locate(IViewService)
+    viewService.setLoading(true);
+    try {
+      await locator.locate(INavigationService).promptGoto(title, url);
+    }
+    finally {
+      viewService.setLoading(false);
+    }
+  }
   return (
     <>
       <UserContext.Provider value={user}>
@@ -65,7 +77,15 @@ export default function App() {
             }
           }}
         ></ServiceView>
-        <div ref={ref} className="nav-content-wrapper">
+        <div onClick={(e) => {
+          if ((e.target as any)?.nodeName === 'A') {
+            const a: HTMLLinkElement = e.target as HTMLLinkElement
+            e.stopPropagation();
+            e.preventDefault();
+            navigateTo(a.innerText.trim(), a.href && uriTransformer(a.href))
+            return
+          }
+        }} ref={ref} className="nav-content-wrapper">
           <HashRouter >
             <style ref={bgRef} >
             </style>
