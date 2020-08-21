@@ -15,6 +15,51 @@ import ILangsService from '../../domain/ILangsService';
 const maxColumn = 3;
 const maxBorderStyle = 4;
 
+const getColumnCountKey = () => 'ARTICLES_COLUMN_COUNT'
+const loadColumnCount = () => {
+    var count = localStorage.getItem(getColumnCountKey())
+    if (!count) {
+        return 0
+    }
+    return parseInt(count) || 0
+}
+const saveColumnCount = (count: number) => {
+    if (count) {
+        localStorage.setItem(getColumnCountKey(), count.toString())
+    } else {
+        localStorage.removeItem(getColumnCountKey())
+    }
+}
+
+const getBorderStyleKey = () => 'ARTICLES_BORDER_STYLE'
+const loadBorderStyle = () => {
+    var style = localStorage.getItem(getBorderStyleKey())
+    if (!style) {
+        return 0
+    }
+    return parseInt(style) || 0
+}
+const saveBorderStyle = (style: number) => {
+    if (style) {
+        localStorage.setItem(getBorderStyleKey(), style.toString())
+    } else {
+        localStorage.removeItem(getBorderStyleKey())
+    }
+}
+
+const getShowIndexKey = () => 'ARTICLES_SHOW_INDEX'
+const loadShowIndex = () => {
+    var paging = localStorage.getItem(getShowIndexKey())
+    return paging === 'true'
+}
+const saveShowIndex = (paging: boolean) => {
+    if (paging) {
+        localStorage.setItem(getShowIndexKey(), 'true')
+    } else {
+        localStorage.removeItem(getShowIndexKey())
+    }
+}
+
 export default function ArticleList() {
     const locator = useServicesLocator()
     const viewService = locator.locate(IViewService)
@@ -61,9 +106,9 @@ export default function ArticleList() {
         }
     }
     const smallScreen = window.matchMedia && window.matchMedia("(max-width: 780px)")?.matches
-    const [columnCount, setColumnCount] = useState(smallScreen ? 1 : 2)
-    const [borderStyle, setBorderStyle] = useState(2)
-    const [showIdx, setShowIdx] = useState(false)
+    const [columnCount, setColumnCount] = useState(loadColumnCount() || (smallScreen ? 1 : 2))
+    const [borderStyle, setBorderStyle] = useState(loadBorderStyle() || maxBorderStyle)
+    const [showIdx, setShowIdx] = useState(loadShowIndex() || false)
     useEffect(() => {
         fetchArticles()
     }, [])
@@ -76,9 +121,21 @@ export default function ArticleList() {
             <div className="article-list-menus" onClick={e => e.stopPropagation()}>
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} />
                 <span className="spilter"></span>
-                <Button type="link" size="large" icon={<OrderedListOutlined />} onClick={() => setShowIdx(!showIdx)} />
-                <Button type="link" size="large" icon={<PicRightOutlined />} onClick={() => setColumnCount(((columnCount) % maxColumn) + 1)} />
-                <Button type="link" size="large" icon={<BorderBottomOutlined />} onClick={() => setBorderStyle(((borderStyle) % maxBorderStyle) + 1)} />
+                <Button type="link" size="large" icon={<OrderedListOutlined />} onClick={() => {
+                    var next = !showIdx;
+                    setShowIdx(next)
+                    saveShowIndex(next)
+                }} />
+                <Button type="link" size="large" icon={<PicRightOutlined />} onClick={() => {
+                    var next = ((columnCount) % maxColumn) + 1
+                    setColumnCount(next)
+                    saveColumnCount(next)
+                }} />
+                <Button type="link" size="large" icon={<BorderBottomOutlined />} onClick={() => {
+                    var next = ((borderStyle) % maxBorderStyle) + 1
+                    setBorderStyle(next)
+                    saveBorderStyle(next)
+                }} />
                 {
                     <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} />
                 }
