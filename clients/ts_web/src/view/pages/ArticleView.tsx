@@ -15,6 +15,7 @@ import {
   CheckOutlined,
   EditOutlined,
   PrinterFilled,
+  PlusCircleFilled,
   UpSquareOutlined,
   UpSquareFilled,
   HeartOutlined,
@@ -23,6 +24,7 @@ import {
   DislikeOutlined,
   ExpandOutlined,
   PrinterOutlined,
+  PlusCircleOutlined,
   MinusOutlined,
   EllipsisOutlined,
   DownOutlined,
@@ -382,7 +384,7 @@ export default function ArticleView(props: {
             </Badge></MenuItem> : null,
             user.printPermission ? (inArticleList ?
               <MenuItem key='remove-print'><Badge >
-                <Button type="link" icon={<PrinterFilled />} onClick={() => {
+                <Button type="link" icon={<PlusCircleFilled />} onClick={() => {
                   articleListService.remove(props.article)
                   setInArticleList(articleListService.has(props.article))
                 }}
@@ -390,7 +392,7 @@ export default function ArticleView(props: {
               </Badge></MenuItem>
               :
               <MenuItem key="add-print"><Badge className="printer-icons">
-                <Button type="link" icon={<PrinterOutlined />} onClick={() => {
+                <Button type="link" icon={<PlusCircleOutlined />} onClick={() => {
                   articleListService.add(props.article, type, () => {
                     setInArticleList(false);
                   })

@@ -88,11 +88,9 @@
 }
 
 .article-list {
-  counter-reset: math-print-article;
-
   &.show-idx > .article > .section-viewer:first-child::before {
-    counter-increment: math-print-article;
-    content: counter(math-print-article) "、 ";
+    counter-increment: article-list;
+    content: counter(article-list) "、 ";
   }
 
   & > .article.problem-viewer {

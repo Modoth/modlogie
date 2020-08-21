@@ -76,24 +76,10 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
         <div className={classNames("single-article", getThemeClass(currentTheme), paging ? 'paging' : '')}>
             <div className={classNames("menus")} onClick={e => e.stopPropagation()}>
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>
-                {props.type.noTitle ? null : <div className={classNames("title")}>{props.article.name}</div>}
-                {
-                    !paging ?
-                        <Dropdown overlay={
-                            <Menu>
-                                <Menu.Item>
-                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} >{langs.get(LangKeys.ScreenShot)}</Button>
-                                </Menu.Item>
-                                {
-                                    sections.map(section => <Menu.Item onClick={() => {
-                                        callbacks.gotoSection && callbacks.gotoSection(section)
-                                    }}>{section}</Menu.Item>)
-                                }
-                            </Menu>}>
-                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<UnorderedListOutlined />} onClick={(e) => e.preventDefault()} ></Button>
-                        </Dropdown>
-                        : null
-                }
+                {props.type.noTitle ? <div className={classNames("title")}></div> : <div className={classNames("title")}>{props.article.name}</div>}
+                {!paging ? <Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} ></Button>
+                    : null}
+
                 {smallScreen ? <Dropdown overlay={
                     <Menu>
                         <Menu.Item>
@@ -123,6 +109,20 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                     <Button onClick={prePage} type="link" size="large" className="paging-button paging-button-left" icon={<LeftCircleOutlined />} ></Button>
                     <Button onClick={nextPage} type="link" size="large" className="paging-button paging-button-right" icon={<RightCircleOutlined />} ></Button>
                 </div> : null}
+                {
+                    !paging ?
+                        <Dropdown overlay={
+                            <Menu>
+                                {
+                                    sections.map(section => <Menu.Item onClick={() => {
+                                        callbacks.gotoSection && callbacks.gotoSection(section)
+                                    }}>{section}</Menu.Item>)
+                                }
+                            </Menu>}>
+                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<UnorderedListOutlined />} onClick={(e) => e.preventDefault()} ></Button>
+                        </Dropdown>
+                        : null
+                }
             </div>
             <div ref={ref} className={classNames("article")}>
                 <props.type.Viewer published={props.article.published} viewerCallbacks={callbacks} showHiddens={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>

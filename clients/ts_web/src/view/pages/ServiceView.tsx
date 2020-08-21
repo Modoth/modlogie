@@ -389,7 +389,8 @@ export default function ServiceView(props: {
                   a.click();
                   setPreviewImgUrl('')
                 }} />
-                <Button type="primary" danger size="large" shape="circle" icon={<CloseOutlined />} onClick={() => {
+                <Button type="primary" danger size="large" shape="circle" icon={<CloseOutlined />} onClick={(e: any) => {
+                  document.body.focus()
                   setPreviewImgUrl('')
                 }} />
               </div>
@@ -404,11 +405,9 @@ export default function ServiceView(props: {
       {
         previewArticle ? <ArticleSingle {...previewArticle}></ArticleSingle> : null
       }
-      {
-        loading ? <div className="loading-panel ">
-          <div className="loading-small"></div>
-        </div> : null
-      }
+      <Spin spinning={loading} delay={250} indicator={<div className="loading-panel ">
+        <div className="loading-small"></div>
+      </div>} />
     </>
   )
 }

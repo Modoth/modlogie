@@ -80,9 +80,7 @@ export default function ArticleList() {
                 <Button type="link" size="large" icon={<PicRightOutlined />} onClick={() => setColumnCount(((columnCount) % maxColumn) + 1)} />
                 <Button type="link" size="large" icon={<BorderBottomOutlined />} onClick={() => setBorderStyle(((borderStyle) % maxBorderStyle) + 1)} />
                 {
-                    showIdx ?
-                        null
-                        : <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} />
+                    <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} />
                 }
                 <Button type="link" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
             </div>

@@ -54,8 +54,6 @@
 }
 
 .article-list {
-  counter-reset: blog-print-article;
-
   &.border-style-1 iframe {
     padding: 0;
     margin: 5px;
@@ -96,8 +94,8 @@
   }
 
   &.show-idx > .article > .h5-viewer:first-child .h5-name::before {
-    counter-increment: blog-print-article;
-    content: counter(blog-print-article) "、 ";
+    counter-increment: article-list;
+    content: counter(article-list) "、 ";
   }
 }
 
