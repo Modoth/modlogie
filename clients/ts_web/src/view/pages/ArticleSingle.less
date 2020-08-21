@@ -4,8 +4,10 @@
   min-height: 100vh;
 
   .menus {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     display: flex;
     padding: 5px;
     z-index: 2;
@@ -35,12 +37,46 @@
       overflow: hidden;
       flex: 1;
     }
+
+    .paging-buttons {
+      position: fixed;
+      left: 0;
+      right: 0;
+      display: flex;
+      top: 45vh;
+      justify-content: space-between;
+      .paging-button {
+        margin: 0;
+        transform: scale(1.5);
+        color: #0001;
+      }
+
+      .paging-button-left {
+        left: 5px;
+      }
+
+      .paging-button-right {
+        right: 5px;
+      }
+    }
   }
 
   & > .article {
     padding: 10px 0 0 0;
     max-width: 780px;
-    margin: 0 auto;
+    margin: 51px auto 0 auto;
+  }
+}
+
+.paging {
+  height: 100vh;
+  overflow-y: hidden;
+  .article {
+    column-width: 100vw;
+    column-count: auto;
+    column-gap: 0;
+    touch-action: none;
+    max-height: calc(100% - 61px);
   }
 }
 
@@ -51,6 +87,7 @@
 @media (min-width: 780px) {
   .single-article {
     background-color: transparent;
+    color: #000;
 
     .article {
       box-shadow: var(--shadow);
@@ -58,16 +95,29 @@
       padding-top: 10px;
       background: #fff;
       min-height: 90vh;
-      margin-top: 10px;
+      margin-top: 61px;
     }
   }
 }
 
 @media print {
+  .paging {
+    height: unset;
+    overflow-y: unset;
+    .article {
+      column-width: unset;
+      column-count: unset;
+      column-gap: unset;
+      touch-action: unset;
+      max-height: unset;
+    }
+  }
   .single-article {
     position: unset;
     margin-bottom: unset;
     min-height: unset;
+    background-color: transparent;
+    color: #000;
 
     .menus {
       display: none;
@@ -78,7 +128,7 @@
       background: unset;
       box-shadow: unset;
       max-width: unset;
-      margin: o;
+      margin: 0;
       border: none;
       border-radius: 0;
       box-shadow: none;

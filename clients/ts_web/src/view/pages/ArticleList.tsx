@@ -60,7 +60,7 @@ export default function ArticleList() {
             viewService.setLoading(false)
         }
     }
-    const smallScreen = window.matchMedia && window.matchMedia("(max-width: 780px)")
+    const smallScreen = window.matchMedia && window.matchMedia("(max-width: 780px)")?.matches
     const [columnCount, setColumnCount] = useState(smallScreen ? 1 : 2)
     const [borderStyle, setBorderStyle] = useState(2)
     const [showIdx, setShowIdx] = useState(false)
