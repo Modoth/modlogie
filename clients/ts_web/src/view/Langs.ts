@@ -88,6 +88,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Order = '顺序';
   Paging = '分页(Beta)';
   Password = '密码';
+  Preview = '预览';
   Recommend = '推荐';
   RemoveFromArticleList = '移除';
   Reset = '重置';

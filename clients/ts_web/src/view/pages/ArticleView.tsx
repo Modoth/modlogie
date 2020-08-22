@@ -8,8 +8,9 @@ import Article, { ArticleFile, ArticleContent, ArticleTag, ArticleAdditionalType
 import { useUser, useServicesLocator } from '../../app/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import IViewService from '../services/IViewService'
-import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker } from 'antd'
+import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
 const { SubMenu } = Menu
+const { Panel } = Collapse;
 import {
   UploadOutlined,
   CheckOutlined,
@@ -422,13 +423,20 @@ export default function ArticleView(props: {
       </div>{
         loaded ? <div className="article-body">
           {editing ? (
-            <props.type.Editor
-              onpaste={addFile}
-              content={content}
-              files={files}
-              callbacks={editorRefs}
-              type={type}
-            />
+            <>
+              <props.type.Editor
+                onpaste={addFile}
+                content={content}
+                files={files}
+                callbacks={editorRefs}
+                type={type}
+              />
+              <Collapse className={classNames("editing-preview")} defaultActiveKey={['1']} >
+                <Panel header={langs.get(LangKeys.Preview) + ': ' + (name || '')} key="1">
+                  <props.type.Viewer showHiddens={true} content={content} files={files} type={type} />
+                </Panel>
+              </Collapse>
+            </>
           ) : (
               <props.type.Viewer content={content} files={files} type={type} />
             )}

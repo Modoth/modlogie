@@ -1,4 +1,27 @@
 .article-view {
+  .editing-preview {
+    position: fixed;
+    right: 10px;
+    top: 61px;
+    width: 40vw;
+    max-width: 780px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #fffa;
+    -webkit-backdrop-filter: blur(1px);
+    backdrop-filter: blur(1px);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    .ant-collapse-content {
+      max-height: 30vh;
+      overflow-y: auto;
+      background: transparent;
+      font-size: 0.8em;
+      .ant-collapse-content-box {
+        padding: 0;
+      }
+    }
+  }
   &.ant-card-bordered {
     margin: 0;
     border-radius: 10px;
@@ -154,5 +177,15 @@
 
   .icon-badges {
     display: none !important;
+  }
+}
+
+@media (max-width: 780px) {
+  .article-view {
+    .editing-preview {
+      right: 0;
+      border-radius: 10px 0 0 10px;
+      width: 70vw;
+    }
   }
 }

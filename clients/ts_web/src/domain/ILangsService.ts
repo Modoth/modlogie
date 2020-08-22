@@ -44,6 +44,7 @@ export class LangKeysInterface {
   Order = 'Order';
   Paging = 'Paging';
   Password = 'Password';
+  Preview = 'Preview';
   Recommend = 'Recommend';
   RemoveFromArticleList = 'RemoveFromArticleList';
   Reset = 'Reset';
