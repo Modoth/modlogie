@@ -29,6 +29,16 @@ export default function App() {
   loginService.onUserChanged = setUser
   const ref = React.createRef<HTMLDivElement>()
   const bgRef = React.createRef<HTMLStyleElement>()
+  const navigateTo = async (title: string | undefined, url: string | undefined) => {
+    var viewService = locator.locate(IViewService)
+    viewService.setLoading(true);
+    try {
+      await locator.locate(INavigationService).promptGoto(title, url);
+    }
+    finally {
+      viewService.setLoading(false);
+    }
+  }
   useEffect(() => {
     (async () => {
       const configService = locator.locate(IConfigsService)
@@ -40,22 +50,28 @@ export default function App() {
         background-image: url("${logo}");
       }`;
     })()
+    window.document.body.onclick = (e) => {
+      if ((e.target as any)?.nodeName === 'A') {
+        const a: HTMLLinkElement = e.target as HTMLLinkElement
+        e.stopPropagation();
+        e.preventDefault();
+        navigateTo(a.innerText.trim(), a.href && uriTransformer(a.href))
+        return
+      }
+    }
   }, [])
-  const navigateTo = async (title: string | undefined, url: string | undefined) => {
-    var viewService = locator.locate(IViewService)
-    viewService.setLoading(true);
-    try {
-      await locator.locate(INavigationService).promptGoto(title, url);
-    }
-    finally {
-      viewService.setLoading(false);
-    }
-  }
   return (
     <>
       <UserContext.Provider value={user}>
         <ServiceView
-          provide={(s) => locator.registerInstance(IViewService, s)}
+          provide={(s) => {
+            var viewService = locator.locate(IViewService)
+            locator.registerInstance(IViewService, s)
+            if (viewService) {
+              s.onShowMenuChanged = viewService.onShowMenuChanged;
+              s.setShowMenu(viewService.showMenu);
+            }
+          }}
           setContentVisiable={(v) => {
             if (!ref.current) {
               return
@@ -77,15 +93,7 @@ export default function App() {
             }
           }}
         ></ServiceView>
-        <div onClick={(e) => {
-          if ((e.target as any)?.nodeName === 'A') {
-            const a: HTMLLinkElement = e.target as HTMLLinkElement
-            e.stopPropagation();
-            e.preventDefault();
-            navigateTo(a.innerText.trim(), a.href && uriTransformer(a.href))
-            return
-          }
-        }} ref={ref} className="nav-content-wrapper">
+        <div ref={ref} className="nav-content-wrapper">
           <HashRouter >
             <style ref={bgRef} >
             </style>
