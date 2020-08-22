@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react'
 import './ArticleSingle.less'
 import { useServicesLocator } from '../../app/Contexts'
 import { Button, Menu, Dropdown } from 'antd';
-import { ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { EditOutlined, EditFilled, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/Article';
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
 import IViewService from '../services/IViewService';
 import ILangsService, { LangKeys } from '../../domain/ILangsService';
+import FreeDrawMask from '../components/FreeDrawMask';
 const themeCount = 3
 const getThemeClass = (idx: number) => idx > 0 ? `reading-theme reading-theme-${idx}` : ''
 const getThemeKey = () => 'READING_THEME'
@@ -45,6 +46,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
         locator.locate(IViewService).previewArticle()
     }
     const langs = locator.locate(ILangsService)
+    const [freeDraw, setFreeDraw] = useState(false)
     const smallScreen = window.matchMedia && window.matchMedia("(max-width: 780px)")?.matches
     const [currentTheme, setCurrentTheme] = useState(smallScreen ? loadTheme() : 0)
     const [paging, setPaging] = useState(smallScreen ? loadPaging() : false)
@@ -77,9 +79,10 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
             <div className={classNames("menus")} onClick={e => e.stopPropagation()}>
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>
                 {props.type.noTitle ? <div className={classNames("title")}></div> : <div className={classNames("title")}>{props.article.name}</div>}
-                {!paging ? <Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} ></Button>
-                    : null}
-
+                {!paging ? <>
+                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} ></Button>
+                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={freeDraw ? <EditFilled /> : <EditOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                </> : null}
                 {smallScreen ? <Dropdown overlay={
                     <Menu>
                         <Menu.Item>
@@ -126,6 +129,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
             </div>
             <div ref={ref} className={classNames("article")}>
                 <props.type.Viewer published={props.article.published} viewerCallbacks={callbacks} showHiddens={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+                <FreeDrawMask enabled={freeDraw} hidden={paging}></FreeDrawMask>
             </div>
         </div>
     )
