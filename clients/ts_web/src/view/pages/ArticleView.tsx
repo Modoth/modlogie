@@ -431,8 +431,22 @@ export default function ArticleView(props: {
                 callbacks={editorRefs}
                 type={type}
               />
-              <Collapse className={classNames("editing-preview")} defaultActiveKey={['1']} >
-                <Panel header={langs.get(LangKeys.Preview) + ': ' + (name || '')} key="1">
+              <Collapse className={classNames("editing-preview")} >
+                <Panel header={
+                  <div className="preview-title-panel">
+                    <span className="preview-title">{langs.get(LangKeys.Edit) + ': ' + (name || '')}</span>
+                    <Button
+                      type="link"
+                      onClick={toggleEditing}
+                      key="endEdit"
+                      icon={<CheckOutlined />}
+                    ></Button>,
+            <Button
+                      type="link"
+                      icon={<UploadOutlined />}
+                      onClick={() => addFile()}
+                    ></Button>
+                  </div>} key="1">
                   <props.type.Viewer showHiddens={true} content={content} files={files} type={type} />
                 </Panel>
               </Collapse>
