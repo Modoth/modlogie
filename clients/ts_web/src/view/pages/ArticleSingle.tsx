@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './ArticleSingle.less'
 import { useServicesLocator } from '../../app/Contexts'
 import { Button, Menu, Dropdown } from 'antd';
-import { EditOutlined, EditFilled, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { HighlightOutlined, HighlightFilled, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/Article';
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
@@ -81,7 +81,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                 {props.type.noTitle ? <div className={classNames("title")}></div> : <div className={classNames("title")}>{props.article.name}</div>}
                 {!paging ? <>
                     <Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} ></Button>
-                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={freeDraw ? <EditFilled /> : <EditOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={freeDraw ? <HighlightFilled /> : <HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
                 </> : null}
                 {smallScreen ? <Dropdown overlay={
                     <Menu>
