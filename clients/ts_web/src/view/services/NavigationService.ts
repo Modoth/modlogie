@@ -10,10 +10,16 @@ export default class NavigationService extends IServicesLocator implements INavi
         if (!url || !title) {
             return
         }
-        var keywordsService = this.locate(IKeywordsService)
         var async: boolean | undefined = undefined;
         var desc = '';
+        if (title) {
+            var ltitle = title.toLocaleLowerCase()
+            if (ltitle.startsWith('http://') || ltitle.startsWith('https://')) {
+                url = title
+            }
+        }
         if (!url || url === window.origin || url === `${window.origin}/`) {
+            var keywordsService = this.locate(IKeywordsService)
             await Promise.all([
                 sleep(200).then(() => {
                     if (async === undefined) {
