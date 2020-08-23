@@ -34,7 +34,7 @@ import IArticleService from './domain/IArticleService'
 import ArticleService from './domain/ArticleService'
 import BlogPluginInfo from './plugins/blog'
 import MathPluginInfo from './plugins/math'
-import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG, get_ROOT_SUBJECT } from './app/ConfigKeys'
+import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG, get_ROOT_SUBJECT, get_DISPLAY_NAME } from './app/ConfigKeys'
 // import './assets/images'
 import logoImg from './assets/logo.png'
 import IMmConverter from './domain/IMmConverter'
@@ -114,6 +114,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       new Config(get_SUB_TYPE_TAG(t.name), ConfigType.STRING),
       new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING, t.defaultSections),
       new Config(get_ROOT_SUBJECT(t.name), ConfigType.STRING, '/' + t.name),
+      new Config(get_DISPLAY_NAME(t.name), ConfigType.STRING, t.name),
     ]))
   var types = plugins.flatMap(p => p.types)
   const subjectServices = serviceLocator.locate(ISubjectsService);
@@ -122,6 +123,9 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     if (type.subTypeTag) {
       type.subTypes = (await tagsService.get(type.subTypeTag))?.values
     }
+    var displayName = await configsService.getValueOrDefault(get_DISPLAY_NAME(type.name))
+    type.displayName = displayName;
+
     var rootSubjectPath = await configsService.getValueOrDefault(get_ROOT_SUBJECT(type.name))
     if (!rootSubjectPath) {
       continue;

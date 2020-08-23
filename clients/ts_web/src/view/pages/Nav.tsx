@@ -101,7 +101,7 @@ function Nav() {
               <Menu.Item key={t.route} icon={t.iconUrl ? <img
                 src={t.iconUrl}
               /> : t.icon}>
-                <Link to={'/' + t.route}>{t.name}</Link>
+                <Link to={'/' + t.route}>{t.displayName || t.name}</Link>
               </Menu.Item>)
           }
           {user.editingPermission ? (

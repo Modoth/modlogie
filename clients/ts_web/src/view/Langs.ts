@@ -31,6 +31,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   SHADOW_SECTION_PRIVATE = '保存隐藏段为私有';
   SUB_TYPE_TAG = '文章子类标签';
   ROOT_SUBJECT = '根目录';
+  DISPLAY_NAME = '显示名';
   WEB_SITE_AVATAR = '站长头像';
   WEB_SITE_DESCRIPTION = '网站描述';
   WEB_SITE_FOOTER = '网站脚注';

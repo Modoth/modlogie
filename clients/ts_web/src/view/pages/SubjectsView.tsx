@@ -74,7 +74,7 @@ export default function SubjectsView() {
   const types = user?.editingPermission ? plugins.AllTypes : plugins.NormalTypes;
   return (<Tabs className="subjects-view">
     {
-      types.map(type => <TabPane tab={type.name} key={type.name}>
+      types.map(type => <TabPane tab={type.displayName || type.name} key={type.name}>
         <SingleTypeSubjectsView type={type}  ></SingleTypeSubjectsView>
       </TabPane>)
     }

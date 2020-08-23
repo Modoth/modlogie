@@ -5,6 +5,7 @@ type Tag = any;
 export interface ArticleType {
   route: string;
   name: string;
+  displayName?: string;
   subTypes?: string[];
   subTypeTag?: string;
   rootSubjectId?: string;

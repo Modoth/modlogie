@@ -15,6 +15,7 @@ import ConfigKeys from '../app/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
 import { uriTransformer } from 'react-markdown'
 import INavigationService from './services/INavigationService'
+import { url } from 'inspector'
 
 
 let savedScrollTop = 0
@@ -53,6 +54,12 @@ export default function App() {
     window.document.body.onclick = (e) => {
       if ((e.target as any)?.nodeName === 'A') {
         const a: HTMLLinkElement = e.target as HTMLLinkElement
+        if (a.href) {
+          var u = new URL(a.href)
+          if (u.origin === window.location.origin && u.pathname === '/' && (u.hash || u.search)) {
+            return
+          }
+        }
         e.stopPropagation();
         e.preventDefault();
         navigateTo(a.innerText.trim(), a.href && uriTransformer(a.href))

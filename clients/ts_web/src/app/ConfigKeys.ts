@@ -31,6 +31,10 @@ export function get_ROOT_SUBJECT(typeName: string) {
     return `${typeName}:ROOT_SUBJECT`
 }
 
+export function get_DISPLAY_NAME(typeName: string) {
+    return `${typeName}:DISPLAY_NAME`
+}
+
 export function get_ARTICLE_SECTIONS(typeName: string, subTypeName?: string) {
     return subTypeName ? `${typeName}_${subTypeName}:ARTICLE_SECTIONS` : `${typeName}:ARTICLE_SECTIONS`
 }
