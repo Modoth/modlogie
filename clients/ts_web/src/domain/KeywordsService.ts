@@ -6,7 +6,6 @@ import { Keyword as KeywordDto, GetAllRequest } from "../apis/keywords_pb";
 import { ClientRun } from "../common/GrpcUtils";
 import { KeywordsServiceClient } from "../apis/KeywordsServiceClientPb";
 import { StringId } from "../apis/messages_pb";
-import { title } from "process";
 
 export default class KeywordsService extends IServicesLocator implements IKeywordsService {
     private _caches?: Map<string, Keyword | undefined>;
@@ -31,10 +30,6 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
             return keywordItem
         }
 
-        if (!keywordItem.searchKeys || !keywordItem.searchKeys.size) {
-            keywordItem.efficialUrl = 'about://blank'
-            return keywordItem
-        }
         if (!this._templates) {
             var templatesStr = await this.locate(IConfigsService).getValueOrDefault(ConfigKeys.KEYWORDS_QRERY_TEMPLAES) || ''
             var templates: [string, string][] = templatesStr.split(',').map(s => s.trim()).filter(s => s).map(s => s.split(' ').map(s => s.trim()).filter(s => s)).filter(s => s[0] && s[1]).map(s => [s[0], s[1]])
@@ -42,7 +37,8 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
             this._templates.set('article', `${window.location.protocol}//${window.location.host}/#/articles/\${keyword}`)
         }
         const getProto = (): string | undefined => {
-            if (!this._templates.size) {
+            if (!this._templates.size || !keywordItem.searchKeys || !keywordItem.searchKeys.size) {
+                return undefined
             }
             for (var p of Array.from(keywordItem.searchKeys!.keys())) {
                 if (this._templates.has(p)) {
@@ -57,7 +53,7 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
         } else {
             var url = this._templates.get('default')
             if (url) {
-                keywordItem.efficialUrl = url.replace('${keyword}', title);
+                keywordItem.efficialUrl = url.replace('${keyword}', keyword);
             } else {
                 keywordItem.efficialUrl = 'about://blank'
             }
