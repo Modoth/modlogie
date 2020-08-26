@@ -15,6 +15,7 @@ import ConfigKeys from '../../app/ConfigKeys'
 import ReactMarkdown from 'react-markdown'
 import { ManageUsers } from './ManageUsers'
 import { ManageKeywords } from './ManageKeywords'
+import { ArticleRedirect } from './ArticleRedirect'
 
 function NavContent() {
   const locator = useServicesLocator()
@@ -59,6 +60,9 @@ function NavContent() {
       </Route>
       <Route path="/login">
         <Login />
+      </Route>
+      <Route path="/article/:path">
+        <ArticleRedirect />
       </Route>
       <Route path="/">
         <>

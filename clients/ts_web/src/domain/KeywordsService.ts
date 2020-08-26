@@ -34,7 +34,7 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
             var templatesStr = await this.locate(IConfigsService).getValueOrDefault(ConfigKeys.KEYWORDS_QRERY_TEMPLAES) || ''
             var templates: [string, string][] = templatesStr.split(',').map(s => s.trim()).filter(s => s).map(s => s.split(' ').map(s => s.trim()).filter(s => s)).filter(s => s[0] && s[1]).map(s => [s[0], s[1]])
             this._templates = new Map(templates);
-            this._templates.set('article', `${window.location.protocol}//${window.location.host}/#/articles/\${keyword}`)
+            this._templates.set('article', `${window.location.protocol}//${window.location.host}/#/article/\${keyword}`)
         }
         const getProto = (): string | undefined => {
             if (!this._templates.size || !keywordItem.searchKeys || !keywordItem.searchKeys.size) {
