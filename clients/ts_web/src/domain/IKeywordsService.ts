@@ -1,7 +1,9 @@
 export class Keyword {
     id: string;
     url: string;
+    efficialUrl?: string;
     description?: string;
+    searchKeys?:Map<string,string>
 }
 
 export default class IKeywordsService {

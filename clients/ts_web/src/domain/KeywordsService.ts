@@ -6,9 +6,11 @@ import { Keyword as KeywordDto, GetAllRequest } from "../apis/keywords_pb";
 import { ClientRun } from "../common/GrpcUtils";
 import { KeywordsServiceClient } from "../apis/KeywordsServiceClientPb";
 import { StringId } from "../apis/messages_pb";
+import { title } from "process";
 
 export default class KeywordsService extends IServicesLocator implements IKeywordsService {
     private _caches?: Map<string, Keyword | undefined>;
+    private _templates: Map<string, string>
     private loaded = false;
     async get(keyword: string): Promise<Keyword> {
         if (!this._caches) {
@@ -25,10 +27,39 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
             }
         }
         var keywordItem: Keyword = this._caches!.get(keyword) || { id: keyword, url: '' };
-        if (!keywordItem.url) {
-            var url = await this.locate(IConfigsService).getValueOrDefault(ConfigKeys.SEARCH_URL)
+        if (keywordItem.efficialUrl) {
+            return keywordItem
+        }
+
+        if (!keywordItem.searchKeys || !keywordItem.searchKeys.size) {
+            keywordItem.efficialUrl = 'about://blank'
+            return keywordItem
+        }
+        if (!this._templates) {
+            var templatesStr = await this.locate(IConfigsService).getValueOrDefault(ConfigKeys.KEYWORDS_QRERY_TEMPLAES) || ''
+            var templates: [string, string][] = templatesStr.split(',').map(s => s.trim()).filter(s => s).map(s => s.split(' ').map(s => s.trim()).filter(s => s)).filter(s => s[0] && s[1]).map(s => [s[0], s[1]])
+            this._templates = new Map(templates);
+            this._templates.set('article', `${window.location.protocol}//${window.location.host}/#/articles/\${keyword}`)
+        }
+        const getProto = (): string | undefined => {
+            if (!this._templates.size) {
+            }
+            for (var p of Array.from(keywordItem.searchKeys!.keys())) {
+                if (this._templates.has(p)) {
+                    return p
+                }
+            }
+            return undefined
+        }
+        var proto = getProto();
+        if (proto) {
+            keywordItem.efficialUrl = this._templates.get(proto)!.replace('${keyword}', keywordItem.searchKeys!.get(proto)!);
+        } else {
+            var url = this._templates.get('default')
             if (url) {
-                keywordItem.url = url.replace('${keyword}', keyword);
+                keywordItem.efficialUrl = url.replace('${keyword}', title);
+            } else {
+                keywordItem.efficialUrl = 'about://blank'
             }
         }
         return keywordItem;
@@ -37,7 +68,24 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
     keywordFrom(item: KeywordDto) {
         var k = new Keyword();
         k.id = item.getId();
-        k.url = item.getUrl();
+        var url = item.getUrl();
+        k.url = url;
+        var tokens = url.split(',').map(s => s.trim()).filter(s => s);
+        for (var token of tokens) {
+            var [proto, path] = token.split('://')
+            if (!proto) {
+                continue
+            }
+            proto = proto.toLocaleLowerCase();
+            if (proto === 'http' || proto === 'https') {
+                k.efficialUrl = token
+                continue
+            }
+            if (proto && path) {
+                k.searchKeys = k.searchKeys || new Map();
+                k.searchKeys!.set(proto, path);
+            }
+        }
         k.description = item.getDescription();
         return k;
     }

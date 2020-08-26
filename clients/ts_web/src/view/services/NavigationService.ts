@@ -27,7 +27,7 @@ export default class NavigationService extends IServicesLocator implements INavi
                     }
                 }),
                 keywordsService.get(title).then((s) => {
-                    url = s.url;
+                    url = s.efficialUrl;
                     desc = s.description || '';
                     if (async === undefined) {
                         async = false;

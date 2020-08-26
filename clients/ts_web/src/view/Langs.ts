@@ -16,22 +16,22 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
     this[ErrorMessage.NO_SUCH_ENTITY] = "无此数据";
   }
   ADDITIONAL_STYLE = '附加样式目录';
-  ALLOW_LOGIN = '允许登陆';
   ALLOW_LIKES = '允许点赞';
+  ALLOW_LOGIN = '允许登陆';
   ALLOW_PRINT = '允许打印';
   ARTICLE_SECTIONS = '文章段';
   ARTICLE_TAGS = '文章标签';
+  DISPLAY_NAME = '显示名';
   IMPORT_SUBJECTS_AUTOFIX = '导入目录时自动修复';
-  MAX_PRINT_COUNT = '最大打印文章数';
+  KEYWORDS_QRERY_TEMPLAES = '关键字查询模板';
   MAX_FAVORITES_PER_TYPE = "每种文章最大收藏数";
+  MAX_PRINT_COUNT = '最大打印文章数';
   PLUGINS = '插件';
   RECOMMENT_COUNT = '推荐数量';
   RECOMMENT_TITLE = '推荐标题';
-  SEARCH_URL = '搜索地址';
+  ROOT_SUBJECT = '根目录';
   SHADOW_SECTION_PRIVATE = '保存隐藏段为私有';
   SUB_TYPE_TAG = '文章子类标签';
-  ROOT_SUBJECT = '根目录';
-  DISPLAY_NAME = '显示名';
   WEB_SITE_AVATAR = '站长头像';
   WEB_SITE_DESCRIPTION = '网站描述';
   WEB_SITE_FOOTER = '网站脚注';
