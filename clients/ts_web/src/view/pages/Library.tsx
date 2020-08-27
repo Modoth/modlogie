@@ -411,6 +411,7 @@ export default function Library(props: LibraryProps) {
     return () => {
       viewService.setShowMenu(true);
       favoriteService.unsetCountChangedHandler(props.type.name);
+      viewService.previewArticle()
     }
   }, [])
 
