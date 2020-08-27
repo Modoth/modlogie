@@ -48,6 +48,9 @@ export default function MarkdownEditor(props: SectionEditorProps) {
     props.callbacks.getEditedContent = () => {
         return content
     }
+    const pasteMarkdownFromHtml = (item: DataTransferItem) => {
+        item.getAsString(s => insertContent(translateHtml2Markdown(s)))
+    }
     return (props.editing ?
         <div className={classNames('md-editor', props.section.name?.match(/(^.*?)(\(|（|$)/)![1])}>
             <label className="md-name">{props.section.name}</label>
@@ -72,7 +75,11 @@ export default function MarkdownEditor(props: SectionEditorProps) {
                     switch (types) {
                         case 'text/plain text/html':
                             e.preventDefault()
-                            e.clipboardData.items[1].getAsString(s => insertContent(translateHtml2Markdown(s)))
+                            pasteMarkdownFromHtml(e.clipboardData.items[1])
+                            return
+                        case 'text/html text/plain':
+                            e.preventDefault()
+                            pasteMarkdownFromHtml(e.clipboardData.items[0])
                             return
                     }
                 }}
