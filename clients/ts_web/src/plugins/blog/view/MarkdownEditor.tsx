@@ -5,9 +5,16 @@ import MarkdownViewer from './MarkdownViewer'
 import classNames from 'classnames'
 import SectionEditorProps from '../../sections-base/view/SectionEditorProps'
 import TextArea from 'antd/lib/input/TextArea'
-
+import TurndownService from 'turndown'
 const translateHtml2Markdown = (html: string) => {
-    return html;
+    try {
+        var turndownService = new TurndownService()
+        var markdown = turndownService.turndown(html)
+        return markdown;
+    } catch (e) {
+        console.log(e)
+        return html;
+    }
 }
 
 export default function MarkdownEditor(props: SectionEditorProps) {
@@ -57,18 +64,18 @@ export default function MarkdownEditor(props: SectionEditorProps) {
                     refs.textArea = e.target
                     setContent(e.target.value)
                 }}
-            // onPaste={(e) => {
-            //     if (!e.clipboardData) {
-            //         return
-            //     }
-            //     const types = e.clipboardData.types.join(' ')
-            //     switch (types) {
-            //         case 'text/plain text/html':
-            //             e.preventDefault()
-            //             e.clipboardData.items[1].getAsString(s => insertContent(translateHtml2Markdown(s)))
-            //             return
-            //     }
-            // }}
+                onPaste={(e) => {
+                    if (!e.clipboardData) {
+                        return
+                    }
+                    const types = e.clipboardData.types.join(' ')
+                    switch (types) {
+                        case 'text/plain text/html':
+                            e.preventDefault()
+                            e.clipboardData.items[1].getAsString(s => insertContent(translateHtml2Markdown(s)))
+                            return
+                    }
+                }}
             ></TextArea>
         </div >
         :
