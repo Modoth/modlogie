@@ -32,7 +32,7 @@ export default function FreeDrawMask(props: { enabled: boolean, hidden: boolean 
             if (!drawing) {
                 return
             }
-            if (ev instanceof TouchEvent && ev.touches.length > 1) {
+            if (window.TouchEvent && ev instanceof window.TouchEvent && ev.touches.length > 1) {
                 return
             }
             ev.stopPropagation();
