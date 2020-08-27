@@ -16,6 +16,7 @@ import ReactMarkdown from 'react-markdown'
 import { ManageUsers } from './ManageUsers'
 import { ManageKeywords } from './ManageKeywords'
 import { ArticleRedirect } from './ArticleRedirect'
+import { ArticleIdRedirect } from './ArticleIdRedirect'
 
 function NavContent() {
   const locator = useServicesLocator()
@@ -60,6 +61,9 @@ function NavContent() {
       </Route>
       <Route path="/login">
         <Login />
+      </Route>
+      <Route path="/article/:typeId/:articleId" exact>
+        <ArticleIdRedirect />
       </Route>
       <Route path="/article/:path">
         <ArticleRedirect />

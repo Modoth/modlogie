@@ -12,6 +12,7 @@ import TextArea from 'antd/lib/input/TextArea'
 import { CloseOutlined, SaveOutlined, CopyOutlined } from '@ant-design/icons'
 import html2canvas from 'html2canvas';
 import ReactMarkdown from 'react-markdown'
+import { ArticlePreview } from './ArticlePreview'
 
 
 class ViewService implements IViewService {
@@ -340,6 +341,8 @@ export default function ServiceView(props: {
                 return (
                   <ReactMarkdown className="md" source={field.value} linkTarget="_blank"></ReactMarkdown>
                 )
+              case 'Article':
+                return (<ArticlePreview className="md" path={field.value}></ArticlePreview>)
               case 'Password':
                 return (
                   <Input.Password

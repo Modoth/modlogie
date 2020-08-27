@@ -2,7 +2,7 @@ import ILangsService from '../../domain/ILangsService'
 import { ArticleContentType } from '../../plugins/IPluginInfo'
 import Article from '../../domain/Article'
 
-export interface IPromptField<TValue, TType extends 'Markdown' | 'Label' | 'Text' | 'TreeSelect' | 'Password' | 'Enum' | 'File' | 'Image' | 'TextFile' | 'Video'> {
+export interface IPromptField<TValue, TType extends 'Article' | 'Markdown' | 'Label' | 'Text' | 'TreeSelect' | 'Password' | 'Enum' | 'File' | 'Image' | 'TextFile' | 'Video'> {
   type: TType;
   hint?: string;
   value: TValue;

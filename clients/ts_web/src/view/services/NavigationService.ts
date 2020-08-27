@@ -35,8 +35,10 @@ export default class NavigationService extends IServicesLocator implements INavi
                 })
             ])
         }
-
-        var newTab = new URL(url || '').hostname !== window.location.hostname
+        var u = new URL(url || '')
+        var newTab = u.hostname !== window.location.hostname
+        var articleView = !newTab && u.hash.startsWith('#/article/')
+        var articlePath = articleView ? decodeURIComponent(u.hash.slice('#/article'.length)) : undefined
         const open = () => {
             if (!url) {
                 return
@@ -47,13 +49,16 @@ export default class NavigationService extends IServicesLocator implements INavi
                 window.open(url, '_blank');
             }
         }
-        if ((async && newTab) || desc) {
+        if ((async && newTab) || desc || articlePath) {
             this.locate(IViewService).prompt(
                 url ? { title, subTitle: this.locate(ILangsService).get(LangKeys.ComfireJump) + url } : title, [
                 ...(desc ? [{
                     type: 'Markdown',
                     value: desc
-                }] : [])
+                }] : (articlePath ? [{
+                    type: 'Article',
+                    value: articlePath
+                }] : []))
             ], async () => {
                 open();
                 return true;
