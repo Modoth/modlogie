@@ -2,9 +2,10 @@ import React, { useEffect } from 'react'
 import './FreeDrawMask.less'
 import classNames from 'classnames'
 
-
-export default function FreeDrawMask(props: { enabled: boolean, hidden: boolean }) {
+let p = {} as any;
+export default function FreeDrawMask(props: { enabled: boolean, size: number, color: string, earse: boolean, hidden: boolean }) {
     const ref = React.createRef<HTMLCanvasElement>()
+    p = props;
     useEffect(() => {
         var canvas = ref.current!
         canvas.height = parseFloat(getComputedStyle(canvas).height);
@@ -37,14 +38,24 @@ export default function FreeDrawMask(props: { enabled: boolean, hidden: boolean 
             }
             ev.stopPropagation();
             ev.preventDefault()
+
             let [tx, ty] = getPos(ev)
             var ctx = canvas.getContext('2d')!
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(tx, ty);
-            ctx.stroke();
+            ctx.save()
+            if (p.earse) {
+                ctx.clearRect(Math.min(x, tx), Math.min(y, ty), Math.abs(x - tx), Math.abs(y - ty))
+            } else {
+                ctx.strokeStyle = p.color;
+                ctx.lineWidth = p.size;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(tx, ty);
+                ctx.stroke();
+            }
+
             x = tx;
             y = ty;
+            ctx.restore()
         }
         canvas.onmousedown = startDraw;
         canvas.ontouchstart = startDraw;

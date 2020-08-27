@@ -6,6 +6,10 @@ import classNames from 'classnames'
 import SectionEditorProps from '../../sections-base/view/SectionEditorProps'
 import TextArea from 'antd/lib/input/TextArea'
 
+const translateHtml2Markdown = (html: string) => {
+    return html;
+}
+
 export default function MarkdownEditor(props: SectionEditorProps) {
     const [filesDict] = useState(props.filesDict || new Map())
     const [content, setContent] = useState(props.section.content)
@@ -53,6 +57,18 @@ export default function MarkdownEditor(props: SectionEditorProps) {
                     refs.textArea = e.target
                     setContent(e.target.value)
                 }}
+            // onPaste={(e) => {
+            //     if (!e.clipboardData) {
+            //         return
+            //     }
+            //     const types = e.clipboardData.types.join(' ')
+            //     switch (types) {
+            //         case 'text/plain text/html':
+            //             e.preventDefault()
+            //             e.clipboardData.items[1].getAsString(s => insertContent(translateHtml2Markdown(s)))
+            //             return
+            //     }
+            // }}
             ></TextArea>
         </div >
         :

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './ArticleSingle.less'
 import { useServicesLocator } from '../../app/Contexts'
 import { Button, Menu, Dropdown } from 'antd';
-import { HighlightOutlined, HighlightFilled, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { ClearOutlined, HighlightOutlined, HighlightFilled, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/Article';
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
@@ -38,10 +38,15 @@ const savePaging = (paging: boolean) => {
         localStorage.removeItem(getPaingKey())
     }
 }
+const drawSizes = [1, 5, 15]
+const drawColors = ['#2d2d2d', '#ff0000', '#ffff0080']
 export default function ArticleSingle(props: { article: Article, type: ArticleContentType }) {
     const locator = useServicesLocator()
     const [sections, setSections] = useState<string[]>([])
     const [currentSection, setCurrentSection] = useState('');
+    const [drawSize, setDrawSize] = useState(drawSizes[0]);
+    const [drawColor, setDrawColors] = useState(drawColors[0])
+    const [earse, setEarse] = useState(false)
     const close = () => {
         locator.locate(IViewService).previewArticle()
     }
@@ -78,58 +83,66 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
         <div className={classNames("single-article", getThemeClass(currentTheme), paging ? 'paging' : '')}>
             <div className={classNames("menus")} onClick={e => e.stopPropagation()}>
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>
-                {props.type.noTitle ? <div className={classNames("title")}></div> : <div className={classNames("title")}>{props.article.name}</div>}
-                {!paging ? <>
-                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} ></Button>
-                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={freeDraw ? <HighlightFilled /> : <HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
-                </> : null}
-                {smallScreen ? <Dropdown overlay={
-                    <Menu>
-                        <Menu.Item>
-                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<BgColorsOutlined />}
-                                onClick={() => {
-                                    var nextTheme = (currentTheme + 1) % themeCount
-                                    setCurrentTheme(nextTheme)
-                                    saveTheme(nextTheme)
-                                }
-                                }
-                            >{langs.get(LangKeys.Themes)}</Button>
-                        </Menu.Item>
-                        <Menu.Item>
-                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
-                                onClick={() => {
-                                    var nextPaging = !paging
-                                    setPaging(nextPaging)
-                                    savePaging(nextPaging)
-                                }
-                                }
-                            >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
-                        </Menu.Item>
-                    </Menu>}>
-                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<FontSizeOutlined />} onClick={(e) => e.preventDefault()} ></Button>
-                </Dropdown> : null}
-                {paging ? <div className="paging-buttons">
-                    <Button onClick={prePage} type="link" size="large" className="paging-button paging-button-left" icon={<LeftCircleOutlined />} ></Button>
-                    <Button onClick={nextPage} type="link" size="large" className="paging-button paging-button-right" icon={<RightCircleOutlined />} ></Button>
-                </div> : null}
                 {
-                    !paging ?
-                        <Dropdown overlay={
+                    !freeDraw ? (<>{props.type.noTitle ? <div className={classNames("title")}></div> : <div className={classNames("title")}>{props.article.name}</div>}
+                        {!paging ? <>
+                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} ></Button>
+                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                        </> : null}
+                        {smallScreen ? <Dropdown overlay={
                             <Menu>
-                                {
-                                    sections.map(section => <Menu.Item onClick={() => {
-                                        callbacks.gotoSection && callbacks.gotoSection(section)
-                                    }}>{section}</Menu.Item>)
-                                }
+                                <Menu.Item>
+                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<BgColorsOutlined />}
+                                        onClick={() => {
+                                            var nextTheme = (currentTheme + 1) % themeCount
+                                            setCurrentTheme(nextTheme)
+                                            saveTheme(nextTheme)
+                                        }
+                                        }
+                                    >{langs.get(LangKeys.Themes)}</Button>
+                                </Menu.Item>
+                                <Menu.Item>
+                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
+                                        onClick={() => {
+                                            var nextPaging = !paging
+                                            setPaging(nextPaging)
+                                            savePaging(nextPaging)
+                                        }
+                                        }
+                                    >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
+                                </Menu.Item>
                             </Menu>}>
-                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<UnorderedListOutlined />} onClick={(e) => e.preventDefault()} ></Button>
-                        </Dropdown>
-                        : null
+                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<FontSizeOutlined />} onClick={(e) => e.preventDefault()} ></Button>
+                        </Dropdown> : null}
+                        {paging ? <div className="paging-buttons">
+                            <Button onClick={prePage} type="link" size="large" className="paging-button paging-button-left" icon={<LeftCircleOutlined />} ></Button>
+                            <Button onClick={nextPage} type="link" size="large" className="paging-button paging-button-right" icon={<RightCircleOutlined />} ></Button>
+                        </div> : null}
+                        {
+                            !paging ?
+                                <Dropdown overlay={
+                                    <Menu>
+                                        {
+                                            sections.map(section => <Menu.Item onClick={() => {
+                                                callbacks.gotoSection && callbacks.gotoSection(section)
+                                            }}>{section}</Menu.Item>)
+                                        }
+                                    </Menu>}>
+                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<UnorderedListOutlined />} onClick={(e) => e.preventDefault()} ></Button>
+                                </Dropdown>
+                                : null
+                        }</>) : (<>
+                            {drawSizes.map(s => <Button className="single-article-content-menu-btn" type={s === drawSize ? "primary" : "link"} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
+                            {drawColors.map(c => <Button className="single-article-content-menu-btn" type={c === drawColor ? "primary" : "link"} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
+                            <Button className="single-article-content-menu-btn" size="large" type={earse ? "primary" : "link"} icon={<ClearOutlined style={{ color: drawColor }} />} onClick={() => setEarse(!earse)}></Button>
+                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightFilled />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                        </>)
                 }
+
             </div>
             <div ref={ref} className={classNames("article")}>
                 <props.type.Viewer published={props.article.published} viewerCallbacks={callbacks} showHiddens={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
-                <FreeDrawMask enabled={freeDraw} hidden={paging}></FreeDrawMask>
+                <FreeDrawMask earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
             </div>
         </div>
     )
