@@ -62,7 +62,7 @@ export default function App() {
         }
         e.stopPropagation();
         e.preventDefault();
-        navigateTo(a.innerText.trim(), a.href && uriTransformer(a.href))
+        navigateTo(((a as any).text || a.innerText || '').trim(), a.href && uriTransformer(a.href))
         return
       }
     }
