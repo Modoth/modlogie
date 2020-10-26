@@ -1,12 +1,15 @@
 import { ILangInterpreter, InterpreterInfo, InterpretRequest, InterpretResponse } from "../ILangInterpretersService"
 
 export class CInterpreter implements ILangInterpreter {
-    _info = new InterpreterInfo(new Set(["c"]), "Coliru", "http://coliru.stacked-crooked.com")
+    _info = new InterpreterInfo(new Set(["c"]), "Powered by Coliru", "http://coliru.stacked-crooked.com")
     get info(): InterpreterInfo {
         return this._info;
     };
     interpret(request: InterpretRequest): Promise<InterpretResponse> {
         return new Promise(resolve => {
+            const versionReg = /^\/\*\s*cc:\s*std=(\S+?)\s/
+            const versionMatch = request.code.match(versionReg)
+            const version = versionMatch?.[1]
             const url = "https://coliru.stacked-crooked.com/compile";
             const req = new XMLHttpRequest();
             req.onabort = () => resolve(new InterpretResponse(""))
@@ -20,7 +23,7 @@ export class CInterpreter implements ILangInterpreter {
                 resolve(new InterpretResponse(res));
             }
             req.open("POST", url, true);
-            const cmd = "gcc main.cpp && ./a.out"
+            const cmd = `gcc ${version ? '-std=' + version : ''} main.cpp && ./a.out`
             const src = '#include <stdio.h>\nint main(){' + request.code + '\n return 0;\n}'
             req.send(JSON.stringify({ cmd, src }));
         })

@@ -5,8 +5,9 @@ const ReactMarkdown = require('react-markdown')
 import './ModlangViewer.less'
 import { ArticleContent } from '../../../domain/Article';
 import classNames from 'classnames';
-import { Button, Tabs } from 'antd';
-import { CaretRightOutlined, ClearOutlined } from '@ant-design/icons'
+import { Button, Tabs, Spin } from 'antd';
+import { } from 'antd';
+import { CaretRightOutlined, MinusOutlined, LoadingOutlined } from '@ant-design/icons'
 
 import { useServicesLocator } from '../../../app/Contexts';
 import ILangInterpretersService, { ILangInterpreter, InterpretRequest } from '../../../domain/ILangInterpretersService';
@@ -22,11 +23,11 @@ export function ModlangInterpreter(props: { code: string, interpreter: ILangInte
             return
         }
         setRunning(true)
+        setHasResult(true)
         var res = await props.interpreter.interpret(new InterpretRequest(props.code))
         setOutput(res.output)
         setCompilerOutput(res.compilerOutpout || '')
         setRunning(false)
-        setHasResult(true)
     }
     const clear = () => {
         setOutput('')
@@ -36,17 +37,25 @@ export function ModlangInterpreter(props: { code: string, interpreter: ILangInte
     }
     return <>
         <div className="interpreter-menu">
-            {props.interpreter.info.url && props.interpreter.info.name ? <a href={props.interpreter.info.url}>{props.interpreter.info.name}</a> : undefined}
-            {hasResult ?
-                <Button size="small" shape="circle" type="text" danger onClick={clear} className="play" icon={<ClearOutlined />}></Button> :
+            {hasResult ? undefined :
                 <Button size="small" shape="circle" disabled={running} loading={running} type="text" onClick={interpret} className="play" icon={<CaretRightOutlined />}></Button>
-
             }
         </div>
         {
             hasResult ? <div className="result">
-                {compilerOutput ? <div className="compiler-output">{compilerOutput}</div> : undefined}
-                {output ? <div className="output">{output}</div> : undefined}
+                <div className="menu">
+                    <Button size="small" shape="circle" type="text" danger onClick={clear} className="play" icon={<MinusOutlined />}></Button>
+                    {props.interpreter.info.url && props.interpreter.info.name ? <a className="title" href={props.interpreter.info.url}>{props.interpreter.info.name}</a> : undefined}
+                </div>
+                <div className="content">
+                    {
+                        compilerOutput || output ?
+                            <>{compilerOutput ? <div className="compiler-output">{compilerOutput}</div> : undefined}
+                                {output ? <div className="output">{output}</div> : undefined}</>
+                            :
+                            <LoadingOutlined style={{ fontSize: 24 }} />
+                    }
+                </div>
             </div> : undefined
         }
     </>
@@ -74,8 +83,8 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
                 var interpreter = section.name && interpretersService.get(section.name)
                 return <TabPane className={classNames(section.name, "code")} tab={section.name} key={section.name}>
                     <div onClick={props.onClick}>
-                        {interpreter ? <ModlangInterpreter code={section.content} interpreter={interpreter}></ModlangInterpreter> : undefined}
                         <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
+                        {interpreter ? <ModlangInterpreter code={section.content} interpreter={interpreter}></ModlangInterpreter> : undefined}
                     </div>
                 </TabPane>
             })
