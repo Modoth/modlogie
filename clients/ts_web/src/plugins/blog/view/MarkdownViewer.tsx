@@ -10,7 +10,7 @@ import language from 'react-syntax-highlighter/dist/esm/languages/hljs/1c'
 import Highlight from '../../modlang/view/Hightlight'
 import { ArticlePreview } from '../../../view/pages/ArticlePreview'
 
-const renderers = {
+const renderers: any = {
     code: (props: { language: string, value: string }) => {
         if (props.language === 'article') {
             var path = props.value && props.value.trim()

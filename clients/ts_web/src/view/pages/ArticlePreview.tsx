@@ -32,7 +32,7 @@ export function ArticlePreview(props: { path: string, className?: string }) {
                 return ret()
             }
             var config = locator.locate(PluginsConfig)
-            var type = (user.editingPermission ? config.AllTypes : config.NormalTypes).find(t => t.rootSubjectId === rootId)
+            var type = config.AllTypes.find(t => t.rootSubjectId === rootId)
             if (!type) {
                 return ret()
             }
