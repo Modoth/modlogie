@@ -78,7 +78,7 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
             }
         </>
     </div> :
-        <Tabs className={classNames(props.className, 'modlang-viewer', "no-print")}>{
+        sections.length > 1 ? <Tabs className={classNames(props.className, 'modlang-viewer', "no-print")}>{
             sections.map(section => {
                 var interpreter = section.name && interpretersService.get(section.name)
                 return <TabPane className={classNames(section.name, "code")} tab={section.name} key={section.name}>
@@ -89,5 +89,14 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
                 </TabPane>
             })
         }
-        </Tabs>
+        </Tabs> :
+            sections.map(section => {
+                var interpreter = section.name && interpretersService.get(section.name)
+                return <div className="modlang-viewer"><div className={classNames(section.name, "code")} key={section.name}>
+                    <div onClick={props.onClick}>
+                        <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
+                        {interpreter ? <ModlangInterpreter code={section.content} interpreter={interpreter}></ModlangInterpreter> : undefined}
+                    </div>
+                </div></div>
+            })
 }
