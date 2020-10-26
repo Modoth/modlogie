@@ -58,6 +58,10 @@ import NavigationService from './view/services/NavigationService'
 import IKeywordsService from './domain/IKeywordsService'
 import KeywordsService from './domain/KeywordsService'
 import { KeywordsServiceClient } from './apis/KeywordsServiceClientPb'
+import LangInterpretersService from './domain/LangInterpretersService'
+import ILangInterpretersService from './domain/ILangInterpretersService'
+import { BashInterpreter } from './domain/Interpreters/BashInterpreter'
+import { CInterpreter } from './domain/Interpreters/CInterpreter'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
@@ -166,6 +170,11 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(IKeywordsService, new KeywordsService());
   serviceLocator.register(ILikesService, LikesService);
   serviceLocator.register(INavigationService, NavigationService);
+
+  var interpretersService = new LangInterpretersService()
+  serviceLocator.registerInstance(ILangInterpretersService, interpretersService)
+  interpretersService.set(new BashInterpreter())
+  interpretersService.set(new CInterpreter())
 
   var clientHost = window.origin + '/api';
   serviceLocator.registerFactory(LoginServiceClient, () => new LoginServiceClient(clientHost, null, null));

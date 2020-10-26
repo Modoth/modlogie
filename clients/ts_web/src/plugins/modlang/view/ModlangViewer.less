@@ -13,6 +13,35 @@
     padding: 0 20px;
     // opacity: 0.5;
   }
+
+  .result {
+    background: #2d2d2d;
+    color: white;
+    padding: 5px 10px;
+
+    .compiler-output {
+      color: salmon;
+    }
+  }
+
+  .interpreter-menu {
+    text-align: right;
+    position: sticky;
+    font-size: 0.75rem;
+    opacity: 0.75;
+    top: 0;
+    right: 0;
+    transform: translate(0px, -3em);
+    user-select: none;
+    display: inline-block;
+    float: right;
+    a {
+      color: rgba(0, 0, 0, 0.65);
+    }
+    .play {
+      margin-left: 10px;
+    }
+  }
 }
 
 .article-list {
