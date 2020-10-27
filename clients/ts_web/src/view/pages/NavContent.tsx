@@ -62,7 +62,7 @@ function NavContent() {
       <Route path="/login">
         <Login />
       </Route>
-      <Route path="/article/:typeId/:articleId" exact>
+      <Route path="/articleid/:typeId/:articleId" exact>
         <ArticleIdRedirect />
       </Route>
       <Route path="/article/:path">

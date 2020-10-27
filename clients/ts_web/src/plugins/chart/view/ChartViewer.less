@@ -1,0 +1,114 @@
+.chart-viewer {
+  margin: 5px 0;
+  padding: 5px 10px;
+
+  & .chart-name {
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 1.05em;
+    margin: 5px 0 15px 0;
+    display: block;
+  }
+}
+
+.chart-viewer.view-mode video {
+  border: 1px solid #0004;
+  border-radius: 5px;
+}
+
+.chart-viewer img {
+  width: 100%;
+}
+
+.H5Viewer {
+  padding: 0;
+  iframe {
+    border: none;
+    width: 100%;
+    max-height: 60vw;
+  }
+}
+
+.single-article {
+  .H5Viewer {
+    padding: 0 10px;
+    iframe {
+      box-shadow: var(--shadow);
+      border-radius: 10px;
+      margin: 1em 0;
+    }
+
+    .md-viewer.view-mode {
+      padding: 0;
+      .md-name {
+        font-style: italic;
+      }
+      & > pre {
+        // margin-left: 1em !important;
+        background: #00000008 !important;
+        padding: 10px !important;
+        border-radius: 2px !important;
+      }
+    }
+  }
+}
+
+.article-list {
+  &.border-style-1 iframe {
+    padding: 0;
+    margin: 5px;
+    border-radius: 2px;
+  }
+
+  &.border-style-2 iframe {
+    padding: 5px;
+    margin: 5px;
+    width: calc(100% - 10px);
+    box-sizing: border-box;
+    border-width: 1px;
+    border-style: dashed;
+    border-color: rgba(0, 0, 0, 0.65);
+    break-inside: avoid-column;
+    border-radius: 2px;
+  }
+
+  &.border-style-3 iframe {
+    padding: 5px;
+    margin: 5px;
+    width: calc(100% - 10px);
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.65);
+    border-style: solid;
+    break-inside: avoid-column;
+    border-radius: 2px;
+  }
+
+  &.border-style-4 iframe {
+    padding: 5px 10px;
+    margin: 5px;
+    width: calc(100% - 10px);
+    box-sizing: border-box;
+    background-color: #00000005;
+    border-radius: 2px;
+  }
+
+  &.show-idx > .article > .chart-viewer:first-child .chart-name::before {
+    counter-increment: article-list;
+    content: counter(article-list) "、 ";
+  }
+}
+
+@media (min-width: 780px) {
+  .single-article .article {
+    .H5Viewer {
+      padding: 0 10px 10px 10px;
+      iframe {
+        box-shadow: 0 0 1px #0004;
+        margin: 1em 0;
+        border-radius: 10px;
+        padding: 10px;
+      }
+    }
+  }
+}

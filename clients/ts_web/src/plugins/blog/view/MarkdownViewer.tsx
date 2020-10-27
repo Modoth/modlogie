@@ -17,7 +17,7 @@ const renderers: any = {
             if (!path) {
                 return undefined
             }
-            return <div className="ref-article"><ArticlePreview path={path}></ArticlePreview></div>
+            return <div className="ref-article"><ArticlePreview hidenAdditional={true} path={path}></ArticlePreview></div>
         }
         return <Highlight language={props.language} value={props.value}></Highlight>
     }
