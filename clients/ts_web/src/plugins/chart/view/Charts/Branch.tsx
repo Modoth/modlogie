@@ -125,10 +125,10 @@ export function Branch(props: ChartViewerProps) {
                                 <g transform={`translate(${offset}, 2)`}><foreignObject width={width - offset} x="0">
                                     <div style={{ borderColor: commit.style.dot.color, backgroundColor: commit.style.dot.color + '40' }} className="branch-summary">
                                         <div className="branch-summary-title">
-                                            <Button disabled={!n.link} type="link" onClick={
+                                            <span className="button" onClick={
                                                 previewLink(`#article${n.link}`, n.id)
-                                            }>{n.id}</Button>
-                                            {n.changeLog ? <Button type="link" onClick={previewLink(`#article${n.changeLog}`, n.id)} icon={<BranchesOutlined />}></Button> : undefined}
+                                            }>{n.id}</span>
+                                            {n.changeLog ? <span className="button" onClick={previewLink(`#article${n.changeLog}`, n.id)} ><BranchesOutlined /></span> : undefined}
                                             <span className="flex"></span>
                                             {n.publish ? <span className="published">{n.publish.toLocaleDateString()}</span> : undefined}
                                         </div>
