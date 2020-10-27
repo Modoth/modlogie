@@ -1,6 +1,6 @@
 import React from 'react'
 import { ChartViewerProps } from '../ChartLiveViewer'
-import './Branch.less'
+import './Timeline.less'
 import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/react'
 import ReactMarkdown from 'react-markdown'
 import { useServicesLocator } from '../../../../app/Contexts'
@@ -13,21 +13,13 @@ class Node {
     content?: string
     link?: string
     changeLog?: string
-    line: Line
+    type: string
 }
 
-class Line {
-    nodes: Node[] = []
-    parent?: Line
-}
-
-type NodeMap = string | { [idx: string]: [string | NodeMap] }
-
-function parseNodes(data: { map?: NodeMap, nodes?: Map<string, Node> }): Node[] {
-    if (!data.map || !data.nodes) {
+function parseNodes(data: { nodes?: Map<string, Node> }): Node[] {
+    if (!data.nodes) {
         return [];
     }
-    const map = data.map!;
     const detail = data.nodes!;
     const nodes = new Map<string, Node>()
     detail.forEach((value: any) => {
@@ -38,35 +30,7 @@ function parseNodes(data: { map?: NodeMap, nodes?: Map<string, Node> }): Node[] 
         node.publish = new Date(node.publish)
         nodes.set(key, node)
     })
-    const handleNodeMap = (mapNode: NodeMap, nodes: Map<string, Node>, line?: Line, parentLine?: Line) => {
-        let id: string
-        let childrens: NodeMap[] = []
-        if (typeof mapNode === 'string') {
-            id = mapNode
-        } else {
-            id = Object.keys(mapNode)[0]
-            childrens = mapNode[id]
-        }
-        var node = nodes.get(id)
-        if (!node) {
-            return
-        }
-        node.line = line || new Line()
-        if (!line && parentLine) {
-            node.line.parent = parentLine
-        }
-        node.line.nodes.push(node)
-        if (!childrens.length) {
-            return
-        }
-        handleNodeMap(childrens[0], nodes, node.line)
-        childrens.shift()
-        if (!childrens.length) {
-            return
-        }
-        childrens.forEach(n => handleNodeMap(n, nodes, undefined, node!.line))
-    }
-    handleNodeMap(map, nodes)
+
     return Array.from(nodes.values()).sort((i, j) => i.publish.valueOf() - j.publish.valueOf());
 }
 
@@ -78,33 +42,24 @@ const template = templateExtend(TemplateName.Metro, {
     },
 });
 
-export function Branch(props: ChartViewerProps) {
+export function Timeline(props: ChartViewerProps) {
     const nodes = parseNodes(props.data)
+    const types = (props.data as any).types
     const locator = useServicesLocator()
-    const width = 300;
+    const getColor = (t: string) => types && (types[t]?.color as string);
     return <div className="branch">
         <Gitgraph options={{ orientation: Orientation.VerticalReverse, template }}>
             {(gitgraph: any) => {
-                const branches = new Map<Line, any>()
-                const getBranch = (line: Line): any => {
-                    if (branches.has(line)) {
-                        return branches.get(line)
-                    }
-                    const parentBranch = line.parent ? getBranch(line.parent) : gitgraph
-                    const branch = parentBranch.branch(line.nodes[line.nodes.length - 1].id)
-                    branches.set(line, branch)
-                    return branch
-                }
+                const master = gitgraph.branch('master')
                 for (const n of nodes) {
-                    var b = getBranch(n.line)
-                    b.commit({
+                    const color = getColor(n.type)
+                    master.commit({
+                        style: { dot: { color } },
                         subject: n.id,
                         renderMessage: (commit: any) => {
-                            // const offset = commit.x + commit.style.dot.size * 3
                             return (
-                                // <g transform={`translate(${offset}, 2)`}><foreignObject width={width - offset} x="0">
                                 <g ><foreignObject width="200" x="0">
-                                    <div style={{ borderColor: commit.style.dot.color, backgroundColor: commit.style.dot.color + '40' }} className="branch-summary">
+                                    <div style={{ borderColor: color, backgroundColor: color + '40' }} className="branch-summary">
                                         <div className="branch-summary-title">
                                             <span className="button" onClick={
                                                 previewArticleByPath(locator, n.link, n.id)

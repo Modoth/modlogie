@@ -5,6 +5,7 @@ import { SectionNames } from './SectionNames';
 import './ChartLiveViewer.less'
 import { Branch } from './Charts/Branch';
 import YAML, { stringify } from 'yaml'
+import { Timeline } from './Charts/Timeline';
 
 
 export class ChartViewerProps {
@@ -26,7 +27,7 @@ const combineContent = (sections: Map<string, ArticleSection>): ChartViewerProps
     }
 }
 
-const charts = new Map<string, { (props: ChartViewerProps): JSX.Element }>([['branch', Branch]])
+const charts = new Map<string, { (props: ChartViewerProps): JSX.Element }>([['branch', Branch], ['timeline', Timeline]])
 
 export default function ChartLiveViewer(props: AdditionalSectionsViewerProps) {
     const chartData = combineContent(new Map(props.sections.map(s => [s.name!, s])))
