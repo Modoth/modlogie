@@ -77,7 +77,6 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         if (this.includeServerConfigs && this.defaultServerConfigs === undefined) {
             this.defaultServerConfigs = await (await ClientRun(this, () => this.locate(KeyValuesServiceClient).getAllServerKeys(new Empty(), null))).getKeysList().map(k => new Config(k.getKey(), ConfigType.STRING))
             this.clearCache(true);
-            console.log(this.defaultServerConfigs);
         }
         await this.loadCache();
         return Array.from(this.configs.values(), this.cloneConfig);

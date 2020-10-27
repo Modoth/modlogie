@@ -75,7 +75,6 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
         }
         var currentPage = Math.floor(par.scrollLeft / width)
         par.scroll({ left: (currentPage + i) * width, behavior: "smooth" })
-        console.log(ele)
     }
     callbacks.onSections = setSections;
     callbacks.onSection = setCurrentSection;
