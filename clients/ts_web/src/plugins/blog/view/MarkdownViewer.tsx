@@ -9,23 +9,29 @@ import IViewService from '../../../view/services/IViewService'
 import language from 'react-syntax-highlighter/dist/esm/languages/hljs/1c'
 import Highlight from '../../modlang/view/Hightlight'
 import { ArticlePreview } from '../../../view/pages/ArticlePreview'
+import { previewArticleByPath } from '../../../view/pages/ServiceView'
+import IServicesLocator from '../../../common/IServicesLocator'
+import { ArrowRightOutlined } from '@ant-design/icons'
 
-const renderers: any = {
-    code: (props: { language: string, value: string }) => {
-        if (props.language === 'article') {
-            var path = props.value && props.value.trim()
-            if (!path) {
-                return undefined
+const getRenders = (locator: IServicesLocator) => {
+    return ({
+        code: (props: { language: string, value: string }) => {
+            if (props.language === 'article') {
+                var path = props.value && props.value.trim()
+                if (!path) {
+                    return undefined
+                }
+                return <div className="ref-article"><ArrowRightOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop(), false)} /><ArticlePreview hidenAdditional={true} path={path}></ArticlePreview></div>
             }
-            return <div className="ref-article"><ArticlePreview hidenAdditional={true} path={path}></ArticlePreview></div>
+            return <Highlight language={props.language} value={props.value}></Highlight>
         }
-        return <Highlight language={props.language} value={props.value}></Highlight>
-    }
+    })
 }
 
 export default function MarkdownViewer(props: SectionViewerProps) {
     const ref = React.createRef<HTMLSpanElement>()
     const locator = useServicesLocator();
+    const renderers = getRenders(locator) as any
     if (props.callbacks) {
         props.callbacks.focus = () => {
             if (ref.current) {

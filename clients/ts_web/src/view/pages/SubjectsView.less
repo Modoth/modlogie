@@ -44,6 +44,13 @@
     width: calc(100% - var(--shift));
   }
 
+  .ant-tabs-tab {
+    max-width: 3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+  }
+
   .category-title {
     flex: 1;
     display: flex;
@@ -61,6 +68,7 @@
       object-fit: contain;
       align-self: center;
       margin: 0 0.5em 0px 0;
+      display: none;
     }
 
     span {

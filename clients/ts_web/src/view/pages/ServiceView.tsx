@@ -13,7 +13,25 @@ import { CloseOutlined, SaveOutlined, CopyOutlined } from '@ant-design/icons'
 import html2canvas from 'html2canvas';
 import ReactMarkdown from 'react-markdown'
 import { ArticlePreview } from './ArticlePreview'
+import IServicesLocator from '../../common/IServicesLocator'
 
+export const previewArticleByPath = (locator: IServicesLocator, path: string | undefined, title: string | undefined, preview = true) => {
+  if (!path) {
+    return undefined
+  }
+  const url = `#article${path}`
+  return () => {
+    locator.locate(IViewService).prompt(
+      { title: title || '', subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url }, [
+      ...(preview ? [{
+        type: 'Article',
+        value: path
+      }] : [])], async () => {
+        window.location.href = url;
+        return true;
+      })
+  }
+}
 
 class ViewService implements IViewService {
   errorKey(langs: ILangsService, key: any, timeout?: number | undefined): void {

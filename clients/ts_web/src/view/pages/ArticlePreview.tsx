@@ -55,7 +55,7 @@ export function ArticlePreview(props: { path: string, className?: string, hidenA
             if (article.lazyLoading) {
                 await article.lazyLoading()
             }
-            if (article.lazyLoadingAddition) {
+            if (props.hidenAdditional && article.lazyLoadingAddition) {
                 await article.lazyLoadingAddition()
             }
             var contentType = await locator.locate(IArticleViewServie)
@@ -65,7 +65,7 @@ export function ArticlePreview(props: { path: string, className?: string, hidenA
             ret()
         })()
     }, [])
-    if (!article || !type) {
+    if (!article || !type || !article.content) {
         return <></>
     }
     return <type.Viewer className={classNames("article-preview", props.className)} published={article.published} showHiddens={!props.hidenAdditional} content={article.content!} files={article.files} type={type}></type.Viewer>

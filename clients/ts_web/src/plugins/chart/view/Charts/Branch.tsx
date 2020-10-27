@@ -9,6 +9,8 @@ import IViewService from '../../../../view/services/IViewService'
 import { Button } from 'antd'
 import ILangsService, { LangKeys } from '../../../../domain/ILangsService'
 import { BranchesOutlined } from '@ant-design/icons'
+import IServicesLocator from '../../../../common/IServicesLocator'
+import { previewArticleByPath } from '../../../../view/pages/ServiceView'
 
 class Node {
     id: string
@@ -103,33 +105,16 @@ export function Branch(props: ChartViewerProps) {
                     b.commit({
                         subject: n.id,
                         renderMessage: (commit: any) => {
-                            console.log(commit);
                             // const offset = commit.x + commit.style.dot.size * 3
-                            const previewLink = (url: string | undefined, title: string | undefined) => {
-                                if (!url) {
-                                    return undefined
-                                }
-                                return () => {
-                                    locator.locate(IViewService).prompt(
-                                        { title: title || '', subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url }, [
-                                        {
-                                            type: 'Article',
-                                            value: n.link
-                                        }], async () => {
-                                            window.location.href = url;
-                                            return true;
-                                        })
-                                }
-                            }
                             return (
                                 // <g transform={`translate(${offset}, 2)`}><foreignObject width={width - offset} x="0">
                                 <g ><foreignObject width="200" x="0">
                                     <div style={{ borderColor: commit.style.dot.color, backgroundColor: commit.style.dot.color + '40' }} className="branch-summary">
                                         <div className="branch-summary-title">
                                             <span className="button" onClick={
-                                                previewLink(`#article${n.link}`, n.id)
+                                                previewArticleByPath(locator, n.link, n.id)
                                             }>{n.id}</span>
-                                            {n.changeLog ? <span className="button" onClick={previewLink(`#article${n.changeLog}`, n.id)} ><BranchesOutlined /></span> : undefined}
+                                            {n.changeLog ? <span className="button" onClick={previewArticleByPath(locator, n.changeLog, n.id)} ><BranchesOutlined /></span> : undefined}
                                             <span className="flex"></span>
                                             {n.publish ? <span className="published">{n.publish.toLocaleDateString()}</span> : undefined}
                                         </div>
