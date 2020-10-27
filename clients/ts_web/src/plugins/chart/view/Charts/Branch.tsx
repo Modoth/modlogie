@@ -104,7 +104,7 @@ export function Branch(props: ChartViewerProps) {
                         subject: n.id,
                         renderMessage: (commit: any) => {
                             console.log(commit);
-                            const offset = commit.x + commit.style.dot.size * 3
+                            // const offset = commit.x + commit.style.dot.size * 3
                             const previewLink = (url: string | undefined, title: string | undefined) => {
                                 if (!url) {
                                     return undefined
@@ -122,7 +122,8 @@ export function Branch(props: ChartViewerProps) {
                                 }
                             }
                             return (
-                                <g transform={`translate(${offset}, 2)`}><foreignObject width={width - offset} x="0">
+                                // <g transform={`translate(${offset}, 2)`}><foreignObject width={width - offset} x="0">
+                                <g ><foreignObject width="200" x="0">
                                     <div style={{ borderColor: commit.style.dot.color, backgroundColor: commit.style.dot.color + '40' }} className="branch-summary">
                                         <div className="branch-summary-title">
                                             <span className="button" onClick={
