@@ -1,5 +1,6 @@
 export const SectionNames = {
     html: 'html',
     css: 'css',
-    js: 'js'
+    js: 'js',
+    data: 'yaml'
 }

@@ -6,13 +6,13 @@ import IViewService from '../services/IViewService'
 import ISubjectsService from '../../domain/ISubjectsService'
 import { Query, Condition } from '../../apis/files_pb'
 import IArticleService from '../../domain/IArticleService'
-import Article from '../../domain/Article'
+import Article, { ArticleSection } from '../../domain/Article'
 import IArticleViewServie from '../services/IArticleViewService'
 import IConfigsService from '../../domain/IConfigsSercice'
 import classNames from 'classnames'
 import "./ArticlePreview.less"
 
-export function ArticlePreview(props: { path: string, className?: string }) {
+export function ArticlePreview(props: { path: string, className?: string, dataSections?: ArticleSection[] }) {
     const locator = useServicesLocator()
     const [article, setArticle] = useState<Article | undefined>(undefined)
     const [type, setType] = useState<ArticleContentType | undefined>(undefined)
@@ -53,6 +53,9 @@ export function ArticlePreview(props: { path: string, className?: string }) {
             }
             if (article.lazyLoading) {
                 await article.lazyLoading()
+            }
+            if (props.dataSections && props.dataSections.length) {
+                article.content?.sections?.push(...props.dataSections)
             }
             var contentType = await locator.locate(IArticleViewServie)
                 .getArticleType(locator.locate(IConfigsService), type, type.subTypeTag ? article.tagsDict?.get(type.subTypeTag!)?.value : undefined);

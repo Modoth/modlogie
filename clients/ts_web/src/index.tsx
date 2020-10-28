@@ -63,6 +63,7 @@ import ILangInterpretersService from './domain/ILangInterpretersService'
 import { BashInterpreter } from './domain/Interpreters/BashInterpreter'
 import { CInterpreter } from './domain/Interpreters/CInterpreter'
 import ChartPluginInfo from './plugins/chart'
+import H5AppPluginInfo from './plugins/h5app'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
@@ -94,6 +95,9 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
         break
       case 'H5':
         plugin = new H5PluginInfo(names);
+        break
+      case 'H5App':
+        plugin = new H5AppPluginInfo(names);
         break
       case 'Chart':
         plugin = new ChartPluginInfo(names);

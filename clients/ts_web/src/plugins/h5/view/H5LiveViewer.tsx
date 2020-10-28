@@ -3,6 +3,7 @@ import { AdditionalSectionsViewerProps } from '../../sections-base/view/SectionV
 import { ArticleSection } from '../../../domain/Article';
 import { SectionNames } from './SectionNames';
 import './H5LiveViewer.less'
+import YAML, { stringify } from 'yaml'
 
 
 const getDataUrl = (content: string) => {
@@ -11,10 +12,21 @@ const getDataUrl = (content: string) => {
 
 const combineContent = (sections: Map<string, ArticleSection>): [string | undefined, string | undefined] => {
     var html = sections.get(SectionNames.html)?.content || ''
-    var style = sections.get(SectionNames.css)?.content
-    var script = sections.get(SectionNames.js)?.content
+
     if (!html) {
         return [undefined, undefined]
+    }
+    var style = sections.get(SectionNames.css)?.content
+    var script = sections.get(SectionNames.js)?.content
+    var data = sections.get(SectionNames.data)?.content
+    var jsData = '';
+    if (data) {
+        try {
+            jsData = JSON.stringify(YAML.parse(data))
+        }
+        catch (e) {
+            console.log(e)
+        }
     }
 
     var content = html;
@@ -23,9 +35,15 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
         content += `\n<style>\n${style}\n</style>`
     }
 
-    if (script) {
-        jsContent = `${content}\n<script>\n${script}\n</script>`
+    if (jsData) {
+        jsContent += `<script>\nwindow.appData=${jsData}\n</script>\n`
     }
+
+    if (script) {
+        jsContent += `<script>\n${script}\n</script>\n`
+    }
+
+    jsContent = `${content}\n${jsContent}`
 
     return [getDataUrl(content), jsContent ? getDataUrl(jsContent) : undefined]
 }
