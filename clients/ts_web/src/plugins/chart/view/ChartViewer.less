@@ -20,15 +20,6 @@
   width: 100%;
 }
 
-.H5Viewer {
-  padding: 0;
-  iframe {
-    border: none;
-    width: 100%;
-    max-height: 60vw;
-  }
-}
-
 .single-article {
   .H5Viewer {
     padding: 0 10px;
@@ -96,19 +87,5 @@
   &.show-idx > .article > .chart-viewer:first-child .chart-name::before {
     counter-increment: article-list;
     content: counter(article-list) "、 ";
-  }
-}
-
-@media (min-width: 780px) {
-  .single-article .article {
-    .H5Viewer {
-      padding: 0 10px 10px 10px;
-      iframe {
-        box-shadow: 0 0 1px #0004;
-        margin: 1em 0;
-        border-radius: 10px;
-        padding: 10px;
-      }
-    }
   }
 }
