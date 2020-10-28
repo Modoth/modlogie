@@ -171,7 +171,7 @@ export default function Library(props: LibraryProps) {
     return article
   }
 
-  const fetchArticlesInternal = async (skip: number, take: number): Promise<[number, Article[]]> => {
+  const fetchArticlesInternal = async (skip: number, take: number, ignoreArticleId = false): Promise<[number, Article[]]> => {
     var query = new Query();
     if (favorite) {
       var [ids, count] = await favoriteService.get(props.type.name, skip, take)
@@ -192,7 +192,7 @@ export default function Library(props: LibraryProps) {
       var res = await locator.locate(IArticleService).query(query, undefined, 0, 0)
       return [count, res[1].sort((r1, r2) => order.get(r1.id!)! - order.get(r2.id!)!)]
     }
-    if (articleId) {
+    if (articleId && !ignoreArticleId) {
       if (articleRecommendView) {
         return [0, []]
       }
@@ -286,23 +286,25 @@ export default function Library(props: LibraryProps) {
     }
   }, [rootSubject])
 
-  const fetchArticles = async (page?: number) => {
+  const fetchArticles = async (page?: number, clearArticleId = false) => {
     if (page === undefined) {
       page = currentPage
     }
     try {
       viewService.setLoading(true);
-      var [total, articles] = await fetchArticlesInternal(countPerPage * (page! - 1), countPerPage)
+      var [total, articles] = await fetchArticlesInternal(countPerPage * (page! - 1), countPerPage, clearArticleId)
       setArticles(articles.map(convertArticle))
-      if (articleId) {
-        setArticleId(undefined)
-      }
       setTotalCount(total)
       setCurrentPage(page)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
       viewService.setLoading(false);
       return false
+    }
+    finally {
+      if (clearArticleId && articleId) {
+        setArticleId(undefined)
+      }
     }
     viewService.setLoading(false);
     window.scrollTo(0, 0);
@@ -436,12 +438,16 @@ export default function Library(props: LibraryProps) {
         <Link to="/"><Button type="link" size="large" icon={logo ? <img className="home-icon"
           src={logo}
         /> : null} /></Link>
+        {
+          articleId ? <span className="searched-subjects-title" onClick={() => {
+            fetchArticles(1, true)
+          }}><CloseOutlined /></span> : <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{
+            rootSubject && effectiveSubjects.length < 2 ?
+              <><img className="subject-icon" src={(effectiveSubjects[0] || rootSubject).resourceUrl}></img><span>{(effectiveSubjects[0] || rootSubject).name}</span></> :
+              effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''
+          }</span>
+        }
 
-        <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{
-          rootSubject && effectiveSubjects.length < 2 ?
-            <><img className="subject-icon" src={(effectiveSubjects[0] || rootSubject).resourceUrl}></img><span>{(effectiveSubjects[0] || rootSubject).name}</span></> :
-            effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''
-        }</span>
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {
