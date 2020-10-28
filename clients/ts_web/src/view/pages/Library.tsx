@@ -9,11 +9,11 @@ import ILangsService, { LangKeys } from '../../domain/ILangsService'
 import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowLeftOutlined, HeartFilled } from '@ant-design/icons'
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
-import { ArticleType, ArticleContentType } from '../../plugins/IPluginInfo'
+import { ArticleType, ArticleContentType, PluginsConfig } from '../../plugins/IPluginInfo'
 import Article, { ArticleTag, ArticleAdditionalType } from '../../domain/Article'
 import ArticleView from './ArticleView'
 import ArticleListSummary from './ArticleListSummary'
-import { useParams, Link, useLocation } from 'react-router-dom'
+import { useParams, Link, useLocation, Redirect } from 'react-router-dom'
 import ITagsService, { TagNames, Tag, TagType } from '../../domain/ITagsService'
 import { generateRandomStyle } from './common'
 import classNames from 'classnames'
@@ -60,6 +60,14 @@ export default function Library(props: LibraryProps) {
       recommendView?: boolean;
     }
     = location.state || {}
+
+  if (!params.articleId) {
+    var config = locator.locate(PluginsConfig)
+    var type = ((user.editingPermission ? config.AllTypes : config.NormalTypes)).find(t => t.rootSubjectId === props.type.rootSubjectId)
+    if (!type) {
+      return <Redirect to='/'></Redirect>
+    }
+  }
   const [showFilter, setShowFilter] = useState(false);
   const [articleId, setArticleId] = useState(params.articleId)
   const [articleRecommendView] = useState(params.recommendView || false)

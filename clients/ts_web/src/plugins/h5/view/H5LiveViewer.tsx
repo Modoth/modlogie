@@ -58,13 +58,20 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
     return [getDataUrl(content), jsContent ? getDataUrl(jsContent) : undefined]
 }
 
+function IFrame(props: { src: string, allowScripts: boolean }) {
+    if (props.allowScripts) {
+        return <iframe src={props.src} sandbox="allow-scripts" ></iframe>
+    }
+    return <iframe src={props.src} sandbox=""></iframe>
+}
+
 export default function H5LiveViewer(props: AdditionalSectionsViewerProps) {
     const [contentUrl, jsContentUrl] = combineContent(new Map(props.sections.map(s => [s.name!, s])))
     const [running, setRunning] = useState(false)
     const [canRunning] = useState(!!jsContentUrl)
     if (running) {
         return jsContentUrl ?
-            <iframe src={jsContentUrl} sandbox="allow-scripts" ></iframe>
+            <div className="h5-live-viewer"><IFrame src={jsContentUrl} allowScripts={true}></IFrame></div>
             : <></>
     }
     return contentUrl ?
