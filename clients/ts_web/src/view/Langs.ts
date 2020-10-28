@@ -53,6 +53,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Cancle = '取消';
   CancleAutoLogin = '自动登录';
   CancleRecommend = '取消推荐';
+  CaptureWord = '取词(Beta)';
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
   ComfireJump = '点击确定继续:\t';
@@ -70,6 +71,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Enabled = '激活';
   EnumValue = '枚举值';
   Favorite = '收藏';
+  FreeDraw = '涂鸦(Beta)';
   Home = '首页';
   Import = '导入';
   Keyword = '关键字';

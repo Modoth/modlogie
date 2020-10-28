@@ -9,65 +9,78 @@
     top: 0;
     left: 0;
     right: 0;
-    display: flex;
-    padding: 5px;
+    padding: 0 5px;
     z-index: 2;
-    background: #fff;
+    background: #fff8;
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
-    // box-shadow: var(--shadow);
-    border-bottom: 1px solid #f0f0f0;
-
-    .ant-btn-primary {
-      background: transparent;
-    }
-    .pen-size {
-      width: 60%;
-      border-radius: 25%;
-      vertical-align: middle;
-      display: inline-block;
-    }
-    // & > * {
-    //   margin-right: 10px;
-    // }
-
-    a.ant-dropdown-link.ant-dropdown-trigger {
-      align-self: center;
-    }
-
-    .sections-icon {
-      margin-left: 5px;
-    }
-
-    .title {
-      align-self: center;
-      color: #251202;
-      font-weight: bold;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      flex: 1;
-    }
-
-    .paging-buttons {
-      position: fixed;
-      left: 0;
-      right: 0;
+    box-shadow: var(--shadow);
+    // border-bottom: 1px solid #f0f0f0;
+    .menus-dict {
+      border-top: 1px solid #00000008;
       display: flex;
-      top: 45vh;
-      justify-content: space-between;
-      .paging-button {
-        margin: 0;
-        transform: scale(1.5);
-        color: #0001;
+      & > .capture-dict {
+        flex: 1;
+        height: 51px;
+      }
+      & > button {
+        margin-top: 5px;
+      }
+    }
+    .menus-bar {
+      padding: 5px 0;
+      display: flex;
+      .ant-btn-primary {
+        background: transparent;
+      }
+      .pen-size {
+        width: 60%;
+        border-radius: 25%;
+        vertical-align: middle;
+        display: inline-block;
+      }
+      // & > * {
+      //   margin-right: 10px;
+      // }
+
+      a.ant-dropdown-link.ant-dropdown-trigger {
+        align-self: center;
       }
 
-      .paging-button-left {
-        left: 5px;
+      .sections-icon {
+        margin-left: 5px;
       }
 
-      .paging-button-right {
-        right: 5px;
+      .title {
+        align-self: center;
+        color: #251202;
+        font-weight: bold;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        flex: 1;
+      }
+
+      .paging-buttons {
+        position: fixed;
+        left: 0;
+        right: 0;
+        display: flex;
+        top: 45vh;
+        justify-content: space-between;
+        .paging-button {
+          margin: 0;
+          transform: scale(1.5);
+          color: #0001;
+        }
+
+        .paging-button-left {
+          left: 5px;
+        }
+
+        .paging-button-right {
+          right: 5px;
+        }
       }
     }
   }

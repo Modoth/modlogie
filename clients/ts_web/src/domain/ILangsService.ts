@@ -8,6 +8,7 @@ export class LangKeysInterface {
   Cancle = 'Cancle';
   CancleAutoLogin = 'CancleAutoLogin';
   CancleRecommend = 'CancleRecommend';
+  CaptureWord = 'CaptureWord';
   ChangeName = 'ChangeName';
   ChangePassword = 'ChangePassword';
   ComfireJump = 'ComfireJump';
@@ -25,6 +26,7 @@ export class LangKeysInterface {
   Enabled = 'Enabled';
   EnumValue = 'EnumValue';
   Favorite = 'Favorite';
+  FreeDraw = 'FreeDraw';
   Home = 'Home';
   Import = 'Import';
   Keyword = 'Keyword';

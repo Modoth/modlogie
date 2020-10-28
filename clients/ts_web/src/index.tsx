@@ -64,6 +64,8 @@ import { BashInterpreter } from './domain/Interpreters/BashInterpreter'
 import { CInterpreter } from './domain/Interpreters/CInterpreter'
 import ChartPluginInfo from './plugins/chart'
 import H5AppPluginInfo from './plugins/h5app'
+import IDictService from './domain/IDictService'
+import DictService from './domain/DictService'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
@@ -176,6 +178,7 @@ const buildServicesLocator = () => {
   }
   serviceLocator.registerInstance(IFavoritesServer, new FavoritesServerSingleton())
   serviceLocator.registerInstance(IKeywordsService, new KeywordsService());
+  serviceLocator.registerInstance(IDictService, new DictService());
   serviceLocator.register(ILikesService, LikesService);
   serviceLocator.register(INavigationService, NavigationService);
 
