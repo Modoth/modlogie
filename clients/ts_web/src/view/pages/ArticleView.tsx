@@ -307,9 +307,9 @@ export default function ArticleView(props: {
     }
   }
   const openDetail = async () => {
-    if (!props.article.additionId) {
-      return
-    }
+    // if (!props.article.additionId) {
+    //   return
+    // }
     if (!additionalLoaded) {
       viewService.setLoading(true);
       await props.article.lazyLoadingAddition!();
@@ -447,7 +447,7 @@ export default function ArticleView(props: {
                       onClick={() => addFile()}
                     ></Button>
                   </div>} key="1">
-                  <props.type.Viewer showHiddens={true} content={content} files={files} type={type} />
+                  <props.type.Viewer showAdditionals={true} content={content} files={files} type={type} />
                 </Panel>
               </Collapse>
             </>

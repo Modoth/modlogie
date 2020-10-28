@@ -21,7 +21,7 @@ const getRenders = (locator: IServicesLocator) => {
                 if (!path) {
                     return undefined
                 }
-                return <div className="ref-article"><ArrowRightOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop(), false)} /><ArticlePreview hidenAdditional={true} path={path}></ArticlePreview></div>
+                return <div className="ref-article"><ArrowRightOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop())} /><ArticlePreview path={path}></ArticlePreview></div>
             }
             return <Highlight language={props.language} value={props.value}></Highlight>
         }

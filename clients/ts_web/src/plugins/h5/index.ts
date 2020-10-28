@@ -9,7 +9,7 @@ export default class H5PluginInfo extends SectionsBasePluginInfo implements IPlu
     constructor(typeNames: string[]) {
         super(H5Viewer, 'H5Viewer', H5Editor, typeNames,
             {
-                defaultSections: `_${SectionNames.html} _${SectionNames.css} _${SectionNames.js}`,
+                defaultSections: `?${SectionNames.html} ?${SectionNames.css} ?${SectionNames.js}`,
                 loadAdditionalsSync: true
             },
             H5LiveViewer)

@@ -9,7 +9,7 @@ export default class ChartPluginInfo extends SectionsBasePluginInfo implements I
     constructor(typeNames: string[]) {
         super(ChartViewer, 'ChartViewer', ChartEditor, typeNames,
             {
-                defaultSections: `_${SectionNames.data} _${SectionNames.type}`,
+                defaultSections: `-${SectionNames.data} -${SectionNames.type}`,
                 loadAdditionalsSync: true
             },
             ChartLiveViewer)

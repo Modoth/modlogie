@@ -15,7 +15,7 @@ import ReactMarkdown from 'react-markdown'
 import { ArticlePreview } from './ArticlePreview'
 import IServicesLocator from '../../common/IServicesLocator'
 
-export const previewArticleByPath = (locator: IServicesLocator, path: string | undefined, title: string | undefined, preview = true) => {
+export const previewArticleByPath = (locator: IServicesLocator, path: string | undefined, title: string | undefined) => {
   if (!path) {
     return undefined
   }
@@ -23,10 +23,10 @@ export const previewArticleByPath = (locator: IServicesLocator, path: string | u
   return () => {
     locator.locate(IViewService).prompt(
       { title: title || '', subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url }, [
-      ...(preview ? [{
+      {
         type: 'Article',
         value: path
-      }] : [])], async () => {
+      }], async () => {
         window.location.href = url;
         return true;
       })

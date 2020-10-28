@@ -32,6 +32,8 @@ export interface ArticleContentType {
   name: string,
   noTitle?: boolean;
   additionalSections: Set<string>,
+  hiddenSections: Set<string>,
+  smartHiddenSections: Set<string>,
   allSections: Set<string>,
   articleType: ArticleType,
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
@@ -53,7 +55,7 @@ export class ArticleContentViewerProps {
   type?: ArticleContentType
   className?: string
   onClick?: MouseEventHandler<any>;
-  showHiddens?: boolean;
+  showAdditionals?: boolean;
   viewerCallbacks?: ArticleContentViewerCallbacks;
   print?: boolean;
 }

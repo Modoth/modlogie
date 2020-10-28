@@ -25,7 +25,7 @@ export default function SectionsBaseViewer(TSectionViewer: { (props: SectionView
   return (props: ArticleContentViewerProps) => {
     const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
     const [sections] = useState((getSections(props.type?.allSections!, props.type?.additionalSections!, props.content!.sections!)))
-    const [showHidden, setShowHidden] = useState(props.showHiddens == true)
+    const [showAdditional, setShowAdditional] = useState(props.showAdditionals == true)
     const [callbacks] = useState(new Map<string, SectionViewerCallbacks>(sections.map(s => [s.name!, {
       onfocus: () => {
         if (props.viewerCallbacks?.onSection) {
@@ -63,7 +63,7 @@ export default function SectionsBaseViewer(TSectionViewer: { (props: SectionView
             <TAdditionalSectionsViewerMemo sections={sections} filesDict={filesDict} ></TAdditionalSectionsViewerMemo> :
             null
         }
-        {sections.filter(s => s.content && s.content.match(/\S/)).filter(s => showHidden || !props.type?.additionalSections.has(s.name!)).map((section) => (
+        {sections.filter(s => !props.type?.hiddenSections.has(s.name!)).filter(s => showAdditional || !props.type?.smartHiddenSections.has(s.name!)).filter(s => s.content && s.content.match(/\S/)).filter(s => showAdditional || !props.type?.additionalSections.has(s.name!)).map((section) => (
           <TSectionViewer className={classNames(section.firstSection ? 'first-section' : (section.additionalSection ? 'additional-section' : 'normal-section'))} callbacks={callbacks.get(section.name!)} key={section.name} section={section} filesDict={filesDict} pureViewMode={true} />
         ))}
       </div>

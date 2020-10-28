@@ -42,11 +42,23 @@ const template = templateExtend(TemplateName.Metro, {
     },
 });
 
+const typesColors = new Map<string, string>()
+const allColors = ["#979797", "#008fb5", "#f1c109"]
+const getColor = (t: string) => {
+    if (!t) {
+        return allColors[0]
+    }
+    if (typesColors.has(t)) {
+        return typesColors.get(t)
+    }
+    var color = allColors[typesColors.size % allColors.length]
+    typesColors.set(t, color)
+    return color;
+}
+
 export function Timeline(props: ChartViewerProps) {
     const nodes = parseNodes(props.data)
-    const types = (props.data as any).types
     const locator = useServicesLocator()
-    const getColor = (t: string) => types && (types[t]?.color as string);
     return <div className="branch">
         <Gitgraph options={{ orientation: Orientation.VerticalReverse, template }}>
             {(gitgraph: any) => {

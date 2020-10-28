@@ -1,5 +1,7 @@
 export const TagNames = {
-    HidenSectionPrefix: '_',
+    AdditionalSectionPrefix: '_',
+    HiddenSectionPrefix: '-',
+    SmartHiddenSectionPrefix: '?',
     RESERVED_PREFIX: '__',
     LIKE_TAG_NAME: '__LIKE',
     DISLIKE_TAG_NAME: '__DISLIKE'
