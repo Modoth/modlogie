@@ -9,7 +9,7 @@ export class LangKeysInterface {
   CancleAutoLogin = 'CancleAutoLogin';
   CancleRecommend = 'CancleRecommend';
   CaptureWord = 'CaptureWord';
-  ChangeDict = 'ChangeDict';
+  NotFount = 'NotFount';
   ChangeName = 'ChangeName';
   ChangePassword = 'ChangePassword';
   ComfireJump = 'ComfireJump';

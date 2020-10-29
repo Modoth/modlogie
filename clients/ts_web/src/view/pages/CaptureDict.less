@@ -1,5 +1,6 @@
 .capture-dict {
   width: 100%;
+  overflow-x: hidden;
   iframe {
     border: none;
     width: 100%;
@@ -12,11 +13,28 @@
     .word {
       flex: 1;
       text-align: center;
+      text-align: center;
+      overflow: hidden;
+      span {
+        overflow: hidden;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+        background: #0001;
+        border-radius: 5px;
+        padding: 0 5px;
+      }
     }
-    button,
-    .count {
+    button {
       margin: 0;
       padding: 0px 10px;
+
+      .info {
+        font-size: 0.75em;
+        font-style: italic;
+        vertical-align: bottom;
+        margin-left: 0;
+      }
     }
   }
 }
