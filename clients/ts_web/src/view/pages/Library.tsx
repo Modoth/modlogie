@@ -6,7 +6,7 @@ import { useServicesLocator, useUser } from '../../app/Contexts'
 import ISubjectsService from '../../domain/ISubjectsService'
 import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowLeftOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowLeftOutlined, ArrowRightOutlined, HeartFilled } from '@ant-design/icons'
 import IViewService from '../services/IViewService'
 import { v4 as uuidv4 } from 'uuid'
 import { ArticleType, ArticleContentType, PluginsConfig } from '../../plugins/IPluginInfo'
@@ -438,16 +438,17 @@ export default function Library(props: LibraryProps) {
         <Link to="/"><Button type="link" size="large" icon={logo ? <img className="home-icon"
           src={logo}
         /> : null} /></Link>
-        {
-          articleId ? <span className="searched-subjects-title" onClick={() => {
+        <span onClick={() => {
+          if (articleId) {
             fetchArticles(1, true)
-          }}><CloseOutlined /></span> : <span onClick={() => setShowFilter(true)} className="searched-subjects-title">{
+          } else {
+            setShowFilter(true)
+          }
+        }} className="searched-subjects-title">{articleId ? <Button type="link" danger className="go-back-btn" icon={<ArrowRightOutlined />}></Button> : undefined}{
             rootSubject && effectiveSubjects.length < 2 ?
               <><img className="subject-icon" src={(effectiveSubjects[0] || rootSubject).resourceUrl}></img><span>{(effectiveSubjects[0] || rootSubject).name}</span></> :
               effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''
           }</span>
-        }
-
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {
