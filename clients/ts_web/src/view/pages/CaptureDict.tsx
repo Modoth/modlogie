@@ -73,7 +73,7 @@ export default function CaptureDict() {
                 const cancleToken: CancleToken = { cancled: false }
                 store.cancleToken = cancleToken
 
-                const url = await dictServer.queryUrl(w);
+                const url = await dictServer.queryUrl(w.toLowerCase());
                 if (cancleToken === store.cancleToken) {
                     clearLastCancleToken()
                     if (url) {
