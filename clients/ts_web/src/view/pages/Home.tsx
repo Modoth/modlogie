@@ -5,7 +5,6 @@ import SubjectsView from './SubjectsView'
 
 export default function Home() {
   return (<div className="home">
-    <RecentsView></RecentsView>
     <SubjectsView></SubjectsView>
   </div>)
 }

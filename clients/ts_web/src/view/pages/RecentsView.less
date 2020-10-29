@@ -1,17 +1,25 @@
 .recents-view {
-  margin-bottom: 2em;
-
+  border-bottom: 1px solid #0001;
   a.recent-article {
     color: unset;
   }
 
-  & .recent-article-wraper {
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    padding: 10px;
-    margin: 10px;
-    background-color: #fff8;
+  & .recent-article-wraper::after {
+    position: absolute;
+    left: 0;
+    content: " ";
+    right: 0;
+    background: linear-gradient(0, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0));
+    height: 2em;
+    bottom: 0;
+  }
 
+  & .recent-article-wraper {
+    background-color: #fff8;
+    touch-action: none;
+    .ref-article .jump-to {
+      display: none;
+    }
     .article-title {
       word-break: break-all;
       border-bottom: 1px groove #0000000c;
@@ -26,7 +34,7 @@
       overflow-x: hidden;
       white-space: nowrap;
       touch-action: none;
-
+      display: none;
       .recommend-button {
         margin: 0 10px 0 0;
         opacity: 1;

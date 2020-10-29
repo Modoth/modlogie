@@ -24,7 +24,7 @@ export default function SectionsBaseViewer(TSectionViewer: { (props: SectionView
   const TAdditionalSectionsViewerMemo = TAdditionalSectionsViewer ? memo(TAdditionalSectionsViewer) : null
   return (props: ArticleContentViewerProps) => {
     const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
-    const [sections] = useState((getSections(props.type?.allSections!, props.type?.additionalSections!, props.content!.sections!)))
+    const [sections] = useState((getSections(props.type?.allSections!, props.type?.additionalSections!, props.content?.sections || [])))
     const [showAdditional, setShowAdditional] = useState(props.showAdditionals == true)
     const [callbacks] = useState(new Map<string, SectionViewerCallbacks>(sections.map(s => [s.name!, {
       onfocus: () => {

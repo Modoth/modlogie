@@ -41,7 +41,7 @@ function RecentArticle(props: { article: Article, type: ArticleType, contentType
   )
 }
 
-export default function RecentsView() {
+export default function RecentsView(props: { type: ArticleType }) {
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
   const viewService = locator.locate(IViewService)
@@ -49,7 +49,7 @@ export default function RecentsView() {
   const [recommendsArticles, setRecommendsArticles] = useState<Article[]>([])
   const [recommandTitle, setRecommendTitle] = useState('')
   const [articleTypes, setArticleTypes] = useState(new Map<Article, ArticleContentType>())
-  const [type, setType] = useState<ArticleType | undefined>();
+  const type = props.type
   const user = useUser();
 
   const fetchArticles = async () => {
@@ -134,26 +134,16 @@ export default function RecentsView() {
     setRecommendsArticles(recommendsArticles)
   }
 
-  const fetchType = async () => {
-    var plugins = locator.locate(PluginsConfig);
-    const type = ((user?.editingPermission ? plugins.AllTypes : plugins.NormalTypes))[0];
-    setType(type);
-  }
-
   useEffect(() => {
     fetchArticles()
-  }, [type])
-
-  useEffect(() => {
-    fetchType()
   }, [])
 
-  if (!type || !articles?.length) {
+  if (!articles?.length) {
     return <></>
   }
   return (
     <div className="recents-view">
-      <Button type="link" className="title">{langs.get(LangKeys.Latest)}</Button>
+      {/* <Button type="link" className="title">{langs.get(LangKeys.Latest)}</Button> */}
       <Carousel>
         {
           recommendsArticles.map(article => <RecentArticle recommendView={true} recommendTitle={recommandTitle} article={article} key={article.id + "_rec"} type={type} contentType={articleTypes.get(article)!} ></RecentArticle>)
