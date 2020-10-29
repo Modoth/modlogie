@@ -79,7 +79,7 @@ export default function CaptureDict() {
                     if (url) {
                         setWord(w)
                         setUrl(url)
-                    } else if (w.length > 1) {
+                    } else if (w.length > 1 && (!w[0].match(/[a-zA-Z0-9]/)) && w[0].match(/\p{Script=Han}/u)) {
                         await queryWord(w[0], w)
                     } else {
                         setWord(origin)
