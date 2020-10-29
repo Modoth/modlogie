@@ -53,6 +53,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Cancle = '取消';
   CancleAutoLogin = '自动登录';
   CancleRecommend = '取消推荐';
+  ChangeDict = '添加/修改字典';
   CaptureWord = '取词(Beta)';
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
