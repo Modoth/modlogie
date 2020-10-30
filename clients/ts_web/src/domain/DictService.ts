@@ -1,16 +1,36 @@
-import sleep from "../common/sleep"
 import IDictService, { CancleToken, DictInfo } from "./IDictService"
 import style from '!!raw-loader!./DictService.css';
 import localforage from "localforage";
+import { LangKeys } from "./ILangsService";
+import { MdxDictParser } from "./DictService.MdxDictParser";
 
-class Item {
+export class Item {
     constructor(public key: string, public value: string) { }
+}
+
+export interface DictParser {
+    parse(file: File): Promise<[string, Item][]>
+}
+
+class JsonDictParser implements DictParser {
+    async parse(file: File): Promise<[string, Item][]> {
+        var content = await file.text()
+        var json: string[][] = JSON.parse(content)
+        return json.filter(i => i[0]).map(i => {
+            var key = i.shift()!
+            return [key, new Item(key, i.join(''))] as [string, Item]
+        })
+    }
 }
 
 export default class DictService implements IDictService {
     async info(token?: CancleToken): Promise<DictInfo> {
         return new DictInfo(await localforage.length())
     }
+    parsers = new Map<string, DictParser>([
+        ['mdx', new MdxDictParser()],
+        ['json', new JsonDictParser()],
+    ])
     constructor() {
         localforage.config({
             driver: localforage.INDEXEDDB,
@@ -19,25 +39,21 @@ export default class DictService implements IDictService {
             storeName: 'dict'
         });
     }
-    parseDict(content: string): [string, Item][] {
-        try {
-            var json: string[][] = JSON.parse(content)
-            return json.filter(i => i[0]).map(i => {
-                var key = i.shift()!
-                return [key, new Item(key, i.join(''))] as [string, Item]
-            })
+    async parseDict(file: File): Promise<[string, Item][]> {
+        var type = file.name.split('.').pop()
+        if (!type || !this.parsers.has(type)) {
+            throw new Error(LangKeys.MSG_ERROR_INVALID_FILE)
         }
-        catch (e) {
-            console.log(e)
-            return []
-        }
+        var parser = this.parsers.get(type)!
+        return await parser?.parse(file)
     }
-    async change(content: string, token?: CancleToken, callBack?: { (progress: number): void }): Promise<DictInfo> {
+    async change(file: File, token?: CancleToken, callBack?: { (progress: number): void }): Promise<DictInfo> {
+        var items = await this.parseDict(file)
         await localforage.clear()
         if (token?.cancled) {
             return new DictInfo(0)
         }
-        var items = this.parseDict(content)
+
         const total = items.length;
         let progress = 0;
         for (var i = 0; i < total; i++) {

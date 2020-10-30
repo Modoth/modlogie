@@ -38,6 +38,7 @@ export class LangKeysInterface {
   Manage = 'Manage';
   Modify = 'Modify';
   MSG_ERROR_NETWORK = 'MSG_ERROR_NETWORK';
+  MSG_ERROR_INVALID_FILE = 'MSG_ERROR_INVALID_FILE';
   MSG_ERROR_SITE_CONFIG = 'MSG_ERROR_SITE_CONFIG';
   MSG_ERROR_USER_OR_PWD = 'MSG_ERROR_USER_OR_PWD';
   Name = 'Name';

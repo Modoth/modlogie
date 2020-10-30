@@ -129,7 +129,8 @@ export default function ServiceView(props: {
     async (
       title: string | { title: string, subTitle: string },
       fields: IPromptField<any, any>[],
-      onOk: (...paras: any) => Promise<boolean | undefined>
+      onOk: (...paras: any) => Promise<boolean | undefined>,
+      tryPreviewFile = true
     ): Promise<boolean> => {
       return new Promise(resolve => {
         resolveModalPromise(false);
@@ -162,7 +163,8 @@ export default function ServiceView(props: {
           setStates()
           return
         }
-        let accept = '*/*'
+        let allAccept = '*/*'
+        let accept = allAccept
         let onchange: (file: File) => void
 
         const handleImage = (file: File) => {
@@ -200,27 +202,29 @@ export default function ServiceView(props: {
             return
           }
           const startsWith = (s: string) => file.type.startsWith(s)
-          if (
-            startsWith('text/') ||
-            startsWith('application/json') ||
-            startsWith('application/x-yaml')
-          ) {
-            singleField.type = 'TextFile'
-            handleText(file)
-            return
-          }
-          if (startsWith('image/')) {
-            singleField.type = 'Image'
-            handleImage(file)
-            return
-          }
-          if (startsWith('video/')) {
-            singleField.type = 'Video'
-            handleVideo(file)
-            if (e) {
-              e.target.value = ''
+          if (tryPreviewFile) {
+            if (
+              startsWith('text/') ||
+              startsWith('application/json') ||
+              startsWith('application/x-yaml')
+            ) {
+              singleField.type = 'TextFile'
+              handleText(file)
+              return
             }
-            return
+            if (startsWith('image/')) {
+              singleField.type = 'Image'
+              handleImage(file)
+              return
+            }
+            if (startsWith('video/')) {
+              singleField.type = 'Video'
+              handleVideo(file)
+              if (e) {
+                e.target.value = ''
+              }
+              return
+            }
           }
           onOk(file)
           resolveModalPromise(true);
@@ -234,7 +238,7 @@ export default function ServiceView(props: {
           return
         }
 
-        refFile.current!.accept = fields[0].accept || accept
+        refFile.current!.accept = fields[0].accept || (accept !== allAccept ? accept : '')
         refFile.current!.onchange = (e: any) => {
           const file: File = e.target.files && e.target.files![0]
           if (!file) {

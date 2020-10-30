@@ -34,24 +34,28 @@ export default function CaptureDict() {
                 {
                     type: 'File',
                     value: null,
-                    accept: 'application/JSON'
                 }
             ],
-            async (file: File | string) => {
+            async (file: File) => {
                 (async () => {
                     store.cancleToken = { cancled: false }
                     setImporting(true)
                     store.importing = true
                     viewService.setLoading(true)
-                    var info = await dictServer.change(typeof (file) === 'string' ? file : await file.text(), store.cancleToken, setImportProgress)
+                    var newInfo = info;
+                    try {
+                        newInfo = await dictServer.change(file, store.cancleToken, setImportProgress)
+                    } catch (e) {
+                        viewService!.errorKey(langs, e.message)
+                    }
                     clearLastCancleToken()
                     store.importing = false
                     setImporting(false)
-                    setInfo(info)
+                    setInfo(newInfo)
                     viewService.setLoading(false)
                 })()
                 return true
-            })
+            }, false)
     }
     useEffect(() => {
         (async () => {

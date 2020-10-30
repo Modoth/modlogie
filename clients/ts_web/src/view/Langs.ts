@@ -85,6 +85,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   MSG_ERROR_NETWORK = '网络错误';
   MSG_ERROR_SITE_CONFIG = '配置错误';
   MSG_ERROR_USER_OR_PWD = '用户名或密码错误';
+  MSG_ERROR_INVALID_FILE = '无效文件';
   Name = '名称';
   NewName = '新名称';
   NewPassword = '新密码';
