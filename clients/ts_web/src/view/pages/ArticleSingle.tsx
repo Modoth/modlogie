@@ -86,7 +86,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                 {
                     showDict ?
                         <div className="menus-dict"><CaptureDict></CaptureDict>
-                            <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setShowDict(false)}></Button></div> :
+                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<CloseOutlined />} onClick={() => setShowDict(false)}></Button></div> :
                         <div className={classNames("menus-bar")} onClick={e => e.stopPropagation()}>
                             {freeDraw ? undefined : <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>}
                             {

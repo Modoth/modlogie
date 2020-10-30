@@ -36,6 +36,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
         var article: Article = {
             name: item.getName(),
             id: item.getId(),
+            path: item.getPath(),
             subjectId: item.getParentId(),
             published: item.getPublished()!.toDate(),
             additionalType: item.getAdditionalType() as ArticleAdditionalType,

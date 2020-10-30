@@ -85,7 +85,7 @@ export default function ServiceView(props: {
   const [previewImgUrl, setPreviewImgUrl] = useState('')
 
   const [previewArticleList, setPreviewArticleList] = useState(false)
-  const [previewArticle, setPreviewArticle] = useState<{ article: Article, type: ArticleContentType } | undefined>(undefined)
+  const [previewArticle, setPreviewArticle] = useState<{ article: Article, type: ArticleContentType, onclose?: { (): void } } | undefined>(undefined)
 
   const updateField = (
     i: number,
@@ -255,14 +255,17 @@ export default function ServiceView(props: {
       props.setContentVisiable(!visiable)
       setPreviewArticleList(visiable)
     },
-    (article: Article, type: ArticleContentType): void => {
+    (article: Article, type: ArticleContentType, onclose?: { (): void }): void => {
       if (article) {
         props.setContentVisiable(false)
-        setPreviewArticle({ article, type })
+        setPreviewArticle({ article, type, onclose })
       }
       else {
         props.setContentVisiable(true)
         setPreviewArticle(undefined)
+        if (previewArticle?.onclose) {
+          previewArticle.onclose()
+        }
       }
     }, async (element: HTMLElement | undefined): Promise<void> => {
       if (!element) {

@@ -3,7 +3,7 @@ import './MarkdownViewer.less'
 import classNames from 'classnames'
 import SectionViewerProps from '../../sections-base/view/SectionViewerProps'
 import ReactMarkdown, { uriTransformer } from 'react-markdown'
-import { useServicesLocator } from '../../../app/Contexts'
+import { useServicesLocator, useUser } from '../../../app/Contexts'
 import INavigationService from '../../../view/services/INavigationService'
 import IViewService from '../../../view/services/IViewService'
 import language from 'react-syntax-highlighter/dist/esm/languages/hljs/1c'
@@ -11,9 +11,10 @@ import Highlight from '../../modlang/view/Hightlight'
 import { ArticlePreview } from '../../../view/pages/ArticlePreview'
 import { previewArticleByPath } from '../../../view/pages/ServiceView'
 import IServicesLocator from '../../../common/IServicesLocator'
-import { ArrowRightOutlined } from '@ant-design/icons'
+import { EditOutlined } from '@ant-design/icons'
 
 const getRenders = (locator: IServicesLocator) => {
+    const user = useUser();
     return ({
         code: (props: { language: string, value: string }) => {
             if (props.language === 'article') {
@@ -21,7 +22,7 @@ const getRenders = (locator: IServicesLocator) => {
                 if (!path) {
                     return undefined
                 }
-                return <div className="ref-article"><ArrowRightOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop())} /><ArticlePreview path={path}></ArticlePreview></div>
+                return <div className="ref-article">{user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop())} /> : undefined}<ArticlePreview path={path}></ArticlePreview></div>
             }
             return <Highlight language={props.language} value={props.value}></Highlight>
         }

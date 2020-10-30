@@ -21,7 +21,7 @@ import Button from 'antd/es/button'
 function RecentArticle(props: { article: Article, type: ArticleType, contentType: ArticleContentType, onClick?: MouseEventHandler<any>; recommendView?: boolean, recommendTitle?: string }) {
   const [redirect, setRedirect] = useState(false)
   if (redirect) {
-    return <Redirect to={{ pathname: '/' + props.type.route, state: { articleId: props.article.id, recommendView: props.recommendView } }}></Redirect>
+    return <Redirect to={{ pathname: '/article' + props.article.path, state: { recommendView: props.recommendView } }}></Redirect>
   }
   const goto = () => setRedirect(true)
   return (

@@ -15,7 +15,7 @@ import ConfigKeys from '../../app/ConfigKeys'
 import ReactMarkdown from 'react-markdown'
 import { ManageUsers } from './ManageUsers'
 import { ManageKeywords } from './ManageKeywords'
-import { ArticleRedirect } from './ArticleRedirect'
+import { ArticleDetail } from './ArticleDetail'
 import { ArticleIdRedirect } from './ArticleIdRedirect'
 
 function NavContent() {
@@ -66,7 +66,7 @@ function NavContent() {
         <ArticleIdRedirect />
       </Route>
       <Route path="/article/:path">
-        <ArticleRedirect />
+        <ArticleDetail />
       </Route>
       <Route path="/">
         <>

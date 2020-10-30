@@ -49,7 +49,7 @@ export default class IViewService {
     throw new Error('Method not implemented.')
   }
 
-  previewArticle(article?: Article, type?: ArticleContentType): void {
+  previewArticle(article?: Article, type?: ArticleContentType, onclose?: { (): void }): void {
     throw new Error('Method not implemented.')
   }
 

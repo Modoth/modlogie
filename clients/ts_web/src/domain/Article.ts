@@ -30,6 +30,7 @@ export enum ArticleAdditionalType {
 
 export default interface Article {
   id?: string;
+  path?: string;
   additionId?: string,
   subjectId?: string;
   name?: string;

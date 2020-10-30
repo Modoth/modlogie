@@ -96,6 +96,6 @@ export default function CaptureDict() {
         };
     }, []);
     return <div className="capture-dict">
-        {url ? <iframe src={url} sandbox=""></iframe> : <div className='menu'><Button danger type="link" icon={<PlusSquareOutlined />} onClick={selectDictFile}><span className="info">{importing ? `${importProgress}%` : (info && info.itemCount || 0)}</span></Button><Button danger type="link" className='word'>{word ? `${langs.get(LangKeys.NotFount)}:${word}` : ''}</Button></div>}
+        {url ? <iframe src={url} sandbox=""></iframe> : <div className='menu'><Button type="link" icon={<PlusSquareOutlined />} onClick={selectDictFile}><span className="info">{importing ? `${importProgress}%` : (info && info.itemCount || 0)}</span></Button><Button type="link" className='word'></Button></div>}
     </div>
 } 
