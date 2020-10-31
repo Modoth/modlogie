@@ -1,7 +1,7 @@
 .capture-dict {
   width: 100%;
   overflow-x: hidden;
-  iframe {
+  .float-dict {
     border: none;
     width: 80%;
     max-width: 624px;
@@ -9,20 +9,29 @@
     position: absolute;
     left: 0;
     right: 0;
-    background: #f5f5f5;
-    height: 6rem;
-    // -webkit-backdrop-filter: blur(5px);
-    // backdrop-filter: blur(5px);
+    background: #fff8;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
     border-radius: 5px;
     padding: 0 5px;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 2px 0px,
       rgba(0, 0, 0, 0.25) 0px 1px 4px 0px, rgba(0, 0, 0, 0.25) 0px 2px 8px 0px;
+    .title {
+      text-align: center;
+    }
+    iframe {
+      width: 100%;
+      border: none;
+      background: transparent;
+      height: 6rem;
+    }
   }
+
   .menu {
     height: 100%;
     display: flex;
     align-items: center;
-    .word {
+    .flex {
       flex: 1;
       text-align: center;
       text-align: center;

@@ -1,5 +1,6 @@
 export class LangKeysInterface {
   AddToArticleList = 'AddToArticleList';
+  AddDict = 'AddDict';
   AdmLogin = 'AdmLogin';
   All = 'All';
   AlreadyLiked = 'AlreadyLiked';

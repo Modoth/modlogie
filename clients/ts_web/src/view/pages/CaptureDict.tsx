@@ -15,7 +15,7 @@ export default function CaptureDict() {
     const [info, setInfo] = useState<DictInfo | undefined>()
     const locator = useServicesLocator()
     const langs = locator.locate(ILangsService)
-    const [store] = useState<{ cancleToken?: CancleToken, importing?: boolean, mousePos?: [number, number] }>({})
+    const [store] = useState<{ cancleToken?: CancleToken, importing?: boolean, mousePos?: [number, number], destoried?: boolean }>({})
     const clearLastCancleToken = () => {
         if (store.cancleToken) {
             store.cancleToken.cancled = true
@@ -23,11 +23,11 @@ export default function CaptureDict() {
         }
     }
     const dictServer = useServicesLocator().locate(IDictService)
+    const viewService = locator.locate(IViewService)
     const selectDictFile = async () => {
         if (store.cancleToken) {
             return
         }
-        const viewService = locator.locate(IViewService)
         viewService.prompt(
             langs.get(LangKeys.Import),
             [
@@ -44,14 +44,20 @@ export default function CaptureDict() {
                     viewService.setLoading(true)
                     var newInfo = info;
                     try {
-                        newInfo = await dictServer.change(file, store.cancleToken, setImportProgress)
+                        newInfo = await dictServer.change(file, store.cancleToken, (i) => {
+                            if (!store.destoried) {
+                                setImportProgress(i)
+                            }
+                        })
                     } catch (e) {
                         viewService!.errorKey(langs, e.message)
                     }
                     clearLastCancleToken()
                     store.importing = false
-                    setImporting(false)
-                    setInfo(newInfo)
+                    if (!store.destoried) {
+                        setImporting(false)
+                        setInfo(newInfo)
+                    }
                     viewService.setLoading(false)
                 })()
                 return true
@@ -60,9 +66,21 @@ export default function CaptureDict() {
     useEffect(() => {
         (async () => {
             store.cancleToken = { cancled: false }
-            var info = await dictServer.info(store.cancleToken)
-            clearLastCancleToken()
-            setInfo(info)
+            viewService.setLoading(true)
+            try {
+                var info = await dictServer.info(store.cancleToken)
+                if (!store.destoried) {
+                    setInfo(info)
+                }
+            }
+            catch (e) {
+                console.log(e)
+            }
+            finally {
+                clearLastCancleToken()
+                viewService.setLoading(false)
+            }
+
         })()
         const handleSelected = async () => {
             const w = window.getSelection()?.toString()?.trim() || '';
@@ -80,6 +98,9 @@ export default function CaptureDict() {
                 store.cancleToken = cancleToken
 
                 const url = await dictServer.queryUrl(w.toLowerCase());
+                if (store.destoried) {
+                    return
+                }
                 if (cancleToken === store.cancleToken) {
                     clearLastCancleToken()
                     if (url) {
@@ -98,7 +119,6 @@ export default function CaptureDict() {
             await queryWord(w, w)
         }
         const handlePosition = (ev: MouseEvent | TouchEvent) => {
-            console.log(ev)
             store.mousePos = ev instanceof MouseEvent ? [ev.clientX, ev.clientY] : (ev.touches[0] ? [ev.touches[0].clientX, ev.touches[0].clientY] : undefined)
         }
         document.addEventListener('mousedown', handlePosition)
@@ -107,6 +127,7 @@ export default function CaptureDict() {
         document.addEventListener('touchmove', handlePosition)
         document.addEventListener('mousemove', handleSelected)
         return function cleanup() {
+            store.destoried = true
             clearLastCancleToken()
             document.removeEventListener('selectionchange', handleSelected)
             document.removeEventListener('mousedown', handlePosition)
@@ -116,7 +137,9 @@ export default function CaptureDict() {
         };
     }, []);
     return <div className="capture-dict">
-        {url && store.mousePos ? <iframe style={{ top: store.mousePos[1] + 20 }} src={url} sandbox=""></iframe> : undefined
-        } <div className='menu'><Button type="link" icon={<PlusSquareOutlined />} onClick={selectDictFile}><span className="info">{importing ? `${importProgress}%` : (info && info.itemCount || 0)}</span></Button><Button type="link" className='word'></Button></div>
+        {url && store.mousePos ? <div style={{ top: store.mousePos[1] + 20 }} className='float-dict'>
+            <div className="title"><Button type="link" className='word'>{word || ''}</Button></div>
+            <iframe src={url} sandbox=""></iframe> </div> : undefined
+        } <div className='menu'><Button type="link" icon={<PlusSquareOutlined />} onClick={selectDictFile}><span className="info">{importing ? `${importProgress}%` : (info && info.itemCount || 0)}</span></Button><Button type="link" className='flex'>{info && info.itemCount ? '' : <span onClick={selectDictFile}>{langs.get(LangKeys.AddDict)}</span>}</Button></div>
     </div >
 } 
