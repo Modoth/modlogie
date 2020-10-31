@@ -26,14 +26,24 @@
         margin-left: 10px;
       }
     }
+    .embed-content,
     .content {
-      background: #2d2d2d;
-      color: white;
+      min-height: 2em;
       padding: 5px 10px;
       border-radius: 0 0 5px 5px;
-      min-height: 2em;
+      background: #2d2d2d;
+      color: white;
+    }
+    .content {
       .compiler-output {
         color: salmon;
+      }
+    }
+    .embed-content {
+      iframe {
+        width: 100%;
+        border: none;
+        background: transparent;
       }
     }
   }

@@ -4,6 +4,7 @@ export class ConfigKeysInterface<T> {
     ALLOW_LOGIN: T = <any>'ALLOW_LOGIN';
     ALLOW_PRINT: T = <any>'ALLOW_PRINT';
     IMPORT_SUBJECTS_AUTOFIX: T = <any>'IMPORT_SUBJECTS_AUTOFIX';
+    LANGS_SERVER: T = <any>'LANGS_SERVER';
     MAX_FAVORITES_PER_TYPE: T = <any>'MAX_FAVORITES_PER_TYPE';
     MAX_PRINT_COUNT: T = <any>'MAX_PRINT_COUNT';
     PLUGINS: T = <any>'PLUGINS'

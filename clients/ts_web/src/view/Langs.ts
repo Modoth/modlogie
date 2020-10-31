@@ -24,6 +24,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   DISPLAY_NAME = '显示名';
   IMPORT_SUBJECTS_AUTOFIX = '导入目录时自动修复';
   KEYWORDS_QRERY_TEMPLAES = '关键字查询模板';
+  LANGS_SERVER = "语言服务器";
   MAX_FAVORITES_PER_TYPE = "每种文章最大收藏数";
   MAX_PRINT_COUNT = '最大打印文章数';
   PLUGINS = '插件';

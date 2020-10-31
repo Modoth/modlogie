@@ -15,6 +15,7 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
     ALLOW_PRINT = new Config(ConfigKeys.ALLOW_PRINT, ConfigType.ENUM, UserRoleKeys.UNLOGIN, "", [UserRoleKeys.UNLOGIN, UserRoleKeys.NORMAL, UserRoleKeys.AUTHORISED, UserRoleKeys.ADM]);
     IMPORT_SUBJECTS_AUTOFIX = new Config(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX, ConfigType.BOOLEAN, "false");
     KEYWORDS_QRERY_TEMPLAES = new Config(ConfigKeys.KEYWORDS_QRERY_TEMPLAES, ConfigType.STRING, "default https://www.google.com/search?q=${keyword}");
+    LANGS_SERVER = new Config(ConfigKeys.LANGS_SERVER, ConfigType.STRING, "");//https://www.modoth.cn:8000/$LANG/$CODE,perl,bash
     MAX_FAVORITES_PER_TYPE = new Config(ConfigKeys.MAX_FAVORITES_PER_TYPE, ConfigType.NUMBER, "1000");
     MAX_PRINT_COUNT = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, "100");
     PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, "");

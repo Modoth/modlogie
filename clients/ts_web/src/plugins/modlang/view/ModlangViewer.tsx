@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ArticleContentViewerProps } from '../../IPluginInfo';
 import Highlight from './Hightlight';
 const ReactMarkdown = require('react-markdown')
@@ -13,49 +13,78 @@ import { useServicesLocator } from '../../../app/Contexts';
 import ILangInterpretersService, { ILangInterpreter, InterpretRequest } from '../../../domain/ILangInterpretersService';
 const { TabPane } = Tabs;
 
-export function ModlangInterpreter(props: { code: string, interpreter: ILangInterpreter }) {
+export function ModlangInterpreter(props: { code: string, lang: string, version?: string }) {
+    const [request] = useState(new InterpretRequest(props.code, props.lang, props.version))
     const [output, setOutput] = useState('')
     const [compilerOutput, setCompilerOutput] = useState('')
     const [running, setRunning] = useState(false)
-    const [hasResult, setHasResult] = useState(false)
-    const interpret = async () => {
-        if (running) {
+    const [opened, setOpened] = useState(false)
+    const interpretersService = useServicesLocator().locate(ILangInterpretersService)
+    const [interpreter, setInterpreter] = useState<ILangInterpreter | undefined>()
+    const [interpreterUrl, setInterpreterUrl] = useState<string | undefined>()
+    const open = async () => {
+        if (running || !interpreter) {
+            return
+        }
+        setOpened(true)
+        if (!interpreter.interpret) {
             return
         }
         setRunning(true)
-        setHasResult(true)
-        var res = await props.interpreter.interpret(new InterpretRequest(props.code))
+        const res = await interpreter.interpret(request)
         setOutput(res.output)
         setCompilerOutput(res.compilerOutpout || '')
         setRunning(false)
     }
+    useEffect(() => {
+        (async () => {
+            const interpreter = await interpretersService.get(props.lang)
+            if (interpreter && interpreter.interpretUrl) {
+                const url = interpreter.interpretUrl(request)
+                console.log(url)
+                setInterpreterUrl(url)
+            }
+            setInterpreter(interpreter)
+        })()
+    }, [])
     const clear = () => {
         setOutput('')
         setCompilerOutput('')
         setRunning(false)
-        setHasResult(false)
+        setOpened(false)
+    }
+    if (!interpreter || !(interpreter.interpret || interpreter.interpretUrl)) {
+        return <></>
     }
     return <>
         <div className="interpreter-menu">
-            {hasResult ? undefined :
-                <Button size="small" shape="circle" disabled={running} loading={running} type="text" onClick={interpret} className="play" icon={<CaretRightOutlined />}></Button>
+            {opened ? undefined :
+                <Button size="small" shape="circle" disabled={running} loading={running} type="text" onClick={open} className="play" icon={<CaretRightOutlined />}></Button>
             }
         </div>
         {
-            hasResult ? <div className="result">
+            opened ? <div className="result">
                 <div className="menu">
                     <Button size="small" shape="circle" type="text" danger onClick={clear} className="play" icon={<MinusOutlined />}></Button>
-                    {props.interpreter.info.url && props.interpreter.info.name ? <a className="title" href={props.interpreter.info.url}>{props.interpreter.info.name}</a> : undefined}
+                    {interpreter.info.url && interpreter.info.name ? <a className="title" href={interpreter.info.url}>{interpreter.info.name}</a> : undefined}
                 </div>
-                <div className="content">
-                    {
-                        compilerOutput || output ?
-                            <>{compilerOutput ? <div className="compiler-output">{compilerOutput}</div> : undefined}
-                                {output ? <div className="output">{output}</div> : undefined}</>
-                            :
-                            <LoadingOutlined style={{ fontSize: 24 }} />
-                    }
-                </div>
+                {
+                    interpreterUrl ?
+                        <div className="embed-content">
+                            {
+                                <iframe src={interpreterUrl}></iframe>
+                            }
+                        </div> :
+                        <div className="content">
+                            {
+                                compilerOutput || output ?
+                                    <>{compilerOutput ? <div className="compiler-output">{compilerOutput}</div> : undefined}
+                                        {output ? <div className="output">{output}</div> : undefined}</>
+                                    :
+                                    <LoadingOutlined style={{ fontSize: 24 }} />
+                            }
+                        </div>
+                }
             </div> : undefined
         }
     </>
@@ -66,7 +95,6 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
     var sections = props.type!.allSections.size > 0 ? Array.from(
         props.type!.allSections, name => existedSections.get(name)!).filter(s => s && s.content)
         : Array.from(existedSections.values())
-    var interpretersService = useServicesLocator().locate(ILangInterpretersService)
     return props.print ? <div className={classNames(props.className, 'modlang-viewer', "only-print")}>
         <>
             {props.showTitle ? <h4 className="article-title">{props.title}</h4> : null}
@@ -80,22 +108,20 @@ export default function ModlangViewer(props: ArticleContentViewerProps) {
     </div> :
         (sections.length > 1 ? <Tabs className={classNames(props.className, 'modlang-viewer', "no-print")}>{
             sections.map(section => {
-                var interpreter = section.name && interpretersService.get(section.name)
                 return <TabPane className={classNames(section.name, "code")} tab={section.name} key={section.name}>
                     <div onClick={props.onClick}>
                         <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
-                        {interpreter ? <ModlangInterpreter code={section.content} interpreter={interpreter}></ModlangInterpreter> : undefined}
+                        {section.name ? <ModlangInterpreter code={section.content} lang={section.name}></ModlangInterpreter> : undefined}
                     </div>
                 </TabPane>
             })
         }
         </Tabs> : <div className="modlang-viewer">{
             sections.map(section => {
-                var interpreter = section.name && interpretersService.get(section.name)
                 return <div className={classNames(section.name, "code")} key={section.name}>
                     <div onClick={props.onClick}>
                         <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
-                        {interpreter ? <ModlangInterpreter code={section.content} interpreter={interpreter}></ModlangInterpreter> : undefined}
+                        {section.name ? <ModlangInterpreter code={section.content} lang={section.name}></ModlangInterpreter> : undefined}
                     </div>
                 </div>
             })}</div>)
