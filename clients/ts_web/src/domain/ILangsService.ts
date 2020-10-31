@@ -13,6 +13,7 @@ export class LangKeysInterface {
   NotFount = 'NotFount';
   ChangeName = 'ChangeName';
   ChangePassword = 'ChangePassword';
+  ClearDict = 'ClearDict';
   ComfireJump = 'ComfireJump';
   Comment = 'Comment';
   Configs = 'Configs';

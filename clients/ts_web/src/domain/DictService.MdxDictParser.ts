@@ -1,4 +1,4 @@
-import { DictParser, Item } from "./DictService";
+import { DictParser, DictItem } from "./DictService";
 import { LangKeys } from "./ILangsService";
 import pako from 'pako'
 import ripemd128 from "../thirds/ripmd128";
@@ -218,7 +218,7 @@ export class MdxDictParser implements DictParser {
         return allKeys
     }
 
-    async parse(file: File): Promise<[string, Item][]> {
+    async parse(file: File): Promise<[string, DictItem][]> {
 
         const reader: DataReader = this.createDataReader(await file.arrayBuffer())
         const info = this.readInfo(reader)
@@ -230,11 +230,11 @@ export class MdxDictParser implements DictParser {
         const keys = this.readKeys(reader, indexEncrypted, decoder, codingUnit)
         const recordBuffer = this.readRecordBuffer(reader)
         const recbufferView = this.createDataReader(recordBuffer.buffer)
-        var items: [string, Item][] = []
+        var items: [string, DictItem][] = []
         for (const i of keys) {
             const key = i.key.trim()
             const [str] = this.findString(recbufferView, i.offset, decoder)
-            items.push([key.trim(), new Item(key, str)])
+            items.push([key.trim(), new DictItem(key, str)])
         }
         return items;
     }

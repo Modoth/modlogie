@@ -5,7 +5,7 @@ import IDictService, { CancleToken, DictInfo } from '../../domain/IDictService';
 import ILangsService, { LangKeys } from '../../domain/ILangsService';
 import IViewService from '../services/IViewService';
 import './CaptureDict.less'
-import { PlusSquareOutlined } from '@ant-design/icons'
+import { PlusSquareOutlined, ClearOutlined } from '@ant-design/icons'
 
 export default function CaptureDict() {
     const [word, setWord] = useState('')
@@ -24,6 +24,30 @@ export default function CaptureDict() {
     }
     const dictServer = useServicesLocator().locate(IDictService)
     const viewService = locator.locate(IViewService)
+    const clearDict = async () => {
+        if (!info || !info.itemCount || store.cancleToken || importing) {
+            return
+        }
+        viewService.prompt(langs.get(LangKeys.ClearDict), [], async () => {
+            if (store.cancleToken) {
+                return true
+            }
+            viewService.setLoading(true)
+            try {
+                await dictServer.clean();
+                if (!store.destoried) {
+                    setInfo(new DictInfo(0))
+                }
+            } catch (e) {
+                viewService!.errorKey(langs, e.message)
+                return false
+            }
+            finally {
+                viewService.setLoading(false)
+            }
+            return true
+        })
+    }
     const selectDictFile = async () => {
         if (store.cancleToken) {
             return
@@ -40,6 +64,7 @@ export default function CaptureDict() {
                 (async () => {
                     store.cancleToken = { cancled: false }
                     setImporting(true)
+                    setImportProgress(0)
                     store.importing = true
                     viewService.setLoading(true)
                     var newInfo = info;
@@ -140,6 +165,9 @@ export default function CaptureDict() {
         {url && store.mousePos ? <div style={{ top: store.mousePos[1] + 20 }} className='float-dict'>
             <div className="title"><Button type="link" className='word'>{word || ''}</Button></div>
             <iframe src={url} sandbox=""></iframe> </div> : undefined
-        } <div className='menu'><Button type="link" icon={<PlusSquareOutlined />} onClick={selectDictFile}><span className="info">{importing ? `${importProgress}%` : (info && info.itemCount || 0)}</span></Button><Button type="link" className='flex'>{info && info.itemCount ? '' : <span onClick={selectDictFile}>{langs.get(LangKeys.AddDict)}</span>}</Button></div>
+        } <div className='menu'>
+            <Button danger size="large" type="link" icon={<ClearOutlined />} onClick={clearDict}></Button>
+            <Button type="link" className='flex'>{importing ? `${importProgress}%` : (<span onClick={selectDictFile}>{langs.get(LangKeys.AddDict)}{<span className="info">{info && info.itemCount || ''}</span>}</span>)}</Button>
+        </div>
     </div >
 } 

@@ -2,24 +2,15 @@ import IDictService, { CancleToken, DictInfo } from "./IDictService"
 import style from '!!raw-loader!./DictService.css';
 import { LangKeys } from "./ILangsService";
 import { MdxDictParser } from "./DictService.MdxDictParser";
+import { JsonDictParser } from "./DictService.JsonDictParser";
+import { TxtDictParser } from "./DictService.TxtDictParser";
 
-export class Item {
+export class DictItem {
     constructor(public key: string, public value: string) { }
 }
 
 export interface DictParser {
-    parse(file: File): Promise<[string, Item][]>
-}
-
-class JsonDictParser implements DictParser {
-    async parse(file: File): Promise<[string, Item][]> {
-        var content = await file.text()
-        var json: string[][] = JSON.parse(content)
-        return json.filter(i => i[0]).map(i => {
-            var key = i.shift()!
-            return [key, new Item(key, i.join(''))] as [string, Item]
-        })
-    }
+    parse(file: File): Promise<[string, DictItem][]>
 }
 
 export default class DictService implements IDictService {
@@ -29,6 +20,7 @@ export default class DictService implements IDictService {
     parsers = new Map<string, DictParser>([
         ['mdx', new MdxDictParser()],
         ['json', new JsonDictParser()],
+        ['txt', new TxtDictParser()]
     ])
 
     private _db: Promise<IDBDatabase>
@@ -106,7 +98,7 @@ export default class DictService implements IDictService {
         })
     }
 
-    async parseDict(file: File): Promise<[string, Item][]> {
+    async parseDict(file: File): Promise<[string, DictItem][]> {
         var type = file.name.split('.').pop()
         if (!type || !this.parsers.has(type)) {
             throw new Error(LangKeys.MSG_ERROR_INVALID_FILE)
@@ -114,14 +106,16 @@ export default class DictService implements IDictService {
         var parser = this.parsers.get(type)!
         return await parser?.parse(file)
     }
+    async clean(): Promise<void> {
+        await this.bulkStore(store => {
+            store.clear()
+        })
+    }
     async change(file: File, token?: CancleToken, callBack?: { (progress: number): void }): Promise<DictInfo> {
         var items = await this.parseDict(file)
         if (token?.cancled) {
             return new DictInfo(0)
         }
-        await this.bulkStore(store => {
-            store.clear()
-        })
         if (token?.cancled) {
             return new DictInfo(0)
         }

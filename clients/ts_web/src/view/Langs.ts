@@ -56,6 +56,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   CancleRecommend = '取消推荐';
   NotFount = '未找到';
   CaptureWord = '取词';
+  ClearDict = '清空字典';
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
   ComfireJump = '点击确定继续:\t';

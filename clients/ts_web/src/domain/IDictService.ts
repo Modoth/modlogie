@@ -8,6 +8,9 @@ export default class IDictService {
     info(token?: CancleToken): Promise<DictInfo> {
         throw new Error('Method not implemented.')
     }
+    clean(): Promise<void> {
+        throw new Error('Method not implemented.')
+    }
     change(file: File, token?: CancleToken, callBack?: { (progress: number): void }): Promise<DictInfo> {
         throw new Error('Method not implemented.')
     }
