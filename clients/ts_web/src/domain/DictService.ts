@@ -25,20 +25,13 @@ class JsonDictParser implements DictParser {
 
 export default class DictService implements IDictService {
     async info(token?: CancleToken): Promise<DictInfo> {
-        return new DictInfo(await localforage.length())
+        return new DictInfo(await this.store.length())
     }
     parsers = new Map<string, DictParser>([
         ['mdx', new MdxDictParser()],
         ['json', new JsonDictParser()],
     ])
-    constructor() {
-        localforage.config({
-            driver: localforage.INDEXEDDB,
-            name: 'modlite',
-            version: 1.0,
-            storeName: 'dict'
-        });
-    }
+    store = localforage.createInstance({ name: 'dict' })
     async parseDict(file: File): Promise<[string, Item][]> {
         var type = file.name.split('.').pop()
         if (!type || !this.parsers.has(type)) {
@@ -49,16 +42,15 @@ export default class DictService implements IDictService {
     }
     async change(file: File, token?: CancleToken, callBack?: { (progress: number): void }): Promise<DictInfo> {
         var items = await this.parseDict(file)
-        await localforage.clear()
+        await this.store.clear()
         if (token?.cancled) {
             return new DictInfo(0)
         }
-
         const total = items.length;
         let progress = 0;
         for (var i = 0; i < total; i++) {
             var item = items[i][1];
-            await localforage.setItem(item.key, item.value)
+            await this.store.setItem(item.key, item.value)
             if (token?.cancled) {
                 return new DictInfo(0)
             }
@@ -70,16 +62,16 @@ export default class DictService implements IDictService {
                 }
             }
         }
-        return new DictInfo(await localforage.length())
+        return new DictInfo(await this.store.length())
     }
     async query(word: string, token?: CancleToken): Promise<string | undefined> {
-        return await localforage.getItem(word) || undefined;
+        return await this.store.getItem(word) || undefined;
     }
     async queryUrl(word: string, token?: CancleToken): Promise<string | undefined> {
         if (token && token.cancled) {
             return ''
         }
-        var value = await localforage.getItem(word)
+        var value = await this.store.getItem(word)
         return value && "data:text/html;charset=utf-8," + encodeURIComponent(`${value}<style>${style}</style>`);
     }
 }

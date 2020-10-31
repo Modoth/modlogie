@@ -66,6 +66,7 @@ import ChartPluginInfo from './plugins/chart'
 import H5AppPluginInfo from './plugins/h5app'
 import IDictService from './domain/IDictService'
 import DictService from './domain/DictService'
+import localforage from 'localforage'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
@@ -203,6 +204,11 @@ const buildServicesLocator = () => {
 }
 
 const bootstrap = async () => {
+  localforage.config({
+    driver: localforage.INDEXEDDB,
+    name: 'modlite',
+    version: 1.0
+  });
   const serviceLocator = await buildServicesLocator()
   await loadPlugins(serviceLocator as ServicesLocator);
   const loginService = serviceLocator.locate(ILoginService)
