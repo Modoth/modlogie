@@ -15,7 +15,7 @@ export default function CaptureDict() {
     const [info, setInfo] = useState<DictInfo | undefined>()
     const locator = useServicesLocator()
     const langs = locator.locate(ILangsService)
-    const [store] = useState<{ cancleToken?: CancleToken, importing?: boolean }>({})
+    const [store] = useState<{ cancleToken?: CancleToken, importing?: boolean, mousePos?: [number, number] }>({})
     const clearLastCancleToken = () => {
         if (store.cancleToken) {
             store.cancleToken.cancled = true
@@ -67,6 +67,8 @@ export default function CaptureDict() {
         const handleSelected = async () => {
             const w = window.getSelection()?.toString()?.trim() || '';
             if (!w) {
+                setWord(w)
+                setUrl('')
                 return
             }
             if (store.importing) {
@@ -83,8 +85,10 @@ export default function CaptureDict() {
                     if (url) {
                         setWord(w)
                         setUrl(url)
-                    } else if (w.length > 1 && (!w[0].match(/[a-zA-Z0-9]/)) && w[0].match(/\p{Script=Han}/u)) {
-                        await queryWord(w[0], w)
+                    } else if (w.length > 1) {
+                        // && (!w[0].match(/[a-zA-Z0-9]/)) && w[0].match(/\p{Script=Han}/u)
+                        // await queryWord(w[0], w)
+                        await queryWord(w.slice(0, w.length - 1), w)
                     } else {
                         setWord(origin)
                         setUrl(url)
@@ -93,13 +97,26 @@ export default function CaptureDict() {
             }
             await queryWord(w, w)
         }
+        const handlePosition = (ev: MouseEvent | TouchEvent) => {
+            console.log(ev)
+            store.mousePos = ev instanceof MouseEvent ? [ev.clientX, ev.clientY] : (ev.touches[0] ? [ev.touches[0].clientX, ev.touches[0].clientY] : undefined)
+        }
+        document.addEventListener('mousedown', handlePosition)
+        document.addEventListener('touchstart', handlePosition)
         document.addEventListener('selectionchange', handleSelected)
+        document.addEventListener('touchmove', handlePosition)
+        document.addEventListener('mousemove', handleSelected)
         return function cleanup() {
             clearLastCancleToken()
             document.removeEventListener('selectionchange', handleSelected)
+            document.removeEventListener('mousedown', handlePosition)
+            document.removeEventListener('touchstart', handlePosition)
+            document.removeEventListener('touchmove', handlePosition)
+            document.removeEventListener('mousemove', handleSelected)
         };
     }, []);
     return <div className="capture-dict">
-        {url ? <iframe src={url} sandbox=""></iframe> : <div className='menu'><Button type="link" icon={<PlusSquareOutlined />} onClick={selectDictFile}><span className="info">{importing ? `${importProgress}%` : (info && info.itemCount || 0)}</span></Button><Button type="link" className='word'></Button></div>}
-    </div>
+        {url && store.mousePos ? <iframe style={{ top: store.mousePos[1] + 20 }} src={url} sandbox=""></iframe> : undefined
+        } <div className='menu'><Button type="link" icon={<PlusSquareOutlined />} onClick={selectDictFile}><span className="info">{importing ? `${importProgress}%` : (info && info.itemCount || 0)}</span></Button><Button type="link" className='word'></Button></div>
+    </div >
 } 

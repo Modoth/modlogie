@@ -103,9 +103,10 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                                                         callbacks.gotoSection && callbacks.gotoSection(section)
                                                     }}>{section}</Menu.Item>).concat(
                                                         <Menu.Divider></Menu.Divider>,
+                                                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={showDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => setShowDict(!showDict)}>{langs.get(LangKeys.CaptureWord)}</Button></Menu.Item>,
+                                                        <Menu.Divider></Menu.Divider>,
                                                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>,
                                                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>,
-                                                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={showDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => setShowDict(!showDict)}>{langs.get(LangKeys.CaptureWord)}</Button></Menu.Item>,
                                                     )
                                                 }
                                                 {smallScreen ? [<Menu.Item>

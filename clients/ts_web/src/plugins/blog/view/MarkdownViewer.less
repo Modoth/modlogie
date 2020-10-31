@@ -186,6 +186,11 @@
   }
 }
 
-.article-view-wraper .sections-base-viewer .normal-section {
-  display: none;
+.article-view-wraper .sections-base-viewer {
+  .normal-section {
+    display: none;
+  }
+  .first-section > *:last-child {
+    margin-bottom: 0 !important;
+  }
 }
