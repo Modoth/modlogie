@@ -46,7 +46,6 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LINK = '链接';
   [key: string]: string;
   AddToArticleList = '添加';
-  AddDict = '添加字典';
   AdmLogin = '管理员登陆';
   All = '全部';
   AlreadyLiked = '已经点过了';
@@ -56,7 +55,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   CancleAutoLogin = '自动登录';
   CancleRecommend = '取消推荐';
   NotFount = '未找到';
-  CaptureWord = '取词';
+  CaptureWordEnable = '开启取词';
+  CaptureWordDisable = '关闭取词';
   ClearDict = '清空字典';
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
@@ -68,6 +68,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Delete = '删除';
   Description = '描述';
   Detail = '详情';
+  Dict = '字典';
   Dislike = '踩';
   Edit = '编辑';
   Email = '邮箱';

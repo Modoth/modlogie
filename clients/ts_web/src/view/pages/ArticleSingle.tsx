@@ -39,6 +39,18 @@ const savePaging = (paging: boolean) => {
         localStorage.removeItem(getPaingKey())
     }
 }
+const getCaptureDictKey = () => 'CAPTUR_DICT'
+const loadCaptureDict = () => {
+    var captureDict = localStorage.getItem(getCaptureDictKey())
+    return captureDict === 'true'
+}
+const saveCaptureDict = (captureDict: boolean) => {
+    if (captureDict) {
+        localStorage.setItem(getCaptureDictKey(), 'true')
+    } else {
+        localStorage.removeItem(getCaptureDictKey())
+    }
+}
 const drawSizes = [1, 5, 15]
 const drawColors = ['#2d2d2d', '#ff0000', '#ffff0080']
 export default function ArticleSingle(props: { article: Article, type: ArticleContentType }) {
@@ -53,7 +65,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     }
     const langs = locator.locate(ILangsService)
     const [freeDraw, setFreeDraw] = useState(false)
-    const [showDict, setShowDict] = useState(false)
+    const [captureDict, setCaptureDict] = useState(loadCaptureDict())
     const smallScreen = window.matchMedia && window.matchMedia("(max-width: 780px)")?.matches
     const [currentTheme, setCurrentTheme] = useState(smallScreen ? loadTheme() : 0)
     const [paging, setPaging] = useState(smallScreen ? loadPaging() : false)
@@ -83,70 +95,75 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     return (
         <div className={classNames("single-article", getThemeClass(currentTheme), paging ? 'paging' : '')}>
             <div className={classNames("menus")}>
-                {
-                    showDict ?
-                        <div className="menus-dict"><CaptureDict></CaptureDict>
-                            <Button danger className="single-article-content-menu-btn" type="link" size="large" icon={<CloseOutlined />} onClick={() => setShowDict(false)}></Button></div> :
-                        <div className={classNames("menus-bar")} onClick={e => e.stopPropagation()}>
-                            {freeDraw ? undefined : <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>}
+                <div className={classNames("menus-bar")} onClick={e => e.stopPropagation()}>
+                    {freeDraw ? undefined : <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>}
+                    {
+                        !freeDraw ? (<>{props.type.noTitle ? <div className={classNames("title")}></div> : <div className={classNames("title")}>{props.article.name}</div>}
+                            {paging ? <div className="paging-buttons">
+                                <Button onClick={prePage} type="link" size="large" className="paging-button paging-button-left" icon={<LeftCircleOutlined />} ></Button>
+                                <Button onClick={nextPage} type="link" size="large" className="paging-button paging-button-right" icon={<RightCircleOutlined />} ></Button>
+                            </div> : null}
                             {
-                                !freeDraw ? (<>{props.type.noTitle ? <div className={classNames("title")}></div> : <div className={classNames("title")}>{props.article.name}</div>}
-                                    {paging ? <div className="paging-buttons">
-                                        <Button onClick={prePage} type="link" size="large" className="paging-button paging-button-left" icon={<LeftCircleOutlined />} ></Button>
-                                        <Button onClick={nextPage} type="link" size="large" className="paging-button paging-button-right" icon={<RightCircleOutlined />} ></Button>
-                                    </div> : null}
-                                    {
-                                        <Dropdown trigger={['click']} overlay={
-                                            <Menu>
-                                                {paging ? null :
-                                                    sections.map(section => <Menu.Item onClick={() => {
-                                                        callbacks.gotoSection && callbacks.gotoSection(section)
-                                                    }}>{section}</Menu.Item>).concat(
-                                                        <Menu.Divider></Menu.Divider>,
-                                                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={showDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => setShowDict(!showDict)}>{langs.get(LangKeys.CaptureWord)}</Button></Menu.Item>,
-                                                        <Menu.Divider></Menu.Divider>,
-                                                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>,
-                                                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>,
-                                                    )
+                                <Dropdown trigger={['click']} overlay={
+                                    <Menu>
+                                        {paging ? null :
+                                            sections.map(section => <Menu.Item onClick={() => {
+                                                callbacks.gotoSection && callbacks.gotoSection(section)
+                                            }}>{section}</Menu.Item>).concat(
+                                                <Menu.Divider></Menu.Divider>,
+                                                <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
+                                                    setCaptureDict(!captureDict)
+                                                    saveCaptureDict(!captureDict)
+                                                }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
+                                                <Menu.Divider></Menu.Divider>,
+                                                <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>,
+                                                <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>,
+                                            )
+                                        }
+                                        {smallScreen ? [<Menu.Item>
+                                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<BgColorsOutlined />}
+                                                onClick={() => {
+                                                    var nextTheme = (currentTheme + 1) % themeCount
+                                                    setCurrentTheme(nextTheme)
+                                                    saveTheme(nextTheme)
                                                 }
-                                                {smallScreen ? [<Menu.Item>
-                                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<BgColorsOutlined />}
-                                                        onClick={() => {
-                                                            var nextTheme = (currentTheme + 1) % themeCount
-                                                            setCurrentTheme(nextTheme)
-                                                            saveTheme(nextTheme)
-                                                        }
-                                                        }
-                                                    >{langs.get(LangKeys.Themes)}</Button>
-                                                </Menu.Item>,
-                                                <Menu.Item>
-                                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
-                                                        onClick={() => {
-                                                            var nextPaging = !paging
-                                                            setPaging(nextPaging)
-                                                            savePaging(nextPaging)
-                                                        }
-                                                        }
-                                                    >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
-                                                </Menu.Item>] : null}
-                                            </Menu>}>
-                                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={<UnorderedListOutlined />} onClick={(e) => e.preventDefault()} ></Button>
-                                        </Dropdown>
-                                    }</>) : (<>
-                                        {drawSizes.map(s => <Button className="single-article-content-menu-btn" type={s === drawSize ? "primary" : "link"} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
-                                        {drawColors.map(c => <Button className="single-article-content-menu-btn" type={c === drawColor ? "primary" : "link"} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
-                                        <Button className="single-article-content-menu-btn" size="large" type={earse ? "primary" : "link"} icon={<ClearOutlined style={{ color: drawColor }} />} onClick={() => setEarse(!earse)}></Button>
-                                        <div className={classNames("title")}></div>
-                                        <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
-                                    </>)
-                            }
-                        </div>
-                }
+                                                }
+                                            >{langs.get(LangKeys.Themes)}</Button>
+                                        </Menu.Item>,
+                                        <Menu.Item>
+                                            <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
+                                                onClick={() => {
+                                                    var nextPaging = !paging
+                                                    setPaging(nextPaging)
+                                                    savePaging(nextPaging)
+                                                }
+                                                }
+                                            >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
+                                        </Menu.Item>] : null}
+                                    </Menu>}>
+                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<UnorderedListOutlined />} onClick={(e) => e.preventDefault()} ></Button>
+                                </Dropdown>
+                            }</>) : (<>
+                                {drawSizes.map(s => <Button className="single-article-content-menu-btn" type={s === drawSize ? "primary" : "link"} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
+                                {drawColors.map(c => <Button className="single-article-content-menu-btn" type={c === drawColor ? "primary" : "link"} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
+                                <Button className="single-article-content-menu-btn" size="large" type={earse ? "primary" : "link"} icon={<ClearOutlined style={{ color: drawColor }} />} onClick={() => setEarse(!earse)}></Button>
+                                <div className={classNames("title")}></div>
+                                <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                            </>)
+                    }
+                </div>
             </div>
             <div ref={ref} className={classNames("article")}>
                 <props.type.Viewer published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
                 <FreeDrawMask earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
             </div>
+            {
+                captureDict ?
+                    <CaptureDict onclose={() => {
+                        setCaptureDict(false)
+                        saveCaptureDict(false)
+                    }}></CaptureDict> :
+                    undefined}
         </div>
     )
 }

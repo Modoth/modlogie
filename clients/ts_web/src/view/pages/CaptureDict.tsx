@@ -5,9 +5,9 @@ import IDictService, { CancleToken, DictInfo } from '../../domain/IDictService';
 import ILangsService, { LangKeys } from '../../domain/ILangsService';
 import IViewService from '../services/IViewService';
 import './CaptureDict.less'
-import { PlusSquareOutlined, ClearOutlined } from '@ant-design/icons'
+import { PlusSquareOutlined, PlusOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons'
 
-export default function CaptureDict() {
+export default function CaptureDict(props: { onclose?(): void }) {
     const [word, setWord] = useState('')
     const [url, setUrl] = useState<string | undefined>()
     const [importing, setImporting] = useState(false)
@@ -166,8 +166,16 @@ export default function CaptureDict() {
             <div className="title"><Button type="link" className='word'>{word || ''}</Button></div>
             <iframe src={url} sandbox=""></iframe> </div> : undefined
         } <div className='menu'>
-            <Button danger size="large" type="link" icon={<ClearOutlined />} onClick={clearDict}></Button>
-            <Button type="link" className='flex'>{importing ? `${importProgress}%` : (<span onClick={selectDictFile}>{langs.get(LangKeys.AddDict)}{<span className="info">{info && info.itemCount || ''}</span>}</span>)}</Button>
+            {props.onclose ? <Button danger size="large" type="link" icon={<CloseOutlined />} onClick={props.onclose}></Button>
+                : undefined}
+            <Button type="link" >{langs.get(LangKeys.Dict)}</Button>
+            <Button size="large" type="link" icon={<PlusOutlined />} onClick={() => {
+                if (importing) {
+                    return
+                }
+                selectDictFile()
+            }}>{importing ? `${importProgress}%` : <span className="info">{info && info.itemCount || ''}</span>}</Button>
+            <Button size="large" type="link" icon={<DeleteOutlined />} onClick={clearDict}></Button>
         </div>
     </div >
 } 

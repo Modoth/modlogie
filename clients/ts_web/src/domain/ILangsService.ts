@@ -1,6 +1,5 @@
 export class LangKeysInterface {
   AddToArticleList = 'AddToArticleList';
-  AddDict = 'AddDict';
   AdmLogin = 'AdmLogin';
   All = 'All';
   AlreadyLiked = 'AlreadyLiked';
@@ -9,7 +8,8 @@ export class LangKeysInterface {
   Cancle = 'Cancle';
   CancleAutoLogin = 'CancleAutoLogin';
   CancleRecommend = 'CancleRecommend';
-  CaptureWord = 'CaptureWord';
+  CaptureWordEnable = 'CaptureWordEnable';
+  CaptureWordDisable = 'CaptureWordDisable';
   NotFount = 'NotFount';
   ChangeName = 'ChangeName';
   ChangePassword = 'ChangePassword';
@@ -22,6 +22,7 @@ export class LangKeysInterface {
   Delete = 'Delete';
   Description = 'Description';
   Detail = 'Detail';
+  Dict = 'Dict';
   Dislike = 'Dislike';
   Edit = 'Edit';
   Email = 'Email';
