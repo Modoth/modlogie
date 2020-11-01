@@ -5,6 +5,9 @@ import { SectionNames } from './SectionNames';
 import './H5LiveViewer.less'
 import YAML, { stringify } from 'yaml'
 import FrameWorks from './frameworks'
+import { Button } from 'antd';
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
+import classNames from 'classnames';
 
 const getDataUrl = (content: string) => {
     return "data:text/html;charset=utf-8," + encodeURIComponent(content);
@@ -58,30 +61,39 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
     return [getDataUrl(content), jsContent ? getDataUrl(jsContent) : undefined]
 }
 
-function IFrame(props: { src: string, allowScripts: boolean }) {
-    if (props.allowScripts) {
-        return <iframe src={props.src} sandbox="allow-scripts" ></iframe>
-    }
+function IFrameWithoutJs(props: { src: string }) {
     return <iframe src={props.src} sandbox=""></iframe>
+}
+
+function IFrameWithJs(props: { src: string }) {
+    return <iframe src={props.src} sandbox="allow-scripts"></iframe>
 }
 
 export default function H5LiveViewer(props: AdditionalSectionsViewerProps) {
     const [contentUrl, jsContentUrl] = combineContent(new Map(props.sections.map(s => [s.name!, s])))
     const [running, setRunning] = useState(false)
     const [canRunning] = useState(!!jsContentUrl)
-    if (running) {
-        return jsContentUrl ?
-            <div className="h5-live-viewer"><IFrame src={jsContentUrl} allowScripts={true}></IFrame></div>
-            : <></>
+    const [fullscreen, setFullscreen] = useState(false)
+    if (!((running && jsContentUrl) || (!running && contentUrl))) {
+        return <></>
     }
-    return contentUrl ?
-        <div className="h5-live-viewer">
-            <iframe src={contentUrl} sandbox=""></iframe>
-            <div onClick={() => {
-                if (canRunning) {
-                    setRunning(true)
-                }
-            }} className="mask"></div>
-        </div>
-        : <></>
+    return <div className={classNames("h5-live-viewer", fullscreen ? "fullscreen" : "")}>
+        {
+            running ?
+                <IFrameWithJs src={jsContentUrl!} />
+                :
+                <IFrameWithoutJs src={contentUrl!} />
+        }
+        {running ? undefined : <div onClick={() => {
+            if (canRunning) {
+                setRunning(true)
+            }
+        }} className="mask"></div>}
+        <div className="float-menu"><Button type="link" onClick={() => {
+            if (!fullscreen) {
+                setRunning(true)
+            }
+            setFullscreen(!fullscreen)
+        }} icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button></div>
+    </div>
 }

@@ -162,10 +162,7 @@ export default function CaptureDict(props: { onclose?(): void }) {
         };
     }, []);
     return <div className="capture-dict">
-        {url && store.mousePos ? <div style={{ top: store.mousePos[1] + 20 }} className='float-dict'>
-            <div className="title"><Button type="link" className='word'>{word || ''}</Button></div>
-            <iframe src={url} sandbox=""></iframe> </div> : undefined
-        } <div className='menu'>
+        <div className='menu'>
             {props.onclose ? <Button danger size="large" type="link" icon={<CloseOutlined />} onClick={props.onclose}></Button>
                 : undefined}
             <Button type="link" >{langs.get(LangKeys.Dict)}</Button>
@@ -177,5 +174,9 @@ export default function CaptureDict(props: { onclose?(): void }) {
             }}>{importing ? `${importProgress}%` : <span className="info">{info && info.itemCount || ''}</span>}</Button>
             <Button size="large" type="link" icon={<DeleteOutlined />} onClick={clearDict}></Button>
         </div>
+        {url && store.mousePos ? <div style={{ top: store.mousePos[1] + 20 }} className='float-dict'>
+            <div className="title"><Button type="link" className='word'>{word || ''}</Button></div>
+            <iframe src={url} sandbox=""></iframe> </div> : undefined
+        }
     </div >
 } 
