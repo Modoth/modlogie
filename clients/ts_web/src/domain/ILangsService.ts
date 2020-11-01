@@ -1,4 +1,5 @@
 export class LangKeysInterface {
+  About = 'About';
   AddToArticleList = 'AddToArticleList';
   AdmLogin = 'AdmLogin';
   All = 'All';

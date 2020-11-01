@@ -45,6 +45,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   DATE = '日期';
   LINK = '链接';
   [key: string]: string;
+  About = '关于';
   AddToArticleList = '添加';
   AdmLogin = '管理员登陆';
   All = '全部';

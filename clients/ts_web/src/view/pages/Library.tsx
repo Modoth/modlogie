@@ -505,7 +505,7 @@ export default function Library(props: LibraryProps) {
       }
       <div className="float-menus">
         {user.printPermission ? <ArticleListSummary></ArticleListSummary> : null}
-        {favoriteService && favoriteCount ?
+        {favoriteService && (favorite || favoriteCount) ?
           <Badge count={favoriteCount}>
             <Button
               icon={<HeartFilled />}

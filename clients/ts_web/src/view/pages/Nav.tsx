@@ -96,23 +96,6 @@ function Nav() {
     <>
       <Drawer className="side-nav-panel" visible={showDrawer} onClose={() => setShowDrawer(false)} closable={false} placement="left">
         <Menu className="side-nav" mode="inline" onClick={() => setShowDrawer(false)} >
-          {user.name ? (
-            <Menu.Item
-              className="nav-avatar-icon"
-              icon={
-                <img
-                  src={avatar}
-                />
-              }
-            >
-              <Link to="/account">{user.name}</Link>
-            </Menu.Item>
-          ) : (
-              <Menu.Item className="nav-logo-icon" icon={<UserOutlined />}>
-                <Link to={allowLogin ? "/login" : "/account"}>{langs.get(LangKeys.Login)}</Link>
-              </Menu.Item>
-            )}
-          <Menu.Divider></Menu.Divider>
           {
             (user?.editingPermission ? plugins.AllTypes : plugins.NormalTypes).map(t =>
               <Menu.Item key={t.route} icon={t.iconUrl ? <img
@@ -146,6 +129,23 @@ function Nav() {
               </Menu.Item>
             </SubMenu>
           ) : null}
+          <Menu.Divider></Menu.Divider>
+          {user.name ? (
+            <Menu.Item
+              className="nav-avatar-icon"
+              icon={
+                <img
+                  src={avatar}
+                />
+              }
+            >
+              <Link to="/account">{user.name}</Link>
+            </Menu.Item>
+          ) : (
+              <Menu.Item className="nav-logo-icon" icon={<UserOutlined />}>
+                <Link to={allowLogin ? "/login" : "/account"}>{langs.get(allowLogin ? LangKeys.Login : LangKeys.About)}</Link>
+              </Menu.Item>
+            )}
         </Menu>
       </Drawer>
 
