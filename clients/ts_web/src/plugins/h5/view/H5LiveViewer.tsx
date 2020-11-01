@@ -89,7 +89,7 @@ export default function H5LiveViewer(props: AdditionalSectionsViewerProps) {
                 setRunning(true)
             }
         }} className="mask"></div>}
-        <div className="float-menu"><Button type="link" onClick={() => {
+        <div className="float-menu"><Button size="large" type="link" onClick={() => {
             if (!fullscreen) {
                 setRunning(true)
             }
