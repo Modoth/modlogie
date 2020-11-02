@@ -38,7 +38,14 @@ namespace Modlogie.Api
             {
                 options.Configuration = Configuration.GetValue<string>("Cache:RedisConfiguration");
             });
-            services.AddGrpc();
+            services.AddGrpc(options =>
+            {
+                var maxFile = Configuration.GetValue<int>("File:MaxSize");
+                if (maxFile > 0)
+                {
+                    options.MaxReceiveMessageSize = maxFile * 1024 * 1024;
+                }
+            });
             services.AddDistributedSession(options =>
             {
                 options.CookieName = Configuration.GetValue<string>("Session:Cookie:Name");

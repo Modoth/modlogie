@@ -1,0 +1,1 @@
+ALTER TABLE `KeyValue` MODIFY `Value` NVARCHAR(512);

@@ -21,6 +21,10 @@ namespace Modlogie.Infrastructure.Data
 
         private (string, string) GenerateAndPrepareForFileName(string group, string type)
         {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                type = "bin";
+            }
             var guid = Guid.NewGuid().ToString();
             var idx = guid.IndexOf("-");
             var folder = Path.Join(group, guid.Substring(0, idx));

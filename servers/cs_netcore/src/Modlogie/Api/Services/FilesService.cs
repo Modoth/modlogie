@@ -984,7 +984,7 @@ namespace Modlogie.Api.Services
             var file = new Modlogie.Domain.Models.File { Type = (int)FileType.Resource, Name = Guid.NewGuid().ToString(), Parent = parent, Created = DateTime.Now, Modified = DateTime.Now, Published = DateTime.Now };
             file.Private = request.Private ? 1ul : 0; ;
             file.Path = JoinPath(parent.Path, file.Name);
-            if (string.IsNullOrWhiteSpace(type))
+            if (!string.IsNullOrWhiteSpace(request.TextContent))
             {
                 file.Content = await _contentService.Add(_resourcesGroup, request.TextContent);
             }
@@ -994,7 +994,7 @@ namespace Modlogie.Api.Services
                             {
                                 request.Content.WriteTo(stream);
                                 return Task.FromResult(true);
-                            }, type);
+                            }, string.IsNullOrWhiteSpace(type) ? null : type);
             }
 
             file = await _service.Add(file);

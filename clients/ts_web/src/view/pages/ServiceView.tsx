@@ -156,8 +156,8 @@ export default function ServiceView(props: {
         const imageField = singleField.type === 'Image'
         const textFileField = singleField.type === 'TextFile'
         const videoFileField = singleField.type === 'Video'
-        let fileField = singleField.type === 'File'
-        fileField = fileField || imageField || textFileField || videoFileField
+        const binFileField = singleField.type === 'File'
+        const fileField = binFileField || imageField || textFileField || videoFileField
 
         if (!fileField) {
           setStates()
@@ -176,7 +176,11 @@ export default function ServiceView(props: {
           const reader = new FileReader()
           reader.onload = () => {
             setStates()
-            setModalFileds([{ ...fields[0], value: reader.result }])
+            setModalFileds([{
+              ...fields[0], value: binFileField ?
+                Object.assign(file, { preview: true, previewContent: reader.result })
+                : reader.result
+            }])
           }
           reader.readAsText(file)
         }
@@ -392,7 +396,7 @@ export default function ServiceView(props: {
                   ></ImageEditor>
                 )
               case 'TextFile':
-                return <textarea rows={10} value={field.value}></textarea>
+                return <textarea rows={10} value={field.value && (field.value as any).preview ? (field.value as any).previewContent : field.value}></textarea>
               default:
                 return <span key={i}>{field.value}</span>
             }

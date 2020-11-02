@@ -14,4 +14,5 @@
       "File:ContentRoot": "/app"
       "File:Resources": "files"
       "File:Caches": "caches"
+      "File:MaxSize": "50"
       "Execute:InstanceName": SERVER_TYPE

@@ -66,6 +66,7 @@ import ChartPluginInfo from './plugins/chart'
 import H5AppPluginInfo from './plugins/h5app'
 import IDictService from './domain/IDictService'
 import DictService from './domain/DictService'
+import ResFilePluginInfo from './plugins/resfile'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   var configsService = serviceLocator.locate(IConfigsService)
@@ -103,6 +104,9 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
         break
       case 'Chart':
         plugin = new ChartPluginInfo(names);
+        break
+      case 'ResFile':
+        plugin = new ResFilePluginInfo(names);
         break
     }
     if (plugin) {
