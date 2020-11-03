@@ -1,1 +1,0 @@
-ALTER TABLE `KeyValue` ADD `Type` int(11) DEFAULT 0, ADD KEY `IX_KeyValue_Type` (`Type`);

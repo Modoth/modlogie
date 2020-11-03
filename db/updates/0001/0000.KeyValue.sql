@@ -1,1 +1,0 @@
--- ALTER TABLE KeyValue ADD DefaultValue NVARCHAR(128);

@@ -1,1 +1,0 @@
-ALTER TABLE `File` DROP KEY `IX_File_Shared`, DROP KEY `IX_File_MainTag`, DROP COLUMN `Shared`, DROP COLUMN `MainTag`, ADD COLUMN `Comment` varchar(255) DEFAULT NULL;

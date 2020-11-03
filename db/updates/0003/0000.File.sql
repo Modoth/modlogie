@@ -1,1 +1,0 @@
-ALTER TABLE `File` ADD `Private` bit(1) DEFAULT 0, ADD KEY `IX_File_Private` (`Private`);
