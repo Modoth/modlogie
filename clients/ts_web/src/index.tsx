@@ -127,7 +127,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       continue;
     }
     type.displayName = displayName;
-    var rootSubjectPath = `/${type.displayName}`
+    var rootSubjectPath = `/${type.name}`
 
     var rootSubject = await subjectServices.getByPath(rootSubjectPath)
     if (rootSubject) {
