@@ -119,6 +119,45 @@ export class KeyValuesServiceClient {
     this.methodInfoDelete);
   }
 
+  methodInfoDeleteAll = new grpcWeb.AbstractClientBase.MethodInfo(
+    messages_pb.Reply,
+    (request: google_protobuf_empty_pb.Empty) => {
+      return request.serializeBinary();
+    },
+    messages_pb.Reply.deserializeBinary
+  );
+
+  deleteAll(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null): Promise<messages_pb.Reply>;
+
+  deleteAll(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: messages_pb.Reply) => void): grpcWeb.ClientReadableStream<messages_pb.Reply>;
+
+  deleteAll(
+    request: google_protobuf_empty_pb.Empty,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.Error,
+               response: messages_pb.Reply) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        new URL('/modlogie.keyvalue.KeyValuesService/DeleteAll', this.hostname_).toString(),
+        request,
+        metadata || {},
+        this.methodInfoDeleteAll,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/modlogie.keyvalue.KeyValuesService/DeleteAll',
+    request,
+    metadata || {},
+    this.methodInfoDeleteAll);
+  }
+
   methodInfoAddOrUpdate = new grpcWeb.AbstractClientBase.MethodInfo(
     KeyValueReply,
     (request: KeyValue) => {

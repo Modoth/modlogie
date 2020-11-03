@@ -4,6 +4,7 @@
   min-height: 100vh;
   font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB,
     WenQuanYi Micro Hei, Microsoft YaHei, sans-serif;
+
   .menus {
     position: fixed;
     top: 0;
@@ -104,22 +105,26 @@
     margin: 51px auto 0 auto;
     user-select: text;
   }
-}
 
-.paging {
-  height: 100vh;
-  overflow-y: hidden;
-  .article {
-    column-width: 100vw;
-    column-count: auto;
-    column-gap: 0;
-    touch-action: none;
-    max-height: calc(100% - 61px);
+  .paging {
+    height: 100vh;
+    overflow-y: hidden;
+    .article {
+      column-width: 100vw;
+      column-count: auto;
+      column-gap: 0;
+      touch-action: none;
+      max-height: calc(100% - 61px);
+    }
+  }
+
+  .single-article-content-menu-btn {
+    padding: 0;
   }
 }
 
-.single-article-content-menu-btn {
-  padding: 0;
+.single-article {
+  @import "./ArticleSingle.Article.less";
 }
 
 @media (min-width: 780px) {
@@ -134,6 +139,15 @@
       background: #fff;
       min-height: 90vh;
       margin-top: 61px;
+    }
+  }
+
+  .single-article {
+    .h5-live-viewer {
+      iframe {
+        box-shadow: none;
+        border-radius: 0;
+      }
     }
   }
 }

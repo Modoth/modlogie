@@ -1,7 +1,7 @@
 import React from 'react'
-import { AdditionalSectionsViewerProps } from '../../sections-base/view/SectionViewerProps';
+import { AdditionalSectionViewerProps } from '../../base/view/SectionViewerProps';
 import { ArticleSection } from '../../../domain/Article';
-import { SectionNames } from './SectionNames';
+import { SectionNames } from './Sections';
 import './H5AppLiveViewer.less'
 import { ArticlePreview } from '../../../view/pages/ArticlePreview';
 
@@ -25,7 +25,7 @@ const getSections = (allSections: Set<string>, additionalSections: Set<string>, 
     return s;
 }
 
-export default function H5AppLiveViewer(props: AdditionalSectionsViewerProps) {
+export default function H5AppLiveViewer(props: AdditionalSectionViewerProps) {
     var msections = new Map(props.sections.map(s => [s.name!, s]))
     var path = msections.get(SectionNames.type)?.content
     var data = msections.get(SectionNames.data)?.content

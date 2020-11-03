@@ -20,8 +20,7 @@ export class ArticleViewServieSingleton implements IArticleViewServie {
         }
         let parentType = subTypeName ? await this.getArticleType(configsService, articleType) : { smartHiddenSections: new Set<string>(), hiddenSections: new Set<string>(), additionalSections: new Set<string>(), allSections: new Set<string>() };
         let type: ArticleContentType = Object.assign({}, parentType, { noTitle: articleType.noTitle, articleType, Viewer: articleType.Viewer, name: typeName })
-
-        var allsections = (await configsService.getValuesOrDefault(get_ARTICLE_SECTIONS(typeName, subTypeName)))
+        var allsections = articleType.fixedSections ? (articleType.defaultSections?.split(' ').map(s => s.trim()).filter(s => s) || []) : (await configsService.getValuesOrDefault(get_ARTICLE_SECTIONS(typeName, subTypeName)))
         if (allsections.length) {
             type.allSections = new Set();
             type.additionalSections = new Set();

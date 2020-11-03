@@ -1,17 +1,21 @@
-import H5Editor from './view/H5Editor'
-import H5Viewer from './view/H5Viewer'
-import SectionsBasePluginInfo from '../sections-base'
+import PluginInfoBase from '../base'
 import IPluginInfo from '../IPluginInfo'
-import { SectionNames } from './view/SectionNames'
 import H5LiveViewer from './view/H5LiveViewer'
+import CreateSectionViewer from '../base/view/SectionViewer'
+import CreateSectionEditor from '../base/view/SectionEditor'
+import { getSectionFileContent, getSectionType, SectionNames } from './view/Sections'
 
-export default class H5PluginInfo extends SectionsBasePluginInfo implements IPluginInfo {
+export default class H5 extends PluginInfoBase implements IPluginInfo {
     constructor(typeNames: string[]) {
-        super(H5Viewer, 'H5Viewer', H5Editor, typeNames,
+        super(H5.name,
+            typeNames,
+            CreateSectionViewer(getSectionType),
+            CreateSectionEditor({ getSectionFileContent }),
+            H5LiveViewer,
             {
                 defaultSections: `?${SectionNames.html} ?${SectionNames.css} ?${SectionNames.js}  -${SectionNames.frameworks}  -${SectionNames.data}`,
-                loadAdditionalsSync: true
-            },
-            H5LiveViewer)
+                loadAdditionalsSync: true,
+                fixedSections: true
+            })
     }
 }

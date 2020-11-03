@@ -149,6 +149,11 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         return this.cloneConfig(config);
     }
 
+    async resetAll(): Promise<void> {
+        await ClientRun(this, () => this.locate(KeyValuesServiceClient).deleteAll(new Empty(), null))
+        this.clearCache()
+    }
+
     clearCache(keepRemoteCache = false) {
         this.configs = new Map(this.defaultConfigs.concat(this.includeServerConfigs && this.defaultServerConfigs ? this.defaultServerConfigs! : []).map(c => [c.key, c]))
         if (!keepRemoteCache) {

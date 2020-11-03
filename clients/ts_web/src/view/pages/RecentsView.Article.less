@@ -1,0 +1,46 @@
+.H5,
+.H5App {
+  padding: 0;
+  .h5-live-viewer {
+    .float-menu {
+      display: none;
+    }
+  }
+}
+
+.ModLang {
+  .ant-tabs-nav {
+    background: transparent;
+  }
+}
+
+.Blog {
+  .article-preview {
+    .ref-article .jump-to {
+      display: none;
+    }
+  }
+  .first-section {
+    min-width: 100%;
+    // height: 7.8em;
+    overflow: hidden;
+    touch-action: pan-y;
+    img {
+      width: 50%;
+      max-width: 50%;
+    }
+    &::after {
+      content: " ";
+      display: block;
+      height: 4px;
+      position: sticky;
+      bottom: -8px;
+      background: transparent;
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+    }
+  }
+  .normal-section {
+    display: none;
+  }
+}

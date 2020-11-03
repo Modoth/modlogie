@@ -17,6 +17,7 @@ export interface ArticleType {
   noTitle?: boolean;
   admOnly?: boolean;
   icon: React.ReactNode;
+  fixedSections?: boolean;
   loadAdditionalsSync?: boolean;
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
   Editor: (props: ArticleContentEditorProps) => JSX.Element;
@@ -71,6 +72,10 @@ export default class IPluginInfo {
   }
 
   init(configs: IConfigsService): Promise<any> {
+    throw new Error('Method not implemented.')
+  }
+
+  get name():string{
     throw new Error('Method not implemented.')
   }
 

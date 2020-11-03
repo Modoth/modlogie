@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import { AdditionalSectionsViewerProps } from '../../sections-base/view/SectionViewerProps';
+import React from 'react'
+import { AdditionalSectionViewerProps } from '../../base/view/SectionViewerProps';
 import { ArticleSection } from '../../../domain/Article';
-import { SectionNames } from './SectionNames';
+import { SectionNames } from './Sections';
 import './ChartLiveViewer.less'
 import { Branch } from './Charts/Branch';
-import YAML, { stringify } from 'yaml'
+import YAML from 'yaml'
 import { Timeline } from './Charts/Timeline';
-
 
 export class ChartViewerProps {
     type: string
@@ -29,7 +28,7 @@ const combineContent = (sections: Map<string, ArticleSection>): ChartViewerProps
 
 const charts = new Map<string, { (props: ChartViewerProps): JSX.Element }>([['branch', Branch], ['timeline', Timeline]])
 
-export default function ChartLiveViewer(props: AdditionalSectionsViewerProps) {
+export default function ChartLiveViewer(props: AdditionalSectionViewerProps) {
     const chartData = combineContent(new Map(props.sections.map(s => [s.name!, s])))
     if (chartData.error) {
         return <div>{chartData.error}</div>

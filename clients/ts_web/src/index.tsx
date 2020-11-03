@@ -15,7 +15,6 @@ import ILangsService from './domain/ILangsService'
 import ISubjectsService from './domain/ISubjectsService'
 import SubjectsServiceSingleton from './domain/SubjectsServiceSingleton'
 import IPluginInfo, { PluginsConfig } from './plugins/IPluginInfo'
-import { ModlangPluginInfo } from './plugins/modlang'
 import IArticleListService, { ArticleListSingletonService } from './domain/IArticleListService'
 import Langs from './view/Langs'
 import ITextImageService, { TextImageServiceSingleton } from './view/services/ITextImageService'
@@ -32,10 +31,7 @@ import TagsServiceSingleton from './domain/TagsServiceSingleton'
 import { FilesServiceClient } from './apis/FilesServiceClientPb'
 import IArticleService from './domain/IArticleService'
 import ArticleService from './domain/ArticleService'
-import BlogPluginInfo from './plugins/blog'
-import MathPluginInfo from './plugins/math'
-import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG, get_ROOT_SUBJECT, get_DISPLAY_NAME } from './app/ConfigKeys'
-// import './assets/images'
+import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG, get_DISPLAY_NAME } from './app/ConfigKeys'
 import logoImg from './assets/logo.png'
 import IMmConverter from './domain/IMmConverter'
 import MmConverter from './domain/MmConverter'
@@ -52,7 +48,6 @@ import IFavoritesServer from './domain/IFavoritesServer'
 import FavoritesServerSingleton from './domain/FavoritesServerSingleton'
 import ILikesService from './domain/ILikesService'
 import LikesService from './domain/LikesService'
-import H5PluginInfo from './plugins/h5'
 import INavigationService from './view/services/INavigationService'
 import NavigationService from './view/services/NavigationService'
 import IKeywordsService from './domain/IKeywordsService'
@@ -62,13 +57,20 @@ import LangInterpretersService from './domain/LangInterpretersService'
 import ILangInterpretersService from './domain/ILangInterpretersService'
 import { BashInterpreter } from './domain/Interpreters/BashInterpreter'
 import { CInterpreter } from './domain/Interpreters/CInterpreter'
-import ChartPluginInfo from './plugins/chart'
-import H5AppPluginInfo from './plugins/h5app'
 import IDictService from './domain/IDictService'
 import DictService from './domain/DictService'
-import ResFilePluginInfo from './plugins/resfile'
+import Blog from './plugins/blog'
+import Chart from './plugins/chart'
+import H5App from './plugins/h5app'
+import H5 from './plugins/h5'
+import Math from './plugins/math'
+import ModLang from './plugins/modlang'
+import ResFile from './plugins/resfile'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
+  const pluginInfos = new Map<string, { new(typeNames: string[]): IPluginInfo }>([
+    Blog, Chart, H5, H5App, Math, ModLang, ResFile
+  ].map(i => [i.name.toLocaleLowerCase(), i]))
   var configsService = serviceLocator.locate(IConfigsService)
   var tagsService = serviceLocator.locate(ITagsService)
   var enabledPlugins = await (await configsService.getValueOrDefault(ConfigKeys.PLUGINS)).split(',').map(c => c.trim()).filter(c => c);
@@ -77,6 +79,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     let [pluginName, ...names] = p.split(' ').map(c => c.trim()).filter(c => c);
     let plugin: IPluginInfo | undefined;
     let hiddenPlugin = false;
+    pluginName = pluginName.toLocaleLowerCase()
     if (pluginName.startsWith('_')) {
       hiddenPlugin = true;
       pluginName = pluginName.slice(1);
@@ -86,28 +89,8 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       orderByPublishedDesc = true;
       pluginName = pluginName.slice(1);
     }
-    switch (pluginName) {
-      case 'Modlang':
-        plugin = new ModlangPluginInfo(names);
-        break
-      case 'Blog':
-        plugin = new BlogPluginInfo(names);
-        break
-      case 'Math':
-        plugin = new MathPluginInfo(names);
-        break
-      case 'H5':
-        plugin = new H5PluginInfo(names);
-        break
-      case 'H5App':
-        plugin = new H5AppPluginInfo(names);
-        break
-      case 'Chart':
-        plugin = new ChartPluginInfo(names);
-        break
-      case 'ResFile':
-        plugin = new ResFilePluginInfo(names);
-        break
+    if (pluginInfos.has(pluginName)) {
+      plugin = new (pluginInfos.get(pluginName)!)(names)
     }
     if (plugin) {
       if (hiddenPlugin) {
@@ -130,10 +113,8 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     [
       new Config(get_ARTICLE_TAGS(t.name), ConfigType.STRING),
       new Config(get_SUB_TYPE_TAG(t.name), ConfigType.STRING),
-      new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING, t.defaultSections),
-      new Config(get_ROOT_SUBJECT(t.name), ConfigType.STRING, '/' + t.name),
-      new Config(get_DISPLAY_NAME(t.name), ConfigType.STRING, t.name),
-    ]))
+      new Config(get_DISPLAY_NAME(t.name), ConfigType.STRING, t.name)
+    ].concat(!t.fixedSections ? [new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING, t.defaultSections)] : [])))
   var types = plugins.flatMap(p => p.types)
   const subjectServices = serviceLocator.locate(ISubjectsService);
   for (var type of types) {
@@ -142,12 +123,12 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       type.subTypes = (await tagsService.get(type.subTypeTag))?.values
     }
     var displayName = await configsService.getValueOrDefault(get_DISPLAY_NAME(type.name))
-    type.displayName = displayName;
-
-    var rootSubjectPath = await configsService.getValueOrDefault(get_ROOT_SUBJECT(type.name))
-    if (!rootSubjectPath) {
+    if (!displayName) {
       continue;
     }
+    type.displayName = displayName;
+    var rootSubjectPath = `/${type.displayName}`
+
     var rootSubject = await subjectServices.getByPath(rootSubjectPath)
     if (rootSubject) {
       type.rootSubjectId = rootSubject.id;
@@ -156,7 +137,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     }
   }
 
-  await configsService.addDefaultConfigs(...plugins.flatMap(p => p.types).flatMap(t =>
+  await configsService.addDefaultConfigs(...plugins.flatMap(p => p.types).filter(t => !t.fixedSections).flatMap(t =>
     t.subTypes && t.subTypes.length ? t.subTypes.map(subType => new Config(get_ARTICLE_SECTIONS(t.name, subType), ConfigType.STRING)) : []))
 
   serviceLocator.registerInstance(PluginsConfig, new PluginsConfig(plugins))

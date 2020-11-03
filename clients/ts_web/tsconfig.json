@@ -23,6 +23,6 @@
     "jsx": "react"
   },
   "include": [
-    "src"
+    "src", "src/.local.plugins_old"
   ]
 }

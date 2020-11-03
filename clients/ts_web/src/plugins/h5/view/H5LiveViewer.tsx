@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { AdditionalSectionsViewerProps } from '../../sections-base/view/SectionViewerProps';
+import { AdditionalSectionViewerProps } from '../../base/view/SectionViewerProps';
 import { ArticleSection } from '../../../domain/Article';
-import { SectionNames } from './SectionNames';
+import { SectionNames } from './Sections';
 import './H5LiveViewer.less'
 import YAML, { stringify } from 'yaml'
 import FrameWorks from './frameworks'
@@ -69,7 +69,7 @@ function IFrameWithJs(props: { src: string }) {
     return <iframe src={props.src} sandbox="allow-scripts"></iframe>
 }
 
-export default function H5LiveViewer(props: AdditionalSectionsViewerProps) {
+export default function H5LiveViewer(props: AdditionalSectionViewerProps) {
     const [contentUrl, jsContentUrl] = combineContent(new Map(props.sections.map(s => [s.name!, s])))
     const [running, setRunning] = useState(false)
     const [canRunning] = useState(!!jsContentUrl)
@@ -84,12 +84,14 @@ export default function H5LiveViewer(props: AdditionalSectionsViewerProps) {
                 :
                 <IFrameWithoutJs src={contentUrl!} />
         }
-        {running ? undefined : <div onClick={() => {
+        {running ? undefined : <div onClick={(ev) => {
+            ev.stopPropagation()
             if (canRunning) {
                 setRunning(true)
             }
         }} className="mask"></div>}
-        <div className="float-menu"><Button size="large" type="link" onClick={() => {
+        <div className="float-menu"><Button size="large" type="link" onClick={(ev) => {
+            ev.stopPropagation()
             if (!fullscreen) {
                 setRunning(true)
             }

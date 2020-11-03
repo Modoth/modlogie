@@ -58,6 +58,10 @@ export default class IConfigsService {
         throw new Error('Method not implemented')
     }
 
+    resetAll(): Promise<void> {
+        throw new Error('Method not implemented')
+    }
+
     clearCache() {
         throw new Error("Method not implemented.")
     }

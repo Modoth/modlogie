@@ -1,8 +1,5 @@
 .recents-view {
   border-bottom: 1px solid #0001;
-  a.recent-article {
-    color: unset;
-  }
 
   & .recent-article-wraper::after {
     position: absolute;
@@ -17,9 +14,6 @@
   & .recent-article-wraper {
     background-color: #fff8;
     touch-action: none;
-    .ref-article .jump-to {
-      display: none;
-    }
     .article-title {
       word-break: break-all;
       border-bottom: 1px groove #0000000c;
@@ -44,6 +38,10 @@
       }
     }
 
+    a.recent-article {
+      color: unset;
+    }
+
     & .recent-article {
       overflow: hidden;
       height: 14em;
@@ -53,28 +51,31 @@
   }
 
   & .title {
-    // color: #251202a0;
     font-weight: bold;
     margin: 10px 20px 0 20px;
     padding: 0;
   }
-}
 
-.ant-carousel .slick-dots li {
-  width: 5px;
-  height: 5px;
-  button {
-    background: #f97241 !important;
-    opacity: 1 !important;
+  .ant-carousel .slick-dots li {
+    width: 5px;
     height: 5px;
-    border-radius: 5px;
+    button {
+      background: #f97241 !important;
+      opacity: 1 !important;
+      height: 5px;
+      border-radius: 5px;
+    }
+
+    &.slick-active {
+      width: 10px !important;
+    }
   }
 
-  &.slick-active {
-    width: 10px !important;
+  .ant-carousel {
+    touch-action: pan-x;
   }
 }
 
-.ant-carousel {
-  touch-action: pan-x;
+.recent-article {
+  @import "./RecentsView.Article.less";
 }

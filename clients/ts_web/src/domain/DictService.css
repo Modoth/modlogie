@@ -1,7 +1,9 @@
 body {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   margin: 0;
-  color: #2d2d2d;
+  color: #333;
+  font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB,
+    WenQuanYi Micro Hei, Microsoft YaHei, sans-serif;
 }
 audio {
   display: none;

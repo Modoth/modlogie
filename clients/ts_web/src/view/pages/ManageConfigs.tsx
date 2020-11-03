@@ -76,6 +76,22 @@ export function ManageConfigs() {
     )
   }
 
+  const resetAll = () => {
+    viewService.prompt(
+      langs.get(LangKeys.Reset),
+      [],
+      async () => {
+        try {
+          await locator.locate(IConfigsService).resetAll();
+          window.location.reload()
+          return true
+        } catch (e) {
+          viewService!.errorKey(langs, e.message)
+        }
+      }
+    )
+  }
+
   useEffect(() => {
     fetchConfigs()
     return function cleanup() {
@@ -144,6 +160,15 @@ export function ManageConfigs() {
         dataSource={configs}
         pagination={false}
       ></Table>
+      <div className="float-menus">
+        <Button
+          icon={<ClearOutlined />}
+          type="default"
+          size="large" shape="circle"
+          onClick={() => resetAll()}
+        >
+        </Button>
+      </div>
     </div>
   )
 }

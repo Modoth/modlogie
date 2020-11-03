@@ -30,7 +30,6 @@
     padding: 10px 0 0 0;
     max-width: 780px;
     margin: 0 auto;
-    counter-reset: article-list;
     &.column-count-1 {
       column-count: 1;
     }
@@ -50,8 +49,17 @@
     &.column-count-5 {
       column-count: 5;
     }
+
+    & > .article {
+      margin-top: 10px;
+    }
   }
 }
+
+.article-list {
+  @import "./ArticleList.Article.less";
+}
+
 @media print {
   .article-list-wraper {
     min-height: unset;

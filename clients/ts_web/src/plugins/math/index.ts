@@ -1,10 +1,14 @@
-import SectionEditor from './view/SectionEditor'
-import SectionViewer from './view/SectionViewer'
-import SectionsBasePluginInfo from '../sections-base'
 import IPluginInfo from '../IPluginInfo'
+import PluginInfoBase from '../base'
+import MathSectionViewer from './view/MathSectionViewer'
+import MathSectionEditor from './view/MathSectionEditor'
 
-export default class MathPluginInfo extends SectionsBasePluginInfo implements IPluginInfo {
+export default class Math extends PluginInfoBase implements IPluginInfo {
     constructor(typeNames: string[]) {
-        super(SectionViewer, 'SectionViewer', SectionEditor, typeNames)
+        super(Math.name,
+            typeNames,
+            MathSectionViewer,
+            MathSectionEditor
+        )
     }
 }

@@ -1,10 +1,14 @@
-import MarkdownEditor from './view/MarkdownEditor'
-import MarkdownViewer from './view/MarkdownViewer'
-import SectionsBasePluginInfo from '../sections-base'
+import PluginInfoBase from '../base'
 import IPluginInfo from '../IPluginInfo'
+import CreateSectionEditor from '../base/view/SectionEditor'
+import { getSectionFileContent, getPasteSectionContent } from './view/Sections'
+import MarkdownViewer from './view/MarkdownViewer'
 
-export default class BlogPluginInfo extends SectionsBasePluginInfo implements IPluginInfo {
+export default class Blog extends PluginInfoBase implements IPluginInfo {
     constructor(typeNames: string[]) {
-        super(MarkdownViewer, 'MarkdownViewer', MarkdownEditor, typeNames)
+        super(Blog.name,
+            typeNames,
+            MarkdownViewer,
+            CreateSectionEditor({ getSectionFileContent, getPasteSectionContent }))
     }
 }

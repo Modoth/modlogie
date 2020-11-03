@@ -308,9 +308,9 @@ export default function ArticleView(props: {
   }
   const hasMore = props.article.additionId || (type && type.smartHiddenSections && type.smartHiddenSections.size)
   const openDetail = async () => {
-    if (!hasMore) {
-      return
-    }
+    // if (!hasMore) {
+    //   return
+    // }
     if (!additionalLoaded) {
       viewService.setLoading(true);
       await props.article.lazyLoadingAddition!();

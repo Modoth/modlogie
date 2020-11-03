@@ -28,10 +28,6 @@ export function get_SUB_TYPE_TAG(typeName: string) {
     return `${typeName}:SUB_TYPE_TAG`
 }
 
-export function get_ROOT_SUBJECT(typeName: string) {
-    return `${typeName}:ROOT_SUBJECT`
-}
-
 export function get_DISPLAY_NAME(typeName: string) {
     return `${typeName}:DISPLAY_NAME`
 }

@@ -1,17 +1,17 @@
 import React, { LabelHTMLAttributes } from 'react'
 import './MarkdownViewer.less'
 import classNames from 'classnames'
-import SectionViewerProps from '../../sections-base/view/SectionViewerProps'
+import SectionViewerProps from '../../base/view/SectionViewerProps'
 import ReactMarkdown, { uriTransformer } from 'react-markdown'
 import { useServicesLocator, useUser } from '../../../app/Contexts'
 import INavigationService from '../../../view/services/INavigationService'
 import IViewService from '../../../view/services/IViewService'
 import language from 'react-syntax-highlighter/dist/esm/languages/hljs/1c'
-import Highlight from '../../modlang/view/Hightlight'
 import { ArticlePreview } from '../../../view/pages/ArticlePreview'
 import { previewArticleByPath } from '../../../view/pages/ServiceView'
 import IServicesLocator from '../../../common/IServicesLocator'
 import { EditOutlined } from '@ant-design/icons'
+import Highlight from '../../base/common/Hightlight'
 
 const getRenders = (locator: IServicesLocator) => {
     const user = useUser();
@@ -30,24 +30,8 @@ const getRenders = (locator: IServicesLocator) => {
 }
 
 export default function MarkdownViewer(props: SectionViewerProps) {
-    const ref = React.createRef<HTMLSpanElement>()
     const locator = useServicesLocator();
     const renderers = getRenders(locator) as any
-    if (props.callbacks) {
-        props.callbacks.focus = () => {
-            if (ref.current) {
-                var offset = 60;
-                const bodyPos = document.body.getBoundingClientRect().top;
-                var elementPos = ref.current.getBoundingClientRect().top;
-                var offsetPosition = elementPos - bodyPos - offset;
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: "smooth"
-                });
-            }
-        }
-    }
-
     return <div onClick={(e) => {
         if ((e.target as any)?.nodeName === 'A') {
             return
@@ -56,7 +40,6 @@ export default function MarkdownViewer(props: SectionViewerProps) {
             props.onClick(e)
         }
     }} className={classNames('md-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode', props.className)} key={props.section.name}>
-        <span ref={ref} ></span>
         <label className="md-name">{props.section.name}</label>
         <ReactMarkdown renderers={renderers} source={props.section?.content} linkTarget="_blank"></ReactMarkdown>
     </div>
