@@ -90,6 +90,25 @@ namespace Modlogie.Api.Services
             return reply;
         }
 
+        public async override Task<Reply> DeleteAll(Empty request, ServerCallContext context)
+        {
+            var reply = new Reply();
+            var user = await _userService.GetUser(context.GetHttpContext());
+            if (user == null)
+            {
+                reply.Error = Error.NeedLogin;
+                return reply;
+            }
+            if (!user.HasWritePermission())
+            {
+                reply.Error = Error.NoPermission;
+                return reply;
+            }
+            await _service.DeleteAll();
+            return reply;
+        }
+
+
         public async override Task<ServerKeysReply> GetAllServerKeys(Empty request, ServerCallContext context)
         {
             var reply = new ServerKeysReply();

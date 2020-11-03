@@ -7,6 +7,7 @@ option csharp_namespace = "Modlogie.Api.KeyValues";
 service KeyValuesService {
   rpc GetAll(google.protobuf.Empty) returns (KeyValuesReply);
   rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
+  rpc DeleteAll(google.protobuf.Empty) returns (modlogie.messages.Reply);
   rpc AddOrUpdate(KeyValue) returns (KeyValueReply);
   rpc GetAllServerKeys(google.protobuf.Empty) returns (ServerKeysReply);
 }

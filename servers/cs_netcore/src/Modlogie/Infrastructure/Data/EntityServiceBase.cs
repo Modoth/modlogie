@@ -72,6 +72,16 @@ namespace Modlogie.Infrastructure.Data
             return 0;
         }
 
+        public async Task<int> DeleteAll()
+        {
+            this.Entities.RemoveRange(this.Entities);
+            if (Context.CurrentTransaction == null)
+            {
+                return await DbContext.SaveChangesAsync();
+            }
+            return 0;
+        }
+
         public async Task<int> UpdateRange(IEnumerable<TEntity> entities)
         {
             this.Entities.UpdateRange(entities);

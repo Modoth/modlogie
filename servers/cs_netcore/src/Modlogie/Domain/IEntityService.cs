@@ -36,6 +36,8 @@ namespace Modlogie.Domain
 
         Task<int> Delete(TEntity entity);
 
+        Task<int> DeleteAll();
+
         Task<int> DeleteRange(IEnumerable<TEntity> entities);
 
     }
