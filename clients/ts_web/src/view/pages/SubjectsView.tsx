@@ -11,6 +11,7 @@ import { PluginsConfig, ArticleType } from '../../plugins/IPluginInfo'
 import { useHistory, Link } from 'react-router-dom'
 import { Badge, Tabs } from 'antd'
 import RecentsView from './RecentsView'
+import { type } from 'os'
 const { TabPane } = Tabs;
 
 function sortSubjectByChildrenCount(subjects: Subject[]) {
@@ -24,7 +25,7 @@ function SubjectView(props: { type: ArticleType, subject: Subject, deepth: numbe
     const path = props.parentPath ? (props.parentPath + "/" + props.subject.name) : props.subject.name
     return (
       <div className={classNames("category", `subject-${props.deepth}`)}>
-        <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("category-title", props.deepth ? '' : 'category-title-root')}>{props.subject.resourceUrl ? <img src={props.subject.resourceUrl}></img> : null}<span >{displayName || path}</span></Link>
+        <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("category-title", props.deepth ? '' : 'category-title-root')}>{props.subject.resourceUrl ? <img src={props.subject.resourceUrl}></img> : null}<span >{props.deepth ? (displayName || path) : props.type.displayName}</span></Link>
         <div className="category-content">{sortSubjectByChildrenCount(props.subject.children).filter(s => s.totalArticleCount).map(subject => <SubjectView key={subject.id} type={props.type} subject={subject} parentPath={path} rootPath={props.rootPath} deepth={props.deepth + 1}></SubjectView>)}</div>
       </div>
     )

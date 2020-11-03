@@ -84,14 +84,12 @@ export default function H5LiveViewer(props: AdditionalSectionViewerProps) {
                 :
                 <IFrameWithoutJs src={contentUrl!} />
         }
-        {running ? undefined : <div onClick={(ev) => {
-            ev.stopPropagation()
+        {running ? undefined : <div onClick={() => {
             if (canRunning) {
                 setRunning(true)
             }
         }} className="mask"></div>}
-        <div className="float-menu"><Button size="large" type="link" onClick={(ev) => {
-            ev.stopPropagation()
+        <div className="float-menu"><Button size="large" type="link" onClick={() => {
             if (!fullscreen) {
                 setRunning(true)
             }

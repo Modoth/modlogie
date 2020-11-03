@@ -17,11 +17,11 @@ export default class SubjectViewModel extends Subject {
 
   parent?: SubjectViewModel;
 
-  constructor(subject: Subject, allSubjects?: Map<string, SubjectViewModel>, excludePath?: string) {
+  constructor(subject: Subject, allSubjects?: Map<string, SubjectViewModel>, excludePath?: string, getDisplayName?: { (subjectId: string): string | undefined }) {
     super()
     Object.assign(this, subject)
     this.key = this.id;
-    this.title = <div className="library-subject-item">{this.resourceUrl ? <img src={this.resourceUrl}></img> : null}{this.name + (this.totalArticleCount ? `(${this.totalArticleCount})` : '')}</div>;
+    this.title = <div className="library-subject-item">{this.resourceUrl ? <img src={this.resourceUrl}></img> : null}{getDisplayName ? (getDisplayName(subject.id) || this.name) : this.name + (this.totalArticleCount ? `(${this.totalArticleCount})` : '')}</div>;
     if (allSubjects) {
       if (allSubjects.has(subject.path!)) {
         console.log('Subject circle error.')

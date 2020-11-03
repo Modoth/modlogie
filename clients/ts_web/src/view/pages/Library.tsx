@@ -85,8 +85,9 @@ export default function Library(props: LibraryProps) {
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>(params.subjectId ? [params.subjectId!] : [])
   const fetchSubjects = async () => {
     const subjectsDict = new Map<string, SubjectViewModel>()
+    const getDisplayName = (id: string) => id == props.type.rootSubjectId ? type?.displayName : undefined
     const _ = (await locator.locate(ISubjectsService).all()).map(
-      (s) => new SubjectViewModel(s, subjectsDict)
+      (s) => new SubjectViewModel(s, subjectsDict, undefined, getDisplayName)
     )
     const newRecommendCount = await locator.locate(IConfigsService).getValueOrDefaultNumber(ConfigKeys.RECOMMENT_COUNT) || 0
     setSubjectsDict(subjectsDict)
@@ -446,8 +447,8 @@ export default function Library(props: LibraryProps) {
           }
         }} className="searched-subjects-title">{articleId ? <Button type="link" danger className="go-back-btn" icon={<ArrowRightOutlined />}></Button> : undefined}{
             rootSubject && effectiveSubjects.length < 2 ?
-              <><img className="subject-icon" src={(effectiveSubjects[0] || rootSubject).resourceUrl}></img><span>{(effectiveSubjects[0] || rootSubject).name}</span></> :
-              effectiveSubjects.map(sbj => sbj.name).join(',') || rootSubject?.name || ''
+              <><img className="subject-icon" src={(effectiveSubjects[0] || rootSubject).resourceUrl}></img><span>{(effectiveSubjects[0]?.id == rootSubject?.id) ? type?.displayName : (effectiveSubjects[0] || rootSubject).name}</span></> :
+              effectiveSubjects.map(sbj => sbj.name).join(',') || type?.displayName || ''
           }</span>
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
