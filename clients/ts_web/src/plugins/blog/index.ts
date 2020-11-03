@@ -5,8 +5,9 @@ import { getSectionFileContent, getPasteSectionContent } from './view/Sections'
 import MarkdownViewer from './view/MarkdownViewer'
 
 export default class Blog extends PluginInfoBase implements IPluginInfo {
+    static get typeName() { return "Blog" }
     constructor(typeNames: string[]) {
-        super(Blog.name,
+        super(Blog.typeName,
             typeNames,
             MarkdownViewer,
             CreateSectionEditor({ getSectionFileContent, getPasteSectionContent }))

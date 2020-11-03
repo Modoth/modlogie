@@ -6,8 +6,9 @@ import CreateSectionEditor from '../base/view/SectionEditor'
 import { getSectionFileContent, getSectionType, SectionNames } from './view/Sections'
 
 export default class H5App extends PluginInfoBase implements IPluginInfo {
+    static get typeName() { return "H5App" }
     constructor(typeNames: string[]) {
-        super(H5App.name,
+        super(H5App.typeName,
             typeNames,
             CreateSectionViewer(getSectionType),
             CreateSectionEditor({ getSectionFileContent }),

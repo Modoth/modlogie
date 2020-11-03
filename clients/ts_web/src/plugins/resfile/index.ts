@@ -5,8 +5,9 @@ import ResFileViewer from './view/ResFileViewer'
 import { SectionNames, addSectionFileContent, removeSectionFileContent } from './view/Sections'
 
 export default class ResFile extends PluginInfoBase implements IPluginInfo {
+    static get typeName() { return "ResFile" }
     constructor(typeNames: string[]) {
-        super(ResFile.name,
+        super(ResFile.typeName,
             typeNames,
             ResFileViewer,
             CreateSectionEditor({ addSectionFileContent, removeSectionFileContent }),

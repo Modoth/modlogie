@@ -6,8 +6,9 @@ import CreateSectionEditor from '../base/view/SectionEditor'
 import { getSectionFileContent, getSectionType, SectionNames } from './view/Sections'
 
 export default class Chart extends PluginInfoBase implements IPluginInfo {
+    static get typeName() { return "Chart" }
     constructor(typeNames: string[]) {
-        super(Chart.name,
+        super(Chart.typeName,
             typeNames,
             CreateSectionViewer(getSectionType),
             CreateSectionEditor({ getSectionFileContent }),

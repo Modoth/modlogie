@@ -70,7 +70,7 @@ import ResFile from './plugins/resfile'
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
   const pluginInfos = new Map<string, { new(typeNames: string[]): IPluginInfo }>([
     Blog, Chart, H5, H5App, Math, ModLang, ResFile
-  ].map(i => [i.name.toLocaleLowerCase(), i]))
+  ].map(i => [i.typeName.toLocaleLowerCase(), i]))
   var configsService = serviceLocator.locate(IConfigsService)
   var tagsService = serviceLocator.locate(ITagsService)
   var enabledPlugins = await (await configsService.getValueOrDefault(ConfigKeys.PLUGINS)).split(',').map(c => c.trim()).filter(c => c);

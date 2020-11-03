@@ -8,8 +8,9 @@ import CreateSectionViewer from '../base/view/SectionViewer'
 const getSectionType = (name: string) => name;
 
 export default class ModLang extends PluginInfoBase implements IPluginInfo {
+  static get typeName() { return "ModLang" }
   constructor(typeNames: string[]) {
-    super(ModLang.name,
+    super(ModLang.typeName,
       typeNames,
       CreateSectionViewer(getSectionType),
       CreateSectionEditor(),
