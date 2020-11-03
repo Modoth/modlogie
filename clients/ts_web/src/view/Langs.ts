@@ -71,6 +71,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Detail = '详情';
   Dict = '字典';
   Dislike = '踩';
+  Download = '下载';
   Edit = '编辑';
   Email = '邮箱';
   EnableAutoLogin = '自动登陆';

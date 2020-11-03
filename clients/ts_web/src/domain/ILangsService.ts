@@ -25,6 +25,7 @@ export class LangKeysInterface {
   Detail = 'Detail';
   Dict = 'Dict';
   Dislike = 'Dislike';
+  Download = 'Download';
   Edit = 'Edit';
   Email = 'Email';
   EnableAutoLogin = 'EnableAutoLogin';

@@ -4,18 +4,30 @@ import classNames from 'classnames'
 import SectionViewerProps from '../../base/view/SectionViewerProps'
 import yaml from 'yaml'
 import { ResFile } from '../ResFile'
+import { Plain } from './ResFileViewers/Plain'
+import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
+import { useServicesLocator } from '../../../app/Contexts'
+import ILangsService, { LangKeys } from '../../../domain/ILangsService'
+import { Button } from 'antd'
 
-export class ResFileViewerProps {
-
+const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.Element } | undefined => {
+    switch (ext) {
+        default:
+            return;
+    }
 }
 
 export default function ResFileViewer(props: SectionViewerProps) {
-    const [resfile] = useState(yaml.parse(props.section.content) as ResFile)
-    const [url] = useState(props.filesDict.get(resfile?.name)?.url)
+    const resfile = yaml.parse(props.section.content) as ResFile
+    const langs = useServicesLocator().locate(ILangsService)
+    const url = props.filesDict.get(resfile?.name)?.url
     if (!url) {
         return <></>
     }
-    return <div onClick={props.onClick} className={classNames('md-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
-        <div><a download={resfile.name} href={url}>{resfile.name}</a></div>
+    const type = resfile.name.split('.').pop()
+    const Viewer = getViewer(type)
+    return <div onClick={props.onClick} className={classNames('resfile-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
+        <div className="summary"><span className="name" >{resfile.name}</span><a download={resfile.name} target="_blank" href={`/${url}`}>{langs.get(LangKeys.Download)}</a></div>
+        {Viewer ? <div><Viewer url={url}></Viewer></div> : undefined}
     </div>
 }
