@@ -1,0 +1,38 @@
+{
+  "colors": [
+    "#cc9999",
+    "#e9ae6a",
+    "#ff6666",
+    "#99cc66"
+  ],
+  "ordinals": [
+    {
+      "name": "数字",
+      "values": "123456789"
+    },
+    {
+      "name": "天干",
+      "values": "甲乙丙丁戊己庚辛壬癸"
+    }
+  ],
+  "types": [
+    {
+      "name": "累加",
+      "ordinal": "数字",
+      "counts": "[2...]",
+      "increments": "1"
+    },
+    {
+      "name": "摆2",
+      "counts": "[2...4]",
+      "ordinal": "天干",
+      "increments": "[-40,1...38,80]*5",
+      "incrementsRestraint": {
+        "name": "sum",
+        "value": 100
+      },
+      "maxScore": 500,
+      "sort": true
+    }
+  ]
+}

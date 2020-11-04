@@ -17,6 +17,9 @@
 		},
 		{
 			"path": "../../clients/ts_web_terminal"
+		},
+		{
+			"path": "../../clients/js_node"
 		}
 	],
 	"settings": {}

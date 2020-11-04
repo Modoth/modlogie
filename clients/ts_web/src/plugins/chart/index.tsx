@@ -15,7 +15,6 @@ export default class Chart extends PluginInfoBase implements IPluginInfo {
             ChartLiveViewer,
             {
                 defaultSections: `-${SectionNames.data} -${SectionNames.type}`,
-                loadAdditionalsSync: true,
                 fixedSections: true
             })
     }

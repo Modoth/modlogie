@@ -15,7 +15,6 @@ export default class ResFile extends PluginInfoBase implements IPluginInfo {
             undefined,
             {
                 defaultSections: `${SectionNames.info}`,
-                loadAdditionalsSync: true,
                 fixedSections: true
             })
     }

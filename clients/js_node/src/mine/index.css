@@ -1,0 +1,129 @@
+html,
+body,
+#app {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+#app {
+  position: fixed;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background-image: radial-gradient(
+      #ffcccc,
+      rgba(255, 255, 255, 0.2) 40px,
+      transparent 80px
+    ),
+    radial-gradient(#ccccff, rgba(255, 255, 255, 0.3) 30px, transparent 100px),
+    radial-gradient(#99cccc, rgba(255, 255, 255, 0.2) 30px, transparent 100px);
+  background-size: 300px 300px, 200px 200px, 300px 300px;
+  background-position: 0 0, 20px 40px, 70px 30px, 60px 80px;
+}
+
+#app > div {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+}
+
+#cellsTable {
+  -webkit-appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+}
+
+#cellsTable > .cellsRow {
+  display: flex;
+  flex: 1;
+}
+
+.cellsRow > input {
+  -webkit-appearance: none;
+  flex: 1;
+  margin: 2px;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  box-sizing: border-box;
+  box-shadow: 1px 1px 3px #888;
+  overflow: hidden;
+}
+
+.cellsRow > input:focus {
+  outline: 0;
+}
+
+*[data-char="0"] {
+  background: #ccccccc0 !important;
+}
+
+*[data-char="1"] {
+  background: #99cc66c0 !important;
+}
+
+*[data-char="2"] {
+  background: #ccccffc0 !important;
+}
+
+*[data-char="3"] {
+  background: #cccc99c0 !important;
+}
+
+*[data-char="4"] {
+  background: #ffccccc0 !important;
+}
+
+*[data-char="5"] {
+  background: #99ccccc0 !important;
+}
+
+*[data-char="6"] {
+  background: #ffffccc0 !important;
+}
+
+*[data-char="7"] {
+  background: #e9ae6ac0 !important;
+}
+
+*[data-char="8"] {
+  background: #cc9999c0 !important;
+}
+
+.mine.fail {
+  background: transparent !important;
+  box-shadow: 0 0 0;
+  color: #ff6666;
+}
+
+.mine.success {
+  color: #99cc6680;
+}
+
+.devider {
+  flex: 4;
+}
+
+.devider-mini {
+  flex: 1;
+}
+
+input.flipped {
+  background: transparent !important;
+  box-shadow: 0 0 0;
+  color: #666;
+}
+
+@media (orientation: landscape) {
+}

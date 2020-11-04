@@ -15,7 +15,6 @@ export default class H5App extends PluginInfoBase implements IPluginInfo {
             H5AppLiveViewer,
             {
                 defaultSections: `?${SectionNames.data} -${SectionNames.type}`,
-                loadAdditionalsSync: true,
                 fixedSections: true
             })
     }
