@@ -16,9 +16,6 @@
 			"path": "../../clients/ts_web"
 		},
 		{
-			"path": "../../contents"
-		},
-		{
 			"path": "../../clients/ts_web_terminal"
 		}
 	],
