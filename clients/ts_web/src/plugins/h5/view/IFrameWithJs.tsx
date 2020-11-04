@@ -95,7 +95,7 @@ export default function IFrameWithJs(props: { src: string, context?: IFrameConte
         const { token, taskTypes } = props.context;
         let lastHeartBeatTime = Date.now()
         let clientWindow: Window
-        const listener = async (ev: MessageEvent<any>) => {
+        const listener = async (ev: MessageEvent) => {
             if (!ev.data || ev.data.token !== token) {
                 return;
             }
