@@ -1,27 +1,30 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AdditionalSectionViewerProps } from '../../base/view/SectionViewerProps';
 import { ArticleSection } from '../../../domain/Article';
 import { SectionNames } from './Sections';
 import './H5LiveViewer.less'
-import YAML, { stringify } from 'yaml'
+import YAML from 'yaml'
 import FrameWorks from './frameworks'
 import { Button } from 'antd';
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
 import classNames from 'classnames';
+import IFrameWithJs, { generateContext, IFrameContext } from './IFrameWithJs';
+
 
 const getDataUrl = (content: string) => {
     return "data:text/html;charset=utf-8," + encodeURIComponent(content);
 }
 
-const combineContent = (sections: Map<string, ArticleSection>): [string | undefined, string | undefined] => {
+const combineContent = (sections: Map<string, ArticleSection>): [string | undefined, string | undefined, IFrameContext | undefined] => {
     var html = sections.get(SectionNames.html)?.content || ''
     var frameworks = sections.get(SectionNames.frameworks)?.content
-    var fws = frameworks && (frameworks.split(' ').filter(s => s && FrameWorks.has(s)).map(s => FrameWorks.get(s)).filter(s => s))
+    var fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
+    var fws = fwNames.filter(s => s && FrameWorks.has(s)).map(s => FrameWorks.get(s))
     var fw_htmls = fws && fws.map(f => f && f.html)
     var fw_jss = fws && fws.map(f => f && f.js)
     var jsData = '';
     if (!html && !(fw_htmls && fw_htmls.length)) {
-        return [undefined, undefined]
+        return [undefined, undefined, undefined]
     }
     var style = sections.get(SectionNames.css)?.content
     var script = sections.get(SectionNames.js)?.content
@@ -38,6 +41,10 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
 
     var content = html || '';
     var jsContent = ''
+    var context: IFrameContext | undefined
+    if (~fwNames.indexOf('storage')) {
+        [context, jsContent] = generateContext()
+    }
     if (style) {
         content += `\n<style>\n${style}\n</style>`
     }
@@ -58,19 +65,15 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
 
     jsContent = `${content}\n${jsContent}`
 
-    return [getDataUrl(content), jsContent ? getDataUrl(jsContent) : undefined]
+    return [getDataUrl(content), jsContent ? getDataUrl(jsContent) : undefined, context]
 }
 
 function IFrameWithoutJs(props: { src: string }) {
     return <iframe src={props.src} sandbox=""></iframe>
 }
 
-function IFrameWithJs(props: { src: string }) {
-    return <iframe src={props.src} sandbox="allow-scripts"></iframe>
-}
-
 export default function H5LiveViewer(props: AdditionalSectionViewerProps) {
-    const [contentUrl, jsContentUrl] = combineContent(new Map(props.sections.map(s => [s.name!, s])))
+    const [contentUrl, jsContentUrl, context] = combineContent(new Map(props.sections.map(s => [s.name!, s])))
     const [running, setRunning] = useState(false)
     const [canRunning] = useState(!!jsContentUrl)
     const [fullscreen, setFullscreen] = useState(false)
@@ -80,7 +83,7 @@ export default function H5LiveViewer(props: AdditionalSectionViewerProps) {
     return <div className={classNames("h5-live-viewer", fullscreen ? "fullscreen" : "")}>
         {
             running ?
-                <IFrameWithJs src={jsContentUrl!} />
+                <IFrameWithJs src={jsContentUrl!} context={context} />
                 :
                 <IFrameWithoutJs src={contentUrl!} />
         }
