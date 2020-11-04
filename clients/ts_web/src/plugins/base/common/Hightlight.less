@@ -1,0 +1,36 @@
+.hightlight {
+  position: relative;
+  .font-selector {
+    position: sticky;
+    top: 71px;
+    float: right;
+    height: 8em;
+    z-index: 1;
+    opacity: 0.4;
+    margin: 0;
+    margin-right: -5px;
+
+    .ant-slider-rail,
+    .ant-slider-track,
+    .ant-slider-step {
+      width: 1px;
+    }
+    .ant-slider-handle {
+      margin-left: -10px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+@media (min-width: 780px) {
+  .hightlight .font-selector {
+    display: none;
+  }
+}
+
+@media print {
+  .hightlight .font-selector {
+    display: none;
+  }
+}

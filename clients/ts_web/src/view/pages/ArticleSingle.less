@@ -132,21 +132,26 @@
     background-color: transparent;
     color: #000;
 
+    .menus {
+      background: #fff;
+    }
+
     .article {
       box-shadow: var(--shadow);
       border-radius: 5px;
       padding-top: 10px;
       background: #fff;
       min-height: 90vh;
-      margin-top: 61px;
+      margin-top: 71px;
     }
   }
 
   .single-article {
     .h5-live-viewer {
       iframe {
-        box-shadow: none;
-        border-radius: 0;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        border: 1px solid #0001;
       }
     }
   }
