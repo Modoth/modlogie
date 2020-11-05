@@ -1,13 +1,18 @@
 .resfile-viewer {
   width: 100%;
   margin-top: 10px;
+  .summary,
+  .preview {
+    background: linear-gradient(-45deg, #00000008, #00000004);
+    padding: 5px;
+    border-radius: 5px;
+  }
   .summary {
     display: flex;
     align-items: center;
     margin-top: 10px;
-    border: 1px solid #eee;
-    padding: 2px 5px;
-    border-radius: 5px;
+    margin-bottom: 5px;
+    color: #0008;
     .name {
       flex: 1;
       margin: 0 20px;
@@ -17,8 +22,8 @@
       color: #0002;
     }
     .download {
+      color: #0008;
       margin: 5px 10px;
-      color: #e8912e;
     }
     margin-bottom: 5px;
   }
@@ -35,7 +40,6 @@
   }
 
   .preview {
-    border: 1px solid #eee;
     min-height: 4rem;
   }
 }

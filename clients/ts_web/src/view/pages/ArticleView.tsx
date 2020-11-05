@@ -33,6 +33,7 @@ import {
   CaretLeftOutlined,
   LeftOutlined,
   DownSquareOutlined,
+  QrcodeOutlined,
   DeleteOutlined,
 } from '@ant-design/icons'
 import './ArticleView.less'
@@ -307,6 +308,13 @@ export default function ArticleView(props: {
     }
   }
   const hasMore = props.article.additionId || (type && type.smartHiddenSections && type.smartHiddenSections.size)
+  const openQrCode = async () => {
+    viewService.prompt((!props.type.noTitle && name) || langs.get(LangKeys.QrCode), [{
+      type: 'QrCode',
+      value: `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
+    }], async () => true)
+  }
+
   const openDetail = async () => {
     // if (!hasMore) {
     //   return
@@ -386,7 +394,7 @@ export default function ArticleView(props: {
             </Badge></MenuItem> : null,
             user.printPermission ? (inArticleList ?
               <MenuItem key='remove-print'><Badge >
-                <Button type="link" icon={<PlusCircleFilled />} onClick={() => {
+                <Button type="link" icon={<PrinterFilled />} onClick={() => {
                   articleListService.remove(props.article)
                   setInArticleList(articleListService.has(props.article))
                 }}
@@ -394,7 +402,7 @@ export default function ArticleView(props: {
               </Badge></MenuItem>
               :
               <MenuItem key="add-print"><Badge className="printer-icons">
-                <Button type="link" icon={<PlusCircleOutlined />} onClick={() => {
+                <Button type="link" icon={<PrinterOutlined />} onClick={() => {
                   articleListService.add(props.article, type, () => {
                     setInArticleList(false);
                   })
@@ -408,6 +416,8 @@ export default function ArticleView(props: {
               ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
             <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
             ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
+            <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />} onClick={openQrCode}
+            ><span className="action-name">{langs.get(LangKeys.QrCode)}</span></Button></MenuItem>,
             ...(user.editingPermission ? [
               <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />} onClick={toogleRecommend}
               ><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,

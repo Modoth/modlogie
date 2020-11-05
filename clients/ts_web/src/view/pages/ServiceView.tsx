@@ -14,6 +14,7 @@ import html2canvas from 'html2canvas';
 import ReactMarkdown from 'react-markdown'
 import { ArticlePreview } from './ArticlePreview'
 import IServicesLocator from '../../common/IServicesLocator'
+import QrCode from '../components/QrCode'
 
 export const previewArticleByPath = (locator: IServicesLocator, path: string | undefined, title: string | undefined) => {
   if (!path) {
@@ -370,6 +371,8 @@ export default function ServiceView(props: {
                 return (
                   <ReactMarkdown className="md" source={field.value} linkTarget="_blank"></ReactMarkdown>
                 )
+              case 'QrCode':
+                return (<div className="service-view-qrcode"><QrCode content={field.value}></QrCode></div>)
               case 'Article':
                 return (<ArticlePreview className="md" path={field.value}></ArticlePreview>)
               case 'Password':

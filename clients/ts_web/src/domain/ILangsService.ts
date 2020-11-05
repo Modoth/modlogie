@@ -55,6 +55,7 @@ export class LangKeysInterface {
   Paging = 'Paging';
   Password = 'Password';
   Preview = 'Preview';
+  QrCode = 'QrCode';
   Recommend = 'Recommend';
   RemoveFromArticleList = 'RemoveFromArticleList';
   Reset = 'Reset';
