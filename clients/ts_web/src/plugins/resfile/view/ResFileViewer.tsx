@@ -10,7 +10,6 @@ import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownOutlined, 
 import ReactMarkdown from 'react-markdown'
 import { ResImage } from './ResFileViewers/ResImage'
 import { Button } from 'antd'
-import { finished } from 'stream'
 
 const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.Element } | undefined => {
     switch (ext?.toLocaleLowerCase()) {
@@ -19,7 +18,10 @@ const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.
         case 'json':
             return ResPlain;
         case 'jpeg':
-        // return ResImage;
+        case 'png':
+        case 'jpg':
+        case 'gif':
+            return ResImage;
         default:
             return
     }
@@ -27,8 +29,10 @@ const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.
 
 function Downloader(props: { name: string, url: string, onProgress?(progress: number): void, onFinished?(blobUrl: string): void }) {
     const [blobUrl, setBlobUrl] = useState('')
+    const [buff, setBuff] = useState<ArrayBuffer | undefined>()
     const [downloadReq, setDownloadReq] = useState<XMLHttpRequest | undefined>()
     const [failed, setFailed] = useState(false)
+    const [preview, setPreview] = useState(false)
     const [downloadProgress, setDownloadProgress] = useState(0)
     const setDownloadProgressAndRaise = (progress: number) => {
         setDownloadProgress(progress)
@@ -50,12 +54,13 @@ function Downloader(props: { name: string, url: string, onProgress?(progress: nu
             }
         }
         req.onerror = () => setFailed(true)
-        req.onload = (ev) => {
+        req.onload = () => {
             const buff = req.response as ArrayBuffer
             const blob = new Blob([buff], { type: 'application/octet-stream' });
             const blobUrl = URL.createObjectURL(blob);
             setDownloadReq(undefined)
             setBlobUrl(blobUrl)
+            setBuff(buff)
             props.onProgress?.(100)
             props.onFinished?.(blobUrl)
         }
@@ -85,38 +90,37 @@ function Downloader(props: { name: string, url: string, onProgress?(progress: nu
             }
         }
     }, [])
-    return <><span className="name" >{props.name}</span><span className="failed">{failed ? <InfoCircleOutlined /> : ''}</span>
-        {
-            blobUrl ? <a className="download" download={props.name} target="_blank" href={blobUrl}><SaveOutlined /></a>
-                :
-                (downloadReq ? <Button type="text" icon={<CloseOutlined />} onClick={cancleDownload}></Button> :
-                    <Button type="text" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
-        }
+    const type = props.name.split('.').pop()
+    const Viewer = getViewer(type)
+    return <>
+        <div className="summary">
+            <span className="progress" style={{ width: `${downloadProgress}%` }}></span>
+            {
+                Viewer ?
+                    <span className="icon" onClick={() => setPreview(!preview)} >{preview ? <UpOutlined /> : <DownOutlined />}</span> :
+                    <span className="icon" ><FileOutlined /></span>
+            }
+            <span className="name" >{props.name}</span>
+            <span className="failed">{failed ? <InfoCircleOutlined /> : ''}</span>
+            {
+                blobUrl ? <a className="download" download={props.name} target="_blank" href={blobUrl}><SaveOutlined /></a>
+                    :
+                    (downloadReq ? <Button type="text" icon={<CloseOutlined />} onClick={cancleDownload}></Button> :
+                        <Button type="text" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
+            }
+        </div>
+        { Viewer && preview ? <div className="preview"><Viewer url={blobUrl || props.url} buff={buff}></Viewer></div> : undefined}
     </>
 }
 
 export default function ResFileViewer(props: SectionViewerProps) {
     const resfile = yaml.parse(props.section.content) as ResFile
-    const [preview, setPreview] = useState(false)
-    const [downloadProgress, setDownloadProgress] = useState(0)
     const [url] = useState(props.filesDict.get(resfile?.name)?.url)
-    const [previewUrl, setPreviewUrl] = useState(url)
     if (!url) {
         return <></>
     }
-    const type = resfile.name.split('.').pop()
-    const Viewer = getViewer(type)
     return <div onClick={props.onClick} className={classNames('resfile-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
         {resfile.comment ? <div className="comment"><ReactMarkdown source={resfile.comment}></ReactMarkdown></div> : undefined}
-        <div className="summary">
-            <span className="progress" style={{ width: `${downloadProgress}%` }}></span>
-            <span className="icon" onClick={() => {
-                if (Viewer) {
-                    setPreview(!preview)
-                }
-            }} >{!Viewer ? <FileOutlined /> : (preview ? <UpOutlined /> : <DownOutlined />)}</span>
-            <Downloader url={url} name={resfile.name} onFinished={setPreviewUrl} onProgress={setDownloadProgress}></Downloader>
-        </div>
-        {Viewer && preview ? <div className="preview"><Viewer url={url}></Viewer></div> : undefined}
+        <Downloader url={url} name={resfile.name}></Downloader>
     </div>
 }

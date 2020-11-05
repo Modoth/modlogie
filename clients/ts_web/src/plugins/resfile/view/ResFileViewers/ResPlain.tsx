@@ -8,14 +8,16 @@ export function ResPlain(props: ResFileViewerProps) {
     const [size, setSize] = useState(0)
     const [fetchedSize, setFetchedSize] = useState(0)
     const [lastBuff, setLastBuff] = useState<ArrayBuffer | undefined>()
-    const [lastTxt, setLastTxt] = useState('')
     const [decoder] = useState(new TextDecoder('utf-8'));
+    const [lastTxt, setLastTxt] = useState(props.buff ? decoder.decode(new Uint8Array(props.buff, blockSize), { stream: true }) : '')
     const ref = React.createRef<HTMLDivElement>()
     useEffect(() => {
-        fetchFileSize(props.url).then(setSize)
+        if (!props.buff) {
+            fetchFileSize(props.url).then(setSize)
+        }
     }, [])
     useEffect(() => {
-        if (!size) {
+        if (!size || props.buff) {
             return
         }
         fetchMore()
