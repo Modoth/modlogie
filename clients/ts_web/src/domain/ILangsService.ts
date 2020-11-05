@@ -41,6 +41,7 @@ export class LangKeysInterface {
   Login = 'Login';
   Logout = 'Logout';
   Manage = 'Manage';
+  Menu = 'Menu';
   Modify = 'Modify';
   MSG_ERROR_NETWORK = 'MSG_ERROR_NETWORK';
   MSG_ERROR_INVALID_FILE = 'MSG_ERROR_INVALID_FILE';

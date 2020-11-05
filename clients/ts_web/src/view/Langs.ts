@@ -87,6 +87,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Login = '登陆';
   Logout = "注销";
   Manage = '管理';
+  Menu = '目录';
   Modify = '修改';
   MSG_ERROR_NETWORK = '网络错误';
   MSG_ERROR_SITE_CONFIG = '配置错误';

@@ -1,11 +1,6 @@
 import { ArticleSection, ArticleFile } from "../../../domain/Article";
 import { MouseEventHandler } from "react";
 
-export interface SectionViewerCallbacks {
-    focus?(): void
-    onfocus?(): void
-}
-
 export interface AdditionalSectionViewerProps {
     sections: ArticleSection[],
     filesDict: Map<string, ArticleFile>

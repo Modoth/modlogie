@@ -3,8 +3,8 @@ import { ArticleContentViewerProps } from '../../IPluginInfo'
 import { ArticleSection } from '../../../domain/Article'
 import './BaseViewer.less'
 import classNames from 'classnames'
-import SectionViewerProps, { AdditionalSectionViewerProps, SectionViewerCallbacks } from './SectionViewerProps'
-import { SectionViewerWraper } from './SectionViewer'
+import SectionViewerProps, { AdditionalSectionViewerProps } from './SectionViewerProps'
+import LocatableView, { LocatableViewCallbacks } from '../../../view/components/LocatableView'
 
 export interface ArticleSectionVm extends ArticleSection {
   additionalSection?: boolean;
@@ -27,7 +27,7 @@ export default function BaseViewer(TSectionViewer: { (props: SectionViewerProps)
     const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
     const [sections] = useState((getSections(props.type?.allSections!, props.type?.additionalSections!, props.content?.sections || [])))
     const [showAdditional] = useState(props.showAdditionals == true)
-    const [callbacks] = useState(new Map<string, SectionViewerCallbacks>(sections.map(s => [s.name!, {
+    const [callbacks] = useState(new Map<string, LocatableViewCallbacks>(sections.map(s => [s.name!, {
       onfocus: () => {
         if (props.viewerCallbacks?.onSection) {
           props.viewerCallbacks!.onSection!(s.name!)
@@ -62,7 +62,7 @@ export default function BaseViewer(TSectionViewer: { (props: SectionViewerProps)
             null
         }
         {sections.filter(s => !props.type?.hiddenSections.has(s.name!)).filter(s => showAdditional || !props.type?.smartHiddenSections.has(s.name!)).filter(s => s.content && s.content.match(/\S/)).filter(s => showAdditional || !props.type?.additionalSections.has(s.name!)).map((section) => (
-          <SectionViewerWraper TSectionViewer={TSectionViewer} className={classNames(section.firstSection ? 'first-section' : (section.additionalSection ? 'additional-section' : 'normal-section'))} callbacks={callbacks.get(section.name!)} key={section.name} section={section} filesDict={filesDict} pureViewMode={true} />
+          <LocatableView View={TSectionViewer} className={classNames(section.firstSection ? 'first-section' : (section.additionalSection ? 'additional-section' : 'normal-section'))} callbacks={callbacks.get(section.name!)} key={section.name} section={section} filesDict={filesDict} pureViewMode={true} />
         ))}
       </div>
     )

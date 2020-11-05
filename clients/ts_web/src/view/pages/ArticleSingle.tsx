@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './ArticleSingle.less'
 import { useServicesLocator } from '../../app/Contexts'
 import { Button, Menu, Dropdown } from 'antd';
-import { ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MenuOutlined, VerticalAlignTopOutlined, MinusOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/Article';
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
@@ -10,6 +10,7 @@ import IViewService from '../services/IViewService';
 import ILangsService, { LangKeys } from '../../domain/ILangsService';
 import FreeDrawMask from '../components/FreeDrawMask';
 import CaptureDict from './CaptureDict';
+import LocatableView, { Div, LocatableViewCallbacks } from '../components/LocatableView';
 const themeCount = 3
 const getThemeClass = (idx: number) => idx > 0 ? `reading-theme reading-theme-${idx}` : ''
 const getThemeKey = () => 'READING_THEME'
@@ -71,6 +72,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     const [paging, setPaging] = useState(smallScreen ? loadPaging() : false)
     const ref = React.createRef<HTMLDivElement>()
     const [callbacks] = useState({} as ArticleContentViewerCallbacks)
+    const [locateRef] = useState({} as LocatableViewCallbacks)
     const prePage = () => {
         goPage(-1)
     }
@@ -90,10 +92,11 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
         var currentPage = Math.floor(par.scrollLeft / width)
         par.scroll({ left: (currentPage + i) * width, behavior: "smooth" })
     }
+    const scrollToTop = () => { locateRef?.focus?.() }
     callbacks.onSections = setSections;
     callbacks.onSection = setCurrentSection;
     return (
-        <div className={classNames("single-article", getThemeClass(currentTheme), paging ? 'paging' : '')}>
+        <LocatableView View={Div} callbacks={locateRef} className={classNames("single-article", getThemeClass(currentTheme), paging ? 'paging' : '')}>
             <div className={classNames("menus")}>
                 <div className={classNames("menus-bar")} onClick={e => e.stopPropagation()}>
                     {freeDraw ? undefined : <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>}
@@ -106,19 +109,24 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                             {
                                 <Dropdown trigger={['click']} overlay={
                                     <Menu>
-                                        {paging ? null :
-                                            sections.map(section => <Menu.Item onClick={() => {
-                                                callbacks.gotoSection && callbacks.gotoSection(section)
-                                            }}>{section}</Menu.Item>).concat(
-                                                <Menu.Divider></Menu.Divider>,
-                                                <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
-                                                    setCaptureDict(!captureDict)
-                                                    saveCaptureDict(!captureDict)
-                                                }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
-                                                <Menu.Divider></Menu.Divider>,
-                                                <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>,
-                                                <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>,
-                                            )
+                                        {paging ? null : [
+                                            <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<VerticalAlignTopOutlined />} onClick={() => scrollToTop()}>{langs.get(LangKeys.Menu)}</Button></Menu.Item>,
+                                        ].concat(
+                                            sections.map(section =>
+                                                <Menu.Item onClick={() => {
+                                                    callbacks.gotoSection && callbacks.gotoSection(section)
+                                                }}>
+                                                    <Button className="single-article-content-menu-btn title" type="text" size="small" icon={<MinusOutlined />}>{section}</Button>
+                                                </Menu.Item>).concat(
+                                                    <Menu.Divider></Menu.Divider>,
+                                                    <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
+                                                        setCaptureDict(!captureDict)
+                                                        saveCaptureDict(!captureDict)
+                                                    }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
+                                                    <Menu.Divider></Menu.Divider>,
+                                                    <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>,
+                                                    <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>,
+                                                ))
                                         }
                                         {smallScreen ? [<Menu.Item>
                                             <Button className="single-article-content-menu-btn" type="link" size="large" icon={<BgColorsOutlined />}
@@ -141,7 +149,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                                             >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
                                         </Menu.Item>] : null}
                                     </Menu>}>
-                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<UnorderedListOutlined />} onClick={(e) => e.preventDefault()} ></Button>
+                                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<MenuOutlined />} onClick={(e) => e.preventDefault()} ></Button>
                                 </Dropdown>
                             }</>) : (<>
                                 {drawSizes.map(s => <Button className="single-article-content-menu-btn" type={s === drawSize ? "primary" : "link"} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
@@ -164,6 +172,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                         saveCaptureDict(false)
                     }}></CaptureDict> :
                     undefined}
-        </div>
+        </LocatableView>
+
     )
 }
