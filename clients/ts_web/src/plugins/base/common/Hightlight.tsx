@@ -20,7 +20,7 @@ export default function Highlight(props: {
                 }
             }} defaultValue={store.fontSize} min={0.6} max={1} step={0.1} />
             <Prism wrapLines={true} language={language} style={coy}>
-                {value}
+                {value || ''}
             </Prism>
         </div>
 
