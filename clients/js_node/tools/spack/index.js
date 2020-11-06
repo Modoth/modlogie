@@ -534,10 +534,12 @@ class Packer {
     }
 }
 
-const extractHtml = (full = '') => {
+const extractHtml = (full = '', extractCss = false) => {
     let css = ''
     let js = ''
-    const regexp = /[\r\n\s]*<(?<type>script)(.|[\r\n])*?>(?<content>(.|[\r\n])*?)[\r\n\s]*<\/\1\s?>[\r\n\s]*/gim
+    const regexp = extractCss ?
+        /[\r\n\s]*<(?<type>script|style)(.|[\r\n])*?>(?<content>(.|[\r\n])*?)[\r\n\s]*<\/\1\s?>[\r\n\s]*/gim
+        : /[\r\n\s]*<(?<type>script)(.|[\r\n])*?>(?<content>(.|[\r\n])*?)[\r\n\s]*<\/\1\s?>[\r\n\s]*/gim
     const html = full.replace(regexp, (...args) => {
         const content = args[7].content ? (args[7].content + '\n') : ''
         switch (args[7].type) {
@@ -586,13 +588,15 @@ class Publisher {
                     }
                     console.log(`${entry.name}: Success`)
                 }
-                const [html, css, js] = extractHtml(result.data)
+                const extractCss = result.data === result.dataWithTemplate && !output.endsWith('framework.html')
+                const [html, css, js] = extractHtml(result.data, extractCss)
                 await FileUtils.writeFile(output, html)
-                // await FileUtils.writeFile(output + ".part.css", css)
+                if (extractCss) {
+                    await FileUtils.writeFile(output.replace(/html$/, 'css'), css)
+                } else {
+                    fs.unlink(output.replace(/html$/, 'css'), () => { })
+                }
                 await FileUtils.writeFile(output.replace(/html$/, 'js'), js)
-                // await FileUtils.writeFile(output + ".indep.html", result.dataWithTemplate)
-                // await FileUtils.writeFile(output, result.data)
-
 
                 console.log(`${entry.name}: Success to Save`)
             } else {

@@ -48,7 +48,7 @@ const getLocalConfigs = async () => {
             if (await FileUtils.exists(file)) {
                 indexFile = file
                 if (fileName !== 'index.html') {
-                    template = 'src/fastapp/index.html'
+                    template = 'src/fastframework/index.html'
                 }
                 break
             }
