@@ -10,11 +10,12 @@ import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownOutlined, 
 import ReactMarkdown from 'react-markdown'
 import { ResImage } from './ResFileViewers/ResImage'
 import { Button } from 'antd'
+import FullscreenWraper from '../../../view/components/FullscreenWraper'
 
 const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.Element } | undefined => {
     switch (ext?.toLocaleLowerCase()) {
         case 'txt':
-        case 'mdx':
+        // case 'mdx':
         case 'json':
             return ResPlain;
         case 'jpeg':
@@ -27,7 +28,7 @@ const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.
     }
 }
 
-function Downloader(props: { name: string, url: string, onProgress?(progress: number): void, onFinished?(blobUrl: string): void }) {
+function DownloadManagerView(props: { name: string, url: string, onProgress?(progress: number): void, onFinished?(blobUrl: string): void }) {
     const [blobUrl, setBlobUrl] = useState('')
     const [buff, setBuff] = useState<ArrayBuffer | undefined>()
     const [downloadReq, setDownloadReq] = useState<XMLHttpRequest | undefined>()
@@ -91,12 +92,12 @@ function Downloader(props: { name: string, url: string, onProgress?(progress: nu
         }
     }, [])
     const type = props.name.split('.').pop()
-    const Viewer = getViewer(type)
+    const Preview = getViewer(type)
     return <>
         <div className="summary">
             <span className="progress" style={{ width: `${downloadProgress}%` }}></span>
             {
-                Viewer ?
+                Preview ?
                     <span className="icon" onClick={() => setPreview(!preview)} >{preview ? <UpOutlined /> : <DownOutlined />}</span> :
                     <span className="icon" ><FileOutlined /></span>
             }
@@ -109,7 +110,7 @@ function Downloader(props: { name: string, url: string, onProgress?(progress: nu
                         <Button type="text" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
             }
         </div>
-        { Viewer && preview ? <div className="preview"><Viewer url={blobUrl || props.url} buff={buff}></Viewer></div> : undefined}
+        { Preview && preview ? <FullscreenWraper className="preview" View={Preview} url={blobUrl || props.url} buff={buff}></FullscreenWraper> : undefined}
     </>
 }
 
@@ -121,6 +122,6 @@ export default function ResFileViewer(props: SectionViewerProps) {
     }
     return <div onClick={props.onClick} className={classNames('resfile-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
         {resfile.comment ? <div className="comment"><ReactMarkdown source={resfile.comment}></ReactMarkdown></div> : undefined}
-        <Downloader url={url} name={resfile.name}></Downloader>
+        <DownloadManagerView url={url} name={resfile.name}></DownloadManagerView>
     </div>
 }

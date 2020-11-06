@@ -6,6 +6,10 @@ export default class RemoteTextReader implements IAsyncTextReader {
     private _size: Promise<number>
     private fetchedSize = 0
     private decoder = new TextDecoder(this.label)
+    private _value: string = ''
+    cache(): string {
+        return this._value
+    }
     size(): Promise<number> {
         if (!this._size) {
             this._size = fetchFileSize(this.url)
@@ -19,6 +23,8 @@ export default class RemoteTextReader implements IAsyncTextReader {
         }
         const buff = await fetchFileRange(this.url, this.fetchedSize, Math.min(this.fetchedSize + this.buffSize, size))
         this.fetchedSize += buff.byteLength
-        return [this.decoder.decode(buff, { stream: true }), this.fetchedSize >= size]
+        const newValue = this.decoder.decode(buff, { stream: true })
+        this._value += newValue
+        return [newValue, this.fetchedSize >= size]
     }
 }

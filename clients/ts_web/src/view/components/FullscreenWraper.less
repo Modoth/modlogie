@@ -1,25 +1,5 @@
-.h5-live-viewer {
+.fullscreen-wraper {
   position: relative;
-  width: 100%;
-  padding-top: 56.25%;
-  iframe {
-    border: none;
-    width: 100%;
-    height: 100%;
-    max-height: 100vmin;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-  }
-  .mask {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
   .float-menu {
     position: absolute;
     bottom: 0px;
@@ -30,11 +10,6 @@
       user-select: none;
     }
   }
-
-  & ~ * {
-    margin-top: 20px;
-  }
-
   &.fullscreen {
     position: fixed;
     left: 0;
@@ -45,6 +20,8 @@
     z-index: 3;
     padding-top: 0;
     margin: 0 !important;
+    width: unset;
+    height: unset;
     .float-menu {
       border-radius: 10px;
       background: #fff8;
@@ -59,12 +36,6 @@
         color: #2d2d2d;
         mix-blend-mode: normal;
       }
-    }
-    iframe {
-      max-height: unset;
-      border: none;
-      box-shadow: none;
-      border-radius: 0;
     }
   }
 }

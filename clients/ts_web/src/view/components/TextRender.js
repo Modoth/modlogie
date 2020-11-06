@@ -451,6 +451,7 @@ export class TextRender {
     page(
     /**@type string */ content,
     /**@type number */ offset = 0,
+        pagingBack = false,
         onpage = null,
         cancleToken = {}
     ) {
@@ -473,11 +474,6 @@ export class TextRender {
             const offset_bk = offset
             let page = 0
             while (offset < content.length) {
-                await sleep(0)
-                if (cancleToken.cancled) {
-                    resolve()
-                    return
-                }
                 const pageRes = this.measurePage_(
                     this.measureCanvas_,
                     content,
@@ -491,19 +487,22 @@ export class TextRender {
                     false,
                     true
                 )
-                onpage && onpage(page, offset)
+                onpage && onpage(page, offset, undefined, pageRes.offset >= content.length)
                 offset = pageRes.offset
                 page++
-            }
-
-            page = 0
-            offset = offset_bk
-            while (offset > 0) {
                 await sleep(0)
                 if (cancleToken.cancled) {
                     resolve()
                     return
                 }
+            }
+            if (!pagingBack) {
+                resolve()
+                return;
+            }
+            page = 0
+            offset = offset_bk
+            while (offset > 0) {
                 const maxOffset = this.measurePage_(
                     this.measureCanvas_,
                     content,
@@ -551,6 +550,11 @@ export class TextRender {
                 page--
                 onpage &&
                     onpage(page, Math.max(offset, 0), offset > 0 ? nextOffset : undefined)
+                await sleep(0)
+                if (cancleToken.cancled) {
+                    resolve()
+                    return
+                }
             }
             resolve()
         })
