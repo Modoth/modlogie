@@ -6,7 +6,7 @@ import yaml from 'yaml'
 import { ResFile } from '../ResFile'
 import { ResPlain } from './ResFileViewers/ResPlain'
 import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
-import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownOutlined, UpOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons'
+import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownCircleOutlined, UpCircleOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons'
 import ReactMarkdown from 'react-markdown'
 import { ResImage } from './ResFileViewers/ResImage'
 import { Button } from 'antd'
@@ -98,16 +98,16 @@ function DownloadManagerView(props: { name: string, url: string, onProgress?(pro
             <span className="progress" style={{ width: `${downloadProgress}%` }}></span>
             {
                 Preview ?
-                    <span className="icon" onClick={() => setPreview(!preview)} >{preview ? <UpOutlined /> : <DownOutlined />}</span> :
+                    <span className="icon" onClick={() => setPreview(!preview)} >{preview ? <UpCircleOutlined /> : <DownCircleOutlined />}</span> :
                     <span className="icon" ><FileOutlined /></span>
             }
             <span className="name" >{props.name}</span>
             <span className="failed">{failed ? <InfoCircleOutlined /> : ''}</span>
             {
-                blobUrl ? <a className="download" download={props.name} target="_blank" href={blobUrl}><SaveOutlined /></a>
+                blobUrl ? <a download={props.name} target="_blank" href={blobUrl}> <Button type="text" className="download" icon={<SaveOutlined />}></Button></a>
                     :
-                    (downloadReq ? <Button type="text" icon={<CloseOutlined />} onClick={cancleDownload}></Button> :
-                        <Button type="text" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
+                    (downloadReq ? <Button className="download" type="text" icon={<CloseOutlined />} onClick={cancleDownload}></Button> :
+                        <Button type="text" className="download" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
             }
         </div>
         { Preview && preview ? <FullscreenWraper className="preview" View={Preview} url={blobUrl || props.url} buff={buff}></FullscreenWraper> : undefined}
