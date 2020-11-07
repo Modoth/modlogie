@@ -1,0 +1,7 @@
+{
+  "type": "distinct",
+  "source": "123456789",
+  "options": {
+    "rCloze": 0.6
+  }
+}
