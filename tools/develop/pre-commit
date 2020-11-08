@@ -5,6 +5,5 @@ set -o errexit
 proj_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 proj_dir=`dirname "$proj_dir"`
 proj_dir=`dirname "$proj_dir"`
-echo "$proj_dir"
-
-exit 1
+cd "$proj_dir"
+(cd clients/ts_web && npm run lint )

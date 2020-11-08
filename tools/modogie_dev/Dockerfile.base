@@ -12,6 +12,7 @@ RUN true \
     curl \
     docker-compose \
     docker.io \
+    graphviz \
     mysql-client \
     openssh-server \
     redis-tools \

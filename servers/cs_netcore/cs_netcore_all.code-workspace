@@ -25,6 +25,7 @@
 	"settings": {
 		"files.exclude": {
 			"**/node_modules/**": true
-		}
+		},
+		"eslint.format.enable": true
 	}
 }
