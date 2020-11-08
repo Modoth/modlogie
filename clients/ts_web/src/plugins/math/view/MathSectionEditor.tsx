@@ -1,7 +1,7 @@
 import React, { useState, useRef, MouseEventHandler } from 'react'
 import { ArticleContentEditorCallbacks } from '../../IPluginInfo'
 import './MathSectionEditor.less'
-import { ArticleFile, ArticleSection } from '../../../domain/Article'
+import { ArticleFile, ArticleSection } from '../../../domain/ServiceInterfaces/Article'
 import MathSectionViewer from './MathSectionViewer'
 import { Input, Button } from 'antd'
 import { FunctionOutlined } from '@ant-design/icons'
@@ -46,8 +46,8 @@ interface Formula {
 }
 
 const getFormulaAtPos = (content: string, pos: number): Formula | undefined => {
-    var slices = getSlices(content)
-    var slice = slices.find(s => s.end >= pos)
+    let slices = getSlices(content)
+    let slice = slices.find(s => s.end >= pos)
     if (!slice || slice.type === SliceType.Normal) {
         return { start: pos, end: pos, content: '', newFormula: true }
     }
@@ -62,7 +62,7 @@ const getFormulaAtPos = (content: string, pos: number): Formula | undefined => {
 const normalizeString = (slice: string) => {
     let newSlice = "";
     const ignoreChars = new Set(['⬚'])
-    for (var i = 0; i < slice.length; i++) {
+    for (let i = 0; i < slice.length; i++) {
         if (slice.charCodeAt(i) >= 65281 && slice.charCodeAt(i) <= 65374) {
             newSlice += String.fromCharCode(slice.charCodeAt(i) - 65248)
         } else if (slice.charCodeAt(i) == 12288) {

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import './ArticleListSummary.less'
-import { useServicesLocator } from '../../app/Contexts'
-import IArticleListService from '../../domain/IArticleListService'
+import { useServicesLocator } from '../Contexts'
+import IArticleListService from '../../app/Interfaces/IArticleListService'
 import { Badge, Button } from 'antd';
 import { PrinterOutlined, ClearOutlined } from '@ant-design/icons'
-import Article from '../../domain/Article';
+import Article from '../../domain/ServiceInterfaces/Article';
 import { ArticleContentType } from '../../plugins/IPluginInfo';
-import IViewService from '../services/IViewService';
+import IViewService from '../../app/Interfaces/IViewService';
 
 export default function ArticleListSummary() {
     const locator = useServicesLocator()

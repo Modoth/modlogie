@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import './Account.less'
-import { useUser, useServicesLocator } from '../../app/Contexts'
+import { useUser, useServicesLocator } from '../Contexts'
 import { Button, Avatar } from 'antd'
 import { Redirect, Link } from 'react-router-dom'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import ILoginService from '../../app/ILoginService'
-import IViewService from '../services/IViewService'
-import defaultLogo from '../../assets/logo.png'
-import IConfigsService from '../../domain/IConfigsSercice'
-import ConfigKeys from '../../app/ConfigKeys'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import ILoginAppservice from '../../app/Interfaces/ILoginAppservice'
+import IViewService from '../../app/Interfaces/IViewService'
+import defaultLogo from '../assets/logo.png'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import ReactMarkdown from 'react-markdown'
 
 export default function Account() {
   const user = useUser()
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
-  const loginService = locator.locate(ILoginService)
+  const loginService = locator.locate(ILoginAppservice)
   const viewService = locator.locate(IViewService)
   const [siteName, setSiteName] = useState('')
   const [siteDesc, setSiteDesc] = useState('')
@@ -42,7 +42,7 @@ export default function Account() {
           return
         }
         try {
-          await locator.locate(ILoginService).updateName(newName, password);
+          await locator.locate(ILoginAppservice).updateName(newName, password);
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -78,7 +78,7 @@ export default function Account() {
           return
         }
         try {
-          await locator.locate(ILoginService).updatePassword(password, newPassword1);
+          await locator.locate(ILoginAppservice).updatePassword(password, newPassword1);
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -86,12 +86,12 @@ export default function Account() {
       })
   }
   const onComponentDidMount = async () => {
-    var configService = locator.locate(IConfigsService);
-    var name = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
-    var desc = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_DESCRIPTION)
-    var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
-    var avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
-    var allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
+    let configService = locator.locate(IConfigsService);
+    let name = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
+    let desc = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_DESCRIPTION)
+    let logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
+    let avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
+    let allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
     setSiteName(name)
     setSiteDesc(desc)
     setLogo(logo)

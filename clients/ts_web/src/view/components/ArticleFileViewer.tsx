@@ -1,11 +1,11 @@
 import React, { ReactNode } from 'react'
 import './ArticleFileViewer.less'
-import { ArticleFile } from '../../domain/Article'
+import { ArticleFile } from '../../domain/ServiceInterfaces/Article'
 import { CloseOutlined } from '@ant-design/icons'
 import { Button, Tooltip } from 'antd'
 import classNames from 'classnames'
-import { useServicesLocator } from '../../app/Contexts'
-import ILangsService from '../../domain/ILangsService'
+import { useServicesLocator } from '../Contexts'
+import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 const Configs = {} as any;
 
 export default function ArticleFileViewer(props: {

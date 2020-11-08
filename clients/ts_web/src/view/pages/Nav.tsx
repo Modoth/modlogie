@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './Nav.less'
 import { Link } from 'react-router-dom'
-import { useUser, useServicesLocator } from '../../app/Contexts'
+import { useUser, useServicesLocator } from '../Contexts'
 import { Menu, Avatar, Drawer } from 'antd'
 import {
   UserOutlined,
@@ -11,17 +11,17 @@ import {
   SettingOutlined,
   TagsOutlined
 } from '@ant-design/icons'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import { generateRandomStyle } from './common'
 import classNames from 'classnames'
-import ITagsService, { TagNames } from '../../domain/ITagsService'
-import IConfigsService from '../../domain/IConfigsSercice'
-import ConfigKeys from '../../app/ConfigKeys'
+import ITagsService, { TagNames } from '../../domain/ServiceInterfaces/ITagsService'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import IPluginInfo, { PluginsConfig } from '../../plugins/IPluginInfo'
 
-import defaultLogo from '../../assets/logo.png'
-import IViewService from '../services/IViewService'
-import ISubjectsService from '../../domain/ISubjectsService'
+import defaultLogo from '../assets/logo.png'
+import IViewService from '../../app/Interfaces/IViewService'
+import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
 
 const { SubMenu } = Menu
 function Nav() {
@@ -37,12 +37,12 @@ function Nav() {
   const [avatar, setAvatar] = useState('')
   const onComponentDidMount = async () => {
     const configService = locator.locate(IConfigsService)
-    var nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
-    var title = nameConfig?.value || nameConfig?.defaultValue || langs.get(LangKeys.Home)
-    var logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE);
-    var logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
-    var avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
-    var allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
+    let nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
+    let title = nameConfig?.value || nameConfig?.defaultValue || langs.get(LangKeys.Home)
+    let logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE);
+    let logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
+    let avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
+    let allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
     document.title = title
     setTitile(title)
     setLogoTitleImg(logoTitle!)
@@ -63,13 +63,13 @@ function Nav() {
     appTouchIcon.rel = 'apple-touch-icon'
     appTouchIcon.href = logo;
     document.head.appendChild(appTouchIcon)
-    for (var type of locator.locate(PluginsConfig).AllTypes) {
-      var styleId = 'additional-style-' + type.name;
+    for (let type of locator.locate(PluginsConfig).AllTypes) {
+      let styleId = 'additional-style-' + type.name;
       document.getElementById(styleId)?.remove()
 
-      var additionalStylePath = await configService.getValueOrDefault(ConfigKeys.ADDITIONAL_STYLE) + '/' + type.name
-      var additionalStyleUrl = (await locator.locate(ISubjectsService).getByPath(additionalStylePath))?.resourceUrl;
-      var additionalStyleContent = '';
+      let additionalStylePath = await configService.getValueOrDefault(ConfigKeys.ADDITIONAL_STYLE) + '/' + type.name
+      let additionalStyleUrl = (await locator.locate(ISubjectsService).getByPath(additionalStylePath))?.resourceUrl;
+      let additionalStyleContent = '';
       if (additionalStyleUrl) {
         try {
           additionalStyleContent = await (await fetch(additionalStyleUrl)).text()

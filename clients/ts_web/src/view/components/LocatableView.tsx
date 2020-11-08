@@ -14,10 +14,10 @@ export default function LocatableView<TProp>(props: TProp & { callbacks?: Locata
     if (props.callbacks) {
         props.callbacks.focus = () => {
             if (ref.current) {
-                var offset = 0;
+                let offset = 0;
                 const bodyPos = document.body.getBoundingClientRect().top;
-                var elementPos = ref.current.nextElementSibling!.getBoundingClientRect().top;
-                var offsetPosition = elementPos - bodyPos - offset;
+                let elementPos = ref.current.nextElementSibling!.getBoundingClientRect().top;
+                let offsetPosition = elementPos - bodyPos - offset;
                 window.scrollTo({
                     top: offsetPosition,
                     behavior: "smooth"

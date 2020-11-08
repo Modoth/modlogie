@@ -1,186 +1,290 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
 import 'antd/dist/antd.less'
-
-import App from './view/App'
-import LangsService from './domain/LangsService'
-import { ServicesLocatorProvider } from './app/Contexts'
-import LoginService from './app/LoginService'
-import zhCN from 'antd/es/locale/zh_CN'
+import { ArticleListSingletonService } from './app/Implements/ArticleListService'
+import { BashInterpreter } from './domain/Services/Interpreters/BashInterpreter'
+import { CInterpreter } from './domain/Services/Interpreters/CInterpreter'
 import { ConfigProvider } from 'antd'
-import ServicesLocator from './common/ServicesLocator'
-import IServicesLocator from './common/IServicesLocator'
-import ILoginService from './app/ILoginService'
-import ILangsService from './domain/ILangsService'
-import ISubjectsService from './domain/ISubjectsService'
-import SubjectsServiceSingleton from './domain/SubjectsServiceSingleton'
-import IPluginInfo, { PluginsConfig } from './plugins/IPluginInfo'
-import IArticleListService, { ArticleListSingletonService } from './domain/IArticleListService'
-import Langs from './view/Langs'
-import ITextImageService, { TextImageServiceSingleton } from './view/services/ITextImageService'
-import ITagsService from './domain/ITagsService'
-import IArticleViewServie, { ArticleViewServieSingleton } from './view/services/IArticleViewService'
-import IAutoAccountService from './domain/IAutoAccountService'
-import { LoginServiceClient } from './apis/LoginServiceClientPb'
-import { KeyValuesServiceClient } from './apis/KeyvaluesServiceClientPb'
-import { ConfigsServiceSingleton } from './domain/ConfigsServiceSingleton'
-import IConfigsService, { Config, ConfigType } from './domain/IConfigsSercice'
-import DefaultConfigs from './app/DefaultConfigs'
-import { TagsServiceClient } from './apis/TagsServiceClientPb'
-import TagsServiceSingleton from './domain/TagsServiceSingleton'
-import { FilesServiceClient } from './apis/FilesServiceClientPb'
-import IArticleService from './domain/IArticleService'
-import ArticleService from './domain/ArticleService'
-import ConfigKeys, { get_ARTICLE_SECTIONS, get_ARTICLE_TAGS, get_SUB_TYPE_TAG, get_DISPLAY_NAME } from './app/ConfigKeys'
-import logoImg from './assets/logo.png'
-import IMmConverter from './domain/IMmConverter'
-import MmConverter from './domain/MmConverter'
-import ISubjectsExporter from './domain/ISubjectsExporter'
-import SubjectsExporter from './domain/SubjectsExporter'
-import IUsersService from './domain/IUsersService'
-import UsersService from './domain/UsersService'
-import { UsersServiceClient } from './apis/UsersServiceClientPb'
-import IPasswordStorage from './domain/IPasswordStorage'
-import LocalPasswordStorage from './domain/LocalPasswordStorage'
-import IFavoritesStorage from './domain/IFavoritesStorage'
-import LocalFavoritesStorage from './domain/LocalFavoritesStorage'
-import IFavoritesServer from './domain/IFavoritesServer'
-import FavoritesServerSingleton from './domain/FavoritesServerSingleton'
-import ILikesService from './domain/ILikesService'
-import LikesService from './domain/LikesService'
-import INavigationService from './view/services/INavigationService'
-import NavigationService from './view/services/NavigationService'
-import IKeywordsService from './domain/IKeywordsService'
-import KeywordsService from './domain/KeywordsService'
-import { KeywordsServiceClient } from './apis/KeywordsServiceClientPb'
-import LangInterpretersService from './domain/LangInterpretersService'
-import ILangInterpretersService from './domain/ILangInterpretersService'
-import { BashInterpreter } from './domain/Interpreters/BashInterpreter'
-import { CInterpreter } from './domain/Interpreters/CInterpreter'
-import IDictService from './domain/IDictService'
-import DictService from './domain/DictService'
+import { ConfigsServiceSingleton } from './impl/RemoteServices/ConfigsServiceSingleton'
+import { FilesServiceClient } from './impl/remote-apis/FilesServiceClientPb'
+import { KeyValuesServiceClient } from './impl/remote-apis/KeyvaluesServiceClientPb'
+import { KeywordsServiceClient } from './impl/remote-apis/KeywordsServiceClientPb'
+import { LoginServiceClient } from './impl/remote-apis/LoginServiceClientPb'
+import { ServicesLocatorProvider } from './view/Contexts'
+import { TagsServiceClient } from './impl/remote-apis/TagsServiceClientPb'
+import { UsersServiceClient } from './impl/remote-apis/UsersServiceClientPb'
+import App from './view/App'
+import AppArticleServiceSingleton from './app/Implements/ArticleAppservice'
+import ArticleService from './impl/RemoteServices/ArticleService'
 import Blog from './plugins/blog'
 import Chart from './plugins/chart'
-import H5App from './plugins/h5app'
+import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
+import DefaultConfigs from './app/Interfaces/DefaultConfigs'
+import DictService from './domain/Services/DictService'
+import FavoritesServerSingleton from './domain/Services/FavoritesServerSingleton'
 import H5 from './plugins/h5'
+import H5App from './plugins/h5app'
+import IArticleAppservice from './app/Interfaces/IArticleAppservice'
+import IArticleListService from './app/Interfaces/IArticleListService'
+import IArticleService from './domain/ServiceInterfaces/IArticleService'
+import IAutoAccountService from './domain/ServiceInterfaces/IAutoAccountService'
+import IConfigsService, { Config, ConfigType } from './domain/ServiceInterfaces/IConfigsSercice'
+import IDictService from './domain/ServiceInterfaces/IDictService'
+import IFavoritesServer from './domain/ServiceInterfaces/IFavoritesServer'
+import IFavoritesStorage from './domain/ServiceInterfaces/IFavoritesStorage'
+import IKeywordsService from './domain/ServiceInterfaces/IKeywordsService'
+import ILangInterpretersService from './domain/ServiceInterfaces/ILangInterpretersService'
+import ILangsService from './domain/ServiceInterfaces/ILangsService'
+import ILikesService from './domain/ServiceInterfaces/ILikesService'
+import ILoginAppservice from './app/Interfaces/ILoginAppservice'
+import IMmConverter from './domain/ServiceInterfaces/IMmConverter'
+import INavigationService from './app/Interfaces/INavigationService'
+import IPasswordStorage from './domain/ServiceInterfaces/IPasswordStorage'
+import IPluginInfo, { PluginsConfig } from './plugins/IPluginInfo'
+import IRemoteServiceInvoker from './infrac/ServiceLocator/IRemoteServiceInvoker'
+import IServicesLocator from './infrac/ServiceLocator/IServicesLocator'
+import ISubjectsExporter from './domain/ServiceInterfaces/ISubjectsExporter'
+import ISubjectsService from './domain/ServiceInterfaces/ISubjectsService'
+import ITagsService from './domain/ServiceInterfaces/ITagsService'
+import ITextImageService from './infrac/Image/ITextImageService'
+import IUserLoginService from './domain/ServiceInterfaces/IUserLoginService'
+import IUsersService from './domain/ServiceInterfaces/IUsersService'
+import KeywordsService from './impl/RemoteServices/KeywordsService'
+import LangInterpretersService from './domain/Services/Interpreters/LangInterpretersService'
+import Langs from './view/Langs'
+import LangsService from './domain/Services/LangsService'
+import LikesService from './impl/RemoteServices/LikesService'
+import LocalFavoritesStorage from './impl/LocalStorages/LocalFavoritesStorage'
+import LocalPasswordStorage from './impl/LocalStorages/LocalPasswordStorage'
+import LoginService from './app/Implements/LoginService'
 import Math from './plugins/math'
+import MmConverter from './domain/Services/MmConverter'
 import ModLang from './plugins/modlang'
+import NavigationService from './app/Implements/NavigationService'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import RemoteServiceInvoker from './app/Implements/RemoteServiceInvoker'
 import ResFile from './plugins/resfile'
+import ServicesLocator from './infrac/ServiceLocator/ServicesLocator'
+import SubjectsExporter from './domain/Services/SubjectsExporter'
+import SubjectsServiceSingleton from './impl/RemoteServices/SubjectsServiceSingleton'
+import TagsServiceSingleton from './impl/RemoteServices/TagsServiceSingleton'
+import TextImageServiceSingleton from './infrac/Image/TextImageServiceSingleton'
+import UserLoginService from './impl/RemoteServices/UserLoginService'
+import UsersService from './impl/RemoteServices/UsersService'
+import zhCN from 'antd/es/locale/zh_CN'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
-  const pluginInfos = new Map<string, { new(typeNames: string[]): IPluginInfo }>([
-    Blog, Chart, H5, H5App, Math, ModLang, ResFile
-  ].map(i => [i.typeName.toLocaleLowerCase(), i]))
-  var configsService = serviceLocator.locate(IConfigsService)
-  var tagsService = serviceLocator.locate(ITagsService)
-  var enabledPlugins = await (await configsService.getValueOrDefault(ConfigKeys.PLUGINS)).split(',').map(c => c.trim()).filter(c => c);
-  var plugins = [];
-  for (var p of enabledPlugins) {
-    let [pluginName, ...names] = p.split(' ').map(c => c.trim()).filter(c => c);
-    let plugin: IPluginInfo | undefined;
-    let hiddenPlugin = false;
+  const pluginInfos = new Map<
+    string,
+    { new(typeNames: string[]): IPluginInfo }
+      >(
+      [Blog, Chart, H5, H5App, Math, ModLang, ResFile].map((i) => [
+        i.typeName.toLocaleLowerCase(),
+        i
+      ])
+      )
+  const configsService = serviceLocator.locate(IConfigsService)
+  const tagsService = serviceLocator.locate(ITagsService)
+  const enabledPlugins = await (
+    await configsService.getValueOrDefault(ConfigKeys.PLUGINS)
+  )
+    .split(',')
+    .map((c) => c.trim())
+    .filter((c) => c)
+  const plugins = []
+  for (const p of enabledPlugins) {
+    let [pluginName, ...names] = p
+      .split(' ')
+      .map((c) => c.trim())
+      .filter((c) => c)
+    let plugin: IPluginInfo | undefined
+    let hiddenPlugin = false
     pluginName = pluginName.toLocaleLowerCase()
     if (pluginName.startsWith('_')) {
-      hiddenPlugin = true;
-      pluginName = pluginName.slice(1);
+      hiddenPlugin = true
+      pluginName = pluginName.slice(1)
     }
     let orderByPublishedDesc = false
     if (pluginName.startsWith('^')) {
-      orderByPublishedDesc = true;
-      pluginName = pluginName.slice(1);
+      orderByPublishedDesc = true
+      pluginName = pluginName.slice(1)
     }
     if (pluginInfos.has(pluginName)) {
       plugin = new (pluginInfos.get(pluginName)!)(names)
     }
     if (plugin) {
       if (hiddenPlugin) {
-        plugin.types.forEach(t => {
+        plugin.types.forEach((t) => {
           t.admOnly = true
         })
       }
       if (orderByPublishedDesc) {
-        plugin.types.forEach(t => {
+        plugin.types.forEach((t) => {
           t.orderBy = 'Published'
           t.orderByDesc = true
         })
       }
-      plugins.push(plugin);
+      plugins.push(plugin)
     }
   }
-  await configsService.addDefaultConfigs(...plugins.flatMap(p => p.defaultConfigs))
-  await Promise.all(plugins.map(p => p.init(configsService)))
-  await configsService.addDefaultConfigs(...plugins.flatMap(p => p.types).flatMap(t =>
-    [
-      new Config(get_ARTICLE_TAGS(t.name), ConfigType.STRING),
-      new Config(get_SUB_TYPE_TAG(t.name), ConfigType.STRING),
-      new Config(get_DISPLAY_NAME(t.name), ConfigType.STRING, t.name)
-    ].concat(!t.fixedSections ? [new Config(get_ARTICLE_SECTIONS(t.name), ConfigType.STRING, t.defaultSections)] : [])))
-  var types = plugins.flatMap(p => p.types)
-  const subjectServices = serviceLocator.locate(ISubjectsService);
-  for (var type of types) {
-    type.subTypeTag = await configsService.getValueOrDefault(get_SUB_TYPE_TAG(type.name))
+  await configsService.addDefaultConfigs(
+    ...plugins.flatMap((p) => p.defaultConfigs)
+  )
+  await Promise.all(plugins.map((p) => p.init(configsService)))
+  await configsService.addDefaultConfigs(
+    ...plugins
+      .flatMap((p) => p.types)
+      .flatMap((t) =>
+        [
+          new Config(getArticleTags(t.name), ConfigType.STRING),
+          new Config(getSubtypeTag(t.name), ConfigType.STRING),
+          new Config(getDisplayName(t.name), ConfigType.STRING, t.name)
+        ].concat(
+          !t.fixedSections
+            ? [
+              new Config(
+                getArticleSections(t.name),
+                ConfigType.STRING,
+                t.defaultSections
+              )
+            ]
+            : []
+        )
+      )
+  )
+  const types = plugins.flatMap((p) => p.types)
+  const subjectServices = serviceLocator.locate(ISubjectsService)
+  for (const type of types) {
+    type.subTypeTag = await configsService.getValueOrDefault(
+      getSubtypeTag(type.name)
+    )
     if (type.subTypeTag) {
       type.subTypes = (await tagsService.get(type.subTypeTag))?.values
     }
-    var displayName = await configsService.getValueOrDefault(get_DISPLAY_NAME(type.name))
+    const displayName = await configsService.getValueOrDefault(
+      getDisplayName(type.name)
+    )
     if (!displayName) {
-      continue;
+      continue
     }
-    type.displayName = displayName;
-    var rootSubjectPath = `/${type.name}`
+    type.displayName = displayName
+    const rootSubjectPath = `/${type.name}`
 
-    var rootSubject = await subjectServices.getByPath(rootSubjectPath)
+    const rootSubject = await subjectServices.getByPath(rootSubjectPath)
     if (rootSubject) {
-      type.rootSubjectId = rootSubject.id;
-      type.initArticleCount = rootSubject.totalArticleCount;
-      type.iconUrl = rootSubject.resourceUrl;
+      type.rootSubjectId = rootSubject.id
+      type.initArticleCount = rootSubject.totalArticleCount
+      type.iconUrl = rootSubject.resourceUrl
     }
   }
 
-  await configsService.addDefaultConfigs(...plugins.flatMap(p => p.types).filter(t => !t.fixedSections).flatMap(t =>
-    t.subTypes && t.subTypes.length ? t.subTypes.map(subType => new Config(get_ARTICLE_SECTIONS(t.name, subType), ConfigType.STRING)) : []))
+  await configsService.addDefaultConfigs(
+    ...plugins
+      .flatMap((p) => p.types)
+      .filter((t) => !t.fixedSections)
+      .flatMap((t) =>
+        t.subTypes && t.subTypes.length
+          ? t.subTypes.map(
+            (subType) =>
+              new Config(
+                getArticleSections(t.name, subType),
+                ConfigType.STRING
+              )
+          )
+          : []
+      )
+  )
 
   serviceLocator.registerInstance(PluginsConfig, new PluginsConfig(plugins))
 }
 
 const buildServicesLocator = () => {
   const serviceLocator = new ServicesLocator()
-  serviceLocator.registerInstance(IConfigsService, new ConfigsServiceSingleton(DefaultConfigs))
-  serviceLocator.registerInstance(ILoginService, new LoginService())
+  serviceLocator.registerInstance(
+    IConfigsService,
+    new ConfigsServiceSingleton(DefaultConfigs)
+  )
+  serviceLocator.registerInstance(ILoginAppservice, new LoginService())
   serviceLocator.registerInstance(ILangsService, new LangsService())
-  serviceLocator.registerInstance(IArticleListService, new ArticleListSingletonService())
-  serviceLocator.registerInstance(ITextImageService, new TextImageServiceSingleton())
+  serviceLocator.registerInstance(
+    IArticleListService,
+    new ArticleListSingletonService()
+  )
+  serviceLocator.registerInstance(
+    ITextImageService,
+    new TextImageServiceSingleton()
+  )
   serviceLocator.registerInstance(ITagsService, new TagsServiceSingleton())
-  serviceLocator.registerInstance(IArticleViewServie, new ArticleViewServieSingleton())
-  serviceLocator.registerInstance(ISubjectsService, new SubjectsServiceSingleton())
+  serviceLocator.registerInstance(
+    IArticleAppservice,
+    new AppArticleServiceSingleton()
+  )
+  serviceLocator.registerInstance(
+    ISubjectsService,
+    new SubjectsServiceSingleton()
+  )
   serviceLocator.registerInstance(IArticleService, new ArticleService())
   serviceLocator.registerInstance(IMmConverter, new MmConverter())
   serviceLocator.registerInstance(ISubjectsExporter, new SubjectsExporter())
   serviceLocator.registerInstance(IUsersService, new UsersService())
+  serviceLocator.registerInstance(IUserLoginService, new UserLoginService())
+  serviceLocator.registerInstance(
+    IRemoteServiceInvoker,
+    new RemoteServiceInvoker()
+  )
   if (window.localStorage) {
-    serviceLocator.registerInstance(IPasswordStorage, new LocalPasswordStorage())
-    serviceLocator.registerInstance(IFavoritesStorage, new LocalFavoritesStorage())
+    serviceLocator.registerInstance(
+      IPasswordStorage,
+      new LocalPasswordStorage()
+    )
+    serviceLocator.registerInstance(
+      IFavoritesStorage,
+      new LocalFavoritesStorage()
+    )
   }
-  serviceLocator.registerInstance(IFavoritesServer, new FavoritesServerSingleton())
-  serviceLocator.registerInstance(IKeywordsService, new KeywordsService());
-  serviceLocator.registerInstance(IDictService, new DictService());
-  serviceLocator.register(ILikesService, LikesService);
-  serviceLocator.register(INavigationService, NavigationService);
+  serviceLocator.registerInstance(
+    IFavoritesServer,
+    new FavoritesServerSingleton()
+  )
+  serviceLocator.registerInstance(IKeywordsService, new KeywordsService())
+  serviceLocator.registerInstance(IDictService, new DictService())
+  serviceLocator.register(ILikesService, LikesService)
+  serviceLocator.register(INavigationService, NavigationService)
 
-  var interpretersService = new LangInterpretersService()
-  serviceLocator.registerInstance(ILangInterpretersService, interpretersService)
+  const interpretersService = new LangInterpretersService()
+  serviceLocator.registerInstance(
+    ILangInterpretersService,
+    interpretersService
+  )
   interpretersService.set(new BashInterpreter())
   interpretersService.set(new CInterpreter())
 
-  var clientHost = window.origin + '/api';
-  serviceLocator.registerFactory(LoginServiceClient, () => new LoginServiceClient(clientHost, null, null));
-  serviceLocator.registerFactory(KeyValuesServiceClient, () => new KeyValuesServiceClient(clientHost, null, null));
-  serviceLocator.registerFactory(TagsServiceClient, () => new TagsServiceClient(clientHost, null, null));
-  serviceLocator.registerFactory(FilesServiceClient, () => new FilesServiceClient(clientHost, null, null));
-  serviceLocator.registerFactory(UsersServiceClient, () => new UsersServiceClient(clientHost, null, null));
-  serviceLocator.registerFactory(KeywordsServiceClient, () => new KeywordsServiceClient(clientHost, null, null));
+  const clientHost = window.origin + '/api'
+  serviceLocator.registerFactory(
+    LoginServiceClient,
+    () => new LoginServiceClient(clientHost, null, null)
+  )
+  serviceLocator.registerFactory(
+    KeyValuesServiceClient,
+    () => new KeyValuesServiceClient(clientHost, null, null)
+  )
+  serviceLocator.registerFactory(
+    TagsServiceClient,
+    () => new TagsServiceClient(clientHost, null, null)
+  )
+  serviceLocator.registerFactory(
+    FilesServiceClient,
+    () => new FilesServiceClient(clientHost, null, null)
+  )
+  serviceLocator.registerFactory(
+    UsersServiceClient,
+    () => new UsersServiceClient(clientHost, null, null)
+  )
+  serviceLocator.registerFactory(
+    KeywordsServiceClient,
+    () => new KeywordsServiceClient(clientHost, null, null)
+  )
 
-  let w = window as any;
+  const w = window as any
   if (w.autoAccountService) {
     serviceLocator.registerInstance(IAutoAccountService, w.autoAccountService)
   }
@@ -189,14 +293,20 @@ const buildServicesLocator = () => {
 
 const bootstrap = async () => {
   const serviceLocator = await buildServicesLocator()
-  await loadPlugins(serviceLocator as ServicesLocator);
-  const loginService = serviceLocator.locate(ILoginService)
+  await loadPlugins(serviceLocator as ServicesLocator)
+  const loginService = serviceLocator.locate(ILoginAppservice)
   const langsService = serviceLocator.locate(ILangsService)
   const plugins = serviceLocator.locate(PluginsConfig)
   const autoAccountService = serviceLocator.locate(IAutoAccountService)
   const account = await autoAccountService?.get()
-  await Promise.all([langsService.load(Langs, ...plugins.Plugins.map(p => p.langs)), account && account.userName && account.password ?
-    loginService.login(account.userName!, account.password!).catch((e) => console.log(e)) : loginService.checkLogin()])
+  await Promise.all([
+    langsService.load(Langs, ...plugins.Plugins.map((p) => p.langs)),
+    account && account.userName && account.password
+      ? loginService
+        .login(account.userName!, account.password!)
+        .catch((e) => console.log(e))
+      : loginService.checkLogin()
+  ])
   ReactDOM.render(
     <React.StrictMode>
       <ServicesLocatorProvider value={serviceLocator}>

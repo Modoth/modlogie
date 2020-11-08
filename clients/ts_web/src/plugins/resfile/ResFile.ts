@@ -1,3 +1,3 @@
 export class ResFile {
-    constructor(public name: string, public comment?: string) { }
+  constructor (public name: string, public comment?: string) { }
 }

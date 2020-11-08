@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './ManageSubjects.less'
-import { useUser, useServicesLocator } from '../../app/Contexts'
+import { useUser, useServicesLocator } from '../Contexts'
 import { Redirect } from 'react-router-dom'
 import { Button, Table, Avatar } from 'antd'
 import {
@@ -15,22 +15,22 @@ import {
   UploadOutlined,
   DownloadOutlined
 } from '@ant-design/icons'
-import Subject from '../../domain/Subject'
-import ISubjectsService from '../../domain/ISubjectsService'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import IViewService from '../services/IViewService'
+import Subject from '../../domain/ServiceInterfaces/Subject'
+import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IViewService from '../../app/Interfaces/IViewService'
 import SubjectViewModel from './SubjectViewModel'
-import IMmConverter from '../../domain/IMmConverter'
-import ISubjectsExporter from '../../domain/ISubjectsExporter'
+import IMmConverter from '../../domain/ServiceInterfaces/IMmConverter'
+import ISubjectsExporter from '../../domain/ServiceInterfaces/ISubjectsExporter'
 
-var subjectsModelCache: SubjectViewModel[] = [];
-var subjectsCacheKey: Subject[] = [];
-var excludePathCacheKey: string | undefined = '';
+let subjectsModelCache: SubjectViewModel[] = [];
+let subjectsCacheKey: Subject[] = [];
+let excludePathCacheKey: string | undefined = '';
 const convertToTreeData = (subjects: Subject[], excludePath: string) => {
   if (subjects === subjectsCacheKey && excludePathCacheKey === excludePath) {
     return subjectsModelCache
   }
-  var subjectsModelDictCache = new Map<string, SubjectViewModel>()
+  let subjectsModelDictCache = new Map<string, SubjectViewModel>()
   subjectsModelCache = subjects.filter(s => s.path !== excludePath).map(
     (s) => new SubjectViewModel(s, subjectsModelDictCache, excludePath)
   )
@@ -230,7 +230,7 @@ export function ManageSubjects() {
         }
       ],
       async (newOrderStr: string) => {
-        var newOrder = newOrderStr ? parseInt(newOrderStr) : Infinity;
+        let newOrder = newOrderStr ? parseInt(newOrderStr) : Infinity;
         if (isNaN(newOrder)) {
           newOrder = Infinity;
         }
@@ -273,7 +273,7 @@ export function ManageSubjects() {
         }
         viewService.setLoading(true)
         const service: ISubjectsService = locator.locate(ISubjectsService)
-        var resourceUrl
+        let resourceUrl
         try {
           if (typeof data === 'string') {
             resourceUrl = await service.setResource(subject.id, 'text/plain', new TextEncoder().encode(data))

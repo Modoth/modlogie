@@ -3,13 +3,12 @@ import './MarkdownViewer.less'
 import classNames from 'classnames'
 import SectionViewerProps from '../../base/view/SectionViewerProps'
 import ReactMarkdown, { uriTransformer } from 'react-markdown'
-import { useServicesLocator, useUser } from '../../../app/Contexts'
-import INavigationService from '../../../view/services/INavigationService'
-import IViewService from '../../../view/services/IViewService'
+import { useServicesLocator, useUser } from '../../../view/Contexts'
+import IViewService from '../../../app/Interfaces/IViewService'
 import language from 'react-syntax-highlighter/dist/esm/languages/hljs/1c'
 import { ArticlePreview } from '../../../view/pages/ArticlePreview'
 import { previewArticleByPath } from '../../../view/pages/ServiceView'
-import IServicesLocator from '../../../common/IServicesLocator'
+import IServicesLocator from "../../../infrac/ServiceLocator/IServicesLocator"
 import { EditOutlined } from '@ant-design/icons'
 import Highlight from '../../base/common/Hightlight'
 
@@ -18,7 +17,7 @@ const getRenders = (locator: IServicesLocator) => {
     return ({
         code: (props: { language: string, value: string }) => {
             if (props.language === 'article') {
-                var path = props.value && props.value.trim()
+                let path = props.value && props.value.trim()
                 if (!path) {
                     return undefined
                 }

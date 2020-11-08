@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import './ArticleSingle.less'
-import { useServicesLocator } from '../../app/Contexts'
+import { useServicesLocator } from '../Contexts'
 import { Button, Menu, Dropdown } from 'antd';
 import { MenuOutlined, VerticalAlignTopOutlined, MinusOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
-import Article from '../../domain/Article';
+import Article from '../../domain/ServiceInterfaces/Article';
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
-import IViewService from '../services/IViewService';
-import ILangsService, { LangKeys } from '../../domain/ILangsService';
+import IViewService from '../../app/Interfaces/IViewService';
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService';
 import FreeDrawMask from '../components/FreeDrawMask';
 import CaptureDict from './CaptureDict';
 import LocatableView, { Div, LocatableViewCallbacks } from '../components/LocatableView';
@@ -15,7 +15,7 @@ const themeCount = 3
 const getThemeClass = (idx: number) => idx > 0 ? `reading-theme reading-theme-${idx}` : ''
 const getThemeKey = () => 'READING_THEME'
 const loadTheme = () => {
-    var theme = localStorage.getItem(getThemeKey())
+    let theme = localStorage.getItem(getThemeKey())
     if (!theme) {
         return 0
     }
@@ -30,7 +30,7 @@ const saveTheme = (theme: number) => {
 }
 const getPaingKey = () => 'READING_PAIGING'
 const loadPaging = () => {
-    var paging = localStorage.getItem(getPaingKey())
+    let paging = localStorage.getItem(getPaingKey())
     return paging === 'true'
 }
 const savePaging = (paging: boolean) => {
@@ -42,7 +42,7 @@ const savePaging = (paging: boolean) => {
 }
 const getCaptureDictKey = () => 'CAPTUR_DICT'
 const loadCaptureDict = () => {
-    var captureDict = localStorage.getItem(getCaptureDictKey())
+    let captureDict = localStorage.getItem(getCaptureDictKey())
     return captureDict === 'true'
 }
 const saveCaptureDict = (captureDict: boolean) => {
@@ -83,13 +83,13 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
         if (!ref.current || !ref.current.offsetParent) {
             return
         }
-        var ele = ref.current!;
-        var par = ref.current.offsetParent!;
-        var width = ele.clientWidth;
+        let ele = ref.current!;
+        let par = ref.current.offsetParent!;
+        let width = ele.clientWidth;
         if (!width) {
             return
         }
-        var currentPage = Math.floor(par.scrollLeft / width)
+        let currentPage = Math.floor(par.scrollLeft / width)
         par.scroll({ left: (currentPage + i) * width, behavior: "smooth" })
     }
     const scrollToTop = () => { locateRef?.focus?.() }
@@ -131,7 +131,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                                         {smallScreen ? [<Menu.Item>
                                             <Button className="single-article-content-menu-btn" type="link" size="large" icon={<BgColorsOutlined />}
                                                 onClick={() => {
-                                                    var nextTheme = (currentTheme + 1) % themeCount
+                                                    let nextTheme = (currentTheme + 1) % themeCount
                                                     setCurrentTheme(nextTheme)
                                                     saveTheme(nextTheme)
                                                 }
@@ -141,7 +141,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                                         <Menu.Item>
                                             <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
                                                 onClick={() => {
-                                                    var nextPaging = !paging
+                                                    let nextPaging = !paging
                                                     setPaging(nextPaging)
                                                     savePaging(nextPaging)
                                                 }

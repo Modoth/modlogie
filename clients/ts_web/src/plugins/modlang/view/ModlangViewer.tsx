@@ -3,14 +3,14 @@ import { ArticleContentViewerProps } from '../../IPluginInfo';
 import Highlight from '../../base/common/Hightlight';
 const ReactMarkdown = require('react-markdown')
 import './ModlangViewer.less'
-import { ArticleContent } from '../../../domain/Article';
+import { ArticleContent } from '../../../domain/ServiceInterfaces/Article';
 import classNames from 'classnames';
 import { Button, Tabs, Spin } from 'antd';
 import { } from 'antd';
 import { CaretRightOutlined, MinusOutlined, LoadingOutlined } from '@ant-design/icons'
 
-import { useServicesLocator } from '../../../app/Contexts';
-import ILangInterpretersService, { ILangInterpreter, InterpretRequest } from '../../../domain/ILangInterpretersService';
+import { useServicesLocator } from '../../../view/Contexts';
+import ILangInterpretersService, { ILangInterpreter, InterpretRequest } from '../../../domain/ServiceInterfaces/ILangInterpretersService';
 const { TabPane } = Tabs;
 
 export function ModlangInterpreter(props: { code: string, lang: string, version?: string }) {
@@ -91,8 +91,8 @@ export function ModlangInterpreter(props: { code: string, lang: string, version?
 }
 
 export default function ModlangViewer(props: ArticleContentViewerProps) {
-    var existedSections = new Map((props.content?.sections || []).map(s => [s.name!, s]))
-    var sections = props.type!.allSections.size > 0 ? Array.from(
+    let existedSections = new Map((props.content?.sections || []).map(s => [s.name!, s]))
+    let sections = props.type!.allSections.size > 0 ? Array.from(
         props.type!.allSections, name => existedSections.get(name)!).filter(s => s && s.content)
         : Array.from(existedSections.values())
     return props.print ? <div className={classNames(props.className, 'ModLang', "only-print")}>

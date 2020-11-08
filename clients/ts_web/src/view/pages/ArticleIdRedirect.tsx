@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, Redirect } from 'react-router-dom'
 import { ArticleType, PluginsConfig } from '../../plugins/IPluginInfo'
-import { useServicesLocator, useUser } from '../../app/Contexts'
-import IViewService from '../services/IViewService'
-import ISubjectsService from '../../domain/ISubjectsService'
-import { Query, Condition } from '../../apis/files_pb'
-import IArticleService from '../../domain/IArticleService'
+import { useServicesLocator, useUser } from '../Contexts'
+import IViewService from '../../app/Interfaces/IViewService'
+import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
 
 export function ArticleIdRedirect(props: {}) {
     const param = useParams<any>()
@@ -25,8 +24,8 @@ export function ArticleIdRedirect(props: {}) {
             if (!rootId) {
                 return ret()
             }
-            var config = locator.locate(PluginsConfig)
-            var type = (user.editingPermission ? config.AllTypes : config.NormalTypes).find(t => t.rootSubjectId === rootId)
+            let config = locator.locate(PluginsConfig)
+            let type = (user.editingPermission ? config.AllTypes : config.NormalTypes).find(t => t.rootSubjectId === rootId)
             if (!type) {
                 return ret()
             }

@@ -3,7 +3,7 @@ import IPluginInfo, { ArticleType } from '../IPluginInfo'
 import BaseViewer from './view/BaseViewer'
 import BaseEditor from './view/BaseEditor'
 import { BookOutlined } from '@ant-design/icons'
-import IConfigsService, { Config } from '../../domain/IConfigsSercice'
+import IConfigsService, { Config } from '../../domain/ServiceInterfaces/IConfigsSercice'
 import DefaultConfigs from './DefaultConfigs'
 import SectionEditorProps from './view/SectionEditorProps'
 import SectionViewerProps, { AdditionalSectionViewerProps } from './view/SectionViewerProps'
@@ -11,7 +11,7 @@ import SectionViewerProps, { AdditionalSectionViewerProps } from './view/Section
 export default class PluginInfoBase implements IPluginInfo {
   private articleTypes: ArticleType[] = [];
 
-  constructor(
+  constructor (
     public name: string,
     typeNames: string[],
     TSectionViewer?: { (props: SectionViewerProps): JSX.Element },
@@ -20,7 +20,7 @@ export default class PluginInfoBase implements IPluginInfo {
     additionOptions?: Partial<ArticleType>,
     public langs: { [key: string]: string } = {}) {
     this.articleTypes = typeNames.map(typeName => {
-      var noTitle = typeName.startsWith('_');
+      let noTitle = typeName.startsWith('_')
       if (noTitle) {
         typeName = typeName.slice(1)
       }
@@ -37,13 +37,14 @@ export default class PluginInfoBase implements IPluginInfo {
     })
   }
 
-  get types(): ArticleType[] {
-    return this.articleTypes;
-  }
-  get defaultConfigs(): Config[] {
-    return DefaultConfigs;
+  get types (): ArticleType[] {
+    return this.articleTypes
   }
 
-  async init(_: IConfigsService): Promise<any> {
+  get defaultConfigs (): Config[] {
+    return DefaultConfigs
+  }
+
+  async init (_: IConfigsService): Promise<any> {
   }
 }

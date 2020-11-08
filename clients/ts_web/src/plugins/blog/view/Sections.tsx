@@ -7,8 +7,8 @@ export const getSectionFileContent = (_: string) => {
 import TurndownService from 'turndown'
 const translateHtml2Markdown = (html: string) => {
     try {
-        var turndownService = new TurndownService()
-        var markdown = turndownService.turndown(html)
+        let turndownService = new TurndownService()
+        let markdown = turndownService.turndown(html)
         return markdown;
     } catch (e) {
         console.log(e)

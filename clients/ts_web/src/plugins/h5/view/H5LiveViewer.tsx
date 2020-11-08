@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { AdditionalSectionViewerProps } from '../../base/view/SectionViewerProps';
-import { ArticleSection } from '../../../domain/Article';
+import { ArticleSection } from '../../../domain/ServiceInterfaces/Article';
 import { SectionNames } from './Sections';
 import './H5LiveViewer.less'
 import YAML from 'yaml'
@@ -16,19 +16,19 @@ const getDataUrl = (content: string) => {
 }
 
 const combineContent = (sections: Map<string, ArticleSection>): [string | undefined, string | undefined, IFrameContext | undefined] => {
-    var html = sections.get(SectionNames.html)?.content || ''
-    var frameworks = sections.get(SectionNames.frameworks)?.content
-    var fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
-    var fws = fwNames.filter(s => s && FrameWorks.has(s)).map(s => FrameWorks.get(s))
-    var fw_htmls = fws && fws.map(f => f && f.html)
-    var fw_jss = fws && fws.map(f => f && f.js)
-    var jsData = '';
+    let html = sections.get(SectionNames.html)?.content || ''
+    let frameworks = sections.get(SectionNames.frameworks)?.content
+    let fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
+    let fws = fwNames.filter(s => s && FrameWorks.has(s)).map(s => FrameWorks.get(s))
+    let fw_htmls = fws && fws.map(f => f && f.html)
+    let fw_jss = fws && fws.map(f => f && f.js)
+    let jsData = '';
     if (!html && !(fw_htmls && fw_htmls.length)) {
         return [undefined, undefined, undefined]
     }
-    var style = sections.get(SectionNames.css)?.content
-    var script = sections.get(SectionNames.js)?.content
-    var data = sections.get(SectionNames.data)?.content
+    let style = sections.get(SectionNames.css)?.content
+    let script = sections.get(SectionNames.js)?.content
+    let data = sections.get(SectionNames.data)?.content
 
     if (data) {
         try {
@@ -39,9 +39,9 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
         }
     }
 
-    var content = html || '';
-    var jsContent = ''
-    var context: IFrameContext | undefined
+    let content = html || '';
+    let jsContent = ''
+    let context: IFrameContext | undefined
     if (~fwNames.indexOf('storage')) {
         [context, jsContent] = generateContext()
     }

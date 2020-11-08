@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import './ManageUsers.less'
-import { useUser, useServicesLocator } from '../../app/Contexts'
+import { useUser, useServicesLocator } from '../Contexts'
 import { Redirect } from 'react-router-dom'
 import { Pagination, Table, Button, Switch, DatePicker } from 'antd'
 import { PlusOutlined, DeleteFilled, UploadOutlined } from '@ant-design/icons'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import IViewService from '../services/IViewService'
-import IUsersService, { User } from '../../domain/IUsersService'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IViewService from '../../app/Interfaces/IViewService'
+import IUsersService, { User } from '../../domain/ServiceInterfaces/IUsersService'
 import moment from 'moment'
 
 export function ManageUsers() {
@@ -30,7 +30,7 @@ export function ManageUsers() {
     }
     try {
       viewService.setLoading(true);
-      var [total, users] = await locator.locate(IUsersService).all(filter, countPerPage * (page! - 1), countPerPage)
+      let [total, users] = await locator.locate(IUsersService).all(filter, countPerPage * (page! - 1), countPerPage)
       setUsers(users)
       setTotalCount(total)
       setCurrentPage(page)
@@ -57,7 +57,7 @@ export function ManageUsers() {
           return
         }
         try {
-          var user = await locator.locate(IUsersService).add(newName, newEmail, password1)
+          let user = await locator.locate(IUsersService).add(newName, newEmail, password1)
           setUsers([...users!, user!])
           return true
         } catch (e) {
@@ -95,7 +95,7 @@ export function ManageUsers() {
 
   const toogleAuthorised = async (user: User) => {
     try {
-      var authorised = !user.authorised
+      let authorised = !user.authorised
       await locator.locate(IUsersService).updateType(user.id, authorised);
       user!.authorised = authorised
       setUsers([...users!])
@@ -106,7 +106,7 @@ export function ManageUsers() {
   }
   const toogleEnabled = async (user: User) => {
     try {
-      var enabled = !user.enabled
+      let enabled = !user.enabled
       await locator.locate(IUsersService).updateStatue(user.id, enabled);
       user!.enabled = enabled
       setUsers([...users!])
@@ -153,7 +153,7 @@ export function ManageUsers() {
   const renderAuthorisedExpired = (_: string, user: User) => {
     return (user.enabled && user.authorised) ? <DatePicker showToday={false} clearIcon={false} value={moment(user.authorisedExpired)} onChange={async e => {
       try {
-        var date = e!.toDate()
+        let date = e!.toDate()
         await locator.locate(IUsersService).updateAuthorisionExpired(user.id, date);
         user!.authorisedExpired = date
         setUsers([...users!])

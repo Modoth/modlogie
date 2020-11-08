@@ -1,6 +1,6 @@
-import { ArticleFile, ArticleContent } from '../domain/Article'
+import { ArticleFile, ArticleContent } from '../domain/ServiceInterfaces/Article'
 import { MouseEventHandler } from 'react'
-import IConfigsService, { Config } from '../domain/IConfigsSercice';
+import IConfigsService, { Config } from '../domain/ServiceInterfaces/IConfigsSercice';
 type Tag = any;
 export interface ArticleType {
   route: string;
@@ -97,18 +97,18 @@ export class PluginsConfig {
     this._allTypes = this._plugins.flatMap(p => p.types).filter(t => t.rootSubjectId);
     this._normalTypes = this._allTypes.filter(t => !t.admOnly && t.initArticleCount);
   };
-  public get Plugins() {
+  get Plugins() {
     return Array.from(this._plugins);
   }
 
   private _allTypes: ArticleType[];
   private _normalTypes: ArticleType[];
 
-  public get AllTypes() {
+  get AllTypes() {
     return this._allTypes;
   }
 
-  public get NormalTypes() {
+  get NormalTypes() {
     return this._normalTypes;
   }
 }

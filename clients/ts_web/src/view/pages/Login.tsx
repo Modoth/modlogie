@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import './Login.less'
-import { useUser, useServicesLocator } from '../../app/Contexts'
+import { useUser, useServicesLocator } from '../Contexts'
 import { Input, Space, Button, Switch } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import ILoginService from '../../app/ILoginService'
-import IViewService from '../services/IViewService'
-import IPasswordStorage from '../../domain/IPasswordStorage'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import ILoginAppservice from '../../app/Interfaces/ILoginAppservice'
+import IViewService from '../../app/Interfaces/IViewService'
+import IPasswordStorage from '../../domain/ServiceInterfaces/IPasswordStorage'
 
 export default function Login() {
   const user = useUser()
@@ -16,7 +16,7 @@ export default function Login() {
   }
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
-  const loginService = locator.locate(ILoginService)
+  const loginService = locator.locate(ILoginAppservice)
   const notify = locator.locate(IViewService)
   const pwdStorage = locator.locate(IPasswordStorage);
   const [name, setName] = useState(pwdStorage && pwdStorage.name || '')

@@ -7,7 +7,7 @@ module.exports = {
     rules: [
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack'],
+        use: ['@svgr/webpack']
       },
       {
         test: /\.(png|jpg|gif)$/i,
@@ -17,9 +17,9 @@ module.exports = {
             options: {
               limit: 8192,
               name: 'assets/[name].[hash:8].[ext]'
-            },
-          },
-        ],
+            }
+          }
+        ]
       },
       {
         test: /\.tsx?$/,
@@ -48,7 +48,7 @@ module.exports = {
                 modifyVars: {
                   'primary-color': '#e8912e',
                   'link-color': '#e8912e',
-                  'error-color': '#29cccc',
+                  'error-color': '#29cccc'
                 }
               }
             }

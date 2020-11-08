@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import './ManageTags.less'
-import { useUser, useServicesLocator } from '../../app/Contexts'
+import { useUser, useServicesLocator } from '../Contexts'
 import { Redirect } from 'react-router-dom'
 import { Pagination, Table, Button } from 'antd'
 import { PlusOutlined, DeleteFilled, UploadOutlined } from '@ant-design/icons'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import IViewService from '../services/IViewService'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IViewService from '../../app/Interfaces/IViewService'
 import YAML, { stringify } from 'yaml'
-import ITagsService, { Tag, TagType, TagNames } from '../../domain/ITagsService'
+import ITagsService, { Tag, TagType, TagNames } from '../../domain/ServiceInterfaces/ITagsService'
 
 export function ManageTags() {
   const user = useUser()
@@ -22,7 +22,7 @@ export function ManageTags() {
   const [tags, setTags] = useState<Tag[] | undefined>()
   const fetchTags = async () => {
     try {
-      var tags = (await locator.locate(ITagsService).all()).filter(t => !t.name.startsWith(TagNames.RESERVED_PREFIX)).sort((a, b) => a.name.localeCompare(b.name));
+      let tags = (await locator.locate(ITagsService).all()).filter(t => !t.name.startsWith(TagNames.RESERVED_PREFIX)).sort((a, b) => a.name.localeCompare(b.name));
       setTags(tags)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -31,7 +31,7 @@ export function ManageTags() {
   }
 
   const addTag = () => {
-    var tagTypes = [TagType.STRING, TagType.ENUM, TagType.DATE, TagType.LINK];
+    let tagTypes = [TagType.STRING, TagType.ENUM, TagType.DATE, TagType.LINK];
     const tagTypeNames = tagTypes.map(type => langs.get(TagType[type]))
     viewService.prompt(
       langs.get(LangKeys.Create),
@@ -53,8 +53,8 @@ export function ManageTags() {
         if (!newTagName || newTagName.startsWith(TagNames.RESERVED_PREFIX)) {
           return
         }
-        var type = tagTypes[tagTypeNames.indexOf(typeName)]
-        var values = undefined;
+        let type = tagTypes[tagTypeNames.indexOf(typeName)]
+        let values = undefined;
         if (type == TagType.ENUM) {
           if (!newTagValue) {
             return
@@ -65,7 +65,7 @@ export function ManageTags() {
           }
         }
         try {
-          var newTag = await locator.locate(ITagsService).add(newTagName, type, values)
+          let newTag = await locator.locate(ITagsService).add(newTagName, type, values)
           setTags([...tags!, newTag!])
           return true
         } catch (e) {
@@ -117,7 +117,7 @@ export function ManageTags() {
           if (!newTagValue) {
             return
           }
-          var values = newTagValue.split(' ').map(s => s.trim()).filter(s => s);
+          let values = newTagValue.split(' ').map(s => s.trim()).filter(s => s);
           if (!values.length) {
             return
           }

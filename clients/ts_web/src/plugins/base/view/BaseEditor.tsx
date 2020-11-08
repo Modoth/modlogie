@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { ArticleContentEditorProps, ArticleContentType } from '../../IPluginInfo'
 import './BaseEditor.less'
-import { ArticleFile, ArticleSection } from '../../../domain/Article'
+import { ArticleFile, ArticleSection } from '../../../domain/ServiceInterfaces/Article'
 import SectionEditorProps from './SectionEditorProps'
 import SectionViewerProps from './SectionViewerProps'
 import classNames from 'classnames'
@@ -21,7 +21,7 @@ export default function BaseEditor(TSectionEditor: { (props: SectionEditorProps)
         return
       }
       setType(props.type)
-      var secs = getSections(props.type?.allSections!, sections.length ? sections : props.content.sections);
+      let secs = getSections(props.type?.allSections!, sections.length ? sections : props.content.sections);
       secs.forEach(s => sectionOps.set(s, {}))
       setSections(secs)
     })

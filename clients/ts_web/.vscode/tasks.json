@@ -3,9 +3,9 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "generate/apis",
+			"script": "generate/remote-apis",
 			"problemMatcher": [],
-			"label": "npm: generate/apis",
+			"label": "npm: generate/remote-apis",
 		}
 	]
 }

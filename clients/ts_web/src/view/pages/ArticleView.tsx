@@ -4,10 +4,10 @@ import {
   ArticleContentEditorCallbacks,
   ArticleContentType,
 } from '../../plugins/IPluginInfo'
-import Article, { ArticleFile, ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/Article'
-import { useUser, useServicesLocator } from '../../app/Contexts'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import IViewService from '../services/IViewService'
+import Article, { ArticleFile, ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
+import { useUser, useServicesLocator } from '../Contexts'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IViewService from '../../app/Interfaces/IViewService'
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
 const { SubMenu } = Menu
 const { Panel } = Collapse;
@@ -37,22 +37,22 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons'
 import './ArticleView.less'
-import IArticleListService from '../../domain/IArticleListService'
+import IArticleListService from '../../app/Interfaces/IArticleListService'
 import classNames from 'classnames'
 import { generateRandomStyle } from './common'
-import ITagsService, { TagNames, Tag } from '../../domain/ITagsService'
-import IArticleViewServie from '../services/IArticleViewService'
+import ITagsService, { TagNames, Tag } from '../../domain/ServiceInterfaces/ITagsService'
+import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import Langs from '../Langs'
-import IArticleService from '../../domain/IArticleService'
-import IConfigsService from '../../domain/IConfigsSercice'
+import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import { title } from 'process'
 import { spawn } from 'child_process'
 import SubjectViewModel from './SubjectViewModel'
 import html2canvas from 'html2canvas';
 import MenuItem from 'antd/lib/menu/MenuItem'
-import IFavoritesServer from '../../domain/IFavoritesServer'
-import ILikesService from '../../domain/ILikesService'
-import ConfigKeys from '../../app/ConfigKeys'
+import IFavoritesServer from '../../domain/ServiceInterfaces/IFavoritesServer'
+import ILikesService from '../../domain/ServiceInterfaces/ILikesService'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import moment from 'moment'
 
 const { Option } = Select
@@ -206,7 +206,7 @@ export default function ArticleView(props: {
       }
       tagsDict?.set(newTag.name!, newTag)
       if (newTag.name === props.type.subTypeTag) {
-        setType(await locator.locate(IArticleViewServie)
+        setType(await locator.locate(IArticleAppservice)
           .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined))
       }
     } catch (e) {
@@ -269,22 +269,22 @@ export default function ArticleView(props: {
       })
     }
     (async () => {
-      var recommendTitle = (await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECOMMENT_TITLE))?.trim();
+      let recommendTitle = (await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECOMMENT_TITLE))?.trim();
       if (recommendTitle) {
         setRecommendTitle(recommendTitle)
       }
     })();
     (async () => {
-      var likesService = locator.locate(ILikesService);
+      let likesService = locator.locate(ILikesService);
       if (likesService) {
-        var enablded = await likesService.enabled();
+        let enablded = await likesService.enabled();
         if (!enablded) {
           return;
         }
-        var canLike = await likesService.canLike(props.article.id!);
-        var canDislike = await likesService.canDislike(props.article.id!);
-        var likeCount = canLike ? await likesService.likeCount(props.article) : 0;
-        var dislikeCount = canDislike ? await likesService.dislikeCount(props.article) : 0;
+        let canLike = await likesService.canLike(props.article.id!);
+        let canDislike = await likesService.canDislike(props.article.id!);
+        let likeCount = canLike ? await likesService.likeCount(props.article) : 0;
+        let dislikeCount = canDislike ? await likesService.dislikeCount(props.article) : 0;
         setLikesService(likesService);
         setCanLike(canLike)
         setCanDislike(canDislike)
@@ -292,14 +292,14 @@ export default function ArticleView(props: {
         setDislikeCount(dislikeCount);
       }
     })()
-    locator.locate(IArticleViewServie)
+    locator.locate(IArticleAppservice)
       .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type));
   }, [])
   if (!type) {
     return <></>
   }
   const toogleRecommend = async () => {
-    var next = !recommend;
+    let next = !recommend;
     try {
       await locator.locate(IArticleService).updateAdditionalType(props.article.id!, next ? ArticleAdditionalType.Recommend : ArticleAdditionalType.Normal)
       setRecommend(next)
@@ -330,7 +330,7 @@ export default function ArticleView(props: {
   }
   const toogleFavorite = async () => {
     try {
-      var nextFav = !favorite;
+      let nextFav = !favorite;
       if (nextFav) {
         await favoriteService.add(props.type.name, props.article.id!);
       } else {
@@ -373,12 +373,12 @@ export default function ArticleView(props: {
     }
   }
   const shortNumber = (num: number): string => {
-    var s = num.toString();
-    var max = 3;
+    let s = num.toString();
+    let max = 3;
     if (s.length < max) {
       return s;
     }
-    var h = Math.floor(num / Math.pow(10, s.length - 1));
+    let h = Math.floor(num / Math.pow(10, s.length - 1));
     return `${h}${["", "", "", "k", "0k", "00k"][s.length - max + 1]}+`
   }
   return (
@@ -498,7 +498,7 @@ export default function ArticleView(props: {
         ]}
           <DatePicker showToday={true} clearIcon={false} value={moment(published)} onChange={async e => {
             try {
-              var date = e!.toDate()
+              let date = e!.toDate()
               await locator.locate(IArticleService).updatePublished(props.article.id!, date);
               setPublished(date)
               return true

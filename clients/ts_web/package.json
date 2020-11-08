@@ -46,9 +46,10 @@
     "@typescript-eslint/eslint-plugin": "^3.3.0",
     "@typescript-eslint/parser": "^3.3.0",
     "css-loader": "^3.6.0",
+    "dependency-cruiser": "^9.16.0",
     "eslint": "^7.2.0",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.20.0",
@@ -68,13 +69,14 @@
     "webpack-merge": "^4.2.2"
   },
   "scripts": {
-    "generate/apis": "rm -rf ./src/apis && mkdir ./src/apis && protoc -I=../../apis/Protos ../../apis/Protos/*.proto --js_out=import_style=commonjs,binary:./src/apis --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/apis",
+    "generate/remote-apis": "rm -rf ./src/impl/remote-apis && mkdir ./src/impl/remote-apis && protoc -I=../../apis/Protos ../../apis/Protos/*.proto --js_out=import_style=commonjs,binary:./src/impl/remote-apis --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/impl/remote-apis",
     "build/netcore": "cd ../../servers/cs_netcore/src && dotnet build",
     "run/netcore": "cd ../../servers/cs_netcore/src/Modlogie/bin/Debug/netcoreapp3.1 && ASPNETCORE_ENVIRONMENT=Development dotnet Modlogie.dll",
     "run/proxy": "envoy -c envoy.yaml",
     "netcore": "npm run build/netcore && npm run run/netcore",
     "start": "webpack-dev-server --config webpack.dev.js",
-    "build-to/client-prod": "webpack --config webpack.prod.js --env.prod=1 --output-path=\"$target_dir\""
+    "build-to/client-prod": "webpack --config webpack.prod.js --env.prod=1 --output-path=\"$target_dir\"",
+    "generate/dep": "depcruise --include-only '^src' --exclude '^src/plugins|^src/index.ts|^src/infrac' --output-type ddot src | dot -T svg > dep.svg"
   },
   "keywords": [],
   "author": "",

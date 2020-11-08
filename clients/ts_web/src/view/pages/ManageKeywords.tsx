@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import './ManageKeywords.less'
-import { useUser, useServicesLocator } from '../../app/Contexts'
+import { useUser, useServicesLocator } from '../Contexts'
 import { Redirect } from 'react-router-dom'
 import { Pagination, Table, Button, Switch, DatePicker } from 'antd'
 import { PlusOutlined, DeleteFilled, SearchOutlined, EditOutlined } from '@ant-design/icons'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import IViewService from '../services/IViewService'
-import IUsersService, { User } from '../../domain/IUsersService'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IViewService from '../../app/Interfaces/IViewService'
+import IUsersService, { User } from '../../domain/ServiceInterfaces/IUsersService'
 import moment from 'moment'
-import IKeywordsService, { Keyword } from '../../domain/IKeywordsService'
+import IKeywordsService, { Keyword } from '../../domain/ServiceInterfaces/IKeywordsService'
 
 export function ManageKeywords() {
   const user = useUser()
@@ -31,7 +31,7 @@ export function ManageKeywords() {
     }
     try {
       viewService.setLoading(true);
-      var [total, keywords] = await locator.locate(IKeywordsService).getAll(filter, countPerPage * (page! - 1), countPerPage)
+      let [total, keywords] = await locator.locate(IKeywordsService).getAll(filter, countPerPage * (page! - 1), countPerPage)
       setKeywords(keywords)
       setTotalCount(total)
       setCurrentPage(page)

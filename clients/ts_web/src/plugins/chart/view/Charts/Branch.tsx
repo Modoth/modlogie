@@ -3,7 +3,7 @@ import { ChartViewerProps } from '../ChartLiveViewer'
 import './Branch.less'
 import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/react'
 import ReactMarkdown from 'react-markdown'
-import { useServicesLocator } from '../../../../app/Contexts'
+import { useServicesLocator } from '../../../../view/Contexts'
 import { BranchesOutlined } from '@ant-design/icons'
 import { previewArticleByPath } from '../../../../view/pages/ServiceView'
 
@@ -31,7 +31,7 @@ function parseNodes(data: { map?: NodeMap, nodes?: Map<string, Node> }): Node[] 
     const detail = data.nodes!;
     const nodes = new Map<string, Node>()
     detail.forEach((value: any) => {
-        var node = new Node();
+        let node = new Node();
         const key = Object.keys(value)[0]
         node.id = key
         Object.assign(node, value[key])
@@ -47,7 +47,7 @@ function parseNodes(data: { map?: NodeMap, nodes?: Map<string, Node> }): Node[] 
             id = Object.keys(mapNode)[0]
             childrens = mapNode[id]
         }
-        var node = nodes.get(id)
+        let node = nodes.get(id)
         if (!node) {
             return
         }
@@ -96,7 +96,7 @@ export function Branch(props: ChartViewerProps) {
                     return branch
                 }
                 for (const n of nodes) {
-                    var b = getBranch(n.line)
+                    let b = getBranch(n.line)
                     b.commit({
                         subject: n.id,
                         renderMessage: (commit: any) => {

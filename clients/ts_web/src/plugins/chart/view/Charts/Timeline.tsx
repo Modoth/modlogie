@@ -3,7 +3,7 @@ import { ChartViewerProps } from '../ChartLiveViewer'
 import './Timeline.less'
 import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/react'
 import ReactMarkdown from 'react-markdown'
-import { useServicesLocator } from '../../../../app/Contexts'
+import { useServicesLocator } from '../../../../view/Contexts'
 import { BranchesOutlined } from '@ant-design/icons'
 import { previewArticleByPath } from '../../../../view/pages/ServiceView'
 
@@ -23,7 +23,7 @@ function parseNodes(data: { nodes?: Map<string, Node> }): Node[] {
     const detail = data.nodes!;
     const nodes = new Map<string, Node>()
     detail.forEach((value: any) => {
-        var node = new Node();
+        let node = new Node();
         const key = Object.keys(value)[0]
         node.id = key
         Object.assign(node, value[key])
@@ -51,7 +51,7 @@ const getColor = (t: string) => {
     if (typesColors.has(t)) {
         return typesColors.get(t)
     }
-    var color = allColors[typesColors.size % allColors.length]
+    let color = allColors[typesColors.size % allColors.length]
     typesColors.set(t, color)
     return color;
 }

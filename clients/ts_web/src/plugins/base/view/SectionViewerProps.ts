@@ -1,4 +1,4 @@
-import { ArticleSection, ArticleFile } from "../../../domain/Article";
+import { ArticleSection, ArticleFile } from "../../../domain/ServiceInterfaces/Article";
 import { MouseEventHandler } from "react";
 
 export interface AdditionalSectionViewerProps {

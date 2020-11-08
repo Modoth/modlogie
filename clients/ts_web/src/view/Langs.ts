@@ -1,20 +1,11 @@
-import { LangKeysInterface } from "../domain/ILangsService";
-import { Error as ErrorMessage } from "../apis/messages_pb";
-import { ConfigKeysInterface } from "../app/ConfigKeys";
+import { LangKeysInterface } from "../domain/ServiceInterfaces/ILangsService";
+import { ConfigKeysInterface } from "../domain/ServiceInterfaces/ConfigKeys";
 
 interface IKeyValue {
   [key: string]: string;
 }
 
 class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface<string> {
-  constructor() {
-    this[ErrorMessage.ENTITY_CONFLICT] = "数据冲突";
-    this[ErrorMessage.INVALID_ARGUMENTS] = "客户端错误";
-    this[ErrorMessage.INVALID_USER_OR_PWD] = "用户名或密码错误";
-    this[ErrorMessage.NEED_LOGIN] = "未登录";
-    this[ErrorMessage.NO_PERMISSION] = "没有权限";
-    this[ErrorMessage.NO_SUCH_ENTITY] = "无此数据";
-  }
   ADDITIONAL_STYLE = '附加样式目录';
   ALLOW_LIKES = '允许点赞';
   ALLOW_LOGIN = '允许登陆';
@@ -55,12 +46,11 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Cancle = '取消';
   CancleAutoLogin = '自动登录';
   CancleRecommend = '取消推荐';
-  NotFount = '未找到';
-  CaptureWordEnable = '开启取词';
   CaptureWordDisable = '关闭取词';
-  ClearDict = '清空字典';
+  CaptureWordEnable = '开启取词';
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
+  ClearDict = '清空字典';
   ComfireJump = '点击确定继续:\t';
   Comment = '备注';
   Configs = '配置';
@@ -77,6 +67,13 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   EnableAutoLogin = '自动登陆';
   Enabled = '激活';
   EnumValue = '枚举值';
+  MSG_ERROR_ENTITY_CONFLICT = "数据冲突";
+  MSG_ERROR_INVALID_ARGUMENTS = "客户端错误";
+  MSG_ERROR_INVALID_OPERATION = "客户端错误";
+  MSG_ERROR_INVALID_USER_OR_PWD = "用户名或密码错误";
+  MSG_ERROR_NEED_LOGIN = "未登录";
+  MSG_ERROR_NO_PERMISSION = "没有权限";
+  MSG_ERROR_NO_SUCH_ENTITY = "无此数据";
   Favorite = '收藏';
   FreeDraw = '涂鸦(Beta)';
   Home = '首页';
@@ -89,13 +86,14 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Manage = '管理';
   Menu = '目录';
   Modify = '修改';
+  MSG_ERROR_INVALID_FILE = '无效文件';
   MSG_ERROR_NETWORK = '网络错误';
   MSG_ERROR_SITE_CONFIG = '配置错误';
   MSG_ERROR_USER_OR_PWD = '用户名或密码错误';
-  MSG_ERROR_INVALID_FILE = '无效文件';
   Name = '名称';
   NewName = '新名称';
   NewPassword = '新密码';
+  NotFount = '未找到';
   Ok = '确定';
   Order = '顺序';
   Paging = '分页(Beta)';

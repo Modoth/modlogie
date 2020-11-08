@@ -1,6 +1,6 @@
 import React from 'react'
 import { AdditionalSectionViewerProps } from '../../base/view/SectionViewerProps';
-import { ArticleSection } from '../../../domain/Article';
+import { ArticleSection } from '../../../domain/ServiceInterfaces/Article';
 import { SectionNames } from './Sections';
 import './H5AppLiveViewer.less'
 import { ArticlePreview } from '../../../view/pages/ArticlePreview';
@@ -18,7 +18,7 @@ export interface ArticleSectionVm extends ArticleSection {
 
 const getSections = (allSections: Set<string>, additionalSections: Set<string>, sections?: ArticleSection[]) => {
     const existedSections = sections ? new Map(sections.map(s => [s.name!, s])) : new Map<string, ArticleSection>()
-    var s = Array.from(allSections, (name) => Object.assign(existedSections.get(name) || { name, content: '' }, { additionalSection: additionalSections && additionalSections.has(name) }) as ArticleSectionVm)
+    let s = Array.from(allSections, (name) => Object.assign(existedSections.get(name) || { name, content: '' }, { additionalSection: additionalSections && additionalSections.has(name) }) as ArticleSectionVm)
     if (s[0]) {
         s[0].firstSection = true;
     }
@@ -26,14 +26,14 @@ const getSections = (allSections: Set<string>, additionalSections: Set<string>, 
 }
 
 export default function H5AppLiveViewer(props: AdditionalSectionViewerProps) {
-    var msections = new Map(props.sections.map(s => [s.name!, s]))
-    var path = msections.get(SectionNames.type)?.content
-    var data = msections.get(SectionNames.data)?.content
+    let msections = new Map(props.sections.map(s => [s.name!, s]))
+    let path = msections.get(SectionNames.type)?.content
+    let data = msections.get(SectionNames.data)?.content
 
     if (!path) {
         return <></>
     }
-    var dataSections: ArticleSection[] = data ? [{
+    let dataSections: ArticleSection[] = data ? [{
         name: 'yaml',
         content: data
     }] : []

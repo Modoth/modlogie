@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import './SectionEditor.less'
-import { ArticleFile } from '../../../domain/Article'
+import { ArticleFile } from '../../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import SectionEditorProps from '../../base/view/SectionEditorProps'
 import TextArea from 'antd/lib/input/TextArea'

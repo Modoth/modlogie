@@ -1,8 +1,8 @@
 
 import React, { useEffect } from 'react'
-import { useServicesLocator } from '../../../app/Contexts';
-import IViewService from '../../../view/services/IViewService';
-import ILangsService, { LangKeys } from '../../../domain/ILangsService';
+import { useServicesLocator } from '../../../view/Contexts';
+import IViewService from '../../../app/Interfaces/IViewService';
+import ILangsService, { LangKeys } from '../../../domain/ServiceInterfaces/ILangsService';
 
 export type IFrameContext = {
     token: string,

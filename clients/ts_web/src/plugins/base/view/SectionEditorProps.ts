@@ -1,4 +1,4 @@
-import { ArticleSection, ArticleFile } from "../../../domain/Article";
+import { ArticleSection, ArticleFile } from "../../../domain/ServiceInterfaces/Article";
 import { ArticleContentEditorCallbacks } from "../../IPluginInfo";
 import { MouseEventHandler } from "react";
 import IFormulaEditingService from "../IFormulaEditingService";

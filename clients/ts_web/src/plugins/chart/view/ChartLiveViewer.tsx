@@ -1,6 +1,6 @@
 import React from 'react'
 import { AdditionalSectionViewerProps } from '../../base/view/SectionViewerProps';
-import { ArticleSection } from '../../../domain/Article';
+import { ArticleSection } from '../../../domain/ServiceInterfaces/Article';
 import { SectionNames } from './Sections';
 import './ChartLiveViewer.less'
 import { Branch } from './Charts/Branch';
@@ -13,8 +13,8 @@ export class ChartViewerProps {
 }
 
 const combineContent = (sections: Map<string, ArticleSection>): ChartViewerProps & { error?: string } => {
-    var type = sections.get(SectionNames.type)?.content || ''
-    var data = sections.get(SectionNames.data)?.content
+    let type = sections.get(SectionNames.type)?.content || ''
+    let data = sections.get(SectionNames.data)?.content
     if (!data) {
         return { type, data: {} }
     }

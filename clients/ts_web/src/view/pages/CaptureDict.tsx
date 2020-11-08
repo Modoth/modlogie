@@ -1,9 +1,9 @@
 import { Button } from 'antd';
 import React, { useState, useEffect } from 'react'
-import { useServicesLocator } from '../../app/Contexts';
-import IDictService, { CancleToken, DictInfo } from '../../domain/IDictService';
-import ILangsService, { LangKeys } from '../../domain/ILangsService';
-import IViewService from '../services/IViewService';
+import { useServicesLocator } from '../Contexts';
+import IDictService, { CancleToken, DictInfo } from '../../domain/ServiceInterfaces/IDictService';
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService';
+import IViewService from '../../app/Interfaces/IViewService';
 import './CaptureDict.less'
 import { PlusSquareOutlined, PlusOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons'
 
@@ -67,7 +67,7 @@ export default function CaptureDict(props: { onclose?(): void }) {
                     setImportProgress(0)
                     store.importing = true
                     viewService.setLoading(true)
-                    var newInfo = info;
+                    let newInfo = info;
                     try {
                         newInfo = await dictServer.change(file, store.cancleToken, (i) => {
                             if (!store.destoried) {
@@ -93,7 +93,7 @@ export default function CaptureDict(props: { onclose?(): void }) {
             store.cancleToken = { cancled: false }
             viewService.setLoading(true)
             try {
-                var info = await dictServer.info(store.cancleToken)
+                let info = await dictServer.info(store.cancleToken)
                 if (!store.destoried) {
                     setInfo(info)
                 }

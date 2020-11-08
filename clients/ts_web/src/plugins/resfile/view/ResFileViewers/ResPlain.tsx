@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ResFileViewerProps } from './ResFileViewerProps'
 import './ResPlain.less'
-import RemoteTextReader from '../../../../common/RemoteTextReader';
+import RemoteTextReader from '../../../../infrac/Lang/RemoteTextReader';
 import TextArea from '../../../../view/components/TextArea';
 
 export function ResPlain(props: ResFileViewerProps) {

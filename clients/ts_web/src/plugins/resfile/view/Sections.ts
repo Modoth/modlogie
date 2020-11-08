@@ -1,4 +1,4 @@
-import { ArticleFile } from "../../../domain/Article"
+import { ArticleFile } from "../../../domain/ServiceInterfaces/Article"
 import { ResFile } from "../ResFile"
 import yaml from 'yaml'
 
@@ -7,7 +7,7 @@ export const SectionNames = {
 }
 
 const addFile = (_: string | undefined, file: ArticleFile) => {
-    var fileInfo = new ResFile(file.name!)
+    let fileInfo = new ResFile(file.name!)
     return yaml.stringify(fileInfo)
 }
 

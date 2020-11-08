@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import './ArticleList.less'
-import { useServicesLocator } from '../../app/Contexts'
-import IArticleListService from '../../domain/IArticleListService'
+import { useServicesLocator } from '../Contexts'
+import IArticleListService from '../../app/Interfaces/IArticleListService'
 import { Button } from 'antd';
 import { ArrowLeftOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
-import Article from '../../domain/Article';
+import Article from '../../domain/ServiceInterfaces/Article';
 import { ArticleContentType } from '../../plugins/IPluginInfo';
 import classNames from 'classnames';
-import IViewService from '../services/IViewService';
-import IConfigsService from '../../domain/IConfigsSercice';
-import ConfigKeys from '../../app/ConfigKeys';
-import ILangsService from '../../domain/ILangsService';
+import IViewService from '../../app/Interfaces/IViewService';
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice';
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys';
+import ILangsService from '../../domain/ServiceInterfaces/ILangsService';
 
 const maxColumn = 3;
 const maxBorderStyle = 4;
 
 const getColumnCountKey = () => 'ARTICLES_COLUMN_COUNT'
 const loadColumnCount = () => {
-    var count = localStorage.getItem(getColumnCountKey())
+    let count = localStorage.getItem(getColumnCountKey())
     if (!count) {
         return 0
     }
@@ -33,7 +33,7 @@ const saveColumnCount = (count: number) => {
 
 const getBorderStyleKey = () => 'ARTICLES_BORDER_STYLE'
 const loadBorderStyle = () => {
-    var style = localStorage.getItem(getBorderStyleKey())
+    let style = localStorage.getItem(getBorderStyleKey())
     if (!style) {
         return 0
     }
@@ -49,7 +49,7 @@ const saveBorderStyle = (style: number) => {
 
 const getShowIndexKey = () => 'ARTICLES_SHOW_INDEX'
 const loadShowIndex = () => {
-    var paging = localStorage.getItem(getShowIndexKey())
+    let paging = localStorage.getItem(getShowIndexKey())
     return paging === 'true'
 }
 const saveShowIndex = (paging: boolean) => {
@@ -68,7 +68,7 @@ export default function ArticleList() {
     const fetchArticles = async () => {
         viewService.setLoading(true)
         try {
-            var all = articleListService.all()
+            let all = articleListService.all()
             let count = 0
             if (all.length) {
                 await Promise.all(all.filter(a => a[1].articleType.loadAdditionalsSync).map(a => a[0]).filter(a => a.lazyLoadingAddition).map(a => a.lazyLoadingAddition!().then(() => {
@@ -78,7 +78,7 @@ export default function ArticleList() {
                 viewService.setLoading(false)
                 return
             }
-            var maxCount = parseInt(await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.MAX_PRINT_COUNT))
+            let maxCount = parseInt(await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.MAX_PRINT_COUNT))
             if (isNaN(maxCount)) {
                 [count, all] = await articleListService.getArticles();
             } else {
@@ -86,7 +86,7 @@ export default function ArticleList() {
             }
             setItems(all);
             await Promise.all(all.map(async ([a, t]) => {
-                var tasks = []
+                let tasks = []
                 if (a.lazyLoading) {
                     tasks.push(a.lazyLoading())
                 }
@@ -122,17 +122,17 @@ export default function ArticleList() {
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} />
                 <span className="spilter"></span>
                 <Button type="link" size="large" icon={<OrderedListOutlined />} onClick={() => {
-                    var next = !showIdx;
+                    let next = !showIdx;
                     setShowIdx(next)
                     saveShowIndex(next)
                 }} />
                 <Button type="link" size="large" icon={<PicRightOutlined />} onClick={() => {
-                    var next = ((columnCount) % maxColumn) + 1
+                    let next = ((columnCount) % maxColumn) + 1
                     setColumnCount(next)
                     saveColumnCount(next)
                 }} />
                 <Button type="link" size="large" icon={<BorderBottomOutlined />} onClick={() => {
-                    var next = ((borderStyle) % maxBorderStyle) + 1
+                    let next = ((borderStyle) % maxBorderStyle) + 1
                     setBorderStyle(next)
                     saveBorderStyle(next)
                 }} />

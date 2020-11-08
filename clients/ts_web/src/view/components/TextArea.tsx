@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import './TextArea.less'
 import { TextRender } from './TextRender'
-import IAsyncTextReader from '../../common/IAsyncTextReader';
-import ResizeWatcher from '../../common/ResizeWatcher';
+import IAsyncTextReader from '../../infrac/Lang/IAsyncTextReader';
+import ResizeWatcher from '../../infrac/Lang/ResizeWatcher';
 
 class TextAreaManager {
     constructor(private value: string, private reader?: IAsyncTextReader) {

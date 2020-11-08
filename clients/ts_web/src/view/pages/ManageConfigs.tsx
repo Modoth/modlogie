@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import './ManageConfigs.less'
-import { useUser, useServicesLocator } from '../../app/Contexts'
+import { useUser, useServicesLocator } from '../Contexts'
 import { Redirect } from 'react-router-dom'
 import { Table, Button } from 'antd'
 import { ClearOutlined, EditOutlined } from '@ant-design/icons'
-import ILangsService, { LangKeys } from '../../domain/ILangsService'
-import IViewService from '../services/IViewService'
-import IConfigsService, { Config, ConfigType, ConfigNames } from '../../domain/IConfigsSercice'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IViewService from '../../app/Interfaces/IViewService'
+import IConfigsService, { Config, ConfigType, ConfigNames } from '../../domain/ServiceInterfaces/IConfigsSercice'
 
 
 export function ManageConfigs() {
@@ -22,7 +22,7 @@ export function ManageConfigs() {
   const [configs, setConfigs] = useState<Config[] | undefined>()
 
   const fetchConfigs = async () => {
-    var configs = await (await locator.locate(IConfigsService).all(true)).filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => a.key.localeCompare(b.key));
+    let configs = await (await locator.locate(IConfigsService).all(true)).filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => a.key.localeCompare(b.key));
     setConfigs(configs)
   }
 

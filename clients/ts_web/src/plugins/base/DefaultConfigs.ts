@@ -1,5 +1,5 @@
 import BaseConfigKeys, { ConfigKeysInterface } from "./BaseConfigKeys";
-import { Config, ConfigType } from "../../domain/IConfigsSercice";
+import { Config, ConfigType } from "../../domain/ServiceInterfaces/IConfigsSercice";
 
 
 class BlogDefaultConfigsClass implements ConfigKeysInterface<Config> {

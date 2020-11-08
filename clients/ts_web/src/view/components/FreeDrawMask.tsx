@@ -7,19 +7,19 @@ export default function FreeDrawMask(props: { enabled: boolean, size: number, co
     const ref = React.createRef<HTMLCanvasElement>()
     p = props;
     useEffect(() => {
-        var canvas = ref.current!
+        let canvas = ref.current!
         canvas.height = parseFloat(getComputedStyle(canvas).height);
         canvas.width = parseFloat(getComputedStyle(canvas).width);
         const getPos = (ev: MouseEvent | TouchEvent): [number, number] => {
-            var rec = canvas.getClientRects()
+            let rec = canvas.getClientRects()
             if (ev instanceof MouseEvent) {
                 return [ev.x - rec[0].x, ev.y - rec[0].y]
             } else {
-                var e = ev.touches[0]
+                let e = ev.touches[0]
                 return [e.clientX - rec[0].x, e.clientY - rec[0].y]
             }
         }
-        var drawing = false;
+        let drawing = false;
         let x = 0;
         let y = 0;
         const startDraw = (ev: MouseEvent | TouchEvent) => {
@@ -40,7 +40,7 @@ export default function FreeDrawMask(props: { enabled: boolean, size: number, co
             ev.preventDefault()
 
             let [tx, ty] = getPos(ev)
-            var ctx = canvas.getContext('2d')!
+            let ctx = canvas.getContext('2d')!
             ctx.save()
             if (p.earse) {
                 ctx.clearRect(Math.min(x, tx), Math.min(y, ty), Math.abs(x - tx), Math.abs(y - ty))

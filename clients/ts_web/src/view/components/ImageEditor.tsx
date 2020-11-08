@@ -1,7 +1,6 @@
 import React from 'react'
 import './ImageEditor.less'
 import classNames from 'classnames'
-const Configs = {} as any
 import {
   UndoOutlined,
   ExpandOutlined,
@@ -13,9 +12,10 @@ import {
   RotateLeftOutlined,
   BorderOutlined
 } from '@ant-design/icons'
+const Configs = {} as any
 
 class MaskAnchor {
-  constructor(
+  constructor (
     public x: number,
     public y: number,
     public i: number,
@@ -24,7 +24,7 @@ class MaskAnchor {
 }
 
 class MaskAnchorCollection {
-  constructor(
+  constructor (
     public top: number,
     public right: number,
     public bottom: number,
@@ -32,10 +32,10 @@ class MaskAnchorCollection {
   ) {
     this.anchors = []
     this.anchorRec = []
-    for (var j = 0; j < 3; j++) {
+    for (let j = 0; j < 3; j++) {
       const row: MaskAnchor[] = []
       this.anchorRec.push(row)
-      for (var i = 0; i < 3; i++) {
+      for (let i = 0; i < 3; i++) {
         const point = new MaskAnchor(0, 0, i, j)
         row.push(point)
         this.anchors.push(point)
@@ -44,7 +44,7 @@ class MaskAnchorCollection {
     this.resize(top, right, bottom, left)
   }
 
-  resize(top: number, right: number, bottom: number, left: number) {
+  resize (top: number, right: number, bottom: number, left: number) {
     this.top = top
     this.right = right
     this.bottom = bottom
@@ -62,7 +62,7 @@ class MaskAnchorCollection {
     }
   }
 
-  public clone() {
+  clone () {
     return new MaskAnchorCollection(
       this.top,
       this.right,
@@ -71,12 +71,12 @@ class MaskAnchorCollection {
     )
   }
 
-  public anchorRec: MaskAnchor[][]; // (i,j)=>[j][i]
-  public anchors: MaskAnchor[];
+  anchorRec: MaskAnchor[][]; // (i,j)=>[j][i]
+  anchors: MaskAnchor[];
 }
 
 class ImageCroper {
-  destroy(): void {
+  destroy (): void {
     this.canvas.removeEventListener('touchstart', this.startMove)
     this.canvas.removeEventListener('touchmove', this.move)
     this.canvas.removeEventListener('touchend', this.stopMove)
@@ -89,7 +89,7 @@ class ImageCroper {
     ctx!.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
-  constructor(
+  constructor (
     public canvas: HTMLCanvasElement,
     public shadowStyle = '#00000040',
     public archorStyle = 'white',
@@ -114,19 +114,19 @@ class ImageCroper {
     this.drawMask()
   }
 
-  public movingAnchor?: MaskAnchor;
+  movingAnchor?: MaskAnchor;
 
-  public movingInterval = 10;
+  movingInterval = 10;
 
-  public anchorFindR = 0;
+  anchorFindR = 0;
 
-  public lastMoveTime = -1;
+  lastMoveTime = -1;
 
-  public moveStartPos?: { x: number; y: number };
+  moveStartPos?: { x: number; y: number };
 
-  public statuses: { ratio: number; archors: MaskAnchorCollection }[] = [];
+  statuses: { ratio: number; archors: MaskAnchorCollection }[] = [];
 
-  public getPointInCanvas(e: any): { x: number; y: number } {
+  getPointInCanvas (e: any): { x: number; y: number } {
     const c: HTMLCanvasElement = e.target
     let x, y
     if (e.targetTouches) {
@@ -145,7 +145,7 @@ class ImageCroper {
     }
   }
 
-  public findMovingAnchor({ x, y }: { x: number; y: number }): MaskAnchor {
+  findMovingAnchor ({ x, y }: { x: number; y: number }): MaskAnchor {
     let ma = null
     let closestA = this.anchorFindR
     for (const a of this.anchors.anchors) {
@@ -158,7 +158,7 @@ class ImageCroper {
     return ma!
   }
 
-  public startMove = (e: UIEvent) => {
+  startMove = (e: UIEvent) => {
     if (this.movingAnchor) {
       return
     }
@@ -174,7 +174,7 @@ class ImageCroper {
     })
   };
 
-  public move = (e: UIEvent) => {
+  move = (e: UIEvent) => {
     e.stopPropagation()
     e.preventDefault()
     if (!this.movingAnchor) {
@@ -195,7 +195,7 @@ class ImageCroper {
     this.drawMask()
   };
 
-  public moveAnchors(
+  moveAnchors (
     current: MaskAnchorCollection,
     start: MaskAnchorCollection,
     dx: number,
@@ -265,14 +265,14 @@ class ImageCroper {
     current.resize(top, right, bottom, left)
   }
 
-  public revertEdit() {
+  revertEdit () {
     const status = this.statuses.pop()!
     this.anchors = status.archors
     this.cropRatio = status.ratio
     this.drawMask()
   }
 
-  public stopMove = (e: UIEvent) => {
+  stopMove = (e: UIEvent) => {
     e.stopPropagation()
     e.preventDefault()
     if (!this.movingAnchor) {
@@ -282,15 +282,15 @@ class ImageCroper {
     this.moveStartPos = undefined
   };
 
-  public anchors: MaskAnchorCollection;
+  anchors: MaskAnchorCollection;
 
-  public cropRatio = NaN;
+  cropRatio = NaN;
 
-  public cropRect() {
+  cropRect () {
     return this.anchors
   }
 
-  public drawMask() {
+  drawMask () {
     const ctx = this.canvas.getContext('2d')!
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
@@ -309,15 +309,15 @@ class ImageCroper {
     ctx.fillStyle = this.archorStyle
     ctx.beginPath()
 
-    for (var a of this.anchors.anchors) {
+    for (let a of this.anchors.anchors) {
       ctx.rect(a.x - this.archR, a.y - this.archR, this.archD, this.archD)
     }
     ctx.fill()
   }
 
-  public archD: number;
+  archD: number;
 
-  public setCropRatio(ratio: number) {
+  setCropRatio (ratio: number) {
     if (this.cropRatio === ratio) {
       return
     }
@@ -344,22 +344,22 @@ class ImageCroper {
 }
 
 class ImageEditorProperties {
-  public className?: string;
-  public maxImageSize?: number = +Infinity;
-  public image?: Blob;
-  public onError?: (msg: string) => void;
-  public closed?: (image?: Blob) => void;
+  className?: string;
+  maxImageSize?: number = +Infinity;
+  image?: Blob;
+  onError?: (msg: string) => void;
+  closed?: (image?: Blob) => void;
 }
 
 class ImageEditorState {
-  public image?: Blob;
-  public ops: any;
-  public allOps: any;
-  public static filter(allOps: any) {
+  image?: Blob;
+  ops: any;
+  allOps: any;
+  static filter (allOps: any) {
     return allOps && allOps.filter((op: any) => !op.hidden || !op.hidden())
   }
 
-  constructor(allOps: any) {
+  constructor (allOps: any) {
     this.allOps = allOps
     this.ops = ImageEditorState.filter(allOps)
   }
@@ -369,12 +369,12 @@ export default class ImageEditor extends React.Component<
   ImageEditorProperties,
   ImageEditorState
   > {
-  constructor(props: ImageEditorProperties) {
+  constructor (props: ImageEditorProperties) {
     super(props)
     this.state = new ImageEditorState(this.ops)
   }
 
-  render() {
+  render () {
     return (
       <div className={classNames('image-editor', this.props.className)}>
         <div className="editor-container">
@@ -399,21 +399,21 @@ export default class ImageEditor extends React.Component<
     )
   }
 
-  componentWillUnmount(): void {
+  componentWillUnmount (): void {
     if (this.croper) {
       this.croper.destroy()
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.tryLoadImage()
   }
 
-  componentDidUpdate() {
+  componentDidUpdate () {
     this.tryLoadImage()
   }
 
-  private tryLoadImage() {
+  private tryLoadImage () {
     if (this.props.image !== this.originImage && this.props.image) {
       this.originImage = this.props.image
       this.editedImage = this.props.image
@@ -422,19 +422,19 @@ export default class ImageEditor extends React.Component<
     }
   }
 
-  public originImage?: Blob;
-  public editedImage?: Blob;
+  originImage?: Blob;
+  editedImage?: Blob;
 
-  public imgType: string = 'image/jpeg';
+  imgType: string = 'image/jpeg';
 
-  public croper?: ImageCroper;
+  croper?: ImageCroper;
 
-  public startOp(op: any) {
+  startOp (op: any) {
     this.croper = new ImageCroper(this.canvasMaskRef.current!)
     this.setState({ allOps: op.ops, ops: ImageEditorState.filter(op.ops) })
   }
 
-  public cancleCrop() {
+  cancleCrop () {
     this.setState({ allOps: this.ops, ops: ImageEditorState.filter(this.ops) })
     if (this.croper) {
       this.croper!.destroy()
@@ -442,7 +442,7 @@ export default class ImageEditor extends React.Component<
     }
   }
 
-  public applyCrop() {
+  applyCrop () {
     this.setState({ allOps: this.ops, ops: ImageEditorState.filter(this.ops) })
     let { top, right, bottom, left } = this.croper!.cropRect()
     this.croper!.destroy()
@@ -474,9 +474,9 @@ export default class ImageEditor extends React.Component<
     this.updateImageData(newImgData)
   }
 
-  public currentOp: any = this;
+  currentOp: any = this;
 
-  public ops = [
+  ops = [
     {
       func: () => {
         this.revertEdit()
@@ -571,9 +571,9 @@ export default class ImageEditor extends React.Component<
   canvasRef = React.createRef<HTMLCanvasElement>();
   canvasMaskRef = React.createRef<HTMLCanvasElement>();
 
-  public async getImage(blob: Blob): Promise<HTMLImageElement> {
+  async getImage (blob: Blob): Promise<HTMLImageElement> {
     return new Promise((resolve) => {
-      var img: HTMLImageElement = window.document.createElement('img')
+      let img: HTMLImageElement = window.document.createElement('img')
       const imgUrl = window.URL.createObjectURL(blob)
       img.src = imgUrl
       img.onload = () => {
@@ -583,9 +583,9 @@ export default class ImageEditor extends React.Component<
     })
   }
 
-  public imagesDatas: ImageData[];
+  imagesDatas: ImageData[];
 
-  public rotateRight(imageData: ImageData) {
+  rotateRight (imageData: ImageData) {
     const newImageData = new ImageData(imageData.height, imageData.width)
     const { data, width, height } = imageData
     const nd = newImageData.data
@@ -602,7 +602,7 @@ export default class ImageEditor extends React.Component<
     return newImageData
   }
 
-  public rotateLeft(imageData: ImageData) {
+  rotateLeft (imageData: ImageData) {
     const newImageData = new ImageData(imageData.height, imageData.width)
     const { data, width, height } = imageData
     const nd = newImageData.data
@@ -619,7 +619,7 @@ export default class ImageEditor extends React.Component<
     return newImageData
   }
 
-  public revertEdit() {
+  revertEdit () {
     if (!this.imagesDatas || this.imagesDatas.length < 2) {
       return
     }
@@ -627,7 +627,7 @@ export default class ImageEditor extends React.Component<
     this.updateImageData(this.imagesDatas.pop()!)
   }
 
-  public execEdit(func: (data: ImageData) => ImageData) {
+  execEdit (func: (data: ImageData) => ImageData) {
     if (!func) {
       return
     }
@@ -641,7 +641,7 @@ export default class ImageEditor extends React.Component<
     this.setState({ ops: ImageEditorState.filter(this.state.allOps) })
   }
 
-  public async loadImage() {
+  async loadImage () {
     const canvas = this.canvasRef.current!
     const img = await this.getImage(this.editedImage!)
     this.updateCanvasWidth(canvas, img.naturalWidth, img.naturalHeight)
@@ -651,7 +651,7 @@ export default class ImageEditor extends React.Component<
     this.imagesDatas.push(ctx.getImageData(0, 0, canvas.width, canvas.height))
   }
 
-  public async apply() {
+  async apply () {
     if (
       this.imagesDatas.length === 1 &&
       (this.editedImage!.type === 'image/gif' ||
@@ -670,11 +670,11 @@ export default class ImageEditor extends React.Component<
     this.props.closed && this.props.closed(blob)
   }
 
-  public async cancle() {
+  async cancle () {
     this.props.closed && this.props.closed(undefined)
   }
 
-  public async normanizeImage() {
+  async normanizeImage () {
     const canvas = this.canvasRef.current!
     const blob: Blob = await new Promise((resolve: any) => {
       if (this.props.maxImageSize) {
@@ -689,7 +689,7 @@ export default class ImageEditor extends React.Component<
     return blob
   }
 
-  public updateImageData(data: ImageData) {
+  updateImageData (data: ImageData) {
     if (!data) {
       return
     }
@@ -700,7 +700,7 @@ export default class ImageEditor extends React.Component<
     ctx.putImageData(data, 0, 0)
   }
 
-  public updateCanvasWidth(
+  updateCanvasWidth (
     canvas: HTMLCanvasElement,
     naturalWidth: number,
     naturalHeight: number
@@ -735,5 +735,5 @@ export default class ImageEditor extends React.Component<
     this.maskRatio = naturalWidth / width
   }
 
-  public maskRatio = 0;
+  maskRatio = 0;
 }

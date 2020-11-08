@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from 'react'
 import { ArticleContentViewerProps } from '../../IPluginInfo'
-import { ArticleSection } from '../../../domain/Article'
+import { ArticleSection } from '../../../domain/ServiceInterfaces/Article'
 import './BaseViewer.less'
 import classNames from 'classnames'
 import SectionViewerProps, { AdditionalSectionViewerProps } from './SectionViewerProps'
@@ -13,7 +13,7 @@ export interface ArticleSectionVm extends ArticleSection {
 
 const getSections = (allSections: Set<string>, additionalSections: Set<string>, sections?: ArticleSection[]) => {
   const existedSections = sections ? new Map(sections.map(s => [s.name!, s])) : new Map<string, ArticleSection>()
-  var s = Array.from(allSections, (name) => Object.assign(existedSections.get(name) || { name, content: '' }, { additionalSection: additionalSections && additionalSections.has(name) }) as ArticleSectionVm)
+  let s = Array.from(allSections, (name) => Object.assign(existedSections.get(name) || { name, content: '' }, { additionalSection: additionalSections && additionalSections.has(name) }) as ArticleSectionVm)
   if (s[0]) {
     s[0].firstSection = true;
   }
