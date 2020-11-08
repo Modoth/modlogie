@@ -23,7 +23,7 @@ class RecBlockInfo {
 
 export class MdxDictParser implements DictParser {
     createDataReader = (buffer: ArrayBuffer): DataReader => {
-      let reader = Object.assign(new DataView(buffer), { position: 0 })
+      const reader = Object.assign(new DataView(buffer), { position: 0 })
       reader.getBigUint64 = reader.getBigUint64 || ((byteOffset: number, le?: boolean) => {
         const low = reader.getUint32(byteOffset + (le ? 0 : 4), le)
         const high = reader.getUint32(byteOffset + (le ? 4 : 0), le)
@@ -74,7 +74,7 @@ export class MdxDictParser implements DictParser {
 
     readKeyBlockInfos = (buffer: ArrayBuffer, blockCount: number, _: TextDecoder, codingUnit: number): KeyBlockInfo[] => {
       const reader: DataReader = this.createDataReader(buffer)
-      let blocks: KeyBlockInfo[] = []
+      const blocks: KeyBlockInfo[] = []
       for (let i = 0; i < blockCount; i++) {
         const keysCount = reader.getBigUint64(reader.position)
         reader.position += 8
@@ -113,7 +113,7 @@ export class MdxDictParser implements DictParser {
 
     readKeyInfos = (buffer: ArrayBuffer, keyInfosCount: number, decoder: TextDecoder): KeyInfo[] => {
       const reader: DataReader = this.createDataReader(buffer)
-      let keys: KeyInfo[] = []
+      const keys: KeyInfo[] = []
       for (let i = 0; i < keyInfosCount; i++) {
         const offset = reader.getBigUint64(reader.position)
         reader.position += 8
@@ -124,7 +124,7 @@ export class MdxDictParser implements DictParser {
     }
 
     readRecordBlockInfos = (reader: DataReader): RecBlockInfo[] => {
-      let blocks: RecBlockInfo[] = []
+      const blocks: RecBlockInfo[] = []
       const recBlocksCount = reader.getBigUint64(reader.position)
       reader.position += 8
       reader.position += 8// num_entries
@@ -141,10 +141,10 @@ export class MdxDictParser implements DictParser {
     }
 
     readRecordBuffer = (reader: DataReader): Uint8Array => {
-      let recBlockInfos = this.readRecordBlockInfos(reader)
+      const recBlockInfos = this.readRecordBlockInfos(reader)
       const recBuffers = recBlockInfos.map(i => this.decompAndDecryptBuffer(reader, i.compSize))
-      let totalCount = recBuffers.reduce((sum, value) => sum + value.byteLength, 0)
-      let recBuffer = new Uint8Array(totalCount)
+      const totalCount = recBuffers.reduce((sum, value) => sum + value.byteLength, 0)
+      const recBuffer = new Uint8Array(totalCount)
       let t = 0
       for (const b of recBuffers) {
         recBuffer.set(new Uint8Array(b), t)
@@ -228,7 +228,7 @@ export class MdxDictParser implements DictParser {
       const keys = this.readKeys(reader, indexEncrypted, decoder, codingUnit)
       const recordBuffer = this.readRecordBuffer(reader)
       const recbufferView = this.createDataReader(recordBuffer.buffer)
-      let items: [string, DictItem][] = []
+      const items: [string, DictItem][] = []
       for (const i of keys) {
         const key = i.key.trim()
         const [str] = this.findString(recbufferView, i.offset, decoder)

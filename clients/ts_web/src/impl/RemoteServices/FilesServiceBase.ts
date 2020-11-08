@@ -8,12 +8,12 @@ import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 
 export default class FilesServiceBase extends IServicesLocator implements IFilesServiceBase {
   async updateTags (articleId: string, ...tags: { id: string; value: string | Uint8Array; contentType?: string }[]): Promise<string[]> {
-    let langs = this.locate(ILangsService)
-    let res = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).addOrUpdateTags(
+    const langs = this.locate(ILangsService)
+    const res = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).addOrUpdateTags(
       new AddOrUpdateTagsRequest()
         .setId(articleId)
         .setTagsList(tags.map(t => {
-          let tag = new FileTag().setTagId(t.id)
+          const tag = new FileTag().setTagId(t.id)
           if (typeof t.value === 'string') {
             tag.setValue(t.value)
           } else {
@@ -37,7 +37,7 @@ export default class FilesServiceBase extends IServicesLocator implements IFiles
   }
 
   async addFile (parentId: string, type: string, content: Uint8Array): Promise<[string, string]> {
-    let res = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(parentId).setType(type).setContent(content), null))
+    const res = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(parentId).setType(type).setContent(content), null))
     return [res.getId(), res.getContentId()]
   }
 

@@ -19,7 +19,7 @@ export default class LikesService extends IServicesLocator implements ILikesServ
   }
 
   async addLike (articleId: string): Promise<void> {
-    let tagId = await this.getLikeTagId()
+    const tagId = await this.getLikeTagId()
     if (!tagId) {
       throw new Error(LangKeys.MSG_ERROR_INVALID_OPERATION)
     }
@@ -28,7 +28,7 @@ export default class LikesService extends IServicesLocator implements ILikesServ
   }
 
   async addDislike (articleId: string): Promise<void> {
-    let tagId = await this.getDislikeTagId()
+    const tagId = await this.getDislikeTagId()
     if (!tagId) {
       throw new Error(LangKeys.MSG_ERROR_INVALID_OPERATION)
     }

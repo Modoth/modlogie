@@ -5,11 +5,11 @@ export default class ServicesLocator implements IServicesLocator {
   private ctors = new Map()
   private singletonCtors = new Map()
   private singletonInstances = new Map()
-  constructor() {
+  constructor () {
     this.locate = this.locate.bind(this)
   }
 
-  locate<TS>(ctor: { new(...args: any): TS }): TS & IServicesLocator {
+  locate<TS> (ctor: { new(...args: any): TS }): TS & IServicesLocator {
     if (this.singletonInstances.has(ctor)) {
       return this.singletonInstances.get(ctor)
     }
@@ -22,9 +22,9 @@ export default class ServicesLocator implements IServicesLocator {
     }
     if (this.factories.has(ctor)) {
       const factory = this.factories.get(ctor)
-      const instance = factory();
+      const instance = factory()
       instance.locate = this.locate
-      return instance;
+      return instance
     }
     if (this.ctors.has(ctor)) {
       const Ctor = this.ctors.get(ctor)
@@ -35,7 +35,7 @@ export default class ServicesLocator implements IServicesLocator {
     return null as any
   }
 
-  register<TInt, TImp extends TInt>(int: { new(...args: any): TInt }, imp: { new(): TImp }, singleton = false): any {
+  register<TInt, TImp extends TInt> (int: { new(...args: any): TInt }, imp: { new(): TImp }, singleton = false): any {
     if (singleton) {
       this.singletonCtors.set(int, imp)
     } else {
@@ -43,11 +43,11 @@ export default class ServicesLocator implements IServicesLocator {
     }
   }
 
-  registerFactory<TInt>(int: { new(...args: any): TInt }, factory: { (): TInt }): any {
-    this.factories.set(int, factory);
+  registerFactory<TInt> (int: { new(...args: any): TInt }, factory: { (): TInt }): any {
+    this.factories.set(int, factory)
   }
 
-  registerInstance<TInt, TImp extends TInt>(int: { new(...args: any): TInt }, instance: TImp): any {
+  registerInstance<TInt, TImp extends TInt> (int: { new(...args: any): TInt }, instance: TImp): any {
     (instance as any).locate = this.locate
     this.singletonInstances.set(int, instance)
   }

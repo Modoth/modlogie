@@ -29,19 +29,19 @@ export default class ArticleService extends FilesServiceBase implements IArticle
   }
 
   private async ArticleFrom (item: File): Promise<Article> {
-    let contentUrl = item.getContent()
-    let additionId = item.getComment()
-    let tagsService = this.locate(ITagsService)
-    let tags = []
-    for (let t of item.getTagsList()) {
-      let tag = await tagsService.getById(t.getTagId())
+    const contentUrl = item.getContent()
+    const additionId = item.getComment()
+    const tagsService = this.locate(ITagsService)
+    const tags = []
+    for (const t of item.getTagsList()) {
+      const tag = await tagsService.getById(t.getTagId())
       if (!tag) {
         console.log('No such tag', tag)
         continue
       }
       tags.push(new ArticleTag(tag!.name, tag!.values || [], tag!.id, t.getValue()))
     }
-    let article: Article = {
+    const article: Article = {
       name: item.getName(),
       id: item.getId(),
       path: item.getPath(),
@@ -83,7 +83,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
             if (article.lazyLoading) {
               await article.lazyLoading()
             }
-            let additionalFile = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).getResourceById(new StringId().setId(additionId), null))).getFile()
+            const additionalFile = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).getResourceById(new StringId().setId(additionId), null))).getFile()
             if (additionalFile) {
               const additionalUrl = additionalFile.getContent()
               const { content }: { content: ArticleContent } = await this.tryParseContent(additionalUrl)
@@ -104,29 +104,29 @@ export default class ArticleService extends FilesServiceBase implements IArticle
   }
 
   async all (subjectId: string, skip: number, take: number): Promise<[number, Article[]]> {
-    let res = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).getFiles(new GetFilesRequest().setParentId(subjectId || '').setSkip(skip).setTake(take), null)))
-    let items = res.getFilesList()
-    let total = res.getTotal()
-    let articles = []
-    for (let i of items) {
+    const res = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).getFiles(new GetFilesRequest().setParentId(subjectId || '').setSkip(skip).setTake(take), null)))
+    const items = res.getFilesList()
+    const total = res.getTotal()
+    const articles = []
+    for (const i of items) {
       articles.push(await this.ArticleFrom(i))
     }
     return [total, articles]
   }
 
   async query (query: Query, filter: string | undefined, skip: number, take: number): Promise<[number, Article[]]> {
-    let res = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).query(new QueryRequest().setQuery(query).setSkip(skip).setTake(take).setFilter(filter || ''), null)))
-    let items = res.getFilesList()
-    let total = res.getTotal()
-    let articles = []
-    for (let i of items) {
+    const res = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).query(new QueryRequest().setQuery(query).setSkip(skip).setTake(take).setFilter(filter || ''), null)))
+    const items = res.getFilesList()
+    const total = res.getTotal()
+    const articles = []
+    for (const i of items) {
       articles.push(await this.ArticleFrom(i))
     }
     return [total, articles]
   }
 
   async add (name: string, subjectId: string): Promise<Article> {
-    let item = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).add(new AddRequest().setName(name).setFileType(File.FileType.NORMAL).setParentId(subjectId), null))
+    const item = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).add(new AddRequest().setName(name).setFileType(File.FileType.NORMAL).setParentId(subjectId), null))
     return this.ArticleFrom(item.getFile()!)
   }
 
@@ -135,7 +135,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
   }
 
   async rename (name: string, articleId: string): Promise<Article> {
-    let item = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updateName(new UpdateNameRequest().setName(name).setId(articleId), null))
+    const item = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updateName(new UpdateNameRequest().setName(name).setId(articleId), null))
     return this.ArticleFrom(item.getFile()!)
   }
 
@@ -144,20 +144,20 @@ export default class ArticleService extends FilesServiceBase implements IArticle
   }
 
   async updatePublished (id: string, published: Date): Promise<void> {
-    let publishedDate = new Timestamp()
+    const publishedDate = new Timestamp()
     publishedDate.fromDate(published)
     await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updatePublished(new UpdatePublishedRequest().setId(id).setPublished(publishedDate), null))
   }
 
   async move (articleId: string, subjectId: string): Promise<Article> {
-    let item = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).move(new MoveRequest().setId(articleId).setParentid(subjectId), null))
+    const item = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).move(new MoveRequest().setId(articleId).setParentid(subjectId), null))
     return this.ArticleFrom(item.getFile()!)
   }
 
   async updateArticleContent (article: Article, content: ArticleContent, hiddenSections?: Set<string>, files?: ArticleFile[]) {
-    let resourceIds = files ? files.map((f) => f.id!) : undefined
-    let allSections = new Map((content?.sections || []).map(s => [s.name!, s!]))
-    let hiddenContent: ArticleContent = { sections: [] }
+    const resourceIds = files ? files.map((f) => f.id!) : undefined
+    const allSections = new Map((content?.sections || []).map(s => [s.name!, s!]))
+    const hiddenContent: ArticleContent = { sections: [] }
     if (hiddenSections && hiddenSections.size) {
       hiddenSections.forEach(name => {
         if (allSections.has(name)) {
@@ -166,12 +166,12 @@ export default class ArticleService extends FilesServiceBase implements IArticle
         }
       })
     }
-    let normalContent: ArticleContent = { sections: Array.from(allSections.values()) }
+    const normalContent: ArticleContent = { sections: Array.from(allSections.values()) }
     if (hiddenContent.sections!.length) {
-      let hiddenContentStr = JSON.stringify({ content: hiddenContent })
+      const hiddenContentStr = JSON.stringify({ content: hiddenContent })
       if (!article.additionId) {
-        let shadowSectionPrivate = await this.locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.SHADOW_SECTION_PRIVATE)
-        let additionId = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(article.id!).setTextContent(hiddenContentStr).setPrivate(shadowSectionPrivate), null))).getId()
+        const shadowSectionPrivate = await this.locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.SHADOW_SECTION_PRIVATE)
+        const additionId = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(article.id!).setTextContent(hiddenContentStr).setPrivate(shadowSectionPrivate), null))).getId()
         await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(additionId), null))
         article.additionId = additionId
       } else {

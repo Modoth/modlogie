@@ -8,7 +8,7 @@ export default class LocalFavoritesStorage implements IFavoritesStorage {
   async get (type: string): Promise<string[]> {
     let ids: string[] = []
     try {
-      let dataStr = window.localStorage.getItem(this.FAVORITE_KEY(type))
+      const dataStr = window.localStorage.getItem(this.FAVORITE_KEY(type))
       if (dataStr) {
         ids = JSON.parse(dataStr)
       }
@@ -20,7 +20,7 @@ export default class LocalFavoritesStorage implements IFavoritesStorage {
 
   async set (type: string, value: string[]): Promise<void> {
     if (value && value.length) {
-      let dataStr = JSON.stringify(value)
+      const dataStr = JSON.stringify(value)
       window.localStorage.setItem(this.FAVORITE_KEY(type), dataStr)
     } else {
       window.localStorage.removeItem(this.FAVORITE_KEY(type))

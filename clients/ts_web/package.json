@@ -76,7 +76,8 @@
     "netcore": "npm run build/netcore && npm run run/netcore",
     "start": "webpack-dev-server --config webpack.dev.js",
     "build-to/client-prod": "webpack --config webpack.prod.js --env.prod=1 --output-path=\"$target_dir\"",
-    "generate/dep": "depcruise --include-only '^src' --exclude '^src/plugins|^src/index.ts|^src/infrac' --output-type ddot src | dot -T svg > dep.svg"
+    "generate/dep": "depcruise --include-only '^src' --exclude '^src/plugins|^src/index.ts|^src/infrac' --output-type ddot src | dot -T svg > dep.svg",
+    "lint": "npx eslint  src/**/*.ts*"
   },
   "keywords": [],
   "author": "",

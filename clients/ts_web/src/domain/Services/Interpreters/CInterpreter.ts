@@ -17,7 +17,7 @@ export class CInterpreter implements ILangInterpreter {
         req.onerror = () => resolve(new InterpretResponse(''))
         req.onload = () => {
           const res = req.response as string
-          let match = res.match(/main\.cpp:(\d+?):(\d+?): error: (.*)$/m)
+          const match = res.match(/main\.cpp:(\d+?):(\d+?): error: (.*)$/m)
           if (match) {
             resolve(new InterpretResponse('', match[3]))
           }

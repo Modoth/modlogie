@@ -10,15 +10,15 @@ export default class FavoritesServerSingleton extends IServicesLocator implement
     private _handlers: Map<string, { (count: number): void }> = new Map();
     private async getTypeFavorites (type: string): Promise<[string[], Set<string>]> {
       if (!this._favorites.has(type)) {
-        let storage = this.locate(IFavoritesStorage)
-        let fav = await storage.get(type)
+        const storage = this.locate(IFavoritesStorage)
+        const fav = await storage.get(type)
         this._favorites.set(type, [fav, new Set(fav)])
       }
       return this._favorites.get(type)!
     }
 
     async add (type: string, id: string): Promise<void> {
-      let [ids, idsSet] = await this.getTypeFavorites(type)
+      const [ids, idsSet] = await this.getTypeFavorites(type)
       if (idsSet.has(id)) {
         return
       }
@@ -35,12 +35,12 @@ export default class FavoritesServerSingleton extends IServicesLocator implement
     }
 
     async has (type: string, id: string): Promise<boolean> {
-      let [_, idsSet] = await this.getTypeFavorites(type)
+      const [_, idsSet] = await this.getTypeFavorites(type)
       return idsSet.has(id)
     }
 
     async remove (type: string, id: string): Promise<void> {
-      let [ids, idsSet] = await this.getTypeFavorites(type)
+      const [ids, idsSet] = await this.getTypeFavorites(type)
       if (!idsSet.has(id)) {
         return
       }
@@ -54,16 +54,16 @@ export default class FavoritesServerSingleton extends IServicesLocator implement
     }
 
     async get (type: string, skip?: number, take?: number): Promise<[string[], number]> {
-      let [ids] = await this.getTypeFavorites(type)
+      const [ids] = await this.getTypeFavorites(type)
       let res = ids
-      let start = skip || 0
-      let end = take ? start + take : undefined
+      const start = skip || 0
+      const end = take ? start + take : undefined
       res = ids.slice(start, end)
       return [res, ids.length]
     }
 
     async count (type: string): Promise<number> {
-      let [ids] = await this.getTypeFavorites(type)
+      const [ids] = await this.getTypeFavorites(type)
       return ids.length
     }
 

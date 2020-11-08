@@ -36,7 +36,7 @@ export default class LoginService extends IServicesLocator implements ILoginApps
     }
 
     set user (value: ILoginUser) {
-      let raiseUpdate = !this.sameUser(this._user, value)
+      const raiseUpdate = !this.sameUser(this._user, value)
       this._user = value
       if (raiseUpdate) {
         this.raiseUpdate()
@@ -44,19 +44,19 @@ export default class LoginService extends IServicesLocator implements ILoginApps
     }
 
     private async checkAllowPrint (role: string): Promise<boolean> {
-      let config = await this.locate(IConfigsService).get(ConfigKeys.ALLOW_PRINT)
+      const config = await this.locate(IConfigsService).get(ConfigKeys.ALLOW_PRINT)
       if (!config || !config.values || !config.values!.length) {
         return false
       }
-      let allow = config!.value || config.defaultValue
+      const allow = config!.value || config.defaultValue
       if (!allow) {
         return false
       }
-      let allowIdx = config.values!.indexOf(allow)
+      const allowIdx = config.values!.indexOf(allow)
       if (allowIdx < 0) {
         return false
       }
-      let roleIdx = config.values!.indexOf(role)
+      const roleIdx = config.values!.indexOf(role)
       return roleIdx >= allowIdx
     }
 
@@ -64,9 +64,9 @@ export default class LoginService extends IServicesLocator implements ILoginApps
 
     async userFromAccount (account?: UserLoginResult): Promise<ILoginUser> {
       if (account) {
-        let name = account.name
+        const name = account.name
         let role = name ? UserRoleKeys.NORMAL : UserRoleKeys.UNLOGIN
-        let user: ILoginUser = name ? { name } : {}
+        const user: ILoginUser = name ? { name } : {}
         if (account.isAdm) {
           role = UserRoleKeys.ADM
           user.editingPermission = true
@@ -82,7 +82,7 @@ export default class LoginService extends IServicesLocator implements ILoginApps
     }
 
     async updatePwdStorage (user: ILoginUser, pwd?: string): Promise<void> {
-      let pwdStorage = this.locate(IPasswordStorage)
+      const pwdStorage = this.locate(IPasswordStorage)
       if (!pwdStorage) {
         return
       }
@@ -98,7 +98,7 @@ export default class LoginService extends IServicesLocator implements ILoginApps
 
     async login (name: string, pwd: string, stopWhenFailed = false): Promise<boolean> {
       try {
-        let res = await this.server.login(name, pwd)
+        const res = await this.server.login(name, pwd)
         if (stopWhenFailed && !res.name) {
           return false
         }
@@ -114,12 +114,12 @@ export default class LoginService extends IServicesLocator implements ILoginApps
     }
 
     async checkLogin (): Promise<boolean> {
-      let res = await this.server.checkLogin()
+      const res = await this.server.checkLogin()
       if (res.name) {
         this.user = await this.userFromAccount(res)
         return true
       }
-      let autoLoginRes = await this.tryAutoLogin(false)
+      const autoLoginRes = await this.tryAutoLogin(false)
       if (!autoLoginRes) {
         this._user = await this.userFromAccount()
       }
@@ -127,15 +127,15 @@ export default class LoginService extends IServicesLocator implements ILoginApps
     }
 
     async tryAutoLogin (stopWhenFailed = false): Promise<boolean> {
-      let pwdStorage = this.locate(IPasswordStorage)
+      const pwdStorage = this.locate(IPasswordStorage)
       if (!pwdStorage) {
         return false
       }
-      let name = pwdStorage.name
+      const name = pwdStorage.name
       if (!name) {
         return false
       }
-      let pwd = pwdStorage.password
+      const pwd = pwdStorage.password
       if (!pwd) {
         return false
       }

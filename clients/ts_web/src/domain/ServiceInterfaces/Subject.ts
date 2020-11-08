@@ -9,7 +9,7 @@ export default class Subject {
     parent?: Subject;
     children?: Subject[]
     clone (parent?: Subject): Subject {
-      let sbj = Object.assign({}, this)
+      const sbj = Object.assign({}, this)
       sbj.parent = parent
       if (this.children) {
         sbj.children = this.children.map(s => s.clone(sbj))

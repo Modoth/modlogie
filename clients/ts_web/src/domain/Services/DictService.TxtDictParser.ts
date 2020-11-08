@@ -4,8 +4,8 @@ import { LangKeys } from '../ServiceInterfaces/ILangsService'
 export class TxtDictParser implements DictParser {
   async parse (file: File): Promise<[string, DictItem][]> {
     try {
-      let content = await file.text()
-      let items: [string, DictItem][] = []
+      const content = await file.text()
+      const items: [string, DictItem][] = []
       for (let line of content.split('\n')) {
         line = line.trim()
         const idx = line.indexOf(' ')

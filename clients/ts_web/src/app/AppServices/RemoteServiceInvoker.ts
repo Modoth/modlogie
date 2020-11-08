@@ -14,9 +14,9 @@ export default class RemoteServiceInvoker extends IServicesLocator implements IR
       console.log(e)
       throw new Error(LangKeys.MSG_ERROR_NETWORK)
     }
-    let error = res.getError()
+    const error = res.getError()
     if (this && error === ErrorMessage.MSG_ERROR_NEED_LOGIN) {
-      let loginService = this.locate(ILoginAppservice)
+      const loginService = this.locate(ILoginAppservice)
       if (await loginService.tryAutoLogin(true)) {
         return await this.invoke(func)
       }

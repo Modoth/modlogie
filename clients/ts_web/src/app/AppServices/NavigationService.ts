@@ -13,13 +13,13 @@ export default class NavigationService extends IServicesLocator implements INavi
     let async: boolean | undefined
     let desc = ''
     if (title) {
-      let ltitle = title.toLocaleLowerCase()
+      const ltitle = title.toLocaleLowerCase()
       if (ltitle.startsWith('http://') || ltitle.startsWith('https://')) {
         url = title
       }
     }
     if (!url || url === window.origin || url === `${window.origin}/`) {
-      let keywordsService = this.locate(IKeywordsService)
+      const keywordsService = this.locate(IKeywordsService)
       await Promise.all([
         sleep(200).then(() => {
           if (async === undefined) {
@@ -35,10 +35,10 @@ export default class NavigationService extends IServicesLocator implements INavi
         })
       ])
     }
-    let u = new URL(url || '')
-    let newTab = u.hostname !== window.location.hostname
-    let articleView = !newTab && u.hash.startsWith('#/article/')
-    let articlePath = articleView ? decodeURIComponent(u.hash.slice('#/article'.length)) : undefined
+    const u = new URL(url || '')
+    const newTab = u.hostname !== window.location.hostname
+    const articleView = !newTab && u.hash.startsWith('#/article/')
+    const articlePath = articleView ? decodeURIComponent(u.hash.slice('#/article'.length)) : undefined
     const open = () => {
       if (!url) {
         return

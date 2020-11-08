@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+proj_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+proj_dir=`dirname "$proj_dir"`
+proj_dir=`dirname "$proj_dir"`
+echo "$proj_dir"
+
+exit 1

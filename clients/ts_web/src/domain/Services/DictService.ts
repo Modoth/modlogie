@@ -58,7 +58,7 @@ export default class DictService implements IDictService {
       const db = await this.getDb()
       const tx = db.transaction(this._storeName, 'readwrite')
       const store = tx.objectStore(this._storeName)
-      let res = await action(store)
+      const res = await action(store)
       if (res) {
         tx.abort()
       }
@@ -77,7 +77,7 @@ export default class DictService implements IDictService {
       const request = store.get(key)
       return new Promise((resolve, reject) => {
         request.onsuccess = function () {
-          let matching = request.result
+          const matching = request.result
           if (matching !== undefined) {
             resolve(matching.value)
           } else {
@@ -102,11 +102,11 @@ export default class DictService implements IDictService {
     }
 
     async parseDict (file: File): Promise<[string, DictItem][]> {
-      let type = file.name.split('.').pop()
+      const type = file.name.split('.').pop()
       if (!type || !this.parsers.has(type)) {
         throw new Error(LangKeys.MSG_ERROR_INVALID_FILE)
       }
-      let parser = this.parsers.get(type)!
+      const parser = this.parsers.get(type)!
       return await parser?.parse(file)
     }
 
@@ -117,7 +117,7 @@ export default class DictService implements IDictService {
     }
 
     async change (file: File, token?: CancleToken, callBack?: { (progress: number): void }): Promise<DictInfo> {
-      let items = await this.parseDict(file)
+      const items = await this.parseDict(file)
       if (token?.cancled) {
         return new DictInfo(0)
       }
@@ -138,7 +138,7 @@ export default class DictService implements IDictService {
         await this.bulkStore(store => {
           for (let i = 0; i < perBulk && i < remain; i++) {
             const idx = i + offset
-            let item = items[idx][1]
+            const item = items[idx][1]
             store.put({ key: item.key, value: item.value })
             if (token?.cancled) {
               return true
@@ -161,7 +161,7 @@ export default class DictService implements IDictService {
       if (token && token.cancled) {
         return ''
       }
-      let value = await this.queryStore(word)
+      const value = await this.queryStore(word)
       return value && 'data:text/html;charset=utf-8,' + encodeURIComponent(`${value}<style>${style}</style>`)
     }
 }

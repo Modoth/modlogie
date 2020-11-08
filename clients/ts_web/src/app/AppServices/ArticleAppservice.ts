@@ -12,14 +12,14 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
     private typesCaches = new Map<string, any>()
 
     async getArticleType (configsService: IConfigsService, articleType: ArticleType, subTypeName?: string): Promise<ArticleContentType> {
-      let typeName = articleType.name
-      let key = subTypeName ? `${typeName}_${subTypeName}` : typeName
+      const typeName = articleType.name
+      const key = subTypeName ? `${typeName}_${subTypeName}` : typeName
       if (this.typesCaches.has(key)) {
         return this.typesCaches.get(key)
       }
       const parentType = subTypeName ? await this.getArticleType(configsService, articleType) : { smartHiddenSections: new Set<string>(), hiddenSections: new Set<string>(), additionalSections: new Set<string>(), allSections: new Set<string>() }
       const type: ArticleContentType = Object.assign({}, parentType, { noTitle: articleType.noTitle, articleType, Viewer: articleType.Viewer, name: typeName })
-      let allsections = articleType.fixedSections ? (articleType.defaultSections?.split(' ').map(s => s.trim()).filter(s => s) || []) : (await configsService.getValuesOrDefault(getArticleSections(typeName, subTypeName)))
+      const allsections = articleType.fixedSections ? (articleType.defaultSections?.split(' ').map(s => s.trim()).filter(s => s) || []) : (await configsService.getValuesOrDefault(getArticleSections(typeName, subTypeName)))
       if (allsections.length) {
         type.allSections = new Set()
         type.additionalSections = new Set()
@@ -46,20 +46,20 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
     }
 
     async fetchArticleByPath (path: string, loadingAddition = false): Promise<[Article | undefined, ArticleContentType | undefined, ArticleType | undefined]> {
-      let root = path.split('/').find(s => s)
-      let rootId = (await this.locate(ISubjectsService).getByPath('/' + root))?.id
+      const root = path.split('/').find(s => s)
+      const rootId = (await this.locate(ISubjectsService).getByPath('/' + root))?.id
       if (!rootId) {
         return [undefined, undefined, undefined]
       }
-      let config = this.locate(PluginsConfig)
-      let type = config.AllTypes.find(t => t.rootSubjectId === rootId)
+      const config = this.locate(PluginsConfig)
+      const type = config.AllTypes.find(t => t.rootSubjectId === rootId)
       if (!type) {
         return [undefined, undefined, undefined]
       }
       const articlesService = this.locate(IArticleService)
       const Query = articlesService.Query()
       const Condition = articlesService.Condition()
-      let query = new Query()
+      const query = new Query()
       query.setWhere(new Condition()
         .setType(Condition.ConditionType.AND)
         .setChildrenList([
@@ -70,8 +70,8 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
             .setProp('Path')
             .setValue(path)
         ]))
-      let res = await articlesService.query(query, undefined, 0, 1)
-      let article = res?.[1]?.[0]
+      const res = await articlesService.query(query, undefined, 0, 1)
+      const article = res?.[1]?.[0]
       if (!article) {
         return [undefined, undefined, type]
       }
@@ -82,7 +82,7 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
         await article.lazyLoadingAddition!()
       }
 
-      let contentType = await this.locate(IArticleAppservice)
+      const contentType = await this.locate(IArticleAppservice)
         .getArticleType(this.locate(IConfigsService), type!, type!.subTypeTag ? article.tagsDict?.get(type!.subTypeTag!)?.value : undefined)
       return [article, contentType, type]
     }

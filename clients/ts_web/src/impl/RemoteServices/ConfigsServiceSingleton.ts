@@ -30,7 +30,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
     }
 
     async getValueOrDefault (key: string): Promise<string> {
-      let config = await this.get(key)
+      const config = await this.get(key)
       if (!config) {
         return ''
       }
@@ -46,7 +46,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
     }
 
     async getValuesOrDefault (key: string): Promise<string[]> {
-      let value = await this.getValueOrDefault(key)
+      const value = await this.getValueOrDefault(key)
       if (!value) {
         return []
       }
@@ -63,7 +63,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
       }
       this.customConfigs = this.customConfigs || new Map((await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(KeyValuesServiceClient).getAll(new Empty(), null))).getKeyValuesList().map(c => [c.getId(), c.getValue()]))
         this.customConfigs!.forEach((value, key) => {
-          let config = this.configs.get(key)
+          const config = this.configs.get(key)
           if (config) {
             config.value = value
           }
@@ -84,7 +84,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
 
     async get (key: string): Promise<Config | undefined> {
       await this.loadCache()
-      let config = this.configs.get(key)
+      const config = this.configs.get(key)
       if (!config) {
         return
       }
@@ -94,22 +94,22 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
     async getResource (key: string): Promise<string | undefined> {
       await this.loadCache()
 
-      let path = await this.getValueOrDefault(key)
+      const path = await this.getValueOrDefault(key)
       if (!path) {
         return
       }
-      let resourceFile = await this.locate(ISubjectsService).getByPath(path)
+      const resourceFile = await this.locate(ISubjectsService).getByPath(path)
       return resourceFile?.resourceUrl
     }
 
     async set (key: string, value: string): Promise<Config | undefined> {
       await this.loadCache()
 
-      let config = this.configs.get(key)
+      const config = this.configs.get(key)
       if (!config) {
         return
       }
-      let req = new KeyValue()
+      const req = new KeyValue()
       req.setId(key)
       req.setValue(value)
       await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(KeyValuesServiceClient).addOrUpdate(req, null))
@@ -118,15 +118,15 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
         this.customConfigs.set(key, value)
       }
       if (key === ConfigKeys.ALLOW_LIKES) {
-        let tags = [TagNames.LIKE_TAG_NAME, TagNames.DISLIKE_TAG_NAME]
-        let tagsDict = new Set(tags)
+        const tags = [TagNames.LIKE_TAG_NAME, TagNames.DISLIKE_TAG_NAME]
+        const tagsDict = new Set(tags)
         let values = await this.getValuesOrDefault(ConfigNames.INCREASABLE_TAGS)
         values = values.filter(v => !tagsDict.has(v))
         if (value === 'true') {
           values.push(...tags)
-          let tagServer = this.locate(ITagsService)
-          for (let tagName of tags) {
-            let tag = await tagServer.get(tagName)
+          const tagServer = this.locate(ITagsService)
+          for (const tagName of tags) {
+            const tag = await tagServer.get(tagName)
             if (!tag) {
               await tagServer.add(tagName, TagType.NUMBER)
             }
@@ -139,11 +139,11 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
 
     async reset (key: string): Promise<Config | undefined> {
       await this.loadCache()
-      let config = this.configs.get(key)
+      const config = this.configs.get(key)
       if (!config) {
         return
       }
-      let req = new StringId()
+      const req = new StringId()
       req.setId(key)
       await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(KeyValuesServiceClient).delete(req, null))
       config.value = undefined
