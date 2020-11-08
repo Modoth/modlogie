@@ -1,4 +1,4 @@
-import { ArticleContentType } from '../../plugins/IPluginInfo'
+import { ArticleContentType } from '../../pluginbase/IPluginInfo'
 import Article from '../../domain/ServiceInterfaces/Article'
 
 export interface IArticleListChangedListener {

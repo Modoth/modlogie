@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react'
 import './ManageUsers.less'
-import { useUser, useServicesLocator } from '../Contexts'
-import { Redirect } from 'react-router-dom'
 import { Pagination, Table, Button, Switch, DatePicker } from 'antd'
-import { PlusOutlined, DeleteFilled, UploadOutlined } from '@ant-design/icons'
+import { PlusOutlined, DeleteFilled } from '@ant-design/icons'
+import { Redirect } from 'react-router-dom'
+import { useUser, useServicesLocator } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
-import IViewService from '../../app/Interfaces/IViewService'
 import IUsersService, { User } from '../../domain/ServiceInterfaces/IUsersService'
+import IViewService from '../../app/Interfaces/IViewService'
 import moment from 'moment'
+import React, { useState, useEffect } from 'react'
 
-export function ManageUsers() {
+export function ManageUsers () {
   const user = useUser()
   if (!user.editingPermission) {
     return <Redirect to="/" />
@@ -29,18 +29,18 @@ export function ManageUsers() {
       page = currentPage
     }
     try {
-      viewService.setLoading(true);
-      let [total, users] = await locator.locate(IUsersService).all(filter, countPerPage * (page! - 1), countPerPage)
+      viewService.setLoading(true)
+      const [total, users] = await locator.locate(IUsersService).all(filter, countPerPage * (page! - 1), countPerPage)
       setUsers(users)
       setTotalCount(total)
       setCurrentPage(page)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
-      viewService.setLoading(false);
+      viewService.setLoading(false)
       return false
     }
-    viewService.setLoading(false);
-    window.scrollTo(0, 0);
+    viewService.setLoading(false)
+    window.scrollTo(0, 0)
   }
 
   const addUser = () => {
@@ -50,14 +50,14 @@ export function ManageUsers() {
         { type: 'Text', value: '', hint: langs.get(LangKeys.Name) },
         { type: 'Text', value: '', hint: langs.get(LangKeys.Email) },
         { type: 'Password', value: '', hint: langs.get(LangKeys.Password) },
-        { type: 'Password', value: '', hint: langs.get(LangKeys.Password) },
+        { type: 'Password', value: '', hint: langs.get(LangKeys.Password) }
       ],
       async (newName: string, newEmail: string, password1: string, password2) => {
         if (!newName || !newEmail || password1 !== password2) {
           return
         }
         try {
-          let user = await locator.locate(IUsersService).add(newName, newEmail, password1)
+          const user = await locator.locate(IUsersService).add(newName, newEmail, password1)
           setUsers([...users!, user!])
           return true
         } catch (e) {
@@ -82,7 +82,7 @@ export function ManageUsers() {
           return
         }
         try {
-          await locator.locate(IUsersService).updateComment(user.id, newComment);
+          await locator.locate(IUsersService).updateComment(user.id, newComment)
           user!.comment = newComment
           setUsers([...users!])
           return true
@@ -95,8 +95,8 @@ export function ManageUsers() {
 
   const toogleAuthorised = async (user: User) => {
     try {
-      let authorised = !user.authorised
-      await locator.locate(IUsersService).updateType(user.id, authorised);
+      const authorised = !user.authorised
+      await locator.locate(IUsersService).updateType(user.id, authorised)
       user!.authorised = authorised
       setUsers([...users!])
       return true
@@ -106,8 +106,8 @@ export function ManageUsers() {
   }
   const toogleEnabled = async (user: User) => {
     try {
-      let enabled = !user.enabled
-      await locator.locate(IUsersService).updateStatue(user.id, enabled);
+      const enabled = !user.enabled
+      await locator.locate(IUsersService).updateStatue(user.id, enabled)
       user!.enabled = enabled
       setUsers([...users!])
       return true
@@ -122,7 +122,7 @@ export function ManageUsers() {
       [],
       async () => {
         try {
-          await locator.locate(IUsersService).delete(user.id);
+          await locator.locate(IUsersService).delete(user.id)
           const idx = users!.indexOf(user)
           users!.splice(idx, 1)
           setUsers([...users!])
@@ -135,7 +135,7 @@ export function ManageUsers() {
   }
 
   useEffect(() => {
-    fetchUsers(1);
+    fetchUsers(1)
   }, [])
 
   const renderId = (_: string, user: User) => {
@@ -147,21 +147,21 @@ export function ManageUsers() {
   }
 
   const renderAuthorised = (_: string, user: User) => {
-    return user.enabled ? <Switch checked={user.authorised} onChange={() => toogleAuthorised(user)} /> : null;
+    return user.enabled ? <Switch checked={user.authorised} onChange={() => toogleAuthorised(user)} /> : null
   }
 
   const renderAuthorisedExpired = (_: string, user: User) => {
     return (user.enabled && user.authorised) ? <DatePicker showToday={false} clearIcon={false} value={moment(user.authorisedExpired)} onChange={async e => {
       try {
-        let date = e!.toDate()
-        await locator.locate(IUsersService).updateAuthorisionExpired(user.id, date);
+        const date = e!.toDate()
+        await locator.locate(IUsersService).updateAuthorisionExpired(user.id, date)
         user!.authorisedExpired = date
         setUsers([...users!])
         return true
       } catch (e) {
         viewService!.errorKey(langs, e.message)
       }
-    }} /> : null;
+    }} /> : null
   }
 
   const renderEnabled = (_: string, user: User) => {

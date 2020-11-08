@@ -6,6 +6,12 @@
 			"script": "generate/remote-apis",
 			"problemMatcher": [],
 			"label": "npm: generate/remote-apis",
+		},
+		{
+			"type": "npm",
+			"script": "generate/dep",
+			"problemMatcher": [],
+			"label": "npm: generate/dep",
 		}
 	]
 }

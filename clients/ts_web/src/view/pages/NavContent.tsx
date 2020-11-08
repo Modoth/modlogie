@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from 'react'
 import './NavContent.less'
-import Login from './Login'
-import { Switch, Route } from 'react-router-dom'
-import Account from './Account'
-import Library from './Library'
-import { ManageTags } from './ManageTags'
-import { ManageSubjects } from './ManageSubjects'
-import { useServicesLocator } from '../Contexts'
-import { PluginsConfig } from '../../plugins/IPluginInfo'
-import Home from './Home'
-import { ManageConfigs } from './ManageConfigs'
-import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
-import ReactMarkdown from 'react-markdown'
-import { ManageUsers } from './ManageUsers'
-import { ManageKeywords } from './ManageKeywords'
 import { ArticleDetail } from './ArticleDetail'
 import { ArticleIdRedirect } from './ArticleIdRedirect'
+import { ManageConfigs } from './ManageConfigs'
+import { ManageKeywords } from './ManageKeywords'
+import { ManageSubjects } from './ManageSubjects'
+import { ManageTags } from './ManageTags'
+import { ManageUsers } from './ManageUsers'
+import { PluginsConfig } from '../../pluginbase/IPluginInfo'
+import { Switch, Route } from 'react-router-dom'
+import { useServicesLocator } from '../common/Contexts'
+import Account from './Account'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import Home from './Home'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
+import Library from './Library'
+import Login from './Login'
+import React, { useState, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
 
-function NavContent() {
+function NavContent () {
   const locator = useServicesLocator()
   const plugins = locator.locate(PluginsConfig)
   const [footer, setFooter] = useState('')
   const fetchFooter = async () => {
-    let footer = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_FOOTER)
+    const footer = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_FOOTER)
     setFooter(footer)
   }
   useEffect(() => {

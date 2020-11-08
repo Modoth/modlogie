@@ -1,51 +1,40 @@
-import React, { useState, useEffect } from 'react'
 import './ManageSubjects.less'
-import { useUser, useServicesLocator } from '../Contexts'
+import { Button, Table } from 'antd'
+import { DeleteFilled, SisternodeOutlined, SubnodeOutlined, FileAddOutlined, FileOutlined, OrderedListOutlined, DragOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
-import { Button, Table, Avatar } from 'antd'
-import {
-  DeleteFilled,
-  SisternodeOutlined,
-  SubnodeOutlined,
-  PictureOutlined,
-  FileAddOutlined,
-  FileOutlined,
-  OrderedListOutlined,
-  DragOutlined,
-  UploadOutlined,
-  DownloadOutlined
-} from '@ant-design/icons'
-import Subject from '../../domain/ServiceInterfaces/Subject'
-import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import { useUser, useServicesLocator } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
-import IViewService from '../../app/Interfaces/IViewService'
-import SubjectViewModel from './SubjectViewModel'
 import IMmConverter from '../../domain/ServiceInterfaces/IMmConverter'
 import ISubjectsExporter from '../../domain/ServiceInterfaces/ISubjectsExporter'
+import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import IViewService from '../../app/Interfaces/IViewService'
+import React, { useState, useEffect } from 'react'
+import Subject from '../../domain/ServiceInterfaces/Subject'
+import SubjectViewModel from './SubjectViewModel'
 
-let subjectsModelCache: SubjectViewModel[] = [];
-let subjectsCacheKey: Subject[] = [];
-let excludePathCacheKey: string | undefined = '';
+let subjectsModelCache: SubjectViewModel[] = []
+let subjectsCacheKey: Subject[] = []
+let excludePathCacheKey: string | undefined = ''
 const convertToTreeData = (subjects: Subject[], excludePath: string) => {
   if (subjects === subjectsCacheKey && excludePathCacheKey === excludePath) {
     return subjectsModelCache
   }
-  let subjectsModelDictCache = new Map<string, SubjectViewModel>()
+  const subjectsModelDictCache = new Map<string, SubjectViewModel>()
   subjectsModelCache = subjects.filter(s => s.path !== excludePath).map(
     (s) => new SubjectViewModel(s, subjectsModelDictCache, excludePath)
   )
   subjectsCacheKey = subjects
   excludePathCacheKey = excludePath
-  return subjectsModelCache;
+  return subjectsModelCache
 }
 
 const isImage = (url: string) => {
-  url = url.toLowerCase();
+  url = url.toLowerCase()
   const imgs = ['.png', '.jpeg', '.jpg', 'gif', '.svg']
-  return imgs.some(i => url.endsWith(i));
+  return imgs.some(i => url.endsWith(i))
 }
 
-export function ManageSubjects() {
+export function ManageSubjects () {
   const user = useUser()
   if (!user.editingPermission) {
     return <Redirect to="/" />
@@ -133,7 +122,7 @@ export function ManageSubjects() {
   }
 
   const exportSubject = (subject?: Subject) => {
-    locator.locate(ISubjectsExporter).export(subject ? [subject] : subjects);
+    locator.locate(ISubjectsExporter).export(subject ? [subject] : subjects)
   }
 
   const importTo = (parent?: Subject) => {
@@ -142,11 +131,11 @@ export function ManageSubjects() {
       [{ type: 'TextFile', value: '', hint: langs.get(LangKeys.Import), accept: '*.mm' }],
       async (content: string) => {
         if (!content) {
-          return false;
+          return false
         }
-        const subjects = locator.locate(IMmConverter).convertFromMmToSubjects(content, parent != null);
+        const subjects = locator.locate(IMmConverter).convertFromMmToSubjects(content, parent != null)
         if (!subjects.length) {
-          return false;
+          return false
         }
         const service: ISubjectsService = locator.locate(ISubjectsService)
         try {
@@ -155,7 +144,7 @@ export function ManageSubjects() {
           viewService!.errorKey(langs, e.message)
           return
         }
-        await fetchSubjects();
+        await fetchSubjects()
         return true
       }
     )
@@ -225,14 +214,14 @@ export function ManageSubjects() {
       [
         {
           type: 'Text',
-          value: Infinity == subject.order ? '' : subject.order,
+          value: Infinity === subject.order ? '' : subject.order,
           hint: langs.get(LangKeys.Order)
         }
       ],
       async (newOrderStr: string) => {
-        let newOrder = newOrderStr ? parseInt(newOrderStr) : Infinity;
+        let newOrder = newOrderStr ? parseInt(newOrderStr) : Infinity
         if (isNaN(newOrder)) {
-          newOrder = Infinity;
+          newOrder = Infinity
         }
         const service: ISubjectsService = locator.locate(ISubjectsService)
         try {
@@ -245,12 +234,12 @@ export function ManageSubjects() {
         if (subject.parent) {
           updateSubjectAncestors(subject)
           if (subject.parent.children) {
-            subject.parent.children = subject.parent.children.sort((a, b) => a.order - b.order);
+            subject.parent.children = subject.parent.children.sort((a, b) => a.order - b.order)
           }
         } else {
           const idx = subjects!.findIndex(s => s.id === subject.id)
           subjects!.splice(idx, 1, Object.assign({}, subject))
-          subjects!.sort((a, b) => a.order - b.order);
+          subjects!.sort((a, b) => a.order - b.order)
         }
         setSubjects([...subjects!])
         return true
@@ -344,11 +333,11 @@ export function ManageSubjects() {
           src={subject.resourceUrl}
         />
       </div> : < Button
-          type="link"
-          onClick={() => resetIcon(subject)}
-          icon={< FileOutlined />}
-        />) :
-        < Button
+        type="link"
+        onClick={() => resetIcon(subject)}
+        icon={< FileOutlined />}
+      />)
+        : < Button
           type="link"
           onClick={() => setIcon(subject)
           }
@@ -386,8 +375,8 @@ export function ManageSubjects() {
   }
 
   const renderMove = (_: string, subject: Subject) => {
-    return (subject.parent ?
-      <Button
+    return (subject.parent
+      ? <Button
         type="link"
         onClick={() => moveSubject(subject)}
         icon={<DragOutlined />}

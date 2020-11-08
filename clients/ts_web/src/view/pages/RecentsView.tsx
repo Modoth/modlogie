@@ -1,31 +1,19 @@
-import React, { useState, useEffect, MouseEventHandler } from 'react'
-import { useServicesLocator, useUser } from '../Contexts'
-import ILangsService, {
-  LangKeys
-} from '../../domain/ServiceInterfaces/ILangsService'
-import IViewService from '../../app/Interfaces/IViewService'
-import classNames from 'classnames'
 import './RecentsView.less'
-import { generateRandomStyle } from './common'
-import IPluginInfo, {
-  ArticleContentType,
-  PluginsConfig,
-  ArticleType
-} from '../../plugins/IPluginInfo'
-import { useHistory, Link, Redirect } from 'react-router-dom'
-import Article, {
-  ArticleAdditionalType
-} from '../../domain/ServiceInterfaces/Article'
-import ITagsService, {
-  TagNames
-} from '../../domain/ServiceInterfaces/ITagsService'
+import { ArticleContentType, ArticleType } from '../../pluginbase/IPluginInfo'
 import { Carousel } from 'antd'
+import { Redirect } from 'react-router-dom'
+import { useServicesLocator, useUser } from '../common/Contexts'
+import Article, { ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
+import Button from 'antd/es/button'
+import classNames from 'classnames'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
-import Button from 'antd/es/button'
+import IViewService from '../../app/Interfaces/IViewService'
+import React, { useState, useEffect, MouseEventHandler } from 'react'
 
 function RecentArticle (props: {
   article: Article;
@@ -103,7 +91,7 @@ export default function RecentsView (props: { type: ArticleType }) {
     const Query = articlesService.Query()
     const Condition = articlesService.Condition()
     try {
-      let query = new Query().setWhere(
+      const query = new Query().setWhere(
         new Condition()
           .setType(Condition.ConditionType.AND)
           .setChildrenList([
@@ -133,7 +121,7 @@ export default function RecentsView (props: { type: ArticleType }) {
       } else {
         query.setOrderBy('Modified').setOrderByDesc(true)
       }
-      let res = await articlesService.query(query, undefined, 0, 5)
+      const res = await articlesService.query(query, undefined, 0, 5)
       articles = res[1]
       await Promise.all(
         articles
@@ -152,12 +140,12 @@ export default function RecentsView (props: { type: ArticleType }) {
     }
     let recommandTitle = ''
     try {
-      let count =
+      const count =
         (await locator
           .locate(IConfigsService)
           .getValueOrDefaultNumber(ConfigKeys.RECOMMENT_COUNT)) || 0
       if (count) {
-        let query = new Query()
+        const query = new Query()
           .setWhere(
             new Condition()
               .setType(Condition.ConditionType.AND)
@@ -181,7 +169,7 @@ export default function RecentsView (props: { type: ArticleType }) {
               ])
           )
           .setOrderBy('Random')
-        let res = await articlesService.query(query, undefined, 0, count)
+        const res = await articlesService.query(query, undefined, 0, count)
         recommendsArticles = res[1]
         await Promise.all(
           recommendsArticles
@@ -203,8 +191,8 @@ export default function RecentsView (props: { type: ArticleType }) {
       // ignore
     }
     const s = locator.locate(IArticleAppservice)
-    let types = new Map()
-    for (let a of articles) {
+    const types = new Map()
+    for (const a of articles) {
       types.set(
         a,
         await s.getArticleType(
@@ -214,7 +202,7 @@ export default function RecentsView (props: { type: ArticleType }) {
         )
       )
     }
-    for (let a of recommendsArticles) {
+    for (const a of recommendsArticles) {
       types.set(
         a,
         await s.getArticleType(

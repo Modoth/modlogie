@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { ArticleFile } from '../../../domain/ServiceInterfaces/Article'
-import ArticleFileViewer from '../../../view/components/ArticleFileViewer'
 import './MathSectionViewer.less'
-import classNames from 'classnames'
+import { ArticleFile } from '../../../domain/ServiceInterfaces/Article'
 import { ArticleSlice, getSlices, SliceType, SliceFile } from './Slice'
-import SectionViewerProps from '../../base/view/SectionViewerProps'
-import Latex from '../../base/common/Latex'
+import ArticleFileViewer from '../../../view/pages/ArticleFileViewer'
+import classNames from 'classnames'
+import Latex from '../../../infrac/components/Latex'
+import React, { useState } from 'react'
+import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
 
 class ArticleSectionVm {
     slices: ArticleSlice[] = [];

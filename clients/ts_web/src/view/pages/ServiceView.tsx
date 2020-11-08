@@ -1,20 +1,20 @@
-import React, { useState, useRef } from 'react'
 import './ServiceView.less'
+import { ArticleContentType } from '../../pluginbase/IPluginInfo'
+import { ArticlePreview } from './ArticlePreview'
+import { CloseOutlined, SaveOutlined } from '@ant-design/icons'
 import { Spin, message, Modal, Input, Space, Radio, TreeSelect, Button } from 'antd'
-import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
-import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
-import ImageEditor from '../components/ImageEditor'
+import Article from '../../domain/ServiceInterfaces/Article'
 import ArticleList from './ArticleList'
 import ArticleSingle from './ArticleSingle'
-import { ArticleContentType } from '../../plugins/IPluginInfo'
-import Article from '../../domain/ServiceInterfaces/Article'
-import TextArea from 'antd/lib/input/TextArea'
-import { CloseOutlined, SaveOutlined, CopyOutlined } from '@ant-design/icons'
 import html2canvas from 'html2canvas'
-import ReactMarkdown from 'react-markdown'
-import { ArticlePreview } from './ArticlePreview'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import ImageEditor from '../../infrac/components/ImageEditor'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
-import QrCode from '../components/QrCode'
+import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
+import QrCode from '../../infrac/components/QrCode'
+import React, { useState, useRef } from 'react'
+import ReactMarkdown from 'react-markdown'
+import TextArea from 'antd/lib/input/TextArea'
 
 export const previewArticleByPath = (locator: IServicesLocator, path: string | undefined, title: string | undefined) => {
   if (!path) {
@@ -415,7 +415,7 @@ export default function ServiceView (props: {
               </div>
               <div className="menus" onClick={e => e.stopPropagation()}>
                 <Button type="primary" size="large" shape="circle" icon={<SaveOutlined />} onClick={() => {
-                  let a = document.createElement('a')
+                  const a = document.createElement('a')
                   a.target = '_blank'
                   a.href = previewImgUrl
                   a.download = 'download.png'

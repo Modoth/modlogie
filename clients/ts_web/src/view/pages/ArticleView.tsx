@@ -1,22 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import {
-  ArticleType,
-  ArticleContentEditorCallbacks,
-  ArticleContentType,
-} from '../../plugins/IPluginInfo'
-import Article, { ArticleFile, ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
-import { useUser, useServicesLocator } from '../Contexts'
-import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
-import IViewService from '../../app/Interfaces/IViewService'
+import './ArticleView.less'
+import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
-const { SubMenu } = Menu
-const { Panel } = Collapse;
+import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
+import { useUser, useServicesLocator } from '../common/Contexts'
 import {
   UploadOutlined,
   CheckOutlined,
   EditOutlined,
   PrinterFilled,
-  PlusCircleFilled,
   UpSquareOutlined,
   UpSquareFilled,
   HeartOutlined,
@@ -25,52 +16,42 @@ import {
   DislikeOutlined,
   ExpandOutlined,
   PrinterOutlined,
-  PlusCircleOutlined,
-  MinusOutlined,
-  EllipsisOutlined,
-  DownOutlined,
-  DoubleLeftOutlined,
   CaretLeftOutlined,
-  LeftOutlined,
-  DownSquareOutlined,
   QrcodeOutlined,
-  DeleteOutlined,
+  DeleteOutlined
 } from '@ant-design/icons'
-import './ArticleView.less'
-import IArticleListService from '../../app/Interfaces/IArticleListService'
+import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
-import { generateRandomStyle } from './common'
-import ITagsService, { TagNames, Tag } from '../../domain/ServiceInterfaces/ITagsService'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
-import Langs from '../Langs'
+import IArticleListService from '../../app/Interfaces/IArticleListService'
 import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import { title } from 'process'
-import { spawn } from 'child_process'
-import SubjectViewModel from './SubjectViewModel'
-import html2canvas from 'html2canvas';
-import MenuItem from 'antd/lib/menu/MenuItem'
 import IFavoritesServer from '../../domain/ServiceInterfaces/IFavoritesServer'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ILikesService from '../../domain/ServiceInterfaces/ILikesService'
-import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import IViewService from '../../app/Interfaces/IViewService'
+import MenuItem from 'antd/lib/menu/MenuItem'
 import moment from 'moment'
+import React, { useState, useEffect } from 'react'
+import SubjectViewModel from './SubjectViewModel'
+const { Panel } = Collapse
 
 const { Option } = Select
 
 const generateNewFileNames = (name: string, existedName: Set<string>) => {
   while (existedName.has(name)) {
-    let match = name.match(/^(.*?)(_(\d*))?(\.\w*)$/)
+    const match = name.match(/^(.*?)(_(\d*))?(\.\w*)$/)
     if (match) {
       name = match[1] + '_' + ((parseInt(match[3]) || 0) + 1) + match[4]
-    }
-    else {
+    } else {
       return name
     }
   }
   return name
 }
 
-export default function ArticleView(props: {
+export default function ArticleView (props: {
   article: Article;
   articleHandlers: { onDelete: { (id: string): void }, editingArticle?: Article };
   type: ArticleType;
@@ -100,14 +81,14 @@ export default function ArticleView(props: {
   const [name, setName] = useState(props.article.name)
   const [favoriteService] = useState(locator.locate(IFavoritesServer))
   const [favorite, setFavorite] = useState(false)
-  const [likesService, setLikesService] = useState<ILikesService | undefined>(undefined);
-  const [canLike, setCanLike] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
-  const [canDislike, setCanDislike] = useState(false);
-  const [dislikeCount, setDislikeCount] = useState(0);
+  const [likesService, setLikesService] = useState<ILikesService | undefined>(undefined)
+  const [canLike, setCanLike] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
+  const [canDislike, setCanDislike] = useState(false)
+  const [dislikeCount, setDislikeCount] = useState(0)
   const [recommendView, setRecommendView] = useState(props.recommendView || false)
-  const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend);
-  const [recommendTitle, setRecommendTitle] = useState('');
+  const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend)
+  const [recommendTitle, setRecommendTitle] = useState('')
 
   const addFile = (file?: File) => {
     viewService.prompt(
@@ -160,23 +141,23 @@ export default function ArticleView(props: {
   const toggleEditing = async () => {
     if (!editing) {
       if (!additionalLoaded) {
-        viewService.setLoading(true);
-        await props.article.lazyLoadingAddition!();
+        viewService.setLoading(true)
+        await props.article.lazyLoadingAddition!()
         setContent(props.article.content!)
-        setAdditionalLoaded(true);
-        viewService.setLoading(false);
+        setAdditionalLoaded(true)
+        viewService.setLoading(false)
       }
       setEditing(true)
       return
     }
     try {
-      const service = locator.locate(IArticleService);
+      const service = locator.locate(IArticleService)
       const newContent = editorRefs.getEditedContent()
       if (
         newContent.sections !== undefined &&
         newContent.sections !== content?.sections
       ) {
-        await service.updateArticleContent(props.article, newContent, type?.additionalSections, files,)
+        await service.updateArticleContent(props.article, newContent, type?.additionalSections, files)
         setContent(newContent)
       }
       setEditing(false)
@@ -188,7 +169,7 @@ export default function ArticleView(props: {
   const updateTag = async (tag: ArticleTag, tagValue: string) => {
     const service = locator.locate(IArticleService)
     try {
-      await service.updateTags(props.article.id!, { id: tag.id!, value: tagValue });
+      await service.updateTags(props.article.id!, { id: tag.id!, value: tagValue })
       const newTags = tagsDict || new Map()
       let newTag: ArticleTag
       if (!newTags.has(tag.name)) {
@@ -204,7 +185,9 @@ export default function ArticleView(props: {
         newTag = newTags.get(tag.name)
         newTag!.value = tagValue
       }
-      tagsDict?.set(newTag.name!, newTag)
+      if (tagsDict) {
+        tagsDict.set(newTag.name!, newTag)
+      }
       if (newTag.name === props.type.subTypeTag) {
         setType(await locator.locate(IArticleAppservice)
           .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined))
@@ -250,14 +233,14 @@ export default function ArticleView(props: {
         ]).then(() => {
           setContent(props.article.content!)
           setFiles(props.article.files!)
-          setAdditionalLoaded(true);
-          setLoaded(true);
+          setAdditionalLoaded(true)
+          setLoaded(true)
         })
       } else {
         props.article.lazyLoading!().then(() => {
           setContent(props.article.content!)
           setFiles(props.article.files!)
-          setLoaded(true);
+          setLoaded(true)
         })
       }
     }
@@ -269,37 +252,37 @@ export default function ArticleView(props: {
       })
     }
     (async () => {
-      let recommendTitle = (await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECOMMENT_TITLE))?.trim();
+      const recommendTitle = (await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECOMMENT_TITLE))?.trim()
       if (recommendTitle) {
         setRecommendTitle(recommendTitle)
       }
     })();
     (async () => {
-      let likesService = locator.locate(ILikesService);
+      const likesService = locator.locate(ILikesService)
       if (likesService) {
-        let enablded = await likesService.enabled();
+        const enablded = await likesService.enabled()
         if (!enablded) {
-          return;
+          return
         }
-        let canLike = await likesService.canLike(props.article.id!);
-        let canDislike = await likesService.canDislike(props.article.id!);
-        let likeCount = canLike ? await likesService.likeCount(props.article) : 0;
-        let dislikeCount = canDislike ? await likesService.dislikeCount(props.article) : 0;
-        setLikesService(likesService);
+        const canLike = await likesService.canLike(props.article.id!)
+        const canDislike = await likesService.canDislike(props.article.id!)
+        const likeCount = canLike ? await likesService.likeCount(props.article) : 0
+        const dislikeCount = canDislike ? await likesService.dislikeCount(props.article) : 0
+        setLikesService(likesService)
         setCanLike(canLike)
         setCanDislike(canDislike)
         setLikeCount(likeCount)
-        setDislikeCount(dislikeCount);
+        setDislikeCount(dislikeCount)
       }
     })()
     locator.locate(IArticleAppservice)
-      .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type));
+      .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type))
   }, [])
   if (!type) {
     return <></>
   }
   const toogleRecommend = async () => {
-    let next = !recommend;
+    const next = !recommend
     try {
       await locator.locate(IArticleService).updateAdditionalType(props.article.id!, next ? ArticleAdditionalType.Recommend : ArticleAdditionalType.Normal)
       setRecommend(next)
@@ -320,95 +303,92 @@ export default function ArticleView(props: {
     //   return
     // }
     if (!additionalLoaded) {
-      viewService.setLoading(true);
-      await props.article.lazyLoadingAddition!();
+      viewService.setLoading(true)
+      await props.article.lazyLoadingAddition!()
       setContent(props.article.content!)
-      setAdditionalLoaded(true);
-      viewService.setLoading(false);
+      setAdditionalLoaded(true)
+      viewService.setLoading(false)
     }
     locator.locate(IViewService).previewArticle(Object.assign({}, props.article, { name, content, files }), type)
   }
   const toogleFavorite = async () => {
     try {
-      let nextFav = !favorite;
+      const nextFav = !favorite
       if (nextFav) {
-        await favoriteService.add(props.type.name, props.article.id!);
+        await favoriteService.add(props.type.name, props.article.id!)
       } else {
-        await favoriteService.remove(props.type.name, props.article.id!);
+        await favoriteService.remove(props.type.name, props.article.id!)
       }
-      setFavorite(nextFav);
+      setFavorite(nextFav)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
     }
   }
   const touchLike = async () => {
     if (!canLike) {
-      viewService.errorKey(langs, LangKeys.AlreadyLiked);
+      viewService.errorKey(langs, LangKeys.AlreadyLiked)
       return
     }
     try {
       await likesService?.addLike(props.article.id!)
       setLikeCount((likeCount || 0) + 1)
-      setCanDislike(false);
-      setCanLike(false);
-    }
-    catch (e) {
+      setCanDislike(false)
+      setCanLike(false)
+    } catch (e) {
       viewService!.errorKey(langs, e.message)
     }
   }
 
   const touchDislike = async () => {
     if (!canDislike) {
-      viewService.errorKey(langs, LangKeys.AlreadyLiked);
+      viewService.errorKey(langs, LangKeys.AlreadyLiked)
       return
     }
     try {
       await likesService?.addDislike(props.article.id!)
       setDislikeCount((dislikeCount || 0) + 1)
-      setCanLike(false);
-      setCanDislike(false);
-    }
-    catch (e) {
+      setCanLike(false)
+      setCanDislike(false)
+    } catch (e) {
       viewService!.errorKey(langs, e.message)
     }
   }
   const shortNumber = (num: number): string => {
-    let s = num.toString();
-    let max = 3;
+    const s = num.toString()
+    const max = 3
     if (s.length < max) {
-      return s;
+      return s
     }
-    let h = Math.floor(num / Math.pow(10, s.length - 1));
-    return `${h}${["", "", "", "k", "0k", "00k"][s.length - max + 1]}+`
+    const h = Math.floor(num / Math.pow(10, s.length - 1))
+    return `${h}${['', '', '', 'k', '0k', '00k'][s.length - max + 1]}+`
   }
   return (
-    <Card className={classNames("article-view", recommendView ? '' : '')}>
+    <Card className={classNames('article-view', recommendView ? '' : '')}>
       <div className="article-title">
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
         }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : openDetail}>{name}</div>}
         {
-          (editing || recommendView) ? null : (<Menu mode="horizontal" className={classNames("actions-list")}>{[
+          (editing || recommendView) ? null : (<Menu mode="horizontal" className={classNames('actions-list')}>{[
             favoriteService ? <MenuItem key="toogle-fav"><Badge>
               <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
                 key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
             </Badge></MenuItem> : null,
-            user.printPermission ? (inArticleList ?
-              <MenuItem key='remove-print'><Badge >
+            user.printPermission ? (inArticleList
+              ? <MenuItem key='remove-print'><Badge >
                 <Button type="link" icon={<PrinterFilled />} onClick={() => {
                   articleListService.remove(props.article)
                   setInArticleList(articleListService.has(props.article))
                 }}
-                  key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
+                key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
               </Badge></MenuItem>
-              :
-              <MenuItem key="add-print"><Badge className="printer-icons">
+              : <MenuItem key="add-print"><Badge className="printer-icons">
                 <Button type="link" icon={<PrinterOutlined />} onClick={() => {
                   articleListService.add(props.article, type, () => {
-                    setInArticleList(false);
+                    setInArticleList(false)
                   })
                   setInArticleList(articleListService.has(props.article))
                 }}
-                  key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
+                key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
               </Badge></MenuItem>
             ) : null,
             ...(likesService ? [<MenuItem key="like"><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
@@ -442,7 +422,7 @@ export default function ArticleView(props: {
                 callbacks={editorRefs}
                 type={type}
               />
-              <Collapse className={classNames("editing-preview")} >
+              <Collapse className={classNames('editing-preview')} >
                 <Panel header={
                   <div className="preview-title-panel">
                     <span className="preview-title">{langs.get(LangKeys.Edit) + ': ' + (name || '')}</span>
@@ -452,7 +432,7 @@ export default function ArticleView(props: {
                       key="endEdit"
                       icon={<CheckOutlined />}
                     ></Button>,
-            <Button
+                    <Button
                       type="link"
                       icon={<UploadOutlined />}
                       onClick={() => addFile()}
@@ -463,8 +443,8 @@ export default function ArticleView(props: {
               </Collapse>
             </>
           ) : (
-              <props.type.Viewer content={content} files={files} type={type} />
-            )}
+            <props.type.Viewer content={content} files={files} type={type} />
+          )}
           {
             (hasMore) ? <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div> : null
           }
@@ -496,16 +476,16 @@ export default function ArticleView(props: {
             </Select>
           ))
         ]}
-          <DatePicker showToday={true} clearIcon={false} value={moment(published)} onChange={async e => {
-            try {
-              let date = e!.toDate()
-              await locator.locate(IArticleService).updatePublished(props.article.id!, date);
-              setPublished(date)
-              return true
-            } catch (e) {
+        <DatePicker showToday={true} clearIcon={false} value={moment(published)} onChange={async e => {
+          try {
+            const date = e!.toDate()
+            await locator.locate(IArticleService).updatePublished(props.article.id!, date)
+            setPublished(date)
+            return true
+          } catch (e) {
               viewService!.errorKey(langs, e.message)
-            }
-          }} />
+          }
+        }} />
         </div>) : null
       }
       {
@@ -518,7 +498,7 @@ export default function ArticleView(props: {
                 key="endEdit"
                 icon={<CheckOutlined />}
               >{langs.get(LangKeys.Ok)}</Button>,
-            <Button
+              <Button
                 type="link"
                 icon={<UploadOutlined />}
                 onClick={() => addFile()}

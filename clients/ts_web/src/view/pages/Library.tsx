@@ -1,68 +1,32 @@
-import React, { useState, useEffect, memo } from 'react'
-import './Library.less'
 import './Library.css'
-import Subject from '../../domain/ServiceInterfaces/Subject'
-import { useServicesLocator, useUser } from '../Contexts'
-import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
-import {
-  TreeSelect,
-  Button,
-  Space,
-  Radio,
-  Pagination,
-  Drawer,
-  Table,
-  Tree,
-  Input,
-  Badge
-} from 'antd'
-import ILangsService, {
-  LangKeys
-} from '../../domain/ServiceInterfaces/ILangsService'
-import {
-  PlusOutlined,
-  SearchOutlined,
-  CloseOutlined,
-  ArrowLeftOutlined,
-  ArrowRightOutlined,
-  HeartFilled
-} from '@ant-design/icons'
-import IViewService from '../../app/Interfaces/IViewService'
-import { v4 as uuidv4 } from 'uuid'
-import {
-  ArticleType,
-  ArticleContentType,
-  PluginsConfig
-} from '../../plugins/IPluginInfo'
-import Article, {
-  ArticleTag,
-  ArticleAdditionalType
-} from '../../domain/ServiceInterfaces/Article'
-import ArticleView from './ArticleView'
-import ArticleListSummary from './ArticleListSummary'
-import { useParams, Link, useLocation, Redirect } from 'react-router-dom'
-import ITagsService, {
-  TagNames,
-  Tag,
-  TagType
-} from '../../domain/ServiceInterfaces/ITagsService'
-import { generateRandomStyle } from './common'
-import classNames from 'classnames'
-import Langs from '../Langs'
-import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import ConfigKeys, {
-  getArticleTags
-} from '../../domain/ServiceInterfaces/ConfigKeys'
-import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
-import SubjectViewModel from './SubjectViewModel'
-import IArticleListService from '../../app/Interfaces/IArticleListService'
-import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
-import IMmConverter from '../../domain/ServiceInterfaces/IMmConverter'
-import ISubjectsExporter from '../../domain/ServiceInterfaces/ISubjectsExporter'
-import { MmIcon } from '../components/Icons'
-import IFavoritesServer from '../../domain/ServiceInterfaces/IFavoritesServer'
+import './Library.less'
+import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase/IPluginInfo'
+import { Link, useLocation, Redirect } from 'react-router-dom'
+import { MmIcon } from '../common/Icons'
+import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowRightOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
+import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
+import { useServicesLocator, useUser } from '../common/Contexts'
+import { v4 as uuidv4 } from 'uuid'
+import Article, { ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
+import ArticleListSummary from './ArticleListSummary'
+import ArticleView from './ArticleView'
+import classNames from 'classnames'
+import ConfigKeys, { getArticleTags } from '../../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
+import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
+import IArticleListService from '../../app/Interfaces/IArticleListService'
+import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
+import IFavoritesServer from '../../domain/ServiceInterfaces/IFavoritesServer'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import ISubjectsExporter from '../../domain/ServiceInterfaces/ISubjectsExporter'
+import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import ITagsService, { Tag, TagType } from '../../domain/ServiceInterfaces/ITagsService'
+import IViewService from '../../app/Interfaces/IViewService'
+import React, { useState, useEffect, memo } from 'react'
+import Subject from '../../domain/ServiceInterfaces/Subject'
+import SubjectViewModel from './SubjectViewModel'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -603,7 +567,7 @@ export default function Library (props: LibraryProps) {
                 src={(effectiveSubjects[0] || rootSubject).resourceUrl}
               ></img>
               <span>
-                {effectiveSubjects[0]?.id == rootSubject?.id
+                {effectiveSubjects[0]?.id === rootSubject?.id
                   ? type?.displayName
                   : (effectiveSubjects[0] || rootSubject).name}
               </span>

@@ -1,21 +1,21 @@
-import { getMdFileContent } from "../../base/common/GetFileContents"
+import { getMdFileContent } from '../../../pluginbase/base/common/GetFileContents'
 
 export const SectionNames = {
-    type: 'type',
-    data: 'data'
+  type: 'type',
+  data: 'data'
 }
 
 export const getSectionType = (name: string) => {
-    switch (name) {
-        case SectionNames.data:
-            return 'yml'
-        case SectionNames.type:
-            return 'txt'
-        default:
-            return name
-    }
+  switch (name) {
+    case SectionNames.data:
+      return 'yml'
+    case SectionNames.type:
+      return 'txt'
+    default:
+      return name
+  }
 }
 
 export const getSectionFileContent = (_: string) => {
-    return getMdFileContent
+  return getMdFileContent
 }

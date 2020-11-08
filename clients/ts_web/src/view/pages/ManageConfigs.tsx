@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react'
 import './ManageConfigs.less'
-import { useUser, useServicesLocator } from '../Contexts'
+import { ClearOutlined, EditOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
 import { Table, Button } from 'antd'
-import { ClearOutlined, EditOutlined } from '@ant-design/icons'
+import { useUser, useServicesLocator } from '../common/Contexts'
+import IConfigsService, { Config, ConfigType, ConfigNames } from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
-import IConfigsService, { Config, ConfigType, ConfigNames } from '../../domain/ServiceInterfaces/IConfigsSercice'
+import React, { useState, useEffect } from 'react'
 
-
-export function ManageConfigs() {
+export function ManageConfigs () {
   const user = useUser()
   if (!user.editingPermission) {
     return <Redirect to="/" />
@@ -22,7 +21,7 @@ export function ManageConfigs() {
   const [configs, setConfigs] = useState<Config[] | undefined>()
 
   const fetchConfigs = async () => {
-    let configs = await (await locator.locate(IConfigsService).all(true)).filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => a.key.localeCompare(b.key));
+    const configs = await (await locator.locate(IConfigsService).all(true)).filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => a.key.localeCompare(b.key))
     setConfigs(configs)
   }
 
@@ -39,8 +38,8 @@ export function ManageConfigs() {
       ],
       async (value: string) => {
         try {
-          let newConfig = await locator.locate(IConfigsService).set(config.key, value);
-          updateConfigs(config, newConfig);
+          const newConfig = await locator.locate(IConfigsService).set(config.key, value)
+          updateConfigs(config, newConfig)
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -50,12 +49,11 @@ export function ManageConfigs() {
   }
 
   const updateConfigs = (origin: Config, newConfig?: Config) => {
-    let idx = configs!.findIndex(c => c == origin)
+    const idx = configs!.findIndex(c => c === origin)
     if (idx < 0) {
       setConfigs([...configs!, newConfig!])
-    }
-    else {
-      configs!.splice(idx, 1, newConfig!);
+    } else {
+      configs!.splice(idx, 1, newConfig!)
       setConfigs([...configs!])
     }
   }
@@ -66,8 +64,8 @@ export function ManageConfigs() {
       [],
       async () => {
         try {
-          let newConfig = await locator.locate(IConfigsService).reset(config.key);
-          updateConfigs(config, newConfig);
+          const newConfig = await locator.locate(IConfigsService).reset(config.key)
+          updateConfigs(config, newConfig)
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -82,7 +80,7 @@ export function ManageConfigs() {
       [],
       async () => {
         try {
-          await locator.locate(IConfigsService).resetAll();
+          await locator.locate(IConfigsService).resetAll()
           window.location.reload()
           return true
         } catch (e) {
@@ -94,9 +92,9 @@ export function ManageConfigs() {
 
   useEffect(() => {
     fetchConfigs()
-    return function cleanup() {
-      locator.locate(IConfigsService).clearCache();
-    };
+    return function cleanup () {
+      locator.locate(IConfigsService).clearCache()
+    }
   }, [])
 
   const renderKey = (_: string, config: Config) => {
@@ -116,8 +114,8 @@ export function ManageConfigs() {
 
   const renderReset = (_: string, config: Config) => {
     return (
-      config.value === undefined ? null :
-        <Button
+      config.value === undefined ? null
+        : <Button
           type="link"
           onClick={() => resetConfig(config)}
           danger

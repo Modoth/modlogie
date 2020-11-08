@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from 'react'
 import './App.less'
-import { BrowserRouter as Router, HashRouter } from 'react-router-dom'
-import { UserContext, useServicesLocator } from './Contexts'
-import LoginService from '../app/Implements/LoginService'
-import Nav from './pages/Nav'
-import NavContent from './pages/NavContent'
-import ILoginAppservice, { ILoginUser } from '../app/Interfaces/ILoginAppservice'
-import IViewService from '../app/Interfaces/IViewService'
-import ServicesLocator from '../infrac/ServiceLocator/ServicesLocator'
-import ServiceView from './pages/ServiceView'
-import IConfigsService from '../domain/ServiceInterfaces/IConfigsSercice'
+import { HashRouter } from 'react-router-dom'
+import { uriTransformer } from 'react-markdown'
+import { UserContext, useServicesLocator } from './common/Contexts'
 import ConfigKeys from '../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from './assets/logo.png'
-import { uriTransformer } from 'react-markdown'
+import IConfigsService from '../domain/ServiceInterfaces/IConfigsSercice'
+import ILoginAppservice, { ILoginUser } from '../app/Interfaces/ILoginAppservice'
 import INavigationService from '../app/Interfaces/INavigationService'
-import { url } from 'inspector'
+import IViewService from '../app/Interfaces/IViewService'
+import LoginService from '../app/AppServices/LoginService'
+import Nav from './pages/Nav'
+import NavContent from './pages/NavContent'
+import React, { useState, useEffect } from 'react'
+import ServicesLocator from '../infrac/ServiceLocator/ServicesLocator'
+import ServiceView from './pages/ServiceView'
 
 let savedScrollTop = 0
 let savedScrollElement: HTMLElement | null = null
@@ -29,7 +28,7 @@ export default function App () {
   const ref = React.createRef<HTMLDivElement>()
   const bgRef = React.createRef<HTMLStyleElement>()
   const navigateTo = async (title: string | undefined, url: string | undefined) => {
-    let viewService = locator.locate(IViewService)
+    const viewService = locator.locate(IViewService)
     viewService.setLoading(true)
     try {
       await locator.locate(INavigationService).promptGoto(title, url)
@@ -40,7 +39,7 @@ export default function App () {
   useEffect(() => {
     (async () => {
       const configService = locator.locate(IConfigsService)
-      let logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
+      const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
       if (!bgRef.current) {
         return
       }
@@ -52,7 +51,7 @@ export default function App () {
       if ((e.target as any)?.nodeName === 'A') {
         const a: HTMLLinkElement = e.target as HTMLLinkElement
         if (a.href) {
-          let u = new URL(a.href)
+          const u = new URL(a.href)
           if (u.origin === window.location.origin && u.pathname === '/' && (u.hash || u.search)) {
             return
           }
@@ -68,7 +67,7 @@ export default function App () {
       <UserContext.Provider value={user}>
         <ServiceView
           provide={(s) => {
-            let viewService = locator.locate(IViewService)
+            const viewService = locator.locate(IViewService)
             locator.registerInstance(IViewService, s)
             if (viewService) {
               s.onShowMenuChanged = viewService.onShowMenuChanged

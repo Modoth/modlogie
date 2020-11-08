@@ -1,25 +1,24 @@
-import { ArticleFile } from "../../../domain/ServiceInterfaces/Article"
-import { ResFile } from "../ResFile"
+import { ArticleFile } from '../../../domain/ServiceInterfaces/Article'
+import { ResFile } from '../ResFile'
 import yaml from 'yaml'
 
 export const SectionNames = {
-    info: 'info'
+  info: 'info'
 }
 
 const addFile = (_: string | undefined, file: ArticleFile) => {
-    let fileInfo = new ResFile(file.name!)
-    return yaml.stringify(fileInfo)
+  const fileInfo = new ResFile(file.name!)
+  return yaml.stringify(fileInfo)
 }
 
 const removeFile = (_1: string | undefined, _2: ArticleFile) => {
-    return '';
+  return ''
 }
 
-
 export const addSectionFileContent = (_: string) => {
-    return addFile
+  return addFile
 }
 
 export const removeSectionFileContent = (_: string) => {
-    return removeFile
+  return removeFile
 }

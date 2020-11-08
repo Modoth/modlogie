@@ -1,4 +1,4 @@
-import { ArticleContentType, ArticleType } from '../../plugins/IPluginInfo'
+import { ArticleContentType, ArticleType } from '../../pluginbase/IPluginInfo'
 import Article from '../../domain/ServiceInterfaces/Article'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 

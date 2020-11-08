@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react'
 import './Login.less'
-import { useUser, useServicesLocator } from '../Contexts'
 import { Input, Space, Button, Switch } from 'antd'
-import { UserOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
+import { UserOutlined } from '@ant-design/icons'
+import { useUser, useServicesLocator } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ILoginAppservice from '../../app/Interfaces/ILoginAppservice'
-import IViewService from '../../app/Interfaces/IViewService'
 import IPasswordStorage from '../../domain/ServiceInterfaces/IPasswordStorage'
+import IViewService from '../../app/Interfaces/IViewService'
+import React, { useState, useEffect } from 'react'
 
-export default function Login() {
+export default function Login () {
   const user = useUser()
   if (user.name) {
     return <Redirect to="/account" />
@@ -18,10 +18,10 @@ export default function Login() {
   const langs = locator.locate(ILangsService)
   const loginService = locator.locate(ILoginAppservice)
   const notify = locator.locate(IViewService)
-  const pwdStorage = locator.locate(IPasswordStorage);
-  const [name, setName] = useState(pwdStorage && pwdStorage.name || '')
-  const [pwd, setPwd] = useState(pwdStorage && pwdStorage.password || '')
-  const [autoLogin, setAutoLogin] = useState(pwdStorage && pwdStorage.autoLogin);
+  const pwdStorage = locator.locate(IPasswordStorage)
+  const [name, setName] = useState((pwdStorage && pwdStorage.name) || '')
+  const [pwd, setPwd] = useState((pwdStorage && pwdStorage.password) || '')
+  const [autoLogin, setAutoLogin] = useState(pwdStorage && pwdStorage.autoLogin)
   const tryLogin = async () => {
     if (!name || !pwd) {
       console.log(LangKeys.MSG_ERROR_USER_OR_PWD)
@@ -35,11 +35,11 @@ export default function Login() {
     }
     notify!.setLoading(false)
   }
-  useEffect(()=>{
-    if(autoLogin){
-      tryLogin();
+  useEffect(() => {
+    if (autoLogin) {
+      tryLogin()
     }
-  },[])
+  }, [])
   return (
     <Space direction="vertical" className="login">
       <Input
@@ -58,14 +58,14 @@ export default function Login() {
         placeholder={langs.get(LangKeys.Password)}
         onPressEnter={tryLogin}
       />
-      {pwdStorage ?
-        <Switch className="auto-login" checked={autoLogin} onClick={(e) => {
-          pwdStorage.autoLogin = e;
-          setAutoLogin(pwdStorage.autoLogin);
+      {pwdStorage
+        ? <Switch className="auto-login" checked={autoLogin} onClick={(e) => {
+          pwdStorage.autoLogin = e
+          setAutoLogin(pwdStorage.autoLogin)
         }}
-          checkedChildren={<span>{langs.get(LangKeys.CancleAutoLogin)}</span>}
-          unCheckedChildren={<span>{langs.get(LangKeys.EnableAutoLogin)}</span>}
-          ></Switch>
+        checkedChildren={<span>{langs.get(LangKeys.CancleAutoLogin)}</span>}
+        unCheckedChildren={<span>{langs.get(LangKeys.EnableAutoLogin)}</span>}
+        ></Switch>
         : null}
       <Button className="login-btn" type="primary" onClick={tryLogin}>
         {langs.get(LangKeys.Login)}

@@ -1,8 +1,8 @@
-import PluginInfoBase from '../base'
-import IPluginInfo from '../IPluginInfo'
+import PluginInfoBase from '../../pluginbase/base'
+import IPluginInfo from '../../pluginbase/IPluginInfo'
 import H5LiveViewer from './view/H5LiveViewer'
-import CreateSectionViewer from '../base/view/SectionViewer'
-import CreateSectionEditor from '../base/view/SectionEditor'
+import CreateSectionViewer from '../../pluginbase/base/view/SectionViewer'
+import CreateSectionEditor from '../../pluginbase/base/view/SectionEditor'
 import { getSectionFileContent, getSectionType, SectionNames } from './view/Sections'
 
 export default class H5 extends PluginInfoBase implements IPluginInfo {

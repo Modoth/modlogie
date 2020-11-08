@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react'
 import './Account.less'
-import { useUser, useServicesLocator } from '../Contexts'
 import { Button, Avatar } from 'antd'
-import { Redirect, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useUser, useServicesLocator } from '../common/Contexts'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import defaultLogo from '../assets/logo.png'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ILoginAppservice from '../../app/Interfaces/ILoginAppservice'
 import IViewService from '../../app/Interfaces/IViewService'
-import defaultLogo from '../assets/logo.png'
-import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import React, { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-export default function Account() {
+export default function Account () {
   const user = useUser()
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
@@ -42,7 +42,7 @@ export default function Account() {
           return
         }
         try {
-          await locator.locate(ILoginAppservice).updateName(newName, password);
+          await locator.locate(ILoginAppservice).updateName(newName, password)
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -78,7 +78,7 @@ export default function Account() {
           return
         }
         try {
-          await locator.locate(ILoginAppservice).updatePassword(password, newPassword1);
+          await locator.locate(ILoginAppservice).updatePassword(password, newPassword1)
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -86,17 +86,17 @@ export default function Account() {
       })
   }
   const onComponentDidMount = async () => {
-    let configService = locator.locate(IConfigsService);
-    let name = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
-    let desc = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_DESCRIPTION)
-    let logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
-    let avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
-    let allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
+    const configService = locator.locate(IConfigsService)
+    const name = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
+    const desc = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_DESCRIPTION)
+    const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
+    const avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR)
+    const allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN)
     setSiteName(name)
     setSiteDesc(desc)
     setLogo(logo)
     setAvatar(avatar || logo)
-    setAllowLogin(allowLogin);
+    setAllowLogin(allowLogin)
   }
   useEffect(() => {
     onComponentDidMount()
@@ -151,8 +151,8 @@ export default function Account() {
       >
         {user.name}
       </Button>
-      {user.editingPermission ? null :
-        <Button
+      {user.editingPermission ? null
+        : <Button
           className="user-name"
           size="large"
           type="text"

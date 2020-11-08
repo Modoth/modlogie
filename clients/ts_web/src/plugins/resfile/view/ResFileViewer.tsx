@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react'
 import './ResFileViewer.less'
-import classNames from 'classnames'
-import SectionViewerProps from '../../base/view/SectionViewerProps'
-import yaml from 'yaml'
-import { ResFile } from '../ResFile'
-import { ResPlain } from './ResFileViewers/ResPlain'
-import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
-import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownCircleOutlined, UpCircleOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons'
-import ReactMarkdown from 'react-markdown'
-import { ResImage } from './ResFileViewers/ResImage'
 import { Button } from 'antd'
-import FullscreenWraper from '../../../view/components/FullscreenWraper'
+import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownCircleOutlined, UpCircleOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons'
+import { ResFile } from '../ResFile'
+import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
+import { ResImage } from './ResFileViewers/ResImage'
+import { ResPlain } from './ResFileViewers/ResPlain'
+import classNames from 'classnames'
+import FullscreenWraper from '../../../infrac/components/FullscreenWraper'
+import React, { useEffect, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
+import yaml from 'yaml'
 
 const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.Element } | undefined => {
   switch (ext?.toLocaleLowerCase()) {
@@ -35,7 +35,9 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
   const [downloadProgress, setDownloadProgress] = useState(0)
   const setDownloadProgressAndRaise = (progress: number) => {
     setDownloadProgress(progress)
-        props.onProgress?.(progress)
+    if (props.onProgress) {
+      props.onProgress(progress)
+    }
   }
   const cancleDownload = () => {
     if (downloadReq) {
@@ -60,14 +62,20 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
       setDownloadReq(undefined)
       setBlobUrl(blobUrl)
       setBuff(buff)
-            props.onProgress?.(100)
-            props.onFinished?.(blobUrl)
+      if (props.onProgress) {
+        props.onProgress(100)
+      }
+      if (props.onFinished) {
+        props.onFinished(blobUrl)
+      }
     }
     req.responseType = 'arraybuffer'
     req.open('GET', props.url, true)
     setFailed(false)
-        props.onProgress?.(0)
-        setDownloadReq(req)
+    if (props.onProgress) {
+      props.onProgress(0)
+    }
+    setDownloadReq(req)
   }
 
   useEffect(() => {
@@ -102,7 +110,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
       <span className="name" >{props.name}</span>
       <span className="failed">{failed ? <InfoCircleOutlined /> : ''}</span>
       {
-        blobUrl ? <a download={props.name} target="_blank" href={blobUrl}> <Button type="text" className="download" icon={<SaveOutlined />}></Button></a>
+        blobUrl ? <a download={props.name} target="_blank" rel="noreferrer" href={blobUrl}> <Button type="text" className="download" icon={<SaveOutlined />}></Button></a>
           : (downloadReq ? <Button className="download" type="text" icon={<CloseOutlined />} onClick={cancleDownload}></Button>
             : <Button type="text" className="download" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
       }

@@ -1,30 +1,20 @@
-import React, { useEffect, useState } from 'react'
 import './Nav.less'
 import { Link } from 'react-router-dom'
-import { useUser, useServicesLocator } from '../Contexts'
-import { Menu, Avatar, Drawer } from 'antd'
-import {
-  UserOutlined,
-  UsergroupAddOutlined,
-  ApiOutlined,
-  MenuOutlined,
-  SettingOutlined,
-  TagsOutlined
-} from '@ant-design/icons'
-import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
-import { generateRandomStyle } from './common'
+import { Menu, Drawer } from 'antd'
+import { PluginsConfig } from '../../pluginbase/IPluginInfo'
+import { UserOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
+import { useUser, useServicesLocator } from '../common/Contexts'
 import classNames from 'classnames'
-import ITagsService, { TagNames } from '../../domain/ServiceInterfaces/ITagsService'
-import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
-import IPluginInfo, { PluginsConfig } from '../../plugins/IPluginInfo'
-
 import defaultLogo from '../assets/logo.png'
-import IViewService from '../../app/Interfaces/IViewService'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import IViewService from '../../app/Interfaces/IViewService'
+import React, { useEffect, useState } from 'react'
 
 const { SubMenu } = Menu
-function Nav() {
+function Nav () {
   const locator = useServicesLocator()
   const plugins = locator.locate(PluginsConfig)
   const langs = locator.locate(ILangsService)
@@ -37,51 +27,59 @@ function Nav() {
   const [avatar, setAvatar] = useState('')
   const onComponentDidMount = async () => {
     const configService = locator.locate(IConfigsService)
-    let nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
-    let title = nameConfig?.value || nameConfig?.defaultValue || langs.get(LangKeys.Home)
-    let logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE);
-    let logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo;
-    let avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR);
-    let allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN);
+    const nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
+    const title = nameConfig?.value || nameConfig?.defaultValue || langs.get(LangKeys.Home)
+    const logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE)
+    const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
+    const avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR)
+    const allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN)
     document.title = title
     setTitile(title)
     setLogoTitleImg(logoTitle!)
-    setLogo(logo);
-    setAvatar(avatar || logo);
-    setAllowLogin(allowLogin);
-    document.getElementById('icon')?.remove()
-    document.getElementById('apple-touch-icon')?.remove()
-    let icon = document.createElement('link');
+    setLogo(logo)
+    setAvatar(avatar || logo)
+    setAllowLogin(allowLogin)
+    const existedIcon = document.getElementById('icon')
+    if (existedIcon) {
+      existedIcon.remove()
+    }
+    const existedTouch = document.getElementById('apple-touch-icon')
+    if (existedTouch) {
+      existedTouch.remove()
+    }
+    const icon = document.createElement('link')
     icon.id = 'icon'
     icon.rel = 'icon'
     icon.type = 'image/x-icon'
-    icon.href = logo;
+    icon.href = logo
     document.head.appendChild(icon)
 
-    let appTouchIcon = document.createElement('link');
+    const appTouchIcon = document.createElement('link')
     appTouchIcon.id = 'apple-touch-icon'
     appTouchIcon.rel = 'apple-touch-icon'
-    appTouchIcon.href = logo;
+    appTouchIcon.href = logo
     document.head.appendChild(appTouchIcon)
-    for (let type of locator.locate(PluginsConfig).AllTypes) {
-      let styleId = 'additional-style-' + type.name;
-      document.getElementById(styleId)?.remove()
+    for (const type of locator.locate(PluginsConfig).AllTypes) {
+      const styleId = 'additional-style-' + type.name
+      const existedStyle = document.getElementById(styleId)
+      if (existedStyle) {
+        existedStyle.remove()
+      }
 
-      let additionalStylePath = await configService.getValueOrDefault(ConfigKeys.ADDITIONAL_STYLE) + '/' + type.name
-      let additionalStyleUrl = (await locator.locate(ISubjectsService).getByPath(additionalStylePath))?.resourceUrl;
-      let additionalStyleContent = '';
+      const additionalStylePath = await configService.getValueOrDefault(ConfigKeys.ADDITIONAL_STYLE) + '/' + type.name
+      const additionalStyleUrl = (await locator.locate(ISubjectsService).getByPath(additionalStylePath))?.resourceUrl
+      let additionalStyleContent = ''
       if (additionalStyleUrl) {
         try {
           additionalStyleContent = await (await fetch(additionalStyleUrl)).text()
-        }
-        catch (e) {
+        } catch (e) {
           console.log('Invalid style')
         }
       }
       if (additionalStyleContent) {
-        let additionalStyle = document.createElement('style')
+        const additionalStyle = document.createElement('style')
         additionalStyle.id = styleId
-        additionalStyle.innerText = additionalStyleContent;
+        additionalStyle.innerText = additionalStyleContent
         document.head.appendChild(additionalStyle)
       }
     }
@@ -90,8 +88,8 @@ function Nav() {
     onComponentDidMount()
   }, [])
 
-  const [showMenu, setShowMenu] = useState(locator.locate(IViewService).showMenu);
-  locator.locate(IViewService).onShowMenuChanged = (s) => s === showMenu || setShowMenu(s);
+  const [showMenu, setShowMenu] = useState(locator.locate(IViewService).showMenu)
+  locator.locate(IViewService).onShowMenuChanged = (s) => s === showMenu || setShowMenu(s)
   return (
     <>
       <Drawer className="side-nav-panel" visible={showDrawer} onClose={() => setShowDrawer(false)} closable={false} placement="left">
@@ -142,14 +140,14 @@ function Nav() {
               <Link to="/account">{user.name}</Link>
             </Menu.Item>
           ) : (
-              <Menu.Item className="nav-logo-icon" icon={<UserOutlined />}>
-                <Link to={allowLogin ? "/login" : "/account"}>{langs.get(allowLogin ? LangKeys.Login : LangKeys.About)}</Link>
-              </Menu.Item>
-            )}
+            <Menu.Item className="nav-logo-icon" icon={<UserOutlined />}>
+              <Link to={allowLogin ? '/login' : '/account'}>{langs.get(allowLogin ? LangKeys.Login : LangKeys.About)}</Link>
+            </Menu.Item>
+          )}
         </Menu>
       </Drawer>
 
-      <Menu mode="horizontal" className={classNames("nav", showMenu ? '' : 'hidden')}>
+      <Menu mode="horizontal" className={classNames('nav', showMenu ? '' : 'hidden')}>
         <Menu.Item className="nav-open-menu" icon={<MenuOutlined />} onClick={() => setShowDrawer(true)}>
         </Menu.Item>
         {

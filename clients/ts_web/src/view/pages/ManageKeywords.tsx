@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react'
 import './ManageKeywords.less'
-import { useUser, useServicesLocator } from '../Contexts'
-import { Redirect } from 'react-router-dom'
-import { Pagination, Table, Button, Switch, DatePicker } from 'antd'
+import { Pagination, Table, Button } from 'antd'
 import { PlusOutlined, DeleteFilled, SearchOutlined, EditOutlined } from '@ant-design/icons'
+import { Redirect } from 'react-router-dom'
+import { useUser, useServicesLocator } from '../common/Contexts'
+import IKeywordsService, { Keyword } from '../../domain/ServiceInterfaces/IKeywordsService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
-import IUsersService, { User } from '../../domain/ServiceInterfaces/IUsersService'
-import moment from 'moment'
-import IKeywordsService, { Keyword } from '../../domain/ServiceInterfaces/IKeywordsService'
+import React, { useState, useEffect } from 'react'
 
-export function ManageKeywords() {
+export function ManageKeywords () {
   const user = useUser()
   if (!user.editingPermission) {
     return <Redirect to="/" />
@@ -30,18 +28,18 @@ export function ManageKeywords() {
       page = currentPage
     }
     try {
-      viewService.setLoading(true);
-      let [total, keywords] = await locator.locate(IKeywordsService).getAll(filter, countPerPage * (page! - 1), countPerPage)
+      viewService.setLoading(true)
+      const [total, keywords] = await locator.locate(IKeywordsService).getAll(filter, countPerPage * (page! - 1), countPerPage)
       setKeywords(keywords)
       setTotalCount(total)
       setCurrentPage(page)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
-      viewService.setLoading(false);
+      viewService.setLoading(false)
       return false
     }
-    viewService.setLoading(false);
-    window.scrollTo(0, 0);
+    viewService.setLoading(false)
+    window.scrollTo(0, 0)
   }
 
   const addKeyword = () => {
@@ -50,7 +48,7 @@ export function ManageKeywords() {
       [
         { type: 'Text', value: '', hint: langs.get(LangKeys.Keyword) },
         { type: 'Text', value: '', hint: langs.get(LangKeys.Url) },
-        { type: 'Text', multiline: true, value: '', hint: langs.get(LangKeys.Description) },
+        { type: 'Text', multiline: true, value: '', hint: langs.get(LangKeys.Description) }
       ],
       async (id: string, url: string, description?: string) => {
         if (!id || !url) {
@@ -82,7 +80,7 @@ export function ManageKeywords() {
           return
         }
         try {
-          await locator.locate(IKeywordsService).updateUrl(keywword.id, url);
+          await locator.locate(IKeywordsService).updateUrl(keywword.id, url)
           keywword!.url = url
           setKeywords([...keywords!])
           return true
@@ -106,7 +104,7 @@ export function ManageKeywords() {
       ],
       async (description: string) => {
         try {
-          await locator.locate(IKeywordsService).updateDescription(keywword.id, description);
+          await locator.locate(IKeywordsService).updateDescription(keywword.id, description)
           keywword!.description = description
           setKeywords([...keywords!])
           return true
@@ -123,7 +121,7 @@ export function ManageKeywords() {
       [],
       async () => {
         try {
-          await locator.locate(IKeywordsService).delete(keyword.id);
+          await locator.locate(IKeywordsService).delete(keyword.id)
           const idx = keywords!.indexOf(keyword)
           keywords!.splice(idx, 1)
           setKeywords([...keywords!])
@@ -136,35 +134,35 @@ export function ManageKeywords() {
   }
 
   useEffect(() => {
-    fetchKeywords(1);
+    fetchKeywords(1)
   }, [])
 
   useEffect(() => {
-    fetchKeywords(1);
+    fetchKeywords(1)
   }, [filter])
 
   const renderId = (_: string, keyword: Keyword) => {
     return <span onClick={() => {
       const title = keyword.id
       const url = keyword.url
-      const desc = keyword.description;
+      const desc = keyword.description
       locator.locate(IViewService).prompt(
         url ? { title, subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url } : title, [
-        ...(desc ? [{
-          type: 'Markdown',
-          value: desc
-        }] : [])
-      ], async () => {
-        if (!url) {
-          return
-        }
-        if (new URL(url!).hostname === window.location.hostname) {
-          window.location.href = url!;
-        } else {
-          window.open(url, '_blank');
-        }
-        return true;
-      })
+          ...(desc ? [{
+            type: 'Markdown',
+            value: desc
+          }] : [])
+        ], async () => {
+          if (!url) {
+            return
+          }
+          if (new URL(url!).hostname === window.location.hostname) {
+            window.location.href = url!
+          } else {
+            window.open(url, '_blank')
+          }
+          return true
+        })
     }}>{keyword.id}</span>
   }
 
@@ -239,7 +237,7 @@ export function ManageKeywords() {
       <div className="float-menus">
         <Button
           icon={<SearchOutlined />}
-          type={filter ? 'primary' : "default"}
+          type={filter ? 'primary' : 'default'}
           size="large" shape="circle"
           onClick={() => {
             locator.locate(IViewService).prompt(langs.get(LangKeys.Search), [
@@ -250,7 +248,7 @@ export function ManageKeywords() {
               }
             ], async (filter: string) => {
               setFilter(filter)
-              return true;
+              return true
             })
           }}
         >

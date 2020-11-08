@@ -1,55 +1,55 @@
-import React, { useState, useEffect } from 'react'
-import { useServicesLocator, useUser } from '../Contexts'
-import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
-import IViewService from '../../app/Interfaces/IViewService'
-import Subject from '../../domain/ServiceInterfaces/Subject'
-import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
-import classNames from 'classnames'
 import './SubjectsView.less'
-import { generateRandomStyle } from './common'
-import { PluginsConfig, ArticleType } from '../../plugins/IPluginInfo'
-import { useHistory, Link } from 'react-router-dom'
 import { Badge, Tabs } from 'antd'
+import { generateRandomStyle } from './common'
+import { PluginsConfig, ArticleType } from '../../pluginbase/IPluginInfo'
+import { useHistory, Link } from 'react-router-dom'
+import { useServicesLocator, useUser } from '../common/Contexts'
+import classNames from 'classnames'
+import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
+import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import IViewService from '../../app/Interfaces/IViewService'
+import React, { useState, useEffect } from 'react'
 import RecentsView from './RecentsView'
-import { type } from 'os'
-const { TabPane } = Tabs;
+import Subject from '../../domain/ServiceInterfaces/Subject'
 
-function sortSubjectByChildrenCount(subjects: Subject[]) {
+const { TabPane } = Tabs
+
+function sortSubjectByChildrenCount (subjects: Subject[]) {
   return subjects.sort((a, b) => (a.children?.length ? 1 : 0) - (b.children?.length ? 1 : 0))
 }
 
-function SubjectView(props: { type: ArticleType, subject: Subject, deepth: number, parentPath: string, rootPath: string }) {
+function SubjectView (props: { type: ArticleType, subject: Subject, deepth: number, parentPath: string, rootPath: string }) {
   const displayName = props.subject.path!.slice(props.rootPath.length)
   const langs = useServicesLocator().locate(ILangsService)
   if (props.subject.children && props.subject.children.length) {
-    const path = props.parentPath ? (props.parentPath + "/" + props.subject.name) : props.subject.name
+    const path = props.parentPath ? (props.parentPath + '/' + props.subject.name) : props.subject.name
     return (
-      <div className={classNames("category", `subject-${props.deepth}`)}>
-        <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("category-title", props.deepth ? '' : 'category-title-root')}>{props.subject.resourceUrl ? <img src={props.subject.resourceUrl}></img> : null}<span >{props.deepth ? (displayName || path) : props.type.displayName}</span></Link>
+      <div className={classNames('category', `subject-${props.deepth}`)}>
+        <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames('category-title', props.deepth ? '' : 'category-title-root')}>{props.subject.resourceUrl ? <img src={props.subject.resourceUrl}></img> : null}<span >{props.deepth ? (displayName || path) : props.type.displayName}</span></Link>
         <div className="category-content">{sortSubjectByChildrenCount(props.subject.children).filter(s => s.totalArticleCount).map(subject => <SubjectView key={subject.id} type={props.type} subject={subject} parentPath={path} rootPath={props.rootPath} deepth={props.deepth + 1}></SubjectView>)}</div>
       </div>
     )
   }
   return (
-    <Badge count={props.subject.totalArticleCount} className={classNames("subject-content-wraper", `subject-${props.deepth}`)}>
-      <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames("subject-content", generateRandomStyle())}>
+    <Badge count={props.subject.totalArticleCount} className={classNames('subject-content-wraper', `subject-${props.deepth}`)}>
+      <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames('subject-content', generateRandomStyle())}>
         {
-          props.subject.resourceUrl ?
-            <img src={props.subject.resourceUrl} /> :
-            <span>{props.subject.name}</span>
+          props.subject.resourceUrl
+            ? <img src={props.subject.resourceUrl} />
+            : <span>{props.subject.name}</span>
         }
       </Link>
     </Badge>
   )
 }
 
-function SingleTypeSubjectsView(props: { type: ArticleType }) {
+function SingleTypeSubjectsView (props: { type: ArticleType }) {
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
   const viewService = locator.locate(IViewService)
   const [subjects, setSubjects] = useState<Subject[]>([])
-  const history = useHistory();
-  const type = props.type;
+  const history = useHistory()
+  const type = props.type
 
   const fetchSubjects = async () => {
     const service = locator.locate(ISubjectsService)
@@ -70,16 +70,16 @@ function SingleTypeSubjectsView(props: { type: ArticleType }) {
   </>)
 }
 
-export default function SubjectsView() {
+export default function SubjectsView () {
   const locator = useServicesLocator()
   const plugins = locator.locate(PluginsConfig)
-  const user = useUser();
-  const types = user?.editingPermission ? plugins.AllTypes : plugins.NormalTypes;
+  const user = useUser()
+  const types = user?.editingPermission ? plugins.AllTypes : plugins.NormalTypes
   return (<Tabs className="subjects-view">
     {
       types.map(type => <TabPane tab={type.displayName || type.name} key={type.name}>
         <RecentsView type={type}></RecentsView>
-        <div className="single-subject-wraper"><SingleTypeSubjectsView type={type}  ></SingleTypeSubjectsView></div>
+        <div className="single-subject-wraper"><SingleTypeSubjectsView type={type} ></SingleTypeSubjectsView></div>
       </TabPane>)
     }
   </ Tabs>)
