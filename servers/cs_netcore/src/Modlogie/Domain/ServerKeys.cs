@@ -1,28 +1,26 @@
-using System;
-using System.Collections.Generic;
-
 namespace Modlogie.Domain
 {
     public enum ServerKeyType
     {
-        STRING = 0,
-        ENUM,
-        NUMBER,
-        BOOLEAN
+        String = 0,
+        Enum,
+        Number,
+        Boolean
     }
 
     public class ServerKey
     {
         public string Key { get; set; }
 
-        public ServerKeyType Type { get; set; } = ServerKeyType.STRING;
+        public ServerKeyType Type { get; set; } = ServerKeyType.String;
     }
+
     public class ServerKeys
     {
-        public static ServerKey WechatApiToken = new ServerKey { Key = nameof(WechatApiToken) };
+        public static ServerKey WechatApiToken = new ServerKey {Key = nameof(WechatApiToken)};
 
-        public static ServerKey __IncreasableTags = new ServerKey { Key = nameof(__IncreasableTags) };
+        public static ServerKey IncreaseTags = new ServerKey {Key = "__" + nameof(IncreaseTags)};
 
-        public static ServerKey[] All = new ServerKey[] { WechatApiToken, __IncreasableTags };
+        public static readonly ServerKey[] All = {WechatApiToken, IncreaseTags};
     }
 }

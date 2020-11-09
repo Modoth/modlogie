@@ -4,33 +4,47 @@ using Autofac;
 using Modlogie.Api.Common;
 using Modlogie.Domain;
 using Modlogie.Infrastructure.Data;
+using Module = Autofac.Module;
 
 namespace Modlogie.Api
 {
-    public class AutofacModule : Autofac.Module
+    public class AutofacModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
             var asm = Assembly.GetAssembly(typeof(AutofacModule));
-            Func<Type, bool> isSingleton = (type) => type.Name.EndsWith("Singleton");
 
-            var domainServiceNameSpace = typeof(IAccontValidationService).Namespace;
-            Func<Type, bool> isDomainService = (type) => type.Namespace == domainServiceNameSpace;
-            builder.RegisterAssemblyTypes(asm)
-                .Where(t => isSingleton(t) && isDomainService(t))
+            bool IsSingleton(Type type)
+            {
+                return type.Name.EndsWith("Singleton");
+            }
+
+            var domainServiceNameSpace = typeof(IAccountValidationService).Namespace;
+
+            bool IsDomainService(Type type)
+            {
+                return type.Namespace == domainServiceNameSpace;
+            }
+
+            builder.RegisterAssemblyTypes(asm!)
+                .Where(t => IsSingleton(t) && IsDomainService(t))
                 .AsImplementedInterfaces();
 
             builder.RegisterAssemblyTypes(asm)
-                            .Where(t => !isSingleton(t) && isDomainService(t))
-                            .AsImplementedInterfaces().SingleInstance();
+                .Where(t => !IsSingleton(t) && IsDomainService(t))
+                .AsImplementedInterfaces().SingleInstance();
 
             builder.RegisterType<LocalFileContentService>().AsImplementedInterfaces();
             builder.RegisterType<LoginUserService>().AsImplementedInterfaces();
             builder.RegisterType<FileQueryCompileServiceSingleton>().AsImplementedInterfaces().SingleInstance();
 
-            Func<Type, bool> isEntityService = (type) => type.Name.EndsWith("EntityService");
+            bool IsEntityService(Type type)
+            {
+                return type.Name.EndsWith("EntityService");
+            }
+
             builder.RegisterAssemblyTypes(asm)
-                .Where(t => isEntityService(t))
+                .Where(IsEntityService)
                 .AsImplementedInterfaces();
         }
     }

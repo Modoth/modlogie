@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Modlogie.Domain.Models;
 
 namespace Modlogie.Infrastructure.Data
@@ -26,11 +24,6 @@ namespace Modlogie.Infrastructure.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=db;database=modlogie;user=root;password=123456", x => x.ServerVersion("10.5.4-mariadb"));
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -117,7 +110,7 @@ namespace Modlogie.Infrastructure.Data
 
             modelBuilder.Entity<FileTag>(entity =>
             {
-                entity.HasKey(e => new { e.FileId, e.TagId })
+                entity.HasKey(e => new {e.FileId, e.TagId})
                     .HasName("PRIMARY");
 
                 entity.ToTable("FileTag");

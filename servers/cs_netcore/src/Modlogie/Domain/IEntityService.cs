@@ -9,22 +9,22 @@ namespace Modlogie.Domain
     {
         Task<int> Commit();
     }
+
     public interface IEntityServiceContext
     {
-        IEntityServiceContextTransaction BeginTransaction();
-
         IEntityServiceContextTransaction CurrentTransaction { get; }
+        IEntityServiceContextTransaction BeginTransaction();
     }
 
     public interface IEntity<TKey>
     {
         TKey Id { get; set; }
     }
+
     public interface IEntityService<TEntity, TKey> where TEntity : class, IEntity<TKey>
     {
-        IQueryable<TEntity> All();
-
         IEntityServiceContext Context { get; }
+        IQueryable<TEntity> All();
 
         Task<TEntity> Update(TEntity entity);
 
@@ -39,6 +39,5 @@ namespace Modlogie.Domain
         Task<int> DeleteAll();
 
         Task<int> DeleteRange(IEnumerable<TEntity> entities);
-
     }
 }

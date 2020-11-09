@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Modlogie.Domain.Models
 {
-    public partial class FileTag
+    public class FileTag
     {
         public Guid FileId { get; set; }
         public Guid TagId { get; set; }

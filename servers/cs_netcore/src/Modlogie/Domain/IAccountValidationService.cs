@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 
-namespace Modlogie.Domain{
+namespace Modlogie.Domain
+{
     public class LoginUser
     {
         public string Id { get; set; }
@@ -8,9 +9,9 @@ namespace Modlogie.Domain{
         public bool Authorised { get; set; }
 
         public bool Adm { get; set; }
-
     }
-    public interface IAccontValidationService
+
+    public interface IAccountValidationService
     {
         Task<LoginUser> Validate(string name, string pwd);
     }

@@ -6,3 +6,5 @@ dist
 build
 contents
 clients/ts_web/src/impl/remote-apis
+.idea
+*.DotSettings.user

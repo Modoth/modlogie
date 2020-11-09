@@ -5,13 +5,6 @@ namespace Modlogie.Domain.Models
 {
     public partial class File
     {
-        public File()
-        {
-            FileTags = new HashSet<FileTag>();
-            InverseParent = new HashSet<File>();
-        }
-
-        public Guid Id { get; set; }
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
         public string Name { get; set; }
@@ -26,7 +19,9 @@ namespace Modlogie.Domain.Models
         public DateTime? Published { get; set; }
 
         public virtual File Parent { get; set; }
-        public virtual ICollection<FileTag> FileTags { get; set; }
-        public virtual ICollection<File> InverseParent { get; set; }
+        public virtual ICollection<FileTag> FileTags { get; set; } = new HashSet<FileTag>();
+        public virtual ICollection<File> InverseParent { get; set; } = new HashSet<File>();
+
+        public Guid Id { get; set; }
     }
 }

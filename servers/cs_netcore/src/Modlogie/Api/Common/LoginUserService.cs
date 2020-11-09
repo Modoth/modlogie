@@ -1,8 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
 using Modlogie.Domain;
 using Newtonsoft.Json;
 
@@ -10,22 +8,11 @@ namespace Modlogie.Api.Common
 {
     public class LoginUserService : ILoginUserService
     {
-        public LoginUserService(IConfiguration configuration, IDistributedCache cache)
+        private readonly IDistributedCache _cache;
+
+        public LoginUserService(IDistributedCache cache)
         {
             _cache = cache;
-            _cacheOption = new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromSeconds(configuration.GetValue<int>("Session:IdleTimeout")) };
-        }
-        private readonly IDistributedCache _cache;
-        private readonly DistributedCacheEntryOptions _cacheOption;
-
-        private static string GetKeyOfUser(string sessionId)
-        {
-            return $"{sessionId}-login-user";
-        }
-
-        private static string GetKeyOfSessionId(string name)
-        {
-            return $"{name}-session-id";
         }
 
         public async Task ClearUser(string id)
@@ -49,16 +36,6 @@ namespace Modlogie.Api.Common
             }
         }
 
-        public async Task<LoginUser> GetUser(string sessionId)
-        {
-            var userStr = await _cache.GetStringAsync(GetKeyOfUser(sessionId));
-            if (string.IsNullOrWhiteSpace(userStr))
-            {
-                return null;
-            }
-            return JsonConvert.DeserializeObject<LoginUser>(userStr);
-        }
-
         public async Task<LoginUser> GetUser(HttpContext context)
         {
             var sessionId = context.GetSessionId();
@@ -67,7 +44,7 @@ namespace Modlogie.Api.Common
 
         public async Task SetUser(HttpContext context, LoginUser user)
         {
-            var userName = user.Id.ToString();
+            var userName = user.Id;
             var sessionId = context.GetSessionId();
             var existedName = await _cache.GetStringAsync(GetKeyOfUser(sessionId));
             await _cache.RemoveAsync(GetKeyOfSessionId(existedName));
@@ -80,6 +57,27 @@ namespace Modlogie.Api.Common
             {
                 await _cache.RemoveAsync(GetKeyOfUser(sessionId));
             }
+        }
+
+        private static string GetKeyOfUser(string sessionId)
+        {
+            return $"{sessionId}-login-user";
+        }
+
+        private static string GetKeyOfSessionId(string name)
+        {
+            return $"{name}-session-id";
+        }
+
+        private async Task<LoginUser> GetUser(string sessionId)
+        {
+            var userStr = await _cache.GetStringAsync(GetKeyOfUser(sessionId));
+            if (string.IsNullOrWhiteSpace(userStr))
+            {
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<LoginUser>(userStr);
         }
     }
 }

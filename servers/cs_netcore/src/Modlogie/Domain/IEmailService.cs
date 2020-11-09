@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Modlogie.Domain
@@ -9,5 +6,4 @@ namespace Modlogie.Domain
     {
         Task<bool> Send(string to, string subject, string content);
     }
-
 }

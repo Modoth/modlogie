@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-
 namespace Modlogie.Domain
 {
     public class Query
@@ -14,7 +9,6 @@ namespace Modlogie.Domain
         public string OrderBy { get; set; }
 
         public bool OrderByDesc { get; set; }
-
     }
 
     public enum ConditionType
@@ -31,7 +25,6 @@ namespace Modlogie.Domain
         GreaterThan,
         GreaterThanOrEqual,
         LessThenOrEqual
-
     }
 
     public class Condition

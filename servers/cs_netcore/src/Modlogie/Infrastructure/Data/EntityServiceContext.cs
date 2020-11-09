@@ -10,35 +10,29 @@ namespace Modlogie.Infrastructure.Data
 
         public IEntityServiceContextTransaction BeginTransaction()
         {
-            if (CurrentTransaction == null)
+            return CurrentTransaction ??= new EntityServiceContextTransaction
             {
-                CurrentTransaction = new EntityServiceContextTransaction
-                {
-                    OnCommit = Commit,
-                    OnDisposed = ClearReansaction
-                };
-            }
-            return CurrentTransaction;
+                OnCommit = Commit,
+                OnDisposed = ClearTransaction
+            };
         }
 
-        private void ClearReansaction()
+        private void ClearTransaction()
         {
             CurrentTransaction = null;
         }
 
         private Task<int> Commit()
         {
-            return this.SaveChangesAsync();
+            return SaveChangesAsync();
         }
     }
 
     public class EntityServiceContextTransaction : IEntityServiceContextTransaction
     {
-        private ModlogieContext _context;
+        public Func<Task<int>> OnCommit;
 
         public Action OnDisposed;
-
-        public Func<Task<int>> OnCommit;
 
         public Task<int> Commit()
         {
@@ -46,17 +40,20 @@ namespace Modlogie.Infrastructure.Data
             {
                 return OnCommit();
             }
+
             return Task.FromResult(0);
         }
 
         public void Dispose()
         {
-            if (OnDisposed != null)
+            if (OnDisposed == null)
             {
-                var ondisposed = OnDisposed;
-                OnDisposed = null;
-                ondisposed();
+                return;
             }
+
+            var onDisposed = OnDisposed;
+            OnDisposed = null;
+            onDisposed();
         }
     }
 }

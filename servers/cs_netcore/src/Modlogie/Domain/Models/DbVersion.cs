@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Modlogie.Domain.Models
+﻿namespace Modlogie.Domain.Models
 {
-    public partial class DbVersion
+    public class DbVersion
     {
         public int Id { get; set; }
     }

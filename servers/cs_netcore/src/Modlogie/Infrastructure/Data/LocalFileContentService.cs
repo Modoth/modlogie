@@ -9,14 +9,38 @@ namespace Modlogie.Infrastructure.Data
     public class LocalFileContentServiceOptions
     {
         public string ContentRoot { get; set; }
-
     }
+
     public class LocalFileContentService : IFileContentService
     {
-        private LocalFileContentServiceOptions _options;
+        private readonly LocalFileContentServiceOptions _options;
+
         public LocalFileContentService(IOptions<LocalFileContentServiceOptions> options)
         {
             _options = options.Value;
+        }
+
+        public async Task<string> Add(string group, string content, string type)
+        {
+            var (id, filePath) = GenerateAndPrepareForFileName(group, type);
+            await File.WriteAllTextAsync(filePath, content);
+            return id;
+        }
+
+        public async Task<string> Add(string group, Func<Stream, Task> writeContent, string type)
+        {
+            var (id, filePath) = GenerateAndPrepareForFileName(group, type);
+            await using var fs = File.OpenWrite(filePath);
+            await writeContent(fs);
+
+            return id;
+        }
+
+        public Task<bool> Delete(string id)
+        {
+            var filePath = Path.Join(_options.ContentRoot, id);
+            File.Delete(filePath);
+            return Task.FromResult(true);
         }
 
         private (string, string) GenerateAndPrepareForFileName(string group, string type)
@@ -25,8 +49,9 @@ namespace Modlogie.Infrastructure.Data
             {
                 type = "bin";
             }
+
             var guid = Guid.NewGuid().ToString();
-            var idx = guid.IndexOf("-");
+            var idx = guid.IndexOf("-", StringComparison.Ordinal);
             var folder = Path.Join(group, guid.Substring(0, idx));
             var file = guid.Substring(idx + 1, guid.Length - (idx + 1)) + "." + type;
             var id = Path.Join(folder, file);
@@ -35,32 +60,9 @@ namespace Modlogie.Infrastructure.Data
             {
                 Directory.CreateDirectory(folderPath);
             }
+
             var filePath = Path.Join(_options.ContentRoot, id);
             return (id, filePath);
-        }
-
-        public async Task<string> Add(string group, string content, string type)
-        {
-            var (id, filePath) = GenerateAndPrepareForFileName(group, type);
-            await System.IO.File.WriteAllTextAsync(filePath, content);
-            return id;
-        }
-
-        public async Task<string> Add(string group, Func<Stream, Task> writeContent, string type)
-        {
-            var (id, filePath) = GenerateAndPrepareForFileName(group, type);
-            using (var fs = File.OpenWrite(filePath))
-            {
-                await writeContent(fs);
-            }
-            return id;
-        }
-
-        public Task<bool> Delete(string id)
-        {
-            var filePath = Path.Join(_options.ContentRoot, id);
-            System.IO.File.Delete(filePath);
-            return Task.FromResult(true);
         }
     }
 }

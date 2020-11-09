@@ -1,6 +1,5 @@
 syntax = "proto3";
 package modlogie.keyword;
-import "google/protobuf/empty.proto";
 import "messages.proto";
 option csharp_namespace = "Modlogie.Api.Keywords";
 

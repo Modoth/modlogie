@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Modlogie.Api.Files;
+using File = Modlogie.Domain.Models.File;
 
 namespace Modlogie.Api.Common
 {
     public class FileParentId
     {
-        public String Path { get; set; }
+        public string Path { get; set; }
     }
+
     public interface IFileQueryCompileService
     {
-        Expression<Func<Domain.Models.File, bool>> Compile(IEnumerable<FileParentId> ins, Query query);
+        Expression<Func<File, bool>> Compile(IEnumerable<FileParentId> ins, Query query);
     }
 }

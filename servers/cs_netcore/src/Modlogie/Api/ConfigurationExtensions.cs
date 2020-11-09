@@ -11,12 +11,14 @@ namespace Modlogie.Api
             var section = configuration.GetSection("ConnectionProps");
             foreach (var s in section.GetChildren())
             {
-                if ((ignoreDbName && s.Key == "Database") || s.Value == null)
+                if (ignoreDbName && s.Key == "Database" || s.Value == null)
                 {
                     continue;
                 }
+
                 ssb.Add(s.Key, s.Value);
             }
+
             return ssb.ToString();
         }
     }

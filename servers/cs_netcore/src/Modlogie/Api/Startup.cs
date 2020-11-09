@@ -23,17 +23,17 @@ namespace Modlogie.Api
             IsDevelopment = env.IsDevelopment();
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
-        private bool IsDevelopment { get; set; }
+        private bool IsDevelopment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ModlogieContext>(options =>
-                {
-                    options.UseMySql(Configuration.GetMySqlConnectionString(), mySqlOptions => mySqlOptions
-                     .ServerVersion(new Version(10, 3, 12), ServerType.MariaDb));
-                });
+            {
+                options.UseMySql(Configuration.GetMySqlConnectionString(), mySqlOptions => mySqlOptions
+                    .ServerVersion(new Version(10, 3, 12), ServerType.MariaDb));
+            });
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = Configuration.GetValue<string>("Cache:RedisConfiguration");
@@ -69,18 +69,19 @@ namespace Modlogie.Api
 
         private bool UpdateDbAndExit(ILogger logger)
         {
-            var scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sqls");
+            var scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "sqls");
             var dbUpdater = new DbUpdater(logger,
-            Configuration.GetMySqlConnectionString(),
-            Configuration.GetValue<string>("ConnectionProps:Database"),
-            Configuration.GetMySqlConnectionString(true),
-            scriptsPath);
+                Configuration.GetMySqlConnectionString(),
+                Configuration.GetValue<string>("ConnectionProps:Database"),
+                Configuration.GetMySqlConnectionString(true),
+                scriptsPath);
             var updateTask = dbUpdater.UpdateAsync();
             updateTask.Wait();
-            return Configuration.GetValue<bool>("Execue:UpdateDbOnly");
+            return Configuration.GetValue<bool>("Execute:UpdateDbOnly");
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, IHostApplicationLifetime lifetime,
+            ILogger<Startup> logger)
         {
             if (UpdateDbAndExit(logger))
             {
@@ -92,17 +93,19 @@ namespace Modlogie.Api
             app.UseDistributedSession();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<Services.LoginService>();
-                endpoints.MapGrpcService<Services.KeyValuesService>();
-                endpoints.MapGrpcService<Services.TagsService>();
-                endpoints.MapGrpcService<Services.FilesService>();
-                endpoints.MapGrpcService<Services.UsersService>();
-                endpoints.MapGrpcService<Services.KeywordsService>();
+                endpoints.MapGrpcService<LoginService>();
+                endpoints.MapGrpcService<KeyValuesService>();
+                endpoints.MapGrpcService<TagsService>();
+                endpoints.MapGrpcService<FilesService>();
+                endpoints.MapGrpcService<UsersService>();
+                endpoints.MapGrpcService<KeywordsService>();
 
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-                });
+                endpoints.MapGet("/",
+                    async context =>
+                    {
+                        await context.Response.WriteAsync(
+                            "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+                    });
             });
         }
     }

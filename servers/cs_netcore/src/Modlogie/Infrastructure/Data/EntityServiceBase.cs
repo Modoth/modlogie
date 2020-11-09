@@ -6,31 +6,33 @@ using Modlogie.Domain;
 
 namespace Modlogie.Infrastructure.Data
 {
-    public abstract class EntityServiceBase<TEntity, TKey> : IEntityService<TEntity, TKey> where TEntity : class, IEntity<TKey>
+    public abstract class EntityServiceBase<TEntity, TKey> : IEntityService<TEntity, TKey>
+        where TEntity : class, IEntity<TKey>
     {
         protected readonly ModlogieContext DbContext;
 
-        public EntityServiceBase(ModlogieContext context)
+        protected EntityServiceBase(ModlogieContext context)
         {
             DbContext = context;
         }
-        public IEntityServiceContext Context => DbContext;
 
         protected abstract DbSet<TEntity> Entities { get; }
+        public IEntityServiceContext Context => DbContext;
 
         public async Task<TEntity> Add(TEntity entity)
         {
-            await this.Entities.AddAsync(entity);
+            await Entities.AddAsync(entity);
             if (Context.CurrentTransaction == null)
             {
                 await DbContext.SaveChangesAsync();
             }
+
             return entity;
         }
 
         public async Task AddRange(IEnumerable<TEntity> entities)
         {
-            await this.Entities.AddRangeAsync(entities);
+            await Entities.AddRangeAsync(entities);
             if (Context.CurrentTransaction == null)
             {
                 await DbContext.SaveChangesAsync();
@@ -39,56 +41,61 @@ namespace Modlogie.Infrastructure.Data
 
         public async Task<TEntity> Update(TEntity entity)
         {
-            this.Entities.Update(entity);
+            Entities.Update(entity);
             if (Context.CurrentTransaction == null)
             {
                 await DbContext.SaveChangesAsync();
             }
+
             return entity;
         }
 
         public IQueryable<TEntity> All()
         {
-            return this.Entities;
+            return Entities;
         }
 
         public async Task<int> Delete(TEntity entity)
         {
-            this.Entities.Remove(entity);
+            Entities.Remove(entity);
             if (Context.CurrentTransaction == null)
             {
                 return await DbContext.SaveChangesAsync();
             }
+
             return 0;
         }
 
         public async Task<int> DeleteRange(IEnumerable<TEntity> entities)
         {
-            this.Entities.RemoveRange(entities);
+            Entities.RemoveRange(entities);
             if (Context.CurrentTransaction == null)
             {
                 return await DbContext.SaveChangesAsync();
             }
+
             return 0;
         }
 
         public async Task<int> DeleteAll()
         {
-            this.Entities.RemoveRange(this.Entities);
+            Entities.RemoveRange(Entities);
             if (Context.CurrentTransaction == null)
             {
                 return await DbContext.SaveChangesAsync();
             }
+
             return 0;
         }
 
         public async Task<int> UpdateRange(IEnumerable<TEntity> entities)
         {
-            this.Entities.UpdateRange(entities);
+            Entities.UpdateRange(entities);
             if (Context.CurrentTransaction == null)
             {
                 return await DbContext.SaveChangesAsync();
             }
+
             return 0;
         }
     }

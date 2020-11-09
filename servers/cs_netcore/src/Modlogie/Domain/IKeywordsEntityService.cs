@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Modlogie.Domain.Models;
 
 namespace Modlogie.Domain.Models
 {
     public partial class Keyword : IEntity<string>
     {
-
     }
 }
 
 namespace Modlogie.Domain
 {
-    public interface IKeywordsEntityService : IEntityService<Domain.Models.Keyword, string>
+    public interface IKeywordsEntityService : IEntityService<Keyword, string>
     {
-
     }
 }
