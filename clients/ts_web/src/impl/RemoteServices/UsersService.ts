@@ -45,7 +45,7 @@ export default class UsersService extends IServicesLocator implements IUsersServ
     const expiredTimeStamp = new Timestamp()
     expiredTimeStamp.fromDate(expired)
     request.setAuthorisionExpired(expiredTimeStamp)
-    await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(UsersServiceClient).updateAuthorisionExpired(request, null))
+    await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(UsersServiceClient).updateAuthorisationExpired(request, null))
   }
 
   async updateComment (name: string, comment: string): Promise<void> {
