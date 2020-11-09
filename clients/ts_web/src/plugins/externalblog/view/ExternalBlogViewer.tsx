@@ -1,5 +1,6 @@
 import './ExternalBlogViewer.less'
 import { AdditionalSectionViewerProps } from '../../../pluginbase/base/view/SectionViewerProps'
+import { ConfigKeys } from './Configs'
 import { SectionNames } from './Sections'
 import { Spin } from 'antd'
 import classNames from 'classnames'
@@ -7,23 +8,30 @@ import Markdown from '../../../infrac/components/Markdown'
 import React, { useEffect, useState } from 'react'
 
 const getRenders = (relativePath:string) => {
-  const url = new URL(relativePath)
-  const idx = url.pathname.lastIndexOf('/')
-  const path = ~idx ? url.pathname.slice(0, idx) : url.pathname
-  const baseUrl = `${url.protocol}//${url.host}${path}`
-  return ({
-    // eslint-disable-next-line react/display-name
-    image: (props: { alt: string, src: string }) => {
-      const src = (props.src && !props.src.match(/^https?:\/\//i)) ? `${baseUrl}/${props.src}` : props.src
-      return <img alt={props.alt} src={src}></img>
-    }
-  })
+  try {
+    const url = new URL(relativePath)
+    const idx = url.pathname.lastIndexOf('/')
+    const path = ~idx ? url.pathname.slice(0, idx) : url.pathname
+    const baseUrl = `${url.protocol}//${url.host}${path}`
+    return ({
+      // eslint-disable-next-line react/display-name
+      image: (props: { alt: string, src: string }) => {
+        const src = (props.src && !props.src.match(/^https?:\/\//i)) ? `${baseUrl}/${props.src}` : props.src
+        return <img alt={props.alt} src={src}></img>
+      }
+    })
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 function UrlMarkdown (props:{url:string, className?:string}) {
   const [content, setContent] = useState('')
   const [renders] = useState(getRenders(props.url))
   const [loading, setLoading] = useState(false)
+  if (!renders) {
+    return <></>
+  }
   const fetchContent = async () => {
     try {
       setLoading(true)
@@ -52,7 +60,8 @@ function UrlMarkdown (props:{url:string, className?:string}) {
 
 export default function ExternalBlogViewer (props: AdditionalSectionViewerProps) {
   const msections = new Map(props.sections.map(s => [s.name!, s]))
-  const path = msections.get(SectionNames.path)?.content
+  const relativePath = msections.get(SectionNames.path)?.content
+  const path = props.type.additionalConfigs?.has(ConfigKeys.BASE_ADD) ? `${props.type.additionalConfigs?.get(ConfigKeys.BASE_ADD)}${relativePath}` : relativePath
   const summary = msections.get(SectionNames.summary)?.content
 
   if (props.summaryMode) {

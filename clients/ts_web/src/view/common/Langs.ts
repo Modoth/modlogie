@@ -1,9 +1,6 @@
 import { ConfigKeysInterface } from '../../domain/ServiceInterfaces/ConfigKeys'
 import { LangKeysInterface } from '../../domain/ServiceInterfaces/ILangsService'
-
-interface IKeyValue {
-  [key: string]: string;
-}
+import IKeyValue from '../../infrac/Image/IKeyValue'
 
 class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface<string> {
   ADDITIONAL_STYLE = '附加样式目录';

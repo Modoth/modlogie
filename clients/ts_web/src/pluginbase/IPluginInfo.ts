@@ -4,22 +4,23 @@ import IConfigsService, { Config } from '../domain/ServiceInterfaces/IConfigsSer
 
 type Tag = any;
 export interface ArticleType {
-  route: string;
-  name: string;
+  additionalConfigs?:Map<string, string>;
+  admOnly?: boolean;
+  defaultSections?: string;
   displayName?: string;
-  subTypes?: string[];
-  subTypeTag?: string;
-  rootSubjectId?: string;
+  fixedSections?: boolean;
+  icon: React.ReactNode;
+  iconUrl?: string;
+  initArticleCount?: number;
+  loadAdditionalsSync?: boolean;
+  name: string;
+  noTitle?: boolean;
   orderBy?: string,
   orderByDesc?: boolean,
-  initArticleCount?: number;
-  defaultSections?: string;
-  iconUrl?: string;
-  noTitle?: boolean;
-  admOnly?: boolean;
-  icon: React.ReactNode;
-  fixedSections?: boolean;
-  loadAdditionalsSync?: boolean;
+  rootSubjectId?: string;
+  route: string;
+  subTypes?: string[];
+  subTypeTag?: string;
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
   Editor: (props: ArticleContentEditorProps) => JSX.Element;
 }

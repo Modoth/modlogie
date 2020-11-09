@@ -1,7 +1,9 @@
 import { ArticleSection, ArticleFile } from '../../../domain/ServiceInterfaces/Article'
+import { ArticleType } from '../../IPluginInfo'
 import { MouseEventHandler } from 'react'
 
 export interface AdditionalSectionViewerProps {
+    type:ArticleType,
     sections: ArticleSection[],
     filesDict: Map<string, ArticleFile>
     onClick?: MouseEventHandler<any>

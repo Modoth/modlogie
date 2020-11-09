@@ -18,7 +18,8 @@ export default class PluginInfoBase implements IPluginInfo {
     TSectionEditor?: { (props: SectionEditorProps): JSX.Element },
     TAdditionalSectionsViewer?: { (props: AdditionalSectionViewerProps): JSX.Element },
     additionOptions?: Partial<ArticleType>,
-    public langs: { [key: string]: string } = {}) {
+    public langs: { [key: string]: string } = {},
+    public TypeDefaultConfigs:Config[] = []) {
     this.articleTypes = typeNames.map(typeName => {
       const noTitle = typeName.startsWith('_')
       if (noTitle) {
@@ -45,6 +46,21 @@ export default class PluginInfoBase implements IPluginInfo {
     return DefaultConfigs
   }
 
-  async init (_: IConfigsService): Promise<any> {
+  async init (configsService: IConfigsService): Promise<any> {
+    if (!this.TypeDefaultConfigs || !this.TypeDefaultConfigs.length) {
+      return
+    }
+    await configsService.addDefaultConfigs(
+      ...this.types
+        .flatMap((t) => this.TypeDefaultConfigs.map(c => Object.assign({}, c, { key: `${t.name}:${c.key}` }))))
+    for (const type of this.types) {
+      const configs = new Map<string, string>()
+      for (const config of this.TypeDefaultConfigs) {
+        const key = `${type.name}:${config.key}`
+        const value = await configsService.getValueOrDefault(key)
+        configs.set(config.key, value)
+      }
+      type.additionalConfigs = configs
+    }
   }
 }
