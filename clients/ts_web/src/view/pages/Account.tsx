@@ -8,8 +8,8 @@ import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ILoginAppservice from '../../app/Interfaces/ILoginAppservice'
 import IViewService from '../../app/Interfaces/IViewService'
+import Markdown from '../../infrac/components/Markdown'
 import React, { useState, useEffect } from 'react'
-import ReactMarkdown from 'react-markdown'
 
 export default function Account () {
   const user = useUser()
@@ -118,7 +118,7 @@ export default function Account () {
           </Button> : null
         }
         {
-          siteDesc ? <ReactMarkdown className="welcome-content" source={siteDesc}></ReactMarkdown> : null
+          siteDesc ? <Markdown className="welcome-content" source={siteDesc}></Markdown> : null
         }
 
         <Button

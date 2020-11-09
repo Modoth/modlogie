@@ -4,8 +4,8 @@ import { ChartViewerProps } from '../ChartLiveViewer'
 import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/react'
 import { previewArticleByPath } from '../../../../view/pages/ServiceView'
 import { useServicesLocator } from '../../../../view/common/Contexts'
+import Markdown from '../../../../infrac/components/Markdown'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 class Node {
     id: string
@@ -114,7 +114,7 @@ export function Branch (props: ChartViewerProps) {
                       <span className="flex"></span>
                       {n.publish ? <span className="published">{n.publish.toLocaleDateString()}</span> : undefined}
                     </div>
-                    {n.content ? <div className='content'><ReactMarkdown source={n.content}></ReactMarkdown> </div> : undefined}
+                    {n.content ? <div className='content'><Markdown source={n.content}></Markdown> </div> : undefined}
                   </div>
                 </foreignObject></g>)
             }

@@ -11,9 +11,9 @@ import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsSe
 import ImageEditor from '../../infrac/components/ImageEditor'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
+import Markdown from '../../infrac/components/Markdown'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
-import ReactMarkdown from 'react-markdown'
 import TextArea from 'antd/lib/input/TextArea'
 
 export const previewArticleByPath = (locator: IServicesLocator, path: string | undefined, title: string | undefined) => {
@@ -367,7 +367,7 @@ export default function ServiceView (props: {
                 )
               case 'Markdown':
                 return (
-                  <ReactMarkdown className="md" source={field.value} linkTarget="_blank"></ReactMarkdown>
+                  <Markdown className="md" source={field.value} linkTarget="_blank"></Markdown>
                 )
               case 'QrCode':
                 return (<div className="service-view-qrcode"><QrCode content={field.value}></QrCode></div>)

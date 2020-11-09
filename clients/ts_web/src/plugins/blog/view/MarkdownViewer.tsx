@@ -6,8 +6,8 @@ import { useServicesLocator, useUser } from '../../../view/common/Contexts'
 import classNames from 'classnames'
 import Highlight from '../../../infrac/components/Hightlight'
 import IServicesLocator from '../../../infrac/ServiceLocator/IServicesLocator'
+import Markdown from '../../../infrac/components/Markdown'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
 
 const getRenders = (locator: IServicesLocator) => {
@@ -39,6 +39,6 @@ export default function MarkdownViewer (props: SectionViewerProps) {
     }
   }} className={classNames('md-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode', props.className)} key={props.section.name}>
     <label className="md-name">{props.section.name}</label>
-    <ReactMarkdown renderers={renderers} source={props.section?.content} linkTarget="_blank"></ReactMarkdown>
+    <Markdown renderers={renderers} source={props.section?.content} linkTarget="_blank"></Markdown>
   </div>
 }

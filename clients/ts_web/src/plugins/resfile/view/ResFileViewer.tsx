@@ -7,8 +7,8 @@ import { ResImage } from './ResFileViewers/ResImage'
 import { ResPlain } from './ResFileViewers/ResPlain'
 import classNames from 'classnames'
 import FullscreenWraper from '../../../infrac/components/FullscreenWraper'
+import Markdown from '../../../infrac/components/Markdown'
 import React, { useEffect, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
 import yaml from 'yaml'
 
@@ -126,7 +126,7 @@ export default function ResFileViewer (props: SectionViewerProps) {
     return <></>
   }
   return <div onClick={props.onClick} className={classNames('resfile-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
-    {resfile.comment ? <div className="comment"><ReactMarkdown source={resfile.comment}></ReactMarkdown></div> : undefined}
+    {resfile.comment ? <div className="comment"><Markdown source={resfile.comment}></Markdown></div> : undefined}
     <DownloadManagerView url={url} name={resfile.name}></DownloadManagerView>
   </div>
 }

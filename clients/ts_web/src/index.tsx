@@ -19,6 +19,7 @@ import Chart from './plugins/chart'
 import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
 import DefaultConfigs from './app/Interfaces/DefaultConfigs'
 import DictService from './domain/Services/DictService'
+import ExternalBlog from './plugins/externalblog'
 import FavoritesServerSingleton from './domain/Services/FavoritesServerSingleton'
 import H5 from './plugins/h5'
 import H5App from './plugins/h5app'
@@ -77,7 +78,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     string,
     { new(typeNames: string[]): IPluginInfo }
       >(
-      [Blog, Chart, H5, H5App, Math, ModLang, ResFile].map((i) => [
+      [Blog, Chart, ExternalBlog, H5, H5App, Math, ModLang, ResFile].map((i) => [
         i.typeName.toLocaleLowerCase(),
         i
       ])

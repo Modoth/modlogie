@@ -8,7 +8,7 @@ import Highlight from '../../../infrac/components/Hightlight'
 import ILangInterpretersService, { ILangInterpreter, InterpretRequest } from '../../../domain/ServiceInterfaces/ILangInterpretersService'
 import React, { useEffect, useState } from 'react'
 
-const ReactMarkdown = require('react-markdown')
+const Markdown = require('react-markdown')
 const { TabPane } = Tabs
 
 export function ModlangInterpreter (props: { code: string, lang: string, version?: string }) {
@@ -98,7 +98,7 @@ export default function ModlangViewer (props: ArticleContentViewerProps) {
       {
         sections.map(section => <div className={classNames(section.name, 'code')} key={section.name}>
           <h5>{section.name} </h5>
-          <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
+          <Markdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></Markdown>
         </div>)
       }
     </>
@@ -107,7 +107,7 @@ export default function ModlangViewer (props: ArticleContentViewerProps) {
       sections.map(section => {
         return <TabPane className={classNames(section.name, 'code')} tab={section.name} key={section.name}>
           <div onClick={props.onClick}>
-            <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
+            <Markdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></Markdown>
             {section.name ? <ModlangInterpreter code={section.content} lang={section.name}></ModlangInterpreter> : undefined}
           </div>
         </TabPane>
@@ -117,7 +117,7 @@ export default function ModlangViewer (props: ArticleContentViewerProps) {
       sections.map(section => {
         return <div className={classNames(section.name, 'code')} key={section.name}>
           <div onClick={props.onClick}>
-            <ReactMarkdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></ReactMarkdown>
+            <Markdown source={'```' + section.name + '\n' + (section.content || '') + '\n```'} renderers={{ code: Highlight }}></Markdown>
             {section.name ? <ModlangInterpreter code={section.content} lang={section.name}></ModlangInterpreter> : undefined}
           </div>
         </div>

@@ -15,8 +15,8 @@ import Home from './Home'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import Library from './Library'
 import Login from './Login'
+import Markdown from '../../infrac/components/Markdown'
 import React, { useState, useEffect } from 'react'
-import ReactMarkdown from 'react-markdown'
 
 function NavContent () {
   const locator = useServicesLocator()
@@ -40,7 +40,7 @@ function NavContent () {
         <>
           <Account />
           {
-            footer ? <ReactMarkdown className="footer" source={footer}></ReactMarkdown> : null
+            footer ? <Markdown className="footer" source={footer}></Markdown> : null
           }
         </>
       </Route>
@@ -72,7 +72,7 @@ function NavContent () {
         <>
           <Home />
           {
-            footer ? <ReactMarkdown className="footer" source={footer}></ReactMarkdown> : null
+            footer ? <Markdown className="footer" source={footer}></Markdown> : null
           }
         </>
       </Route>

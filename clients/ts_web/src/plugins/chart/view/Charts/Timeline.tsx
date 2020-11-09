@@ -5,7 +5,7 @@ import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/r
 import { previewArticleByPath } from '../../../../view/pages/ServiceView'
 import { useServicesLocator } from '../../../../view/common/Contexts'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
+import Markdown from '../../../../infrac/components/Markdown'
 
 class Node {
     id: string
@@ -81,7 +81,7 @@ export function Timeline (props: ChartViewerProps) {
                       <span className="flex"></span>
                       {n.publish ? <span className="published">{n.publish.toLocaleDateString()}</span> : undefined}
                     </div>
-                    {n.content ? <div className='content'><ReactMarkdown source={n.content}></ReactMarkdown> </div> : undefined}
+                    {n.content ? <div className='content'><Markdown source={n.content}></Markdown> </div> : undefined}
                   </div>
                 </foreignObject></g>)
             }

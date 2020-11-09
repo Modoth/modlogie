@@ -5,6 +5,7 @@ export interface AdditionalSectionViewerProps {
     sections: ArticleSection[],
     filesDict: Map<string, ArticleFile>
     onClick?: MouseEventHandler<any>
+    summaryMode?:boolean
 }
 
 export default interface SectionViewerProps {
