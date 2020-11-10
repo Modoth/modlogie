@@ -16,13 +16,20 @@ const getRenders = (locator: IServicesLocator) => {
     // eslint-disable-next-line react/display-name
     code: (props: { language: string, value: string }) => {
       if (props.language && props.language.startsWith(proto)) {
-        const path = props.language.slice(proto.length).trim()
+        let path = props.language.slice(proto.length).trim()
+        const idx = path.indexOf(':')
+        let type = ''
+        if (~idx) {
+          type = path.slice(0, idx)
+          path = path.slice(idx + 1)
+        }
         if (!path) {
           return undefined
         }
         const dataSections = props.value ? [{
           name: 'data',
-          content: props.value
+          content: props.value,
+          type
         }] : []
         return <div className="ref-article">{user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop())} /> : undefined}
           <ArticlePreview dataSections={dataSections} path={path}></ArticlePreview>

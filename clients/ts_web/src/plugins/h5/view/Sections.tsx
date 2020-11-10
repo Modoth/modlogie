@@ -11,7 +11,7 @@ export const SectionNames = {
 export const getSectionType = (name: string) => {
   switch (name) {
     case SectionNames.data:
-      return 'yml'
+      return 'data'
     case SectionNames.frameworks:
       return 'txt'
     default:

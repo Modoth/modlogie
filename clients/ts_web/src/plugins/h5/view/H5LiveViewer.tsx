@@ -14,7 +14,7 @@ const getDataUrl = (content: string) => {
   return 'data:text/html;charset=utf-8,' + encodeURIComponent(content)
 }
 
-const combineContent = (sections: Map<string, ArticleSection>): [string | undefined, string | undefined, IFrameContext | undefined] => {
+const combineContent = (sections: Map<string, ArticleSection>): [string | undefined, string | undefined, boolean|undefined, IFrameContext | undefined] => {
   const html = sections.get(SectionNames.html)?.content || ''
   const frameworks = sections.get(SectionNames.frameworks)?.content
   const fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
@@ -23,15 +23,26 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
   const fwJss = fws && fws.map(f => f && f.js)
   let jsData = ''
   if (!html && !(fwHtmls && fwHtmls.length)) {
-    return [undefined, undefined, undefined]
+    return [undefined, undefined, undefined, undefined]
   }
   const style = sections.get(SectionNames.css)?.content
   const script = sections.get(SectionNames.js)?.content
   const data = sections.get(SectionNames.data)?.content
-
+  const dataType = sections.get(SectionNames.data)?.type?.toLocaleLowerCase()
+  let hasData = false
   if (data) {
     try {
-      jsData = JSON.stringify(YAML.parse(data))
+      switch (dataType) {
+        case 'yml':
+        case 'yaml':
+          jsData = JSON.stringify(YAML.parse(data))
+          break
+        case 'json':
+          jsData = JSON.stringify(JSON.parse(data))
+          break
+        default:
+          jsData = JSON.stringify(data)
+      }
     } catch (e) {
       console.log(e)
     }
@@ -52,6 +63,7 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
 
   if (jsData) {
     jsContent += `<script>\nwindow.appData=${jsData}\n</script>\n`
+    hasData = true
   }
   if (fwJss && fwJss.length) {
     jsContent += `<script>\n${fwJss.join('\n')}\n</script>`
@@ -63,7 +75,7 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
 
   jsContent = `${content}\n${jsContent}`
 
-  return [getDataUrl(content), jsContent ? getDataUrl(jsContent) : undefined, context]
+  return [getDataUrl(content), jsContent ? getDataUrl(jsContent) : undefined, hasData, context]
 }
 
 function IFrameWithoutJs (props: { src: string }) {
@@ -71,8 +83,8 @@ function IFrameWithoutJs (props: { src: string }) {
 }
 
 export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
-  const [contentUrl, jsContentUrl, context] = combineContent(new Map(props.sections.map(s => [s.name!, s])))
-  const [running, setRunning] = useState(false)
+  const [contentUrl, jsContentUrl, hasData, context] = combineContent(new Map(props.sections.map(s => [s.name!, s])))
+  const [running, setRunning] = useState(!!hasData)
   const [canRunning] = useState(!!jsContentUrl)
   const [fullscreen, setFullscreen] = useState(false)
   if (!((running && jsContentUrl) || (!running && contentUrl))) {
