@@ -41,8 +41,8 @@ cp default.conf "$deploy_dir"
 cp Dockerfile.* "$deploy_dir"
 cat docker-compose_fixed.yml > "$deploy_dir"/docker-compose.yml
 cat envoy_fixed.yaml > "$deploy_dir"/envoy.yaml
-if [[ -n "$app_url_base" ]]; then
-    cat envoy_fixed.yaml_cors | sed -e "s;app_url_base;$app_url_base;g" >>  "$deploy_dir"/envoy.yaml
+if [[ -n "$app_cors_prefix" ]]; then
+    cat envoy_fixed.yaml_cors | sed -e "s;app_cors_prefix;$app_cors_prefix;g" >>  "$deploy_dir"/envoy.yaml
 fi
 cat envoy_fixed.yaml_end >> "$deploy_dir"/envoy.yaml
 
