@@ -8,7 +8,7 @@ class App {
     const components = ['board', 'select-board', 'select-board-panel']
     return [
       components,
-      .../**@imports html */ './app.html',
+      .../**@imports html */ './cloze.html',
       /**@imports css */ './app.css',
     ]
   }

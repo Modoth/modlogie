@@ -7,10 +7,14 @@
     "clean": "rm -rf dist",
     "build": "node tools/spack/index.js publish",
     "rebuild": "npm run clean && npm run build",
-    "start": "tools/spack/index.js serve --watch",
+    "start": "node tools/spack/index.js serve --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.13.0",
+    "eslint-config-google": "^0.14.0"
+  }
 }
