@@ -24,7 +24,8 @@ fi
 
 deploy_dir="$scripts_dir/build/${app_name}"
 
-if [[ -n "$@" ]]; then
+if [[ "docker-compose" == "$1" ]]; then
+    shift
     cd "$deploy_dir" && docker-compose $@
     exit
 fi
@@ -39,6 +40,9 @@ if [[ -d "./.local.certs/${app_name}" && -f "./.local.certs/${app_name}/cert.pem
 fi
 cp default.conf "$deploy_dir"
 cp Dockerfile.* "$deploy_dir"
+if [[ -n "$app_api_base" ]];then
+    cat ENVOVERRIDE.Dockerfile.web | sed -e "s;app_api_base;$app_api_base;g" >> "$deploy_dir/Dockerfile.web"
+fi
 cat docker-compose_fixed.yml > "$deploy_dir"/docker-compose.yml
 cat envoy_fixed.yaml > "$deploy_dir"/envoy.yaml
 if [[ -n "$app_cors_prefix" ]]; then
@@ -56,6 +60,10 @@ cd "$deploy_dir"
 if [ ! -f 'cert.pem' ];then
     openssl req -new -newkey rsa:4096 -nodes -keyout cert.key -out cert.csr -subj '/CN=localhost' -config <(printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
     openssl x509 -req -sha256 -days 1 -in cert.csr -signkey cert.key -out cert.pem
+fi
+if [[ -n "$@" ]]; then
+    cd "$deploy_dir" && docker-compose $@
+    exit
 fi
 docker-compose pull
 docker-compose up -d --build

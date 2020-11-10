@@ -1,0 +1,1 @@
+RUN sed -i -e 's;</head>;</head><script>window.ENV_OVERRIDE={API_BASE:"app_api_base"}</script>;' /usr/share/nginx/html/index.html

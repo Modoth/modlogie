@@ -260,7 +260,7 @@ const buildServicesLocator = () => {
   interpretersService.set(new CInterpreter())
 
   // eslint-disable-next-line no-undef
-  const apiBase = ENV.API_BASE
+  const apiBase = (window.ENV_OVERRIDE || ENV).API_BASE
   const clientHost = apiBase || (window.origin + '/api')
   const credentials :any = undefined
   const options :any = apiBase && { withCredentials: true }
