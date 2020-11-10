@@ -29,7 +29,7 @@ export default function BaseViewer (TSectionViewer: { (props: SectionViewerProps
     const [sections] = useState((getSections(props.type?.allSections!, props.type?.additionalSections!, props.content?.sections || [])))
     const [showAdditional] = useState(props.showAdditionals === true)
     const [callbacks] = useState(new Map<string, LocatableViewCallbacks>(sections.map(s => [s.name!, {
-      onfocus: () => {
+      onLocated: () => {
         if (props.viewerCallbacks?.onSection) {
           props.viewerCallbacks!.onSection!(s.name!)
         }
@@ -38,11 +38,11 @@ export default function BaseViewer (TSectionViewer: { (props: SectionViewerProps
     useEffect(() => {
       if (props.viewerCallbacks) {
         if (props.viewerCallbacks.onSections) {
-          props.viewerCallbacks.onSections(sections!.map(s => s.name!).filter(s => callbacks.get(s)?.focus))
+          props.viewerCallbacks.onSections(sections!.map(s => s.name!).filter(s => callbacks.get(s)?.locate))
         }
         props.viewerCallbacks.gotoSection = s => {
           if (callbacks.has(s)) {
-            callbacks.get(s)!.focus!()
+            callbacks.get(s)!.locate!()
           }
         }
       }

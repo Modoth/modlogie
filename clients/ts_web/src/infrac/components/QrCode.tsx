@@ -9,5 +9,5 @@ export default function QrCode (props: { content: string }) {
   if (!url) {
     return <></>
   }
-  return <img src={url}></img>
+  return <img alt={props.content} src={url}></img>
 }

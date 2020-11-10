@@ -292,10 +292,14 @@ export default function ArticleView (props: {
   }
   const hasMore = props.article.additionId || (type && type.smartHiddenSections && type.smartHiddenSections.size)
   const openQrCode = async () => {
-    viewService.prompt((!props.type.noTitle && name) || langs.get(LangKeys.QrCode), [{
+    const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
+    viewService.prompt({ title: (!props.type.noTitle && name) || langs.get(LangKeys.QrCode), subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url }, [{
       type: 'QrCode',
-      value: `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
-    }], async () => true)
+      value: url
+    }], async () => {
+      window.location.href = url
+      return true
+    })
   }
 
   const openDetail = async () => {

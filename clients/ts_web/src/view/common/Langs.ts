@@ -72,7 +72,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   MSG_ERROR_NO_PERMISSION = '没有权限';
   MSG_ERROR_NO_SUCH_ENTITY = '无此数据';
   Favorite = '收藏';
-  FreeDraw = '涂鸦(Beta)';
+  FreeDraw = '涂鸦';
   Home = '首页';
   Import = '导入';
   Keyword = '关键字';
@@ -100,7 +100,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Recommend = '推荐';
   RemoveFromArticleList = '移除';
   Reset = '重置';
-  ScreenShot = '截图(Beta)';
+  ScreenShot = '截图';
   Scroll = '滚动';
   Search = '搜索';
   Sections = '章节';

@@ -93,9 +93,9 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     const currentPage = Math.floor(par.scrollLeft / width)
     par.scroll({ left: (currentPage + i) * width, behavior: 'smooth' })
   }
-  const scrollToTop = () => {
-    if (locateRef && locateRef.focus) {
-      locateRef.focus()
+  const scrollToTop = (direct?:boolean) => {
+    if (locateRef && locateRef.locate) {
+      locateRef.locate(direct)
     }
   }
   callbacks.onSections = setSections
@@ -129,7 +129,10 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                           saveCaptureDict(!captureDict)
                         }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
                         <Menu.Divider></Menu.Divider>,
-                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => {
+                          scrollToTop(true)
+                          setTimeout(() => locator.locate(IViewService).captureElement(ref.current!), 50)
+                        }} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>
                       ))
                     }

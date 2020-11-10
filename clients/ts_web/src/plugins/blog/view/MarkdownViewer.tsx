@@ -9,18 +9,24 @@ import IServicesLocator from '../../../infrac/ServiceLocator/IServicesLocator'
 import Markdown from '../../../infrac/components/Markdown'
 import React from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
-
+const proto = 'article:'
 const getRenders = (locator: IServicesLocator) => {
   const user = useUser()
   return ({
     // eslint-disable-next-line react/display-name
     code: (props: { language: string, value: string }) => {
-      if (props.language === 'article') {
-        const path = props.value && props.value.trim()
+      if (props.language && props.language.startsWith(proto)) {
+        const path = props.language.slice(proto.length).trim()
         if (!path) {
           return undefined
         }
-        return <div className="ref-article">{user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop())} /> : undefined}<ArticlePreview path={path}></ArticlePreview></div>
+        const dataSections = props.value ? [{
+          name: 'data',
+          content: props.value
+        }] : []
+        return <div className="ref-article">{user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop())} /> : undefined}
+          <ArticlePreview dataSections={dataSections} path={path}></ArticlePreview>
+        </div>
       }
       return <Highlight language={props.language} value={props.value}></Highlight>
     }

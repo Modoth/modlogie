@@ -1,8 +1,8 @@
 import React from 'react'
 
 export interface LocatableViewCallbacks {
-    focus?(): void
-    onfocus?(): void
+    locate?(direct?:boolean): void
+    onLocated?(): void
 }
 
 export function Div (props: any) {
@@ -12,7 +12,7 @@ export function Div (props: any) {
 export default function LocatableView<TProp> (props: TProp & { callbacks?: LocatableViewCallbacks, View: { (props: TProp): JSX.Element } }) {
   const ref = React.createRef<HTMLSpanElement>()
   if (props.callbacks) {
-    props.callbacks.focus = () => {
+    props.callbacks.locate = (direct?:boolean) => {
       if (ref.current) {
         const offset = 0
         const bodyPos = document.body.getBoundingClientRect().top
@@ -20,7 +20,7 @@ export default function LocatableView<TProp> (props: TProp & { callbacks?: Locat
         const offsetPosition = elementPos - bodyPos - offset
         window.scrollTo({
           top: offsetPosition,
-          behavior: 'smooth'
+          behavior: direct ? 'auto' : 'smooth'
         })
       }
     }
