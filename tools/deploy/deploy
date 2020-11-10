@@ -20,7 +20,6 @@ if [[ -n "$DEPLOY_SERVER" ]]; then
     sleep 1
     trap "kill $ssh_pid || true; rm $PWD/docker.sock" EXIT
     export DOCKER_HOST=unix://$PWD/docker.sock
-    # export DOCKER_HOST=ssh://$DEPLOY_SERVER
 fi
 
 deploy_dir="$scripts_dir/build/${app_name}"
@@ -42,6 +41,11 @@ cp default.conf "$deploy_dir"
 cp Dockerfile.* "$deploy_dir"
 cat docker-compose_fixed.yml > "$deploy_dir"/docker-compose.yml
 cat envoy_fixed.yaml > "$deploy_dir"/envoy.yaml
+if [[ -n "$URL_BASE" ]]; then
+    cat envoy_fixed.yaml_cors | sed -e "s;URL_BASE;$URL_BASE;g" >>  "$deploy_dir"/envoy.yaml
+fi
+cat envoy_fixed.yaml_end >> "$deploy_dir"/envoy.yaml
+
 for type in $server_types
 do
  cat docker-compose_flex.yml | sed -e "s/SERVER_TYPE/$type/g" >> "$deploy_dir"/docker-compose.yml

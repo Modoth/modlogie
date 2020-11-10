@@ -259,30 +259,34 @@ const buildServicesLocator = () => {
   interpretersService.set(new BashInterpreter())
   interpretersService.set(new CInterpreter())
 
-  const clientHost = window.origin + '/api'
+  // eslint-disable-next-line no-undef
+  const apiBase = ENV.API_BASE
+  const clientHost = apiBase || (window.origin + '/api')
+  const credentials :any = undefined
+  const options :any = apiBase && { withCredentials: true }
   serviceLocator.registerFactory(
     LoginServiceClient,
-    () => new LoginServiceClient(clientHost, null, null)
+    () => new LoginServiceClient(clientHost, credentials, options)
   )
   serviceLocator.registerFactory(
     KeyValuesServiceClient,
-    () => new KeyValuesServiceClient(clientHost, null, null)
+    () => new KeyValuesServiceClient(clientHost, credentials, options)
   )
   serviceLocator.registerFactory(
     TagsServiceClient,
-    () => new TagsServiceClient(clientHost, null, null)
+    () => new TagsServiceClient(clientHost, credentials, options)
   )
   serviceLocator.registerFactory(
     FilesServiceClient,
-    () => new FilesServiceClient(clientHost, null, null)
+    () => new FilesServiceClient(clientHost, credentials, options)
   )
   serviceLocator.registerFactory(
     UsersServiceClient,
-    () => new UsersServiceClient(clientHost, null, null)
+    () => new UsersServiceClient(clientHost, credentials, options)
   )
   serviceLocator.registerFactory(
     KeywordsServiceClient,
-    () => new KeywordsServiceClient(clientHost, null, null)
+    () => new KeywordsServiceClient(clientHost, credentials, options)
   )
 
   const w = window as any
