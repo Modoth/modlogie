@@ -10,8 +10,8 @@
   padding: 8px;
 }
 .screen {
-  font-size: 13px;
-  line-height: 1.3em;
+  font-size: 11px;
+  line-height: 2em;
   font-family: monospace;
   width: 100%;
   height: 100%;
@@ -43,6 +43,7 @@
   animation: blink 1s infinite;
   user-select: none;
   shape-outside: content-box;
+  color:var(--csi-color-4);
 }
 .csi-1 {
   font-weight: bold;
