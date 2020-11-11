@@ -5,7 +5,8 @@ export const SectionNames = {
   css: 'css',
   js: 'js',
   data: 'data',
-  frameworks: 'frameworks'
+  frameworks: 'frameworks',
+  url: 'url'
 }
 
 export const getSectionType = (name: string) => {
@@ -13,6 +14,7 @@ export const getSectionType = (name: string) => {
     case SectionNames.data:
       return 'data'
     case SectionNames.frameworks:
+    case SectionNames.url:
       return 'txt'
     default:
       return name

@@ -15,6 +15,10 @@ const getDataUrl = (content: string) => {
 }
 
 const combineContent = (sections: Map<string, ArticleSection>): [string | undefined, string | undefined, boolean|undefined, IFrameContext | undefined] => {
+  const url = sections.get(SectionNames.url)?.content || ''
+  if (url) {
+    return [url, url, undefined, undefined]
+  }
   const html = sections.get(SectionNames.html)?.content || ''
   const frameworks = sections.get(SectionNames.frameworks)?.content
   const fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
