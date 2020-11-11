@@ -1,14 +1,14 @@
 import { sleep } from '../commons/sleep.js'
 
 export class AppBase {
-  async launch() {
+  async launch () {
     this.storage = this.initStorage_()
     this.data = await this.initData(window.appData)
     window.app = this
     await this.start()
   }
 
-  async registerStorageProperties(...props) {
+  async registerStorageProperties (...props) {
     if (!this.storage) {
       return
     }
@@ -60,7 +60,7 @@ export class AppBase {
             if (!successLoadFromStorage) {
               loadFunc = func
             }
-          }),
+          })
         ])
       }
       await Promise.race([
@@ -71,26 +71,26 @@ export class AppBase {
             valueModified = true
             asyncTimeout = 0
           }
-        }),
+        })
       ])
       Object.defineProperty(this, prop, {
-        get() {
+        get () {
           if (loadFunc) {
             tryLoad()
           }
           return propValue
         },
-        set(newValue) {
+        set (newValue) {
           propValue = newValue
           if (successLoadFromStorage) {
             this.storage.setItem(prop, JSON.stringify(propValue))
           }
-        },
+        }
       })
     }
   }
 
-  initStorage_() {
+  initStorage_ () {
     if (window.$localStorage) {
       return window.$localStorage
     }
@@ -100,28 +100,28 @@ export class AppBase {
     } catch {
       return {
         getItem: () => '',
-        setItem: () => true,
+        setItem: () => true
       }
     }
   }
 
-  async initData(data) {
+  async initData (data) {
     return data
   }
 
-  async start() {
+  async start () {
     console.log('start')
   }
 
-  async pause() {
+  async pause () {
     console.log('pause')
   }
 
-  async resume() {
+  async resume () {
     console.log('pause')
   }
 
-  async stop() {
+  async stop () {
     console.log('stop')
   }
 }

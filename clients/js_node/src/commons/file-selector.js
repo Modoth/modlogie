@@ -1,7 +1,7 @@
 import { readFile } from './readFile.js'
 
 export class FileSelector {
-  constructor(/**@type HTMLElement */ root = document.body) {
+  constructor (/** @type HTMLElement */ root = document.body) {
     if (!window.$localStorage) {
       this.btnFile_ = document.createElement('input')
       this.btnFile_.style.display = 'none'
@@ -10,10 +10,10 @@ export class FileSelector {
     }
   }
 
-  selectFile(
+  selectFile (
     mimeType = '*',
-    /**@type { 'ArrayBuffer' | 'DataURL' | 'Text' } */ format = 'ArrayBuffer',
-    /**@type { { (result :{file:File, data: ArrayBuffer | String }):any} } */
+    /** @type { 'ArrayBuffer' | 'DataURL' | 'Text' } */ format = 'ArrayBuffer',
+    /** @type { { (result :{file:File, data: ArrayBuffer | String }):any} } */
     callback
   ) {
     if (this.btnFile_) {

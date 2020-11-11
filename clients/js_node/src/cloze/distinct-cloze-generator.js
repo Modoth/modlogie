@@ -1,11 +1,11 @@
 import { sleep } from '../commons/sleep.js'
 
 export class DistinctClozeGenerator {
-  constructor(
-    /**@type string[] */ dataSource,
+  constructor (
+    /** @type string[] */ dataSource,
     { perGen = 10, genTimes = 1000, rCloze = 0.6 } = {}
   ) {
-    /**@private */
+    /** @private */
     this.dataSource_ = dataSource
     this.perGen_ = perGen
     this.genTimes_ = genTimes
@@ -13,13 +13,13 @@ export class DistinctClozeGenerator {
     this.analysis_(dataSource)
   }
 
-  /**@private */
-  async analysis_(dataSource) {
+  /** @private */
+  async analysis_ (dataSource) {
     this.rank_ = 0
     this.count_ = 0
     const maxRank = 8
     for (let r = 0; r < maxRank; r++) {
-      let count = r * r
+      const count = r * r
       if (count > this.dataSource_.length) {
         break
       }
@@ -57,13 +57,13 @@ export class DistinctClozeGenerator {
     }
   }
 
-  cloneArrange_(/**@type [[]] */ origin, length) {
+  cloneArrange_ (/** @type [[]] */ origin, length) {
     return Array.from({ length }, (_, j) =>
       Array.from({ length }, (_, i) => origin[i + j * length])
     )
   }
 
-  generateArranges_(initRange, rank, length, generateCount) {
+  generateArranges_ (initRange, rank, length, generateCount) {
     const arranges = []
     const rowsBitmaps = Array.from({ length }, () => new Set())
     const columnsBitmaps = Array.from({ length }, () => new Set())
@@ -116,7 +116,7 @@ export class DistinctClozeGenerator {
     return arranges
   }
 
-  generate() {
+  generate () {
     const source = this.dataSource_
     const length = this.count_
     let remain = 0
@@ -129,7 +129,7 @@ export class DistinctClozeGenerator {
           Math.random() >= this.rCloze_
             ? {
                 class: ClozeCellClass.PreInsert,
-                content: source[rand[i + j * length]],
+                content: source[rand[i + j * length]]
               }
             : { class: ClozeCellClass.UserInsert }
 
@@ -156,7 +156,7 @@ export class DistinctClozeGenerator {
     )
   }
 
-  loopNeighber_(x, y, cloze, interrupt) {
+  loopNeighber_ (x, y, cloze, interrupt) {
     for (let j = 0; j < cloze.height; j++) {
       if (j === y) {
         continue
@@ -189,7 +189,7 @@ export class DistinctClozeGenerator {
     return true
   }
 
-  check_(x, y, value, cloze) {
+  check_ (x, y, value, cloze) {
     if (value === undefined) {
       return true
     }
@@ -201,7 +201,7 @@ export class DistinctClozeGenerator {
     )
   }
 
-  getOptions_(x, y, cloze) {
+  getOptions_ (x, y, cloze) {
     const options = new Set(Array.from(this.dataSource_))
     this.loopNeighber_(
       x,

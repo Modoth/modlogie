@@ -1,46 +1,46 @@
-export let ClozeCellClass = {
+export const ClozeCellClass = {
   Blank: 'blank',
   PreInsert: 'pre-insert',
-  UserInsert: 'user-insert',
+  UserInsert: 'user-insert'
 }
 
 export class Cloze {
-  constructor(
-    /**@type { [CellData][] } */ matric,
+  constructor (
+    /** @type { [CellData][] } */ matric,
     width,
     height,
-    /**@type number */ remain,
+    /** @type number */ remain,
     checkValue,
     getOptions,
     group = 0
   ) {
-    /**@private */
+    /** @private */
     this.width_ = width
-    /**@private */
+    /** @private */
     this.height_ = height
     this.group_ = group
-    /**@private */
+    /** @private */
     this.matric_ = matric
     this.remain_ = remain
     this.checkValue_ = checkValue
     this.getOptions_ = getOptions
   }
 
-  get(x, y) {
+  get (x, y) {
     if (!this.checkRange_(x, y)) {
       return undefined
     }
     return this.matric_[y][x]
   }
 
-  getOptions(x, y) {
+  getOptions (x, y) {
     if (!this.checkRange_(x, y)) {
       return []
     }
     return this.getOptions_(x, y, this)
   }
 
-  set(x, y, value) {
+  set (x, y, value) {
     if (!this.checkRange_(x, y)) {
       return false
     }
@@ -60,24 +60,24 @@ export class Cloze {
     return true
   }
 
-  get group() {
+  get group () {
     return this.group_
   }
 
-  get remain() {
+  get remain () {
     return this.remain_
   }
 
-  get width() {
+  get width () {
     return this.width_
   }
 
-  get height() {
+  get height () {
     return this.height_
   }
 
-  /**@private */
-  checkRange_(x, y) {
+  /** @private */
+  checkRange_ (x, y) {
     return x >= 0 && x < this.width_ && y >= 0 && y < this.height_
   }
 }

@@ -1,12 +1,12 @@
-/**@type function(Blob file):Promise<string> */
+/** @type function(Blob file):Promise<string> */
 export const toDataUrl = (file) => {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = () => {
-      resolve(reader.result);
+      resolve(reader.result)
     }
-    reader.onerror = reject;
-    reader.onabort = reject;
-    reader.readAsDataURL(file);
+    reader.onerror = reject
+    reader.onabort = reject
+    reader.readAsDataURL(file)
   })
 }

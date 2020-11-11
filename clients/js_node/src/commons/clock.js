@@ -1,19 +1,21 @@
 const ClockStatus = {
   Stop: 0,
   Runing: 1,
-  Pause: 2,
+  Pause: 2
 }
 
 export class Clock {
-  constructor(tps = 1) {
+  constructor (tps = 1) {
     this.now_ = -1
     this.interval_ = 0
     this.tps_ = Math.min(1000, tps)
   }
-  get now() {
+
+  get now () {
     return this.now_
   }
-  onTick_() {
+
+  onTick_ () {
     this.tick_++
     this.now_ = Date.now - this.start_
     let task = this.tasks_[0]
@@ -23,31 +25,35 @@ export class Clock {
       task = this.tasks_[0]
     }
   }
-  start() {
+
+  start () {
     this.tick_ = 0
     this.now_ = 0
     this.start_ = Date.now
     this.tasks_ = []
     this.resume()
   }
-  pause() {
+
+  pause () {
     clearInterval(this.interval_)
     this.status = ClockStatus.Stop
   }
-  resume() {
+
+  resume () {
     this.interval_ = setInterval(this.onTick_.bind(this), 1000 / this.tps_)
     this.status = ClockStatus.Runing
   }
-  stop() {
+
+  stop () {
     this.pause()
     this.status = ClockStatus.Stop
   }
 
-  get tick() {
+  get tick () {
     return this.tick_
   }
 
-  wait(tick = 0) {
+  wait (tick = 0) {
     return new Promise((resolve) => {
       const raiseTick = this.tick_ + tick
       const newTask = { raiseTick, resolve }

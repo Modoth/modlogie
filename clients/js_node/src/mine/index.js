@@ -3,8 +3,8 @@
 import { ResizeWatcher } from '../commons/resize-watcher.js'
 
 class App {
-  constructor() { }
-  initComponents() {
+  constructor () { }
+  initComponents () {
     ;['cellsTable'].forEach((n) => {
       this[n] = document.getElementById(n)
     })
@@ -12,7 +12,7 @@ class App {
     new ResizeWatcher(window).register(this.tryResize.bind(this))
   }
 
-  updateMines(success) {
+  updateMines (success) {
     this.cells.forEach((cs) =>
       cs.forEach((c) => {
         if (c.isMine) {
@@ -23,7 +23,7 @@ class App {
     )
   }
 
-  select(cell) {
+  select (cell) {
     if (!this.isRunning) {
       this.start()
       return
@@ -43,26 +43,25 @@ class App {
       this.isRunning = false
       this.hasFliped = false
       this.updateMines(true)
-      return
     }
   }
 
-  flipCell(cell) {
+  flipCell (cell) {
     if (cell.isFliped) {
       return
     }
     this.remainCells--
     cell.isFliped = true
     cell.btn.classList.add('flipped')
-    let { i, j } = cell
+    const { i, j } = cell
     let mineCount = 0
-    let nCells = []
-    let iMin = Math.max(0, i - 1)
-    let iMax = Math.min(this.width, i + 2)
-    let jMin = Math.max(0, j - 1)
-    let jMax = Math.min(this.height, j + 2)
-    for (var s = jMin; s < jMax; s++) {
-      for (var r = iMin; r < iMax; r++) {
+    const nCells = []
+    const iMin = Math.max(0, i - 1)
+    const iMax = Math.min(this.width, i + 2)
+    const jMin = Math.max(0, j - 1)
+    const jMax = Math.min(this.height, j + 2)
+    for (let s = jMin; s < jMax; s++) {
+      for (let r = iMin; r < iMax; r++) {
         if (r === i && s === j) {
           continue
         }
@@ -75,7 +74,7 @@ class App {
       }
     }
     if (mineCount == 0) {
-      for (var c of nCells) {
+      for (const c of nCells) {
         this.flipCell(c)
       }
     } else {
@@ -83,8 +82,8 @@ class App {
     }
   }
 
-  calculateSize() {
-    let cellWidth = 36
+  calculateSize () {
+    const cellWidth = 36
     this.width = Math.floor(window.innerWidth / cellWidth)
     this.height = Math.floor(window.innerHeight / cellWidth)
     if (this.width < this.height) {
@@ -96,39 +95,39 @@ class App {
     this.cellsTable.style.height = `${this.height * cellWidth}px`
   }
 
-  tryResize() {
+  tryResize () {
     if (this.hasFliped) {
       return
     }
     this.start()
   }
 
-  start() {
+  start () {
     this.calculateSize()
     this.isRunning = true
     this.cellsTable.innerHTML = ''
     this.cellsCount = this.width * this.height
     this.remainCells = this.cellsCount
-    let mineOp = 0.2
+    const mineOp = 0.2
     this.cells = []
     this.mineCount = 0
     for (let j = 0; j < this.height; j++) {
-      var raw = []
+      const raw = []
       this.cells.push(raw)
-      var cellsRow = document.createElement('div')
+      const cellsRow = document.createElement('div')
       cellsRow.classList.add('cellsRow')
       this.cellsTable.appendChild(cellsRow)
       for (let i = 0; i < this.width; i++) {
-        let cell = {
+        const cell = {
           i,
-          j,
+          j
         }
         raw.push(cell)
         if (Math.random() < mineOp) {
           cell.isMine = true
           this.mineCount++
         }
-        var btn = document.createElement('input')
+        const btn = document.createElement('input')
         btn.type = 'button'
         btn.dataset.char = Math.floor(Math.random() * 9)
         if (cell.isMine) {

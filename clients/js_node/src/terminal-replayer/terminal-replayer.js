@@ -1,7 +1,7 @@
 import { sleep } from '../commons/sleep.js'
 
 class Context {
-  constructor() {
+  constructor () {
     this.currentLine = ''
     this.lines = [this.currentLine]
     this.styles = new Set()
@@ -12,10 +12,10 @@ class Context {
 }
 
 export class TerminalReplayer {
-  constructor() {
+  constructor () {
     this.root_ = document.createElement('div')
     const shadow = this.root_.attachShadow({ mode: 'closed' })
-    const style = /**@imports css */ './terminal-replayer.css'
+    const style = /** @imports css */ './terminal-replayer.css'
     shadow.appendChild(style)
     this.screen_ = document.createElement('pre')
     this.screen_.classList.add('screen')
@@ -24,11 +24,11 @@ export class TerminalReplayer {
     this.csiSurfix_ = 'm'
   }
 
-  get view() {
+  get view () {
     return this.root_
   }
 
-  printCaret_() {
+  printCaret_ () {
     const e = document.createElement('code')
     e.innerText = '|'
     e.classList.add('caret')
@@ -37,7 +37,7 @@ export class TerminalReplayer {
     this.caret_ = e
   }
 
-  clearScreen_(/**@type Context */ ctx, type) {
+  clearScreen_ (/** @type Context */ ctx, type) {
     switch (type) {
       case 1:
         return
@@ -61,11 +61,10 @@ export class TerminalReplayer {
           }
         }
         this.rows_ = this.rows_.slice(0, ctx.caretY + 1)
-        return
     }
   }
 
-  changeCaretPosition_(/**@type Context */ ctx, dx = 0, dy = 0) {
+  changeCaretPosition_ (/** @type Context */ ctx, dx = 0, dy = 0) {
     let nextY = ctx.caretY + (dy || 0)
     let nextX = ctx.caretX + (dx || 0)
     nextY = Math.min(this.rows_.length - 1, nextY)
@@ -84,7 +83,7 @@ export class TerminalReplayer {
     ctx.caretY = nextY
   }
 
-  changeCaretState_(/**@type Context */ ctx, enable = false) {
+  changeCaretState_ (/** @type Context */ ctx, enable = false) {
     ctx.enableCaret = enable
     if (enable) {
       this.caret_.classList.remove('hidden')
@@ -93,11 +92,11 @@ export class TerminalReplayer {
     }
   }
 
-  resetAll_(ctx) {
+  resetAll_ (ctx) {
     this.resetCsi_(ctx)
   }
 
-  async escape_(/**@type Context */ ctx) {
+  async escape_ (/** @type Context */ ctx) {
     const type = ctx.currentLine[0]
     switch (type) {
       case 'N':
@@ -118,26 +117,25 @@ export class TerminalReplayer {
       case '[':
         ctx.currentLine = ctx.currentLine.slice(1)
         await this.csi_(ctx)
-        return
+
       default:
-        return
     }
   }
 
-  resetCsi_(/**@type Context */ ctx) {
+  resetCsi_ (/** @type Context */ ctx) {
     ctx.styles.clear()
   }
 
-  csiClear_(/**@type Context */ ctx, /**@type string */ group) {
+  csiClear_ (/** @type Context */ ctx, /** @type string */ group) {
     ctx.styles.delete(group)
   }
 
-  csiSet_(/**@type Context */ ctx, csiCmd, /**@type string */ group) {
+  csiSet_ (/** @type Context */ ctx, csiCmd, /** @type string */ group) {
     ctx.styles.add(group)
     ctx[group] = `csi-${csiCmd}`
   }
 
-  csiSgr_(/**@type Context */ ctx, sgrType) {
+  csiSgr_ (/** @type Context */ ctx, sgrType) {
     switch (sgrType) {
       case 0:
         this.resetCsi_(ctx)
@@ -175,13 +173,12 @@ export class TerminalReplayer {
       case 46:
       case 47:
         this.csiSet_(ctx, sgrType, 'background')
-        return
+
       default:
-        return
     }
   }
 
-  async csi_(/**@type Context */ ctx) {
+  async csi_ (/** @type Context */ ctx) {
     const match = ctx.currentLine.match(/^([\d;]*)([ABCDEFGHJKSTZfminsu])/)
     if (!match) {
       return
@@ -206,13 +203,12 @@ export class TerminalReplayer {
         return
       case 'J':
         this.clearScreen_(ctx, arg || 0)
-        return
+
       default:
-        return
     }
   }
 
-  printChar_(/**@type Context */ ctx, c) {
+  printChar_ (/** @type Context */ ctx, c) {
     const e = document.createElement('code')
     e.innerText = c
     for (const style of ctx.styles) {
@@ -222,7 +218,7 @@ export class TerminalReplayer {
     this.rows_[ctx.caretY] = [
       ...this.rows_[ctx.caretY].slice(0, ctx.caretX),
       e,
-      ...this.rows_[ctx.caretY].slice(ctx.caretX),
+      ...this.rows_[ctx.caretY].slice(ctx.caretX)
     ]
     if (c === '\n') {
       ctx.caretY++
@@ -232,11 +228,11 @@ export class TerminalReplayer {
       ctx.caretX++
     }
     this.screen_.scrollTo({
-      top: this.screen_.scrollHeight - this.screen_.clientHeight,
+      top: this.screen_.scrollHeight - this.screen_.clientHeight
     })
   }
 
-  async printLine_(/**@type Context */ ctx) {
+  async printLine_ (/** @type Context */ ctx) {
     while (ctx.currentLine.length) {
       if (ctx.currentLine.startsWith(this.escapePrefix_)) {
         ctx.currentLine = ctx.currentLine.slice(this.escapePrefix_.length)
@@ -264,7 +260,7 @@ export class TerminalReplayer {
     }
   }
 
-  async replay(data, option, /**@type { {cancled : boolean} } */ cancleToken) {
+  async replay (data, option, /** @type { {cancled : boolean} } */ cancleToken) {
     const { inputCharDelay = 75, outputCharDelay = 0 } = option || {}
     this.inputCharDelay_ = inputCharDelay
     this.outputCharDelay_ = outputCharDelay

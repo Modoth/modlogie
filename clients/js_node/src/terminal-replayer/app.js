@@ -2,8 +2,8 @@ import { TerminalReplayer } from './terminal-replayer.js'
 import { highlight } from './highlight.js'
 
 class App {
-  initComponents() {
-    const style = /**@imports css */ './app.css'
+  initComponents () {
+    const style = /** @imports css */ './app.css'
     this.replay_ = document.createElement('div')
     this.replay_.classList.add('replay')
     this.replay_.innerText = 'REPLAY'
@@ -19,22 +19,22 @@ class App {
         this.resume()
       }
     }
-    this.testData_ = /**@imports txt */ './app-data.txt'
+    this.testData_ = /** @imports txt */ './app-data.txt'
   }
 
-  async start(data) {
+  async start (data) {
     this.highlightedData_ = [highlight(data || this.testData_)]
     const option = { inputCharDelay: 0, outputCharDelay: 0 }
     await this.resume(option)
   }
 
-  async pause() {
+  async pause () {
     if (this.cancleToken_) {
       this.cancleToken_.cancled = true
     }
   }
 
-  async resume(option) {
+  async resume (option) {
     if (this.cancleToken_) {
       return
     }

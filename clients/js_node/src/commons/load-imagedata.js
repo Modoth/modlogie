@@ -1,5 +1,5 @@
-export const loadImageData = (/**@string */ url) => {
-  /**@type Promise<ImageData> */
+export const loadImageData = (/** @string */ url) => {
+  /** @type Promise<ImageData> */
   const task = new Promise((resolve, reject) => {
     const img = document.createElement('img')
     img.onload = () => {

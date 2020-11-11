@@ -1,9 +1,9 @@
-export const highlight = (/**@type string */ content) => {
+export const highlight = (/** @type string */ content) => {
   const results = []
   const lines = content.split('\n')
   let prefix
   for (let line of lines) {
-    let match = line.match(/^([\$#]|(?:PS.*?>)|(?:>>>)|(?:>))(\s+)(\w+)?(.*)/)
+    const match = line.match(/^([\$#]|(?:PS.*?>)|(?:>>>)|(?:>))(\s+)(\w+)?(.*)/)
     if (!match) {
       results.push(line)
       continue

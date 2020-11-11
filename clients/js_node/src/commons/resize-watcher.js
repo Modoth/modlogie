@@ -1,6 +1,6 @@
 export class ResizeWatcher {
-  constructor(target = window) {
-    /**@type Window & typeof globalThis*/
+  constructor (target = window) {
+    /** @type Window & typeof globalThis */
     this.target_ = target
     this.target_.onresize = (ev) => this.onResize_(ev)
     this.resizeThreshold_ = 10
@@ -8,7 +8,8 @@ export class ResizeWatcher {
     this.isWatching_ = false
     this.checkThreshold_ = 200
   }
-  register(callback) {
+
+  register (callback) {
     callback && this.callbacks_.push(callback)
     if (!this.isWatching_) {
       this.isWatching_ = true
@@ -18,7 +19,7 @@ export class ResizeWatcher {
     }
   }
 
-  unregister(callback) {
+  unregister (callback) {
     if (!callback) {
       return
     }
@@ -32,7 +33,7 @@ export class ResizeWatcher {
     }
   }
 
-  onResize_(/**@type UIEvent*/ ev) {
+  onResize_ (/** @type UIEvent */ ev) {
     if (!this.isWatching_) {
       return
     }
@@ -41,8 +42,8 @@ export class ResizeWatcher {
       return
     }
     this.lastCheckTime_ = now
-    let w = this.target_.innerWidth
-    let h = this.target_.innerHeight
+    const w = this.target_.innerWidth
+    const h = this.target_.innerHeight
 
     if (
       Math.abs(this.lastW_ - w) < this.resizeThreshold_ &&

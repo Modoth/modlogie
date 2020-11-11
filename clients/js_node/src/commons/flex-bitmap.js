@@ -3,12 +3,12 @@ import { nameof } from '../commons/nameof.js'
 import { remainDevide } from '../commons/remain-devide.js'
 
 export class FlexBitmap {
-  constructor(width, height, bufferSize = 10) {
+  constructor (width, height, bufferSize = 10) {
     assertPara(width >= 0, nameof({ width }))
     assertPara(height >= 0, nameof({ height }))
     this.bufferSize_ = parseInt(bufferSize)
     assertPara(this.bufferSize_ > 0, nameof({ bufferSize }))
-    /**@type [any]*/
+    /** @type [any] */
     this.buffers_ = []
     this.interWidth_ = 0
     this.bufferPerRow_ = 0
@@ -17,7 +17,7 @@ export class FlexBitmap {
     this.guaranteeSize_(width - 1, height - 1)
   }
 
-  guaranteeSize_(x, y) {
+  guaranteeSize_ (x, y) {
     if (x < this.width && y < this.height) {
       return
     }
@@ -51,9 +51,9 @@ export class FlexBitmap {
     }
   }
 
-  nonEmptyRow_(scanInverse = false) {
+  nonEmptyRow_ (scanInverse = false) {
     for (let j = 0; j < this.height; j++) {
-      let fixJ = scanInverse ? this.height - 1 - j : j
+      const fixJ = scanInverse ? this.height - 1 - j : j
       for (let k = 0; k < this.bufferPerRow_; k++) {
         const buffer = this.buffers_[k + this.bufferPerRow_ * fixJ]
         for (let i = 0; i < this.bufferSize_; i++) {
@@ -65,11 +65,11 @@ export class FlexBitmap {
     }
   }
 
-  nonEmptyColumn_(scanInverse = false) {
+  nonEmptyColumn_ (scanInverse = false) {
     for (let k = 0; k < this.bufferPerRow_; k++) {
-      let fixK = scanInverse ? this.bufferPerRow_ - 1 - k : k
+      const fixK = scanInverse ? this.bufferPerRow_ - 1 - k : k
       for (let i = 0; i < this.bufferSize_; i++) {
-        let fixI = scanInverse ? this.bufferSize_ - 1 - i : i
+        const fixI = scanInverse ? this.bufferSize_ - 1 - i : i
         for (let j = 0; j < this.height; j++) {
           const buffer = this.buffers_[fixK + this.bufferPerRow_ * j]
           if (buffer[fixI] & 0xff) {
@@ -80,15 +80,15 @@ export class FlexBitmap {
     }
   }
 
-  getRegion() {
-    let top = this.nonEmptyRow_()
-    let bottom = this.nonEmptyRow_(true) + 1
-    let left = this.nonEmptyColumn_()
-    let right = this.nonEmptyColumn_(true) + 1
+  getRegion () {
+    const top = this.nonEmptyRow_()
+    const bottom = this.nonEmptyRow_(true) + 1
+    const left = this.nonEmptyColumn_()
+    const right = this.nonEmptyColumn_(true) + 1
     return [top, right, bottom, left]
   }
 
-  get(x, y) {
+  get (x, y) {
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
       return undefined
     }
@@ -96,16 +96,16 @@ export class FlexBitmap {
     return this.buffers_[y * this.bufferPerRow_ + rowBufferIdx][offset]
   }
 
-  set(x, y, value) {
+  set (x, y, value) {
     this.guaranteeSize_(x, y)
     const [rowBufferIdx, offset] = remainDevide(x, this.bufferSize_)
     this.buffers_[y * this.bufferPerRow_ + rowBufferIdx][offset] = value
   }
 
-  toString() {
+  toString () {
     const rows = []
     for (let j = 0; j < this.height; j++) {
-      let row = []
+      const row = []
       for (let k = 0; k < this.bufferPerRow_; k++) {
         const buffer = this.buffers_[k + this.bufferPerRow_ * j]
         for (let i = 0; i < this.bufferSize_; i++) {

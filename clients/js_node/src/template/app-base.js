@@ -1,5 +1,5 @@
 export class AppBase {
-  async init(/**@type HTMLElement */ root, data) {
+  async init (/** @type HTMLElement */ root, data) {
     this.storage = this.initStorage_()
     this.root = root
     this.data = await this.validateData(data)
@@ -19,7 +19,7 @@ export class AppBase {
         console.log(item)
       }
     }
-    let view = this.view(this.root)
+    const view = this.view(this.root)
     append(view)
     componentNames.forEach(
       (item) =>
@@ -30,7 +30,7 @@ export class AppBase {
     await this.start(this.data)
   }
 
-  initStorage_() {
+  initStorage_ () {
     if (window.$storage) {
       return window.$storage
     }
@@ -40,36 +40,36 @@ export class AppBase {
     } catch {
       return {
         getItem: () => '',
-        setItem: () => true,
+        setItem: () => true
       }
     }
   }
 
-  getElementName(id) {
+  getElementName (id) {
     return id.replace(/-(.)/g, (_, g) => g.toUpperCase())
   }
 
-  async validateData(data) {
+  async validateData (data) {
     return data
   }
 
-  async initComponents() {}
+  async initComponents () {}
 
-  view() {}
+  view () {}
 
-  async start() {
+  async start () {
     console.log('start')
   }
 
-  async pause() {
+  async pause () {
     console.log('pause')
   }
 
-  async resume() {
+  async resume () {
     console.log('pause')
   }
 
-  async stop() {
+  async stop () {
     console.log('stop')
   }
 }

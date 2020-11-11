@@ -1,11 +1,11 @@
 /* eslint-disable require-jsdoc */
-const path = require('path');
-const fs = require('fs');
-const http = require('http');
+const path = require('path')
+const fs = require('fs')
+const http = require('http')
 // eslint-disable-next-line no-unused-vars
-const {Socket} = require('net');
-const https = require('https');
-const crypto = require('crypto');
+const { Socket } = require('net')
+const https = require('https')
+const crypto = require('crypto')
 
 class FileUtils {
   /**
@@ -13,16 +13,16 @@ class FileUtils {
      * @param {string} file
      * @return { Buffer }
      */
-  static readFile(file) {
+  static readFile (file) {
     return new Promise((resolve, reject) => {
       fs.readFile(file, (err, data) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve(data);
+          resolve(data)
         }
-      });
-    });
+      })
+    })
   }
 
   /**
@@ -30,385 +30,396 @@ class FileUtils {
      * @param {string} file
      * @return { Stats }
      */
-  static fileStat(file) {
+  static fileStat (file) {
     return new Promise((resolve, reject) => {
       fs.stat(file, (err, stats) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve(stats);
+          resolve(stats)
         }
-      });
-    });
+      })
+    })
   }
 
-  static exists(file) {
+  static exists (file) {
     return new Promise((resolve) => {
-      fs.exists(file, resolve);
-    });
+      fs.exists(file, resolve)
+    })
   }
 
-  static mkdir(dir) {
+  static mkdir (dir) {
     return new Promise((resolve, reject) => {
       fs.mkdir(dir, (err) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve();
+          resolve()
         }
-      });
-    });
+      })
+    })
   }
 
-  static async createPaths(dir) {
+  static async createPaths (dir) {
     if (await FileUtils.exists(dir)) {
-      return;
+      return
     }
-    const parent = path.dirname(dir);
+    const parent = path.dirname(dir)
     if (!(await FileUtils.exists(parent))) {
-      await FileUtils.createPaths(parent);
+      await FileUtils.createPaths(parent)
     }
-    await FileUtils.mkdir(dir);
+    await FileUtils.mkdir(dir)
   }
 
-  static async writeFile(filepath, content) {
-    await FileUtils.createPaths(path.dirname(filepath));
+  static async writeFile (filepath, content) {
+    await FileUtils.createPaths(path.dirname(filepath))
     return await new Promise((resolve, reject) => {
       fs.writeFile(filepath, content, (err) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve();
+          resolve()
         }
-      });
-    });
+      })
+    })
   }
 }
 
 class ImporterUtils {
-  static getModuleInfos(
-      /** @type string */ content,
-      /** @type RegExp */ reg,
-      contentToInsert,
+  static getModuleInfos (
+    /** @type string */ content,
+    /** @type RegExp */ reg,
+    contentToInsert
   ) {
-    const moduleInfos = [];
+    const moduleInfos = []
     while (true) {
-      const match = reg.exec(content);
+      const match = reg.exec(content)
       if (!match) {
-        break;
+        break
       }
       moduleInfos.push({
         startIdx: match.index,
         length: match[0].length,
         filename: match[1],
-        contentToInsert,
-      });
+        contentToInsert
+      })
     }
-    return moduleInfos;
+    return moduleInfos
   }
 }
 
 class HtmlScriptAdaper {
-  constructor() {
-    this.reg = /<script[^>]+src="([^">]*)"[^>]*>\s*<\/script>/gm;
+  constructor () {
+    this.reg = /<script[^>]+src="([^">]*)"[^>]*>\s*<\/script>/gm
   }
-  convert(content) {
-    return `<script>\n${content}\n</script>`;
+
+  convert (content) {
+    return `<script>\n${content}\n</script>`
   }
 }
 
 class HtmlCssAdaper {
-  constructor() {
-    this.reg = /<link rel="stylesheet" type="text\/css" href="([^"]*\.css)">/gm;
+  constructor () {
+    this.reg = /<link rel="stylesheet" type="text\/css" href="([^"]*\.css)">/gm
   }
-  convert(content) {
-    return `<style>\n${content}\n</style>`;
+
+  convert (content) {
+    return `<style>\n${content}\n</style>`
   }
 }
 
 class HtmlHTMLAdaper {
-  constructor() {
-    this.reg = /<imports src="([^"]*\.html)"><\/imports>/gm;
+  constructor () {
+    this.reg = /<imports src="([^"]*\.html)"><\/imports>/gm
   }
-  convert(content) {
-    return `\n${content}\n`;
+
+  convert (content) {
+    return `\n${content}\n`
   }
 }
 
 class JsPngAdaper {
-  constructor() {
-    this.reg = /\/\*\*\s*@imports image\s*\*\/ '([^']*)'/gm;
+  constructor () {
+    this.reg = /\/\*\*\s*@imports image\s*\*\/ '([^']*)'/gm
   }
-  convert(content) {
-    return `'data:image/png;base64,${content.toString('base64')}'`;
+
+  convert (content) {
+    return `'data:image/png;base64,${content.toString('base64')}'`
   }
 }
 
 class JsonPngAdaper {
-  constructor() {
-    this.reg = /\/\*\*\s*@imports image\s*\*\/ '([^']*)'/gm;
+  constructor () {
+    this.reg = /\/\*\*\s*@imports image\s*\*\/ '([^']*)'/gm
   }
-  convert(content) {
-    return `data:image/png;base64,${content.toString('base64')}`;
+
+  convert (content) {
+    return `data:image/png;base64,${content.toString('base64')}`
   }
 }
 
 class JsonAudioAdaper {
-  constructor() {
-    this.reg = /\/\*\*\s*@imports audio\s*\*\/ '([^']*)'/gm;
+  constructor () {
+    this.reg = /\/\*\*\s*@imports audio\s*\*\/ '([^']*)'/gm
   }
-  convert(content) {
-    return `data:audio/mpeg;base64,${content.toString('base64')}`;
+
+  convert (content) {
+    return `data:audio/mpeg;base64,${content.toString('base64')}`
   }
 }
 
 class JsHtmlAdaper {
-  constructor() {
-    this.reg = /\/\*\*\s*@imports html\s*\*\/ '([^']*)'/gm;
+  constructor () {
+    this.reg = /\/\*\*\s*@imports html\s*\*\/ '([^']*)'/gm
   }
-  convert(content) {
+
+  convert (content) {
     return `(()=>{
       const root = document.createElement('div')
       // const shadow = root.attachShadow({mode:"closed"})
       root.innerHTML = ${JSON.stringify(content)}
       return root.children.length === 1 ? 
             root.children[0] : Array.from(root.children)
-    })()`;
+    })()`
   }
 }
 
 class JsJsonAdaper {
-  constructor() {
-    this.reg = /\/\*\*\s*@imports json\s*\*\/ '([^']*)'/gm;
+  constructor () {
+    this.reg = /\/\*\*\s*@imports json\s*\*\/ '([^']*)'/gm
   }
-  convert(content) {
-    return content;
+
+  convert (content) {
+    return content
   }
 }
 
 class JsTextAdaper {
-  constructor() {
-    this.reg = /\/\*\*\s*@imports txt\s*\*\/ '([^']*)'/gm;
+  constructor () {
+    this.reg = /\/\*\*\s*@imports txt\s*\*\/ '([^']*)'/gm
   }
-  convert(content) {
-    return JSON.stringify(content);
+
+  convert (content) {
+    return JSON.stringify(content)
   }
 }
 
 class JsCssAdaper {
-  constructor() {
-    this.reg = /\/\*\*\s*@imports css\s*\*\/ '([^']*)'/gm;
+  constructor () {
+    this.reg = /\/\*\*\s*@imports css\s*\*\/ '([^']*)'/gm
   }
-  convert(content) {
+
+  convert (content) {
     return `(()=>{
       const style = document.createElement('style')
       style.innerHTML = ${JSON.stringify(content)}
       return style
-    })()`;
+    })()`
   }
 }
 
 class JsJsAdaper {
-  constructor() {
-    this.reg = /^\s*import(?:.*\s*)*?.*from.*'(.*)'/gm;
+  constructor () {
+    this.reg = /^\s*import(?:.*\s*)*?.*from.*'(.*)'/gm
   }
-  convert(content) {
-    content = content.replace(/^\s*export\s*/g, '\n');
-    content = content.replace(/\n\s*export\s*/g, '\n\n');
-    return content;
+
+  convert (content) {
+    content = content.replace(/^\s*export\s*/g, '\n')
+    content = content.replace(/\n\s*export\s*/g, '\n\n')
+    return content
   }
 }
 
 class TextImporter {
-  constructor(
-      /** @type {reg : RegExp, convert:(any) => string }[] */ ...adapters
+  constructor (
+    /** @type {reg : RegExp, convert:(any) => string }[] */ ...adapters
   ) {
-    this.adapters = adapters;
+    this.adapters = adapters
   }
 
-  async import(filepath, context) {
-    const buffer = await FileUtils.readFile(filepath);
-    let mtime = (await FileUtils.fileStat(filepath)).mtimeMs;
+  async import (filepath, context) {
+    const buffer = await FileUtils.readFile(filepath)
+    let mtime = (await FileUtils.fileStat(filepath)).mtimeMs
 
     /** @type string */
-    const content = buffer.toString('utf-8');
+    const content = buffer.toString('utf-8')
     if (!(this.adapters && this.adapters.length > 0)) {
       return {
         mtime,
-        data: content,
-      };
+        data: content
+      }
     }
-    let moduleInfos = [];
+    let moduleInfos = []
     moduleInfos = this.adapters
-        .map((a) => ImporterUtils.getModuleInfos(content, a.reg, a.convert))
-        .reduce((r, i) => r.concat(i), [])
-        .sort((a, b) => a.startIdx - b.startIdx);
+      .map((a) => ImporterUtils.getModuleInfos(content, a.reg, a.convert))
+      .reduce((r, i) => r.concat(i), [])
+      .sort((a, b) => a.startIdx - b.startIdx)
     for (const i of moduleInfos) {
-      i.filepath = path.resolve(filepath, '..', i.filename);
-      i.filepath = await context.toImport(i.filepath, filepath);
+      i.filepath = path.resolve(filepath, '..', i.filename)
+      i.filepath = await context.toImport(i.filepath, filepath)
     }
     return {
       lazyGetResult: async (ctx) => {
-        let startIdx = 0;
-        const slices = [];
+        let startIdx = 0
+        const slices = []
         for (const i of moduleInfos) {
-          slices.push(content.slice(startIdx, i.startIdx));
-          const result = await ctx.getResult(i.filepath);
-          slices.push(i.contentToInsert(result.data));
-          startIdx = i.startIdx + i.length;
+          slices.push(content.slice(startIdx, i.startIdx))
+          const result = await ctx.getResult(i.filepath)
+          slices.push(i.contentToInsert(result.data))
+          startIdx = i.startIdx + i.length
           if (result.mtime > mtime) {
-            mtime = result.mtime;
+            mtime = result.mtime
           }
         }
-        slices.push(content.slice(startIdx));
-        const data = slices.join('');
-        return {mtime, data};
-      },
-    };
+        slices.push(content.slice(startIdx))
+        const data = slices.join('')
+        return { mtime, data }
+      }
+    }
   }
 }
 
 // eslint-disable-next-line no-unused-vars
 class CssImporter {
-  async import(filepath, _) {
-    const buffer = await FileUtils.readFile(filepath);
-    const mtime = (await FileUtils.fileStat(i.filepath)).mtimeMs;
+  async import (filepath, _) {
+    const buffer = await FileUtils.readFile(filepath)
+    const mtime = (await FileUtils.fileStat(i.filepath)).mtimeMs
     /** @type string */
-    const data = buffer.toString('utf-8');
+    const data = buffer.toString('utf-8')
     return {
       lazyGetResult: (_) => {
         return {
           mtime,
-          data,
-        };
-      },
-    };
+          data
+        }
+      }
+    }
   }
 }
 
 class BufferImporter {
-  async import(filepath, _) {
-    const data = await FileUtils.readFile(filepath);
-    const mtime = (await FileUtils.fileStat(filepath)).mtimeMs;
+  async import (filepath, _) {
+    const data = await FileUtils.readFile(filepath)
+    const mtime = (await FileUtils.fileStat(filepath)).mtimeMs
     return {
       lazyGetResult: (_) => {
         return {
           mtime,
-          data,
-        };
-      },
-    };
+          data
+        }
+      }
+    }
   }
 }
 
 class ImportContext {
-  constructor(workdir, {replceSurfix = ''}) {
+  constructor (workdir, { replceSurfix = '' }) {
     /** @type string[] */
-    this.modules = [];
+    this.modules = []
     /** @type string[] */
-    this.results = {};
+    this.results = {}
     /** @type Set<string> */
-    this.dealingmodules = new Set();
-    this.addedModules = new Set();
-    this.workdir = workdir;
-    this.dependentedBys = {};
-    this.replaceFile_ = replceSurfix ?
-            async (filepath) => {
-              const replaceFile = path.join(
-                  path.dirname(filepath),
-                  replceSurfix + path.basename(filepath),
-              );
-              if (await FileUtils.exists(replaceFile)) {
-                return replaceFile;
-              }
-              return filepath;
-            } :
-            (filepath) => filepath;
+    this.dealingmodules = new Set()
+    this.addedModules = new Set()
+    this.workdir = workdir
+    this.dependentedBys = {}
+    this.replaceFile_ = replceSurfix
+      ? async (filepath) => {
+          const replaceFile = path.join(
+            path.dirname(filepath),
+            replceSurfix + path.basename(filepath)
+          )
+          if (await FileUtils.exists(replaceFile)) {
+            return replaceFile
+          }
+          return filepath
+        }
+      : (filepath) => filepath
   }
 
-  async toImport(filename, dependentedBy) {
-    filename = await this.replaceFile_(filename);
+  async toImport (filename, dependentedBy) {
+    filename = await this.replaceFile_(filename)
     this.dependentedBys[filename] =
-            this.dependentedBys[filename] || new Set([filename]);
+            this.dependentedBys[filename] || new Set([filename])
     if (dependentedBy) {
       this.dependentedBys[dependentedBy] =
-                this.dependentedBys[dependentedBy] || new Set([dependentedBy]);
+                this.dependentedBys[dependentedBy] || new Set([dependentedBy])
       for (const dep of this.dependentedBys[dependentedBy].keys()) {
-        this.dependentedBys[filename].add(dep);
+        this.dependentedBys[filename].add(dep)
       }
     }
     if (this.addedModules.has(filename)) {
-      return filename;
+      return filename
     }
-    this.addedModules.add(filename);
-    this.modules.push(filename);
-    return filename;
+    this.addedModules.add(filename)
+    this.modules.push(filename)
+    return filename
   }
 
-  async getResult(filename) {
-    const result = this.results[filename];
+  async getResult (filename) {
+    const result = this.results[filename]
     if (result.data === undefined) {
       if (this.dealingmodules.has(filename)) {
-        throw new Error('Cyclic dependencies');
+        throw new Error('Cyclic dependencies')
       }
-      this.dealingmodules.add(filename);
-      const {data, mtime} = await result.lazyGetResult(this);
-      result.data = data;
-      result.mtime = mtime;
-      this.dealingmodules.delete(filename);
+      this.dealingmodules.add(filename)
+      const { data, mtime } = await result.lazyGetResult(this)
+      result.data = data
+      result.mtime = mtime
+      this.dealingmodules.delete(filename)
     }
-    return result;
+    return result
   }
 }
 
 class Packer {
-  getLoader(/** @type string */ filepath) {
-    const ext = path.extname(filepath).toLocaleLowerCase();
+  getLoader (/** @type string */ filepath) {
+    const ext = path.extname(filepath).toLocaleLowerCase()
     switch (ext) {
       case '.html':
         return new TextImporter(
-            new HtmlCssAdaper(),
-            new HtmlHTMLAdaper(),
-            new HtmlScriptAdaper(),
-            new JsJsAdaper(),
-            new JsHtmlAdaper(),
-            new JsCssAdaper(),
-            new JsJsonAdaper(),
-            new JsTextAdaper(),
-            new JsPngAdaper(),
-        );
+          new HtmlCssAdaper(),
+          new HtmlHTMLAdaper(),
+          new HtmlScriptAdaper(),
+          new JsJsAdaper(),
+          new JsHtmlAdaper(),
+          new JsCssAdaper(),
+          new JsJsonAdaper(),
+          new JsTextAdaper(),
+          new JsPngAdaper()
+        )
       case '.js':
         return new TextImporter(
-            new JsJsAdaper(),
-            new JsHtmlAdaper(),
-            new JsCssAdaper(),
-            new JsJsonAdaper(),
-            new JsTextAdaper(),
-            new JsPngAdaper(),
-        );
+          new JsJsAdaper(),
+          new JsHtmlAdaper(),
+          new JsCssAdaper(),
+          new JsJsonAdaper(),
+          new JsTextAdaper(),
+          new JsPngAdaper()
+        )
       case '.json':
-        return new TextImporter(new JsonPngAdaper(), new JsonAudioAdaper());
+        return new TextImporter(new JsonPngAdaper(), new JsonAudioAdaper())
       case '.txt':
       case '.css':
-        return new TextImporter();
+        return new TextImporter()
       case '.png':
-        return new BufferImporter();
+        return new BufferImporter()
       case '.mp3':
-        return new BufferImporter();
+        return new BufferImporter()
       default:
-        throw new Error();
+        throw new Error()
     }
   }
 
-  getOutputFileName(/** @type string */ outputTemplate, meta) {
-    return outputTemplate.replace('[name]', meta.name);
+  getOutputFileName (/** @type string */ outputTemplate, meta) {
+    return outputTemplate.replace('[name]', meta.name)
   }
 
-  async packOnce(workdir, entries, outputTemplate, options) {
-    const entryModules = [];
+  async packOnce (workdir, entries, outputTemplate, options) {
+    const entryModules = []
     for (const name in entries) {
       if (!entries[name]) {
-        continue;
+        continue
       }
       entryModules.push({
         name,
@@ -416,180 +427,181 @@ class Packer {
         path: path.resolve(workdir, entries[name].path),
         templatePath:
                     entries[name].template &&
-                    path.resolve(workdir, entries[name].template),
-      });
+                    path.resolve(workdir, entries[name].template)
+      })
     }
-    const results = {};
-    const context = new ImportContext(workdir, options);
-    const {modules} = context;
+    const results = {}
+    const context = new ImportContext(workdir, options)
+    const { modules } = context
     for (const m of entryModules) {
-      m.path = await context.toImport(m.path);
+      m.path = await context.toImport(m.path)
       if (m.templatePath) {
-        m.templatePath = await context.toImport(m.templatePath, m.path);
+        m.templatePath = await context.toImport(m.templatePath, m.path)
       }
     }
     while (modules.length > 0) {
-      const m = modules.shift();
-      const importer = this.getLoader(m);
-      context.results[m] = await importer.import(m, context);
+      const m = modules.shift()
+      const importer = this.getLoader(m)
+      context.results[m] = await importer.import(m, context)
     }
     for (const m of entryModules) {
-      const result = await context.getResult(m.path);
-      result.entry = m.entry;
+      const result = await context.getResult(m.path)
+      result.entry = m.entry
       if (m.templatePath) {
-        const template = await context.getResult(m.templatePath);
+        const template = await context.getResult(m.templatePath)
         if (m.path.endsWith('.html')) {
           result.dataWithTemplate = template.data.replace(
-              /\s*<imports slot><\/imports>\s*/,
-              '\n\n' + result.data + '\n\n',
-          );
+            /\s*<imports slot><\/imports>\s*/,
+            '\n\n' + result.data + '\n\n'
+          )
         } else {
           result.dataWithTemplate =
-          `<script>\n${result.data}</script>\n${template.data}`;
+          `<script>\n${result.data}</script>\n${template.data}`
         }
-        result.mtime = Math.max(result.mtime, template.mtime);
+        result.mtime = Math.max(result.mtime, template.mtime)
       } else {
-        result.dataWithTemplate = result.data;
+        result.dataWithTemplate = result.data
       }
       result.output =
                 this.getOutputFileName(outputTemplate, {
-                  name: m.name,
-                }) + '.html';
-      results[m.name] = result;
+                  name: m.name
+                }) + '.html'
+      results[m.name] = result
     }
-    return {results, dependentedBys: context.dependentedBys};
+    return { results, dependentedBys: context.dependentedBys }
   }
 
-  async checkFileChanges() {
-    return false;
+  async checkFileChanges () {
+    return false
   }
 
-  async pack(workdir, entries, outputTemplate, onchange = null, options = {}) {
-    const {results, dependentedBys} = await this.packOnce(
-        workdir,
-        entries,
-        outputTemplate,
-        options,
-    );
-    const watchers = new Map();
-    const contentChangedDeps = new Set();
+  async pack (workdir, entries, outputTemplate, onchange = null, options = {}) {
+    const { results, dependentedBys } = await this.packOnce(
+      workdir,
+      entries,
+      outputTemplate,
+      options
+    )
+    const watchers = new Map()
+    const contentChangedDeps = new Set()
     if (onchange) {
       ; (async () => {
         while (true) {
-          contentChangedDeps.clear();
-          const newDeps = new Set(Object.keys(dependentedBys));
-          const wathedDeps = Array.from(watchers.keys());
+          contentChangedDeps.clear()
+          const newDeps = new Set(Object.keys(dependentedBys))
+          const wathedDeps = Array.from(watchers.keys())
           for (const dep of wathedDeps) {
             if (dependentedBys[dep]) {
-              newDeps.delete(dep);
+              newDeps.delete(dep)
             } else {
-              watchers.get(dep).removeAllListeners();
-              watchers.delete(dep);
+              watchers.get(dep).removeAllListeners()
+              watchers.delete(dep)
             }
           }
           for (const dep of newDeps.keys()) {
             const watcher = fs.watch(dep, (event) => {
               if (event !== 'change') {
-                return;
+                return
               }
               for (const file of dependentedBys[dep]) {
-                contentChangedDeps.add(file);
+                contentChangedDeps.add(file)
               }
-              watchers.delete(dep);
-              watcher.removeAllListeners();
-            });
-            watchers.set(dep, watcher);
+              watchers.delete(dep)
+              watcher.removeAllListeners()
+            })
+            watchers.set(dep, watcher)
           }
           while (!contentChangedDeps.size) {
-            await new Promise((r) => setTimeout(r, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 1000))
           }
-          console.log('Start\n============');
-          const toUpdateEntries = {};
+          console.log('Start\n============')
+          const toUpdateEntries = {}
           for (const name in entries) {
             if (!entries[name]) {
-              continue;
+              continue
             }
-            const entry = entries[name];
+            const entry = entries[name]
             if (contentChangedDeps.has(entry.path)) {
-              toUpdateEntries[name] = entry;
+              toUpdateEntries[name] = entry
               for (const dep of contentChangedDeps) {
-                dependentedBys[dep].delete(name);
+                dependentedBys[dep].delete(name)
                 if (!dependentedBys[dep].size) {
-                  delete dependentedBys[dep];
+                  delete dependentedBys[dep]
                 }
               }
             }
           }
           const {
             results,
-            dependentedBys: newDependentedBys,
+            dependentedBys: newDependentedBys
           } = await this.packOnce(
-              workdir,
-              toUpdateEntries,
-              outputTemplate,
-              options,
-          );
-          console.log('============\nend\n');
-          onchange(results);
+            workdir,
+            toUpdateEntries,
+            outputTemplate,
+            options
+          )
+          console.log('============\nend\n')
+          onchange(results)
           for (const dep in newDependentedBys) {
             if (!dependentedBys[dep]) {
-              dependentedBys[dep] = newDependentedBys[dep];
+              dependentedBys[dep] = newDependentedBys[dep]
             } else {
               for (const deped of newDependentedBys[dep]) {
-                dependentedBys[dep].add(deped);
+                dependentedBys[dep].add(deped)
               }
             }
           }
         }
-      })();
+      })()
     }
-    return results;
+    return results
   }
 }
 
 const extractHtml = (full = '', extractCss = false) => {
-  let css = '';
-  let js = '';
-  const regexp = extractCss ?
-        // eslint-disable-next-line max-len
-        /[\r\n\s]*<(?<type>script|style)(.|[\r\n])*?>(?<content>(.|[\r\n])*?)[\r\n\s]*<\/\1\s?>[\r\n\s]*/gim :
-        // eslint-disable-next-line max-len
-        /[\r\n\s]*<(?<type>script)(.|[\r\n])*?>(?<content>(.|[\r\n])*?)[\r\n\s]*<\/\1\s?>[\r\n\s]*/gim;
+  let css = ''
+  let js = ''
+  const regexp = extractCss
+  // eslint-disable-next-line max-len
+    ? /[\r\n\s]*<(?<type>script|style)(.|[\r\n])*?>(?<content>(.|[\r\n])*?)[\r\n\s]*<\/\1\s?>[\r\n\s]*/gim
+  // eslint-disable-next-line max-len
+    : /[\r\n\s]*<(?<type>script)(.|[\r\n])*?>(?<content>(.|[\r\n])*?)[\r\n\s]*<\/\1\s?>[\r\n\s]*/gim
   const html = full.replace(regexp, (...args) => {
-    const content = args[7].content ? (args[7].content + '\n') : '';
+    const content = args[7].content ? (args[7].content + '\n') : ''
     switch (args[7].type) {
       case 'script':
-        js += content;
-        break;
+        js += content
+        break
       case 'style':
-        css += content;
-        break;
+        css += content
+        break
     }
-    return '\n';
-  });
-  return [html, css, js];
-};
+    return '\n'
+  })
+  return [html, css, js]
+}
 
 class Publisher {
-  constructor(cd) {
-    this.cdConfig = cd;
+  constructor (cd) {
+    this.cdConfig = cd
   }
-  async publish(entries, results, outputDir) {
-    let apiClient;
+
+  async publish (entries, results, outputDir) {
+    let apiClient
     if (entries.some((m) => m.blogPath)) {
       const client = new Client(this.cdConfig.url, {
-        acceptUnauthorized: this.cdConfig.acceptUnauthorized,
-      });
+        acceptUnauthorized: this.cdConfig.acceptUnauthorized
+      })
       apiClient =
                 !client.invalidUrl &&
                 (await client.login(
-                    this.cdConfig.name, this.cdConfig.password,
-                ))&&
-                 client;
+                  this.cdConfig.name, this.cdConfig.password
+                )) &&
+                 client
     }
     for (const entry of entries) {
-      const result = results[entry.name];
-      const output = path.join(outputDir, result.output);
+      const result = results[entry.name]
+      const output = path.join(outputDir, result.output)
       if (
         !(await FileUtils.exists(output)) ||
                 (await FileUtils.fileStat(output)).mtimeMs < result.mtime
@@ -598,94 +610,96 @@ class Publisher {
           if (
             !apiClient ||
                         !(await apiClient.createOrUpdateBlog(
-                            entry.blogPath, result.data,
+                          entry.blogPath, result.data
                         ))
           ) {
-            console.log(`${entry.name}: Failed`);
-            continue;
+            console.log(`${entry.name}: Failed`)
+            continue
           }
-          console.log(`${entry.name}: Success`);
+          console.log(`${entry.name}: Success`)
         }
-        const extractCss = result.entry.extractCss;
-        const [html, css, js] = extractHtml(result.entry.includeTemplate ?
-            result.dataWithTemplate: result.data, extractCss);
-        await FileUtils.writeFile(output, html);
-        if (extractCss) {
-          await FileUtils.writeFile(output.replace(/html$/, 'css'), css);
-        } else {
-          fs.unlink(output.replace(/html$/, 'css'), () => { });
-        }
-        await FileUtils.writeFile(output.replace(/html$/, 'js'), js);
+        const extractCss = result.entry.extractCss
+        const [html, css, js] = extractHtml(result.entry.includeTemplate
+          ? result.dataWithTemplate
+          : result.data, extractCss)
 
-        console.log(`${entry.name}: Success to Save`);
+        await FileUtils.writeFile(output, html)
+        if (extractCss) {
+          await FileUtils.writeFile(output.replace(/html$/, 'css'), css)
+        } else {
+          fs.unlink(output.replace(/html$/, 'css'), () => { })
+        }
+        await FileUtils.writeFile(output.replace(/html$/, 'js'), js)
+
+        console.log(`${entry.name}: Success to Save`)
       } else {
-        console.log(`${entry.name}: No Change`);
+        console.log(`${entry.name}: No Change`)
       }
     }
   }
 }
 
 class Client {
-  constructor(baseUrl, {acceptUnauthorized}) {
-    this.baseUrl = baseUrl;
-    this.invalidUrl = false;
-    this.nodesDict = {};
-    this.acceptUnauthorized = acceptUnauthorized;
+  constructor (baseUrl, { acceptUnauthorized }) {
+    this.baseUrl = baseUrl
+    this.invalidUrl = false
+    this.nodesDict = {}
+    this.acceptUnauthorized = acceptUnauthorized
     if (!this.baseUrl) {
-      this.invalidUrl = true;
-      return;
+      this.invalidUrl = true
+      return
     }
-    this.request = this.baseUrl.toLocaleLowerCase().startsWith('https') ?
-            https.request :
-            http.request;
+    this.request = this.baseUrl.toLocaleLowerCase().startsWith('https')
+      ? https.request
+      : http.request
   }
 
-  get(url) {
+  get (url) {
     return new Promise((resolve) => {
       const req = this.request(
           `${this.baseUrl}${url}`,
           {
             method: 'GET',
             headers: {
-              Cookie: this.sessionCookie || '',
+              Cookie: this.sessionCookie || ''
             },
-            rejectUnauthorized: !this.acceptUnauthorized,
+            rejectUnauthorized: !this.acceptUnauthorized
           },
           (res) => {
-            this.registerResWithResolve(res, resolve);
-          },
-      );
+            this.registerResWithResolve(res, resolve)
+          }
+      )
       req.on('error', (e) => {
-        resolve(null);
-      });
-      req.end();
-    });
+        resolve(null)
+      })
+      req.end()
+    })
   }
 
-  registerResWithResolve(res, resolve) {
+  registerResWithResolve (res, resolve) {
     if (res.statusCode !== 200) {
-      resolve(null);
+      resolve(null)
     }
-    res.setEncoding('utf8');
-    let apiRes = null;
+    res.setEncoding('utf8')
+    let apiRes = null
     res.on('data', (chunk) => {
       try {
-        apiRes = JSON.parse(chunk);
+        apiRes = JSON.parse(chunk)
       } catch {
         // ignore
       }
-    });
+    })
     res.on('end', () => {
       if (apiRes) {
-        apiRes.headers = res.headers;
+        apiRes.headers = res.headers
       }
-      resolve(apiRes);
-    });
+      resolve(apiRes)
+    })
   }
 
-  postOrPut(url, data, type) {
+  postOrPut (url, data, type) {
     return new Promise((resolve) => {
-      const jsonData = JSON.stringify(data);
+      const jsonData = JSON.stringify(data)
 
       const req = this.request(
           `${this.baseUrl}${url}`,
@@ -696,227 +710,227 @@ class Client {
             headers: {
               'Content-Type': 'application/json',
               'Content-Length': Buffer.byteLength(jsonData),
-              'Cookie': this.sessionCookie || '',
-            },
+              Cookie: this.sessionCookie || ''
+            }
           },
           (res) => {
-            this.registerResWithResolve(res, resolve);
-          },
-      );
+            this.registerResWithResolve(res, resolve)
+          }
+      )
 
       req.on('error', (e) => {
-        resolve(null);
-      });
-      req.write(jsonData);
-      req.end();
-    });
+        resolve(null)
+      })
+      req.write(jsonData)
+      req.end()
+    })
   }
 
-  post(url, data) {
-    return this.postOrPut(url, data, 'POST');
+  post (url, data) {
+    return this.postOrPut(url, data, 'POST')
   }
 
-  put(url, data) {
-    return this.postOrPut(url, data, 'PUT');
+  put (url, data) {
+    return this.postOrPut(url, data, 'PUT')
   }
 
-  async login(name, password) {
+  async login (name, password) {
     if (!name || !password) {
-      this.invalidUrl = true;
-      return null;
+      this.invalidUrl = true
+      return null
     }
-    const apiRes = await this.post(`/api/Login/PwdOn`, {name, password});
+    const apiRes = await this.post('/api/Login/PwdOn', { name, password })
     if (apiRes && apiRes.result) {
       for (const cookieStr of apiRes.headers['set-cookie']) {
-        const cookies = cookieStr.split(';').map((c) => c.trim());
+        const cookies = cookieStr.split(';').map((c) => c.trim())
         const sessionCookie = cookies.find((c) =>
-          c.startsWith('.AspNetCore.Session='),
-        );
+          c.startsWith('.AspNetCore.Session=')
+        )
         if (sessionCookie) {
-          this.sessionCookie = sessionCookie;
-          break;
+          this.sessionCookie = sessionCookie
+          break
         }
       }
     }
-    this.rootPath = `/${name}`;
-    return this.sessionCookie;
+    this.rootPath = `/${name}`
+    return this.sessionCookie
   }
 
-  async createOrUpdateBlog(blogPath, content) {
+  async createOrUpdateBlog (blogPath, content) {
     const res = await this.put(
         `/api/Nodes/CreateOrUpdateBlogContent?path=${blogPath}`,
-        content,
-    );
-    return res && res.result;
+        content
+    )
+    return res && res.result
   }
 }
 
 class Server {
-  async updateResult(results) {
-    Object.assign(this.results, results);
+  async updateResult (results) {
+    Object.assign(this.results, results)
     for (const file in results) {
       if (!results[file]) {
-        continue;
+        continue
       }
       /** @type Socket */
-      const socket = this.watchedSockets_.get(file);
+      const socket = this.watchedSockets_.get(file)
       if (socket) {
-        socket.write(this.encodeWsData('update'));
+        socket.write(this.encodeWsData('update'))
       }
     }
   }
 
-  resFile(res, name) {
-    res.setHeader('content-type', 'text/html');
+  resFile (res, name) {
+    res.setHeader('content-type', 'text/html')
     if (this.results[name]) {
       res.write(
-          this.results[name].dataWithTemplate + this.getInjectScript(name) ||
-          '');
+        this.results[name].dataWithTemplate + this.getInjectScript(name) ||
+          '')
     } else {
-      this.resNotFound(res);
+      this.resNotFound(res)
     }
   }
 
-  resList(res) {
-    res.setHeader('content-type', 'text/html');
+  resList (res) {
+    res.setHeader('content-type', 'text/html')
     res.write(
         // eslint-disable-next-line max-len
         `<html><head><meta charset="utf-8"><title>spack</title></head><body><ul>${this.entries
             .map((e) => `<li><a href="/${e.name}">${e.name}</a></li>`)
-            .join('')}</ul></body></html>`,
-    );
+            .join('')}</ul></body></html>`
+    )
   }
 
-  resNotFound(res) {
-    res.statusCode = 404;
-    res.write('404');
+  resNotFound (res) {
+    res.statusCode = 404
+    res.write('404')
   }
 
-  resJson(res, data, statusCode = 200) {
-    res.statusCode = statusCode;
-    res.write(JSON.stringify(data));
+  resJson (res, data, statusCode = 200) {
+    res.statusCode = statusCode
+    res.write(JSON.stringify(data))
   }
 
-  resApi(res, api, ...param) {
-    res.setHeader('content-type', 'application/json');
+  resApi (res, api, ...param) {
+    res.setHeader('content-type', 'application/json')
     switch (api) {
       default:
-        return this.resJson(res, {error: true}, 404);
+        return this.resJson(res, { error: true }, 404)
     }
   }
 
-  encodeWsData(payload, opcode = 1) {
+  encodeWsData (payload, opcode = 1) {
     if (opcode !== 0xa) {
-      payload = new TextEncoder('utf-8').encode(payload);
+      payload = new TextEncoder('utf-8').encode(payload)
     }
-    const length = payload.length;
+    const length = payload.length
     if (length >= 126) {
-      throw new Error('Not Support.');
+      throw new Error('Not Support.')
     }
-    const data = new Uint8Array(2 + length);
-    data[0] = 0b10000000 | (opcode & 0b1111111);
-    data[1] = length;
+    const data = new Uint8Array(2 + length)
+    data[0] = 0b10000000 | (opcode & 0b1111111)
+    data[1] = length
     for (let i = 0; i < length; i++) {
-      data[i + 2] = payload[i];
+      data[i + 2] = payload[i]
     }
-    return data;
+    return data
   }
 
-  decodeWsData(/** @type Buffer*/ data) {
-    const fin = data[0] >>> 7;
+  decodeWsData (/** @type Buffer */ data) {
+    const fin = data[0] >>> 7
     if (!fin) {
-      return;
+      return
     }
-    const opcode = data[0] & 0b1111;
+    const opcode = data[0] & 0b1111
     if (opcode !== 1 && opcode !== 0x9) {
-      return {opcode};
+      return { opcode }
     }
-    const hasMask = data[1] >>> 7;
+    const hasMask = data[1] >>> 7
     if (hasMask !== 1) {
-      return;
+      return
     }
-    const len = data[1] & 0b1111111;
+    const len = data[1] & 0b1111111
     if (len >= 126) {
-      return;
+      return
     }
-    const masks = data.slice(2, 6);
-    const payload = data.slice(6);
+    const masks = data.slice(2, 6)
+    const payload = data.slice(6)
     if (payload.length !== len) {
-      return;
+      return
     }
     for (let i = 0; i < len; i++) {
-      payload[i] ^= masks[i % 4];
+      payload[i] ^= masks[i % 4]
     }
     return {
       opcode,
       payload:
-                opcode === 1 ?
-                 new TextDecoder('utf-8').decode(payload) : payload,
-    };
+                opcode === 1
+                  ? new TextDecoder('utf-8').decode(payload)
+                  : payload
+    }
   }
 
-  resWebSocket(req, res) {
+  resWebSocket (req, res) {
     /** @type Socket */
-    const socket = res.socket;
+    const socket = res.socket
     req.socket.on('data', (data) => {
-      const {opcode, payload} = this.decodeWsData(data);
+      const { opcode, payload } = this.decodeWsData(data)
       if (opcode === 0x8) {
-        console.log('ws close by client');
-        const file = this.watchedFiles_.get(socket);
+        console.log('ws close by client')
+        const file = this.watchedFiles_.get(socket)
         if (file) {
-          this.watchedFiles_.delete(socket);
-          this.watchedSockets_.delete(file);
+          this.watchedFiles_.delete(socket)
+          this.watchedSockets_.delete(file)
         }
-        res.end();
+        res.end()
       }
       if (payload === undefined) {
-        socket.write(this.encodeWsData('Not Support.'));
-        return;
+        socket.write(this.encodeWsData('Not Support.'))
+        return
       }
       if (opcode === 0x9) {
-        console.log('ping!');
-        socket.write(this.encodeWsData(payload, opcode));
-        return;
+        console.log('ping!')
+        socket.write(this.encodeWsData(payload, opcode))
+        return
       }
-      console.log(`ws received payload`);
-      const msgs = payload.split(':');
-      const cmd = msgs[0];
-      const file = msgs[1];
+      console.log('ws received payload')
+      const msgs = payload.split(':')
+      const cmd = msgs[0]
+      const file = msgs[1]
       switch (cmd) {
         case 'watch':
-          console.log(`watch ${file}`);
-          this.watchedFiles_.set(socket, file);
-          this.watchedSockets_.set(file, socket);
-          socket.write(this.encodeWsData(`watch ${file}`));
-          return;
+          console.log(`watch ${file}`)
+          this.watchedFiles_.set(socket, file)
+          this.watchedSockets_.set(file, socket)
+          socket.write(this.encodeWsData(`watch ${file}`))
+          return
         default:
-          socket.write(this.encodeWsData('404'));
-          return;
+          socket.write(this.encodeWsData('404'))
       }
-    });
-    const key = req.headers['sec-websocket-key'];
-    const magic = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+    })
+    const key = req.headers['sec-websocket-key']
+    const magic = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
     const accept = crypto
-        .createHash('sha1')
-        .update(key + magic)
-        .digest('base64');
+      .createHash('sha1')
+      .update(key + magic)
+      .digest('base64')
     const headers = `HTTP/1.1 101 Switching Protocols
 Upgrade: websocket
 Sec-WebSocket-Accept: ${accept}
 Connection: Upgrade
 
-`;
-    socket.write(headers);
-    console.log('ws connected');
+`
+    socket.write(headers)
+    console.log('ws connected')
   }
 
-  async serve(/** @type any[] */ entries, results) {
-    const port = 9081;
-    const hostname = 'localhost';
-    this.results = results;
-    this.entries = entries;
-    this.watchedFiles_ = new Map();
-    this.watchedSockets_ = new Map();
+  async serve (/** @type any[] */ entries, results) {
+    const port = 9081
+    const hostname = 'localhost'
+    this.results = results
+    this.entries = entries
+    this.watchedFiles_ = new Map()
+    this.watchedSockets_ = new Map()
     this.getInjectScript = (name) => `
 <script>
   const ws = new WebSocket('ws://${hostname}:${port}')
@@ -933,76 +947,75 @@ Connection: Upgrade
     data === 'update' && window.location.reload()
   }
 </script>
-`;
-    this.connections = {};
-    const apiPrefix = '/api/';
+`
+    this.connections = {}
+    const apiPrefix = '/api/'
     const httpServer = http.createServer((req, res) => {
       if (
-        req.headers['connection'].indexOf('Upgrade') >= 0 &&
-                req.headers['upgrade'] === 'websocket'
+        req.headers.connection.indexOf('Upgrade') >= 0 &&
+                req.headers.upgrade === 'websocket'
       ) {
-        this.resWebSocket(req, res);
-        return;
+        this.resWebSocket(req, res)
+        return
       }
-      console.log(req.url);
+      console.log(req.url)
       if (!req.url || req.url === '/') {
-        this.resList(res);
+        this.resList(res)
       } else if (req.url.startsWith(apiPrefix)) {
         const tokens = req.url
-            .slice(apiPrefix.length)
-            .split('/')
-            .map((s) => s.trim())
-            .filter((s) => s);
-        this.resApi(res, ...tokens);
+          .slice(apiPrefix.length)
+          .split('/')
+          .map((s) => s.trim())
+          .filter((s) => s)
+        this.resApi(res, ...tokens)
       } else {
-        this.resFile(res, req.url.replace(/^\//, ''));
+        this.resFile(res, req.url.replace(/^\//, ''))
       }
-      res.end();
-    });
-    httpServer.listen(port, hostname);
+      res.end()
+    })
+    httpServer.listen(port, hostname)
   }
 }
 
 const cmds = {
   publish: 'publish',
-  serve: 'serve',
-};
+  serve: 'serve'
+}
 
 const main = async () => {
-  const workdir = process.cwd();
-  const cmd = process.argv[2] || cmds.publish;
-  const options = new Set(process.argv.slice(3));
-  const defaultConfigFile = 'spack.config.js';
-  const configPath = path.join(workdir, defaultConfigFile);
+  const workdir = process.cwd()
+  const cmd = process.argv[2] || cmds.publish
+  const options = new Set(process.argv.slice(3))
+  const defaultConfigFile = 'spack.config.js'
+  const configPath = path.join(workdir, defaultConfigFile)
   /** @type { entries: string[], output: { path: string, filename: string } } */
-  const config = await require(configPath);
-  const packer = new Packer(config.cd);
+  const config = await require(configPath)
+  const packer = new Packer(config.cd)
   const entries = Object.keys(config.entries).map((name) =>
-    Object.assign({name}, config.entries[name]),
-  );
+    Object.assign({ name }, config.entries[name])
+  )
   switch (cmd) {
     case cmds.publish:
       await new Publisher(config.cd).publish(
-          entries,
-          await packer.pack(workdir, config.entries, config.output.filename),
-          config.output.path,
-      );
-      return;
-    case cmds.serve:
-      const watch = options.has('--watch');
-      const server = new Server();
+        entries,
+        await packer.pack(workdir, config.entries, config.output.filename),
+        config.output.path
+      )
+      return
+    case cmds.serve: {
+      const watch = options.has('--watch')
+      const server = new Server()
       await server.serve(
-          entries,
-          await packer.pack(
-              workdir,
-              config.entries,
-              config.output.filename,
-              watch && server.updateResult.bind(server),
-              {replceSurfix: '.local.'},
-          ),
-      );
-      return;
+        entries,
+        await packer.pack(
+          workdir,
+          config.entries,
+          config.output.filename,
+          watch && server.updateResult.bind(server),
+          { replceSurfix: '.local.' }
+        )
+      ) }
   }
-};
+}
 
-main();
+main()

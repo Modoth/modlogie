@@ -1,5 +1,7 @@
+import { generateQrCode } from './qrcode-model.js'
+
 export class QrCodeData {
-  constructor(width, height) {
+  constructor (width, height) {
     this.width = width
     this.height = height
     this.data = new Uint8Array(this.width * this.height)
@@ -7,7 +9,7 @@ export class QrCodeData {
 }
 
 export class QrCodeGenerator {
-  generate(/**@type string */ content) {
+  generate (/** @type string */ content) {
     const model = generateQrCode(content)
     const length = model.getModuleCount()
     const qr = new QrCodeData(length, length)
@@ -20,5 +22,3 @@ export class QrCodeGenerator {
     return qr
   }
 }
-
-import { generateQrCode } from './qrcode-model.js'

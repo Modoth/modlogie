@@ -2,7 +2,7 @@ import { ResizeWatcher } from './resize-watcher.js'
 import { registerDragMove } from './register-drag-move.js'
 
 export class DragMoveCanvas {
-  constructor(bufferX, bufferY, getRgba, root, ratio) {
+  constructor (bufferX, bufferY, getRgba, root, ratio) {
     this.bufferX_ = bufferX
     this.bufferY_ = bufferY
     this.getRgba_ = getRgba
@@ -23,11 +23,11 @@ export class DragMoveCanvas {
     this.registerCanvasDrag_()
   }
 
-  registerCanvasDrag_() {
+  registerCanvasDrag_ () {
     let start
     let dx = 0
     let dy = 0
-    let threshold = 1
+    const threshold = 1
     this.canvas_.onclick = (ev) =>
       this.onClick && this.onClick(ev.clientX, ev.clientY)
     registerDragMove(
@@ -54,7 +54,7 @@ export class DragMoveCanvas {
     )
   }
 
-  updateCanvasSize_() {
+  updateCanvasSize_ () {
     this.width = this.root_.clientWidth
     this.height = this.root_.clientHeight
     this.offsetX_ = Math.floor(this.width * this.bufferX_)
@@ -74,7 +74,7 @@ export class DragMoveCanvas {
     }
   }
 
-  drawGrid_({ x, y, width, height }) {
+  drawGrid_ ({ x, y, width, height }) {
     this.backgroundCanvasContext_.clearRect(
       0,
       0,
@@ -105,7 +105,7 @@ export class DragMoveCanvas {
     this.backgroundCanvasContext_.stroke()
   }
 
-  redraw(grid) {
+  redraw (grid) {
     console.log('redraw')
     if (grid) {
       this.drawGrid_(grid)
@@ -122,7 +122,7 @@ export class DragMoveCanvas {
     )
   }
 
-  draw(x, y, width, height) {
+  draw (x, y, width, height) {
     const px = Math.floor(x * this.ratio_)
     const py = Math.floor(y * this.ratio_)
     const pwidth = Math.floor((x + width) * this.ratio_) - px
@@ -134,7 +134,7 @@ export class DragMoveCanvas {
           Math.floor((px + i) / this.ratio_),
           Math.floor((py + j) / this.ratio_)
         )
-        let idx = (i + j * pwidth) * 4
+        const idx = (i + j * pwidth) * 4
         imgData.data[idx] = bits[0]
         imgData.data[idx + 1] = bits[1]
         imgData.data[idx + 2] = bits[2]

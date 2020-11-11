@@ -4,31 +4,31 @@ import { WordsClozeGenerator } from './words-cloze-generator.js'
 import { DistinctClozeGenerator } from './distinct-cloze-generator.js'
 
 class App {
-  view() {
+  view () {
     const components = ['board', 'select-board', 'select-board-panel']
     return [
       components,
-      .../**@imports html */ './cloze.html',
-      /**@imports css */ './app.css',
+      ...'./cloze.html',
+      /** @imports css */ './app.css'
     ]
   }
 
-  validateData(data) {
-    data = data || /**@imports json */ './app-data.json'
+  validateData (data) {
+    data = data || /** @imports json */ './app-data.json'
     if (typeof data === 'string') {
       return {
         type: 'words',
         source: data
           .split('\n')
           .map((i) => i.trim())
-          .filter((i) => i),
+          .filter((i) => i)
       }
     }
     data.type = data.type || 'words'
     return data
   }
 
-  async start() {
+  async start () {
     new ResizeWatcher(window).register(() => {
       this.startCloze_(true)
     })
@@ -43,14 +43,14 @@ class App {
       // },
       {
         name: '↺',
-        onclick: () => this.startCloze_(),
-      },
+        onclick: () => this.startCloze_()
+      }
     ]
     const generatorClasses = {
       words: WordsClozeGenerator,
-      distinct: DistinctClozeGenerator,
+      distinct: DistinctClozeGenerator
     }
-    let { type, source, options } = this.data
+    const { type, source, options } = this.data
     if (generatorClasses[type]) {
       this.generator_ = new generatorClasses[type](source, options)
       while (this.generator_) {
@@ -59,7 +59,7 @@ class App {
     }
   }
 
-  fitWidth_() {
+  fitWidth_ () {
     let width, height, cellSize
     for (cellSize of this.cellSizes_) {
       width = Math.floor((window.innerWidth - this.margin_) / cellSize)
@@ -71,7 +71,7 @@ class App {
     return [width, height, cellSize]
   }
 
-  fitSize_(width, height) {
+  fitSize_ (width, height) {
     let cellSize
     for (cellSize of this.cellSizes_) {
       const remainX = Math.floor(
@@ -87,8 +87,8 @@ class App {
     return cellSize
   }
 
-  /**@private */
-  async startCloze_(resizeOnly = false) {
+  /** @private */
+  async startCloze_ (resizeOnly = false) {
     if (resizeOnly) {
       if (this.cloze_) {
         this.calculateSizeAndUpdate()
@@ -98,7 +98,8 @@ class App {
     if (this.currentClozeTask_) {
       this.currentClozeTask_()
     }
-    let [width, height, cellSize] = this.fitWidth_()
+    const [width, height, cellSize] = this.fitWidth_()
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       this.currentClozeTask_ = resolve
       this.cloze_ = this.generator_.generate(width, height)
@@ -106,7 +107,7 @@ class App {
     })
   }
 
-  calculateSizeAndUpdate() {
+  calculateSizeAndUpdate () {
     const cellSize = this.fitSize_(this.cloze_.width, this.cloze_.height)
     this.components.selectBoardPanel.classList.add('hidden')
     this.components.root.onclick = () => {
@@ -116,15 +117,15 @@ class App {
     this.updateBoardCells_(this.cloze_, cellSize)
   }
 
-  checkFinish_(cloze) {
+  checkFinish_ (cloze) {
     const remain = cloze.remain
     if (remain <= 0) {
       this.startCloze_()
     }
   }
 
-  /**@private */
-  selectCell(/**@type Cloze */ cloze, i, j, cell, cellContent) {
+  /** @private */
+  selectCell (/** @type Cloze */ cloze, i, j, cell, cellContent) {
     const options = cloze.getOptions(i, j)
     if (this.currentCell_) {
       this.currentCell_.classList.remove('selected')
@@ -140,7 +141,7 @@ class App {
     })
   }
 
-  updateSelectBoardCells_(options, select) {
+  updateSelectBoardCells_ (options, select) {
     this.components.selectBoard.innerHTML = ''
     for (const o of options) {
       const [cell, cellContent] = this.createCell_()
@@ -168,7 +169,7 @@ class App {
     this.components.selectBoardPanel.classList.remove('hidden')
   }
 
-  createCell_() {
+  createCell_ () {
     const cell = document.createElement('div')
     cell.classList.add('cell')
     const cellBorder = document.createElement('div')
@@ -180,8 +181,8 @@ class App {
     return [cell, cellContent]
   }
 
-  /**@private */
-  updateBoardCells_(/**@type Cloze */ cloze, cellSize) {
+  /** @private */
+  updateBoardCells_ (/** @type Cloze */ cloze, cellSize) {
     this.components.board.innerHTML = ''
     const cellStyle = document.createElement('style')
     const fontSize = this.fontSizes_.find((f) => f > cellSize / 2)

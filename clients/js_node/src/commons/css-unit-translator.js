@@ -1,6 +1,6 @@
-//todo: to complte
+// todo: to complte
 class CssImage {
-  static parseAll(/**@type string */ content) {
+  static parseAll (/** @type string */ content) {
     const images = []
     const reg = /(?<type>(repeating-)?(radial|linear)-gradient)\(\s*(?<content>.*?)\s*\)(?=(,\s*(repeating-)?(radial|linear)-gradient)|\s*$)/g
     for (const match of content.matchAll(reg)) {
@@ -15,11 +15,13 @@ class CssImage {
     }
     return images
   }
-  constructor(type, content) {
+
+  constructor (type, content) {
     this.type = type
     this.content = content
   }
-  toString() {
+
+  toString () {
     return `${this.type}(${this.content})`
   }
 }
@@ -121,10 +123,11 @@ class CssImage {
 // }
 
 class CssRepeatingRadialGradient extends CssImage {
-  static get name() {
+  static get name () {
     return 'repeating-radial-gradient'
   }
-  static parse(content) {
+
+  static parse (content) {
     const match = content.match(
       /((?<type>circle|ellipse)(\s*(?<length>\w*))?(\s*at(\s*(?<loc>[^,]*)))\s*,)?\s*(?<stop>.*)\s*$/
     )
@@ -140,14 +143,16 @@ class CssRepeatingRadialGradient extends CssImage {
     }
     return new CssRepeatingRadialGradient(content, type, length, loc, stops)
   }
-  constructor(content, type, length, location, stops) {
+
+  constructor (content, type, length, location, stops) {
     super(CssRepeatingRadialGradient.name, content)
     this.type = type
     this.length = length
     this.location = location
     this.stops = stops
   }
-  toPercentage(imageSize) {
+
+  toPercentage (imageSize) {
     if (!imageSize) {
       return
     }
@@ -172,7 +177,7 @@ class CssRepeatingRadialGradient extends CssImage {
         numberValues
           .map((l, i) => ((l * 100) / sizes[i]).toFixed() + '%')
           .join(' '),
-        numberValues,
+        numberValues
       ]
     }
     if (this.length) {
@@ -200,7 +205,7 @@ class CssRepeatingRadialGradient extends CssImage {
     }
   }
 
-  toString() {
+  toString () {
     return `${CssRepeatingRadialGradient.name}(${this.type || ''}${
       this.length ? ' ' + this.length : ''
     }${this.location ? ' at ' + this.location : ''}${
@@ -216,7 +221,7 @@ class CssRepeatingRadialGradient extends CssImage {
 }
 
 export class CssUnitTranslator {
-  translate(/**@type string */ css, ignore = new Set()) {
+  translate (/** @type string */ css, ignore = new Set()) {
     const ruleStrs = css
       .split(';')
       .map((r) => r.trim())

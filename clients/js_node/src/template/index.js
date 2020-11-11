@@ -3,7 +3,7 @@ import { AppBase } from './app-base.js'
 window.onload = async () => {
   let app = new AppBase()
   if (App) {
-    let base = app
+    const base = app
     app = new App()
     let current = app
     while (current.__proto__ && current.__proto__ != Object.prototype) {

@@ -1,12 +1,12 @@
 export class ColorPaletteFactory {
-  create(colors, selectedColor, onSelect) {
+  create (colors, selectedColor, onSelect) {
     const root = document.createElement('div')
     root.onclick = () => onSelect && onSelect(null)
     const shadow = root.attachShadow({ mode: 'closed' })
     const palette = document.createElement('div')
     shadow.appendChild(palette)
     palette.classList.add('palette')
-    const style = /**@imports css */ './color-palette.css'
+    const style = /** @imports css */ './color-palette.css'
     shadow.appendChild(style)
     colors.forEach((c) => {
       const cell = document.createElement('div')

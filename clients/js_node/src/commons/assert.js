@@ -1,5 +1,5 @@
 export const assert = (
-  /**@type boolean */ condition,
+  /** @type boolean */ condition,
   errorMessage = 'Error'
 ) => {
   if (!condition) {
@@ -7,7 +7,7 @@ export const assert = (
   }
 }
 
-export const assertPara = (/**@type boolean */ condition, paraName = '') => {
+export const assertPara = (/** @type boolean */ condition, paraName = '') => {
   if (!condition) {
     throw new Error(`Invalid Parameter  ${paraName}`)
   }
