@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
-const path = require('path');
-const fs = require('fs');
+const path = require('path')
+const fs = require('fs')
 
 class FileUtils {
   /**
@@ -8,84 +8,83 @@ class FileUtils {
      * @param {string} file
      * @return { string[] }
      */
-  static readdir(file) {
+  static readdir (file) {
     return new Promise((resolve, reject) => {
       fs.readdir(file, (err, files) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve(files);
+          resolve(files)
         }
-      });
-    });
+      })
+    })
   }
 
-  static exists(file) {
+  static exists (file) {
     return new Promise((resolve) => {
-      fs.exists(file, resolve);
-    });
+      fs.exists(file, resolve)
+    })
   }
 }
 
 const getLocalConfigs = async () => {
-  const srcFolder = path.join(__dirname, 'src');
-  const subfolders = await FileUtils.readdir(srcFolder);
-  const entries = {};
-  let localCfg;
+  const srcFolder = path.join(__dirname, 'src')
+  const subfolders = await FileUtils.readdir(srcFolder)
+  const entries = {}
+  let localCfg
   const localCfgFile =
-        process.env['SPACK_CONFIG_FILE'] || './.local.spack.config.js';
+        process.env.SPACK_CONFIG_FILE || './.local.spack.config.js'
   if (localCfgFile && (await FileUtils.exists(localCfgFile))) {
     try {
-      localCfg = require(localCfgFile);
+      localCfg = require(localCfgFile)
     } catch {
-      console.log(`Config File Error: ${localCfgFile}`);
+      console.log(`Config File Error: ${localCfgFile}`)
     }
   }
   for (const subfolder of subfolders) {
-    let indexFile;
-    let template;
-    let extractCss = true;
-    let includeTemplate = false;
+    let indexFile
+    let template
+    let extractCss = true
+    const includeTemplate = false
     for (const fileName of ['index.html', 'app.html', 'app.js']) {
-      const file = path.join(srcFolder, subfolder, fileName);
+      const file = path.join(srcFolder, subfolder, fileName)
       if (await FileUtils.exists(file)) {
-        indexFile = file;
+        indexFile = file
         switch (fileName) {
           case 'app.html':
-            template = 'src/fastframework/index.html';
-            extractCss = false;
-            break;
+            template = 'src/fast/index.html'
+            extractCss = false
+            break
           case 'app.js':
-            template = 'src/template/index.html';
-            includeTemplate = true;
-            break;
+            template = 'src/simple/index.html'
+            break
         }
-        break;
+        break
       }
     }
-    if (subfolder === 'fastframework') {
-      extractCss = false;
+    if (subfolder === 'fast' || subfolder === 'simple') {
+      extractCss = false
     }
     if (!indexFile) {
-      continue;
+      continue
     }
     entries[subfolder] = Object.assign(
-        {path: indexFile, template, extractCss, includeTemplate},
-        localCfg && localCfg.entries && localCfg.entries[subfolder],
-    );
+      { path: indexFile, template, extractCss, includeTemplate },
+      localCfg && localCfg.entries && localCfg.entries[subfolder]
+    )
   }
   return {
     cd: (localCfg && localCfg.cd) || {},
     dist: localCfg && localCfg.dist,
-    entries,
-  };
-};
+    entries
+  }
+}
 
-module.exports = getLocalConfigs().then(({cd, dist, entries}) => ({
+module.exports = getLocalConfigs().then(({ cd, dist, entries }) => ({
   entries,
   output: {
     path: path.join(__dirname, dist || 'dist'),
-    filename: '[name]',
+    filename: '[name]'
   },
-  cd,
-}));
+  cd
+}))

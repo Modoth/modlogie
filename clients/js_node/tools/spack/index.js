@@ -455,8 +455,9 @@ class Packer {
             '\n\n' + result.data + '\n\n'
           )
         } else {
+          result.data = `<script>\n${result.data}</script>`
           result.dataWithTemplate =
-          `<script>\n${result.data}</script>\n${template.data}`
+          `${result.data}\n${template.data}`
         }
         result.mtime = Math.max(result.mtime, template.mtime)
       } else {

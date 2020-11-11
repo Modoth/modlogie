@@ -1,17 +1,15 @@
-/* eslint-disable no-with */
-/* eslint-disable no-eval */
 
 const { registerElement, registerProperties } = (() => {
   const evalInContext = (exp, context) => {
-    return (function () {
+    return function () {
       with (this) {
         try {
           return eval(`(${exp})`)
         } catch (e) {
-
+          return
         }
       }
-    }.call(context))
+    }.call(context)
   }
 
   const onprop = (exp, context, listener) => {
@@ -28,8 +26,8 @@ const { registerElement, registerProperties } = (() => {
     }
   }
 
-  const bindingForInstruction = (/** @type HTMLElement */ element) => {
-    const forExp = element.getAttribute('for.')
+  const bindingForInstruction = (/**@type HTMLElement */ element) => {
+    let forExp = element.getAttribute('for.')
     const match = forExp.match(
       /^\s*(((let|const|of)\s+)?(\w+)\s+(of|in)\s+)?\s*([\w.]+)\s*$/
     )
@@ -37,11 +35,11 @@ const { registerElement, registerProperties } = (() => {
       throw new Error('Invalid for Expression')
     }
     const collectionName = match[6]
-    const ofIn = match[5] || 'of'
+    const of_in = match[5] || 'of'
     let varName = match[4]
     let forHead
     if (varName) {
-      forHead = `for(const ${varName} ${ofIn} ${collectionName})`
+      forHead = `for(const ${varName} ${of_in} ${collectionName})`
     } else {
       varName = '$$i'
       forHead = `for(const ${varName} of ${collectionName})`
@@ -50,9 +48,9 @@ const { registerElement, registerProperties } = (() => {
     const parent = element.parentElement
     parent.insertBefore(comment, element)
     element.remove()
-    /** @type Map<any, HTMLElement> */
+    /**@type Map<any, HTMLElement> */
     let items = new Map()
-    /** @type Map<any, HTMLElement> */
+    /**@type Map<any, HTMLElement> */
     let newItems = new Map()
     let idx = 0
     let allRemoved = false
@@ -74,7 +72,7 @@ const { registerElement, registerProperties } = (() => {
         }
         items = newItems
       }.call(element.context, ($$i) => {
-        /** @type HTMLElement */
+        /**@type HTMLElement */
         let item
         if (items.has($$i)) {
           const pair = items.get($$i)
@@ -120,8 +118,8 @@ const { registerElement, registerProperties } = (() => {
     return {}
   }
 
-  const bindingIfInstruction = (/** @type HTMLElement */ element) => {
-    const ifExp = element.getAttribute('if.')
+  const bindingIfInstruction = (/**@type HTMLElement */ element) => {
+    let ifExp = element.getAttribute('if.')
     const comment = document.createComment(element.outerHTML)
     const parent = element.parentElement
     parent.insertBefore(comment, element)
@@ -166,7 +164,7 @@ const { registerElement, registerProperties } = (() => {
     return exp.match(/[a-zA-Z0-9_$.]+/g) || []
   }
 
-  const bindingAttrs = (/** @type HTMLElement */ element) => {
+  const bindingAttrs = (/**@type HTMLElement */ element) => {
     if (element.hasAttribute('for.')) {
       return bindingForInstruction(element)
     }
@@ -246,12 +244,12 @@ const { registerElement, registerProperties } = (() => {
     return element
   }
 
-  const binding = (/** @type HTMLElement */ element) => {
-    /** @type { Object.<string,HTMLElement> } */
+  const binding = (/**@type HTMLElement */ element) => {
+    /**@type { Object.<string,HTMLElement> } */
     const components = element.context.components
     if (element.hasAttribute) {
       const handler = bindingAttrs(element)
-      // collect ids
+      //collect ids
       if (element.hasAttribute('id')) {
         components[element.getAttribute('id')] = handler
       }
@@ -261,7 +259,7 @@ const { registerElement, registerProperties } = (() => {
     }
     for (const child of [...element.children]) {
       if (
-        child.context === element.context ||
+        child.context == element.context ||
         (child.context &&
           Object.getPrototypeOf(child.context) === element.context)
       ) {
@@ -283,23 +281,23 @@ const { registerElement, registerProperties } = (() => {
     props.forEach((prop) => {
       let propValue
       Object.defineProperty(obj, prop, {
-        get () {
+        get() {
           return propValue
         },
-        set (newValue) {
+        set(newValue) {
           const oldValue = propValue
           propValue = newValue
           obj.raise(prop, newValue, oldValue)
-        }
+        },
       })
     })
   }
 
-  const addPropChange = (/** @type { Object } */ obj) => {
-    /** @type Map<string, Set<{(newValue, oldValue):any}>> */
+  const addPropChange = (/**@type { Object } */ obj) => {
+    /**@type Map<string, Set<{(newValue, oldValue):any}>> */
     const listeners = new Map()
     obj.define = (...props) => registerProperties(obj, ...props)
-    obj.on = (/** @type string */ prop, listener) => {
+    obj.on = (/**@type string */ prop, listener) => {
       if (!listeners.has(prop)) {
         listeners.set(prop, new Set())
       }
@@ -321,7 +319,7 @@ const { registerElement, registerProperties } = (() => {
     }
   }
 
-  const registerElement = (tagName, /** @type { string } */ constructor) => {
+  const registerElement = (tagName, /**@type { string } */ constructor) => {
     const elementClassName = `HTML${constructor || getNameFromTagName(tagName)
       }Element`
     constructor = constructor || 'Object'
@@ -382,6 +380,7 @@ const { registerElement, registerProperties } = (() => {
   }
   return { registerElement, registerProperties }
 })()
+
 
 const sleep = (timeout) =>
   new Promise((resolve) => setTimeout(resolve, timeout))
@@ -512,50 +511,46 @@ class AppBase {
   }
 }
 
-window.onload = async () => {
-  // eslint-disable-next-line no-undef
-  Object.setPrototypeOf(App.prototype, AppBase.prototype)
-  for (const template of document.querySelectorAll(
-    'template[id][view-model]'
-  )) {
-    const tagName = template.getAttribute('id')
-    if (!tagName) {
-      continue
+  window.onload = async () => {
+    Object.setPrototypeOf(App.prototype, AppBase.prototype)
+    for (const template of document.querySelectorAll(
+      'template[id][view-model]'
+    )) {
+      const tagName = template.getAttribute('id')
+      if (!tagName) {
+        continue
+      }
+      const codeBehind = template.getAttribute('view-model')
+      registerElement(tagName, codeBehind)
     }
-    const codeBehind = template.getAttribute('view-model')
-    registerElement(tagName, codeBehind)
-  }
-}
-
-class MenuItem {
-  constructor (name = '', onclick = null, show = true) {
-    registerProperties(this, 'name', 'show')
-    this.name = name
-    this.show = show
-    this.onclick = onclick
-  }
-}
-
-class Modal {
-  constructor () {
-    /** @type { Object.<string,HTMLElement> } */
-    // eslint-disable-next-line no-unused-expressions
-    this.components
-    /** @type { Storage | {  } } */
-    // eslint-disable-next-line no-unused-expressions
-    this.storage
-    registerProperties(this, 'toastMessage')
   }
 
-  toast (/** @string */ msg, /** @type number */ timeout = 1000) {
-    return new Promise((resolve) => {
-      this.toastMessage = msg
-      setTimeout(() => {
-        this.toastMessage = null
-        resolve()
-      }, timeout)
-    })
+  class MenuItem {
+    constructor(name = '', onclick = null, show = true) {
+      registerProperties(this, 'name', 'show')
+      this.name = name
+      this.show = show
+      this.onclick = onclick
+    }
   }
-}
 
-class Popup {}
+  class Modal {
+    constructor() {
+      /**@type { Object.<string,HTMLElement> } */
+      this.components
+      /**@type { Storage | {  } } */
+      this.storage
+      registerProperties(this, 'toastMessage')
+    }
+    toast(/**@string */ msg, /**@type number */ timeout = 1000) {
+      return new Promise((resolve) => {
+        this.toastMessage = msg
+        setTimeout(() => {
+          this.toastMessage = null
+          resolve()
+        }, timeout)
+      })
+    }
+  }
+
+  class Popup {}

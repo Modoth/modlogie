@@ -19,7 +19,7 @@ module.exports = {
     'react',
     '@typescript-eslint'
   ],
-  ignorePatterns: ['src/impl/remote-apis/**'],
+  ignorePatterns: ['src/impl/remote-apis/**', 'src/plugins/h5/view/frameworks'],
   rules: {
     'no-unused-vars': 'off',
     'no-useless-constructor': 0,

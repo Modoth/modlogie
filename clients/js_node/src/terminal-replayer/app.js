@@ -47,7 +47,7 @@ class App {
       this.cancleToken_
     )
     this.replay_.classList.remove('playing')
-    this.replay_.innerText = 'REPLAY'
+    this.replay_.innerText = 'PLAY'
     this.cancleToken_ = null
   }
 }
