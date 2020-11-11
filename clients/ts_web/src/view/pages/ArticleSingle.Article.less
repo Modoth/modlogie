@@ -1,9 +1,9 @@
 .H5,
 .H5App {
   .h5-live-viewer {
-    margin: 1em 0;
+    margin: 10px 0;
     iframe {
-      box-shadow: var(--shadow);
+      box-shadow: rgba(0, 0, 0, 0.4) 0 3px 10px;
       border-radius: 10px;
     }
   }
@@ -11,6 +11,30 @@
     iframe {
       box-shadow: unset;
       border-radius: unset;
+    }
+  }
+  .section-viewer {
+    & > .section-name {
+      border-bottom: 1px solid #0001;
+      padding-bottom: 5px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.ref-article {
+  .h5-live-viewer {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 780px) {
+  .H5,
+  .H5App {
+    .section-viewer {
+      & > .hightlight {
+        font-size: 0.75em !important;
+      }
     }
   }
 }

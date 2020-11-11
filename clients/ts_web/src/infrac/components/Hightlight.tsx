@@ -13,12 +13,12 @@ export default function Highlight (props: {
   const ref = React.createRef<HTMLDivElement>()
   return (
     <div className="hightlight" ref={ref} style={{ fontSize: `${store.fontSize}em` }}>
-      <Slider vertical={true} tooltipVisible={false} className="font-selector" onChange={value => {
+      {/* <Slider vertical={true} tooltipVisible={false} className="font-selector" onChange={value => {
         store.fontSize = typeof (value) === 'number' ? value : value[0]
         if (ref.current) {
           ref.current.style.fontSize = `${store.fontSize}em`
         }
-      }} defaultValue={store.fontSize} min={0.6} max={1} step={0.1} />
+      }} defaultValue={store.fontSize} min={0.6} max={1} step={0.1} /> */}
       <Prism wrapLines={true} language={language} style={coy}>
         {value || ''}
       </Prism>
