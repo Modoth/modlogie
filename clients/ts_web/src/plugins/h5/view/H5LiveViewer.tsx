@@ -49,7 +49,10 @@ const combineContent = async (articleService:IArticleAppservice, sections: Map<s
   const fws = await Promise.all(fwNames.map(name =>
     articleService.getCacheOrFetch(fwsCache, getFwPath(name), converter).then(fw => ({ name, fw }))))
   const missingFws = fws.filter(f => !f.fw).map(f => f.name)
-  console.log('Missing frameworks:', missingFws)
+  if (missingFws.length) {
+    console.log('Missing frameworks:', missingFws)
+    return {}
+  }
   const fwHtml = fws && fws.map(f => f.fw?.html).filter(s => s)
   const fwCss = fws && fws.map(f => f.fw?.css).filter(s => s)
   const fwJs = fws && fws.map(f => f.fw?.js).filter(s => s)
