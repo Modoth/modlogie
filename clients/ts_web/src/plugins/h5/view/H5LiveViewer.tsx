@@ -7,7 +7,7 @@ import { SectionNames } from './Sections'
 import classNames from 'classnames'
 import FrameWorks from './frameworks'
 import IFrameWithJs, { generateContext, IFrameContext } from './IFrameWithJs'
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import YAML from 'yaml'
 
 const getDataUrl = (content: string) => {
@@ -86,8 +86,12 @@ function IFrameWithoutJs (props: { src: string }) {
   return <iframe src={props.src} sandbox=""></iframe>
 }
 
+const IFrameWithJsMemo = memo(IFrameWithJs)
+const IFrameWithoutJsMemo = memo(IFrameWithoutJs)
+
 export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
-  const [contentUrl, jsContentUrl, hasData, context] = combineContent(new Map(props.sections.map(s => [s.name!, s])))
+  const [data] = useState(combineContent(new Map(props.sections.map(s => [s.name!, s]))))
+  const [contentUrl, jsContentUrl, hasData, context] = data
   const [running, setRunning] = useState(!!hasData)
   const [canRunning] = useState(!!jsContentUrl)
   const [fullscreen, setFullscreen] = useState(false)
@@ -97,8 +101,8 @@ export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
   return <div className={classNames('h5-live-viewer', fullscreen ? 'fullscreen' : '')}>
     {
       running
-        ? <IFrameWithJs src={jsContentUrl!} context={context} />
-        : <IFrameWithoutJs src={contentUrl!} />
+        ? <IFrameWithJsMemo src={jsContentUrl!} context={context} />
+        : <IFrameWithoutJsMemo src={contentUrl!} />
     }
     {running ? undefined : <div onClick={() => {
       if (canRunning) {
