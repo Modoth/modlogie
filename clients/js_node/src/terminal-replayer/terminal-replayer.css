@@ -1,12 +1,12 @@
 :host {
-  --csi-color-0: #7d8b8f;
-  --csi-color-1: #b23a52;
-  --csi-color-2: #789b6a;
-  --csi-color-3: #b9ac4a;
-  --csi-color-4: #2a7fac;
-  --csi-color-5: #bd4f5a;
-  --csi-color-6: #44a799;
-  --csi-color-7: #f2f8f9;
+  --csi-color-0: #2d2d2d;
+  --csi-color-1: #cc9999;
+  --csi-color-2: #99cc66;
+  --csi-color-3: #cccc99;
+  --csi-color-4: #99cccc;
+  --csi-color-5: #ffcccc;
+  --csi-color-6: #ccccff;
+  --csi-color-7: #cccccc;
 }
 .screen {
   font-size: 13px;

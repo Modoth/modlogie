@@ -1,7 +1,7 @@
 .terminal-replayer {
   --background-1: #2b2d2e;
   --background-2: #2b2d2e;
-  --foreground: #f2f8f9;
+  --foreground: #2d2d2d;
   position: fixed;
   left: 0px;
   right: 0px;
@@ -9,11 +9,15 @@
   bottom: 0px;
   border-radius: 0px;
   box-sizing: border-box;
-  background: linear-gradient(
-    45deg,
-    var(--background-1) 0%,
-    var(--background-2) 100%
-  );
+  background-image: radial-gradient(
+      #ffcccc,
+      rgba(255, 255, 255, 0.2) 40px,
+      transparent 80px
+    ),
+    radial-gradient(#ccccff, rgba(255, 255, 255, 0.3) 30px, transparent 100px),
+    radial-gradient(#99cccc, rgba(255, 255, 255, 0.2) 30px, transparent 100px);
+  background-size: 300px 300px, 200px 200px, 300px 300px;
+  background-position: 0 0, 20px 40px, 70px 30px, 60px 80px;
   padding: 10px;
   color: var(--foreground);
 }
