@@ -10,6 +10,9 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ARTICLE_SECTIONS = '文章段';
   ARTICLE_TAGS = '文章标签';
   DISPLAY_NAME = '显示名';
+  EDITOR_TYPES = '编辑器类型';
+  EDITORS_PATH = '编辑器路径';
+  FRAMEWORKS_PATH = '框架路径';
   IMPORT_SUBJECTS_AUTOFIX = '导入目录时自动修复';
   KEYWORDS_QRERY_TEMPLAES = '关键字查询模板';
   LANGS_SERVER = '语言服务器';
@@ -21,6 +24,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ROOT_SUBJECT = '根目录';
   SHADOW_SECTION_PRIVATE = '保存隐藏段为私有';
   SUB_TYPE_TAG = '文章子类标签';
+  VIEWER_PATH = '阅读器路径';
+  VIEWER_TYPES = '阅读器类型';
   WEB_SITE_AVATAR = '站长头像';
   WEB_SITE_DESCRIPTION = '网站描述';
   WEB_SITE_FOOTER = '网站脚注';

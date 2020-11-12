@@ -6,8 +6,11 @@ import { SectionNames } from './Sections'
 import { useServicesLocator } from '../../../view/common/Contexts'
 import Article, { ArticleSection } from '../../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
+import ConfigKeys from '../../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleAppservice from '../../../app/Interfaces/IArticleAppservice'
+import IConfigsService from '../../../domain/ServiceInterfaces/IConfigsSercice'
 import IFrameWithJs, { generateContext, IFrameContext } from './IFrameWithJs'
+import IServicesLocator from '../../../infrac/ServiceLocator/IServicesLocator'
 import React, { memo, useEffect, useState } from 'react'
 import YAML from 'yaml'
 
@@ -27,9 +30,6 @@ interface IData{
     hasData?:boolean;
      context?:IFrameContext;
 }
-const fwBase = '/apps/frameworks'
-const getFwPath = (name:string) => `${fwBase}/${name}`
-const fwsCache = fwBase
 const converter = async (article:Article):Promise<IFramework> => {
   const sections = new Map(article?.content?.sections?.map(s => [s.name!, s]))
   const html = sections.get(SectionNames.html)?.content
@@ -38,7 +38,7 @@ const converter = async (article:Article):Promise<IFramework> => {
   return { html, css, js }
 }
 
-const combineContent = async (articleService:IArticleAppservice, sections: Map<string, ArticleSection>): Promise<IData> => {
+const combineContent = async (locator:IServicesLocator, sections: Map<string, ArticleSection>): Promise<IData> => {
   const url = sections.get(SectionNames.url)?.content || ''
   if (url) {
     return { contentUrl: url, jsContentUrl: url }
@@ -46,12 +46,21 @@ const combineContent = async (articleService:IArticleAppservice, sections: Map<s
   const html = sections.get(SectionNames.html)?.content || ''
   const frameworks = sections.get(SectionNames.frameworks)?.content
   const fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
-  const fws = await Promise.all(fwNames.map(name =>
-    articleService.getCacheOrFetch(fwsCache, getFwPath(name), converter).then(fw => ({ name, fw }))))
-  const missingFws = fws.filter(f => !f.fw).map(f => f.name)
-  if (missingFws.length) {
-    console.log('Missing frameworks:', missingFws)
-    return {}
+
+  let fws : {name:string, fw?:IFramework}[] = []
+  if (fwNames) {
+    const articleService = locator.locate(IArticleAppservice)
+    const configsService = locator.locate(IConfigsService)
+    const fwBase = await configsService.getValueOrDefault(ConfigKeys.FRAMEWORKS_PATH)
+    const getFwPath = (name:string) => `${fwBase}/${name}`
+    const fwsCache = fwBase
+    fws = await Promise.all(fwNames.map(name =>
+      articleService.getCacheOrFetch(fwsCache, getFwPath(name), converter).then(fw => ({ name, fw }))))
+    const missingFws = fws.filter(f => !f.fw).map(f => f.name)
+    if (missingFws.length) {
+      console.log('Missing frameworks:', missingFws)
+      return {}
+    }
   }
   const fwHtml = fws && fws.map(f => f.fw?.html).filter(s => s)
   const fwCss = fws && fws.map(f => f.fw?.css).filter(s => s)
@@ -134,7 +143,7 @@ export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
   const [fullscreen, setFullscreen] = useState(false)
   const locator = useServicesLocator()
   useEffect(() => {
-    combineContent(locator.locate(IArticleAppservice), new Map(props.sections.map(s => [s.name!, s]))).then(data => {
+    combineContent(locator, new Map(props.sections.map(s => [s.name!, s]))).then(data => {
       if (data) {
         setData(data)
         setRunning(!!data.hasData)
