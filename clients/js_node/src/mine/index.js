@@ -9,7 +9,7 @@ class App {
       this[n] = document.getElementById(n)
     })
     this.start()
-    new ResizeWatcher(window).register(this.tryResize.bind(this))
+    new ResizeWatcher(window, 50).register(this.tryResize.bind(this))
   }
 
   updateMines (success) {
