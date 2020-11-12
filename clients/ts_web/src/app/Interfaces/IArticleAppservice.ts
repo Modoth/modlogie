@@ -10,4 +10,8 @@ export default class IArticleAppservice {
   fetchArticleByPath (path: string, loadingAddition = false): Promise<[Article | undefined, ArticleContentType | undefined, ArticleType | undefined]> {
     throw new Error('Method not implemented.')
   }
+
+  getCacheOrFetch<TValue> (group:string, path:string, converter:{(article:Article):Promise<TValue|undefined>}):Promise<TValue|undefined> {
+    throw new Error('Method not implemented.')
+  }
 }

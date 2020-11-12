@@ -1,33 +1,61 @@
 import './H5LiveViewer.less'
 import { AdditionalSectionViewerProps } from '../../../pluginbase/base/view/SectionViewerProps'
-import { ArticleSection } from '../../../domain/ServiceInterfaces/Article'
 import { Button } from 'antd'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
 import { SectionNames } from './Sections'
+import { useServicesLocator } from '../../../view/common/Contexts'
+import Article, { ArticleSection } from '../../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
-import FrameWorks from './frameworks'
+import IArticleAppservice from '../../../app/Interfaces/IArticleAppservice'
 import IFrameWithJs, { generateContext, IFrameContext } from './IFrameWithJs'
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import YAML from 'yaml'
 
 const getDataUrl = (content: string) => {
   return 'data:text/html;charset=utf-8,' + encodeURIComponent(content)
 }
 
-const combineContent = (sections: Map<string, ArticleSection>): [string | undefined, string | undefined, boolean|undefined, IFrameContext | undefined] => {
+interface IFramework{
+  html?:string;
+  css?:string;
+  js?:string;
+}
+
+interface IData{
+  contentUrl?:string;
+   jsContentUrl?:string;
+    hasData?:boolean;
+     context?:IFrameContext;
+}
+
+const getFwPath = (name:string) => `/apps/frameworks/${name}`
+const editorCache = 'EDITORS'
+const converter = async (article:Article):Promise<IFramework> => {
+  const sections = new Map(article?.content?.sections?.map(s => [s.name!, s]))
+  const html = sections.get(SectionNames.html)?.content
+  const css = sections.get(SectionNames.css)?.content
+  const js = sections.get(SectionNames.js)?.content
+  return { html, css, js }
+}
+
+const combineContent = async (articleService:IArticleAppservice, sections: Map<string, ArticleSection>): Promise<IData> => {
   const url = sections.get(SectionNames.url)?.content || ''
   if (url) {
-    return [url, url, undefined, undefined]
+    return { contentUrl: url, jsContentUrl: url }
   }
   const html = sections.get(SectionNames.html)?.content || ''
   const frameworks = sections.get(SectionNames.frameworks)?.content
   const fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
-  const fws = fwNames.filter(s => s && FrameWorks.has(s)).map(s => FrameWorks.get(s))
-  const fwHtmls = fws && fws.map(f => f && f.html)
-  const fwJss = fws && fws.map(f => f && f.js)
+  const fws = await Promise.all(fwNames.map(name =>
+    articleService.getCacheOrFetch(editorCache, getFwPath(name), converter).then(fw => ({ name, fw }))))
+  const missingFws = fws.filter(f => !f.fw).map(f => f.name)
+  console.log('Missing frameworks:', missingFws)
+  const fwHtml = fws && fws.map(f => f.fw?.html).filter(s => s)
+  const fwCss = fws && fws.map(f => f.fw?.css).filter(s => s)
+  const fwJs = fws && fws.map(f => f.fw?.js).filter(s => s)
   let jsData = ''
-  if (!html && !(fwHtmls && fwHtmls.length)) {
-    return [undefined, undefined, undefined, undefined]
+  if (!html && !(fwHtml && fwHtml.length)) {
+    return {}
   }
   const style = sections.get(SectionNames.css)?.content
   const script = sections.get(SectionNames.js)?.content
@@ -52,34 +80,41 @@ const combineContent = (sections: Map<string, ArticleSection>): [string | undefi
     }
   }
 
-  let content = html || ''
+  let content = ''
+  if (fwHtml && fwHtml.length) {
+    content += `${fwHtml.join('\n')}\n`
+  }
+  if (html) {
+    content += html + '\n'
+  }
+  if (fwCss && fwCss.length) {
+    content += `<style>\n${fwCss.join('\n')}\n$</style>\n`
+  }
+  if (style) {
+    content += `<style>\n${style}\n$</style>\n`
+  }
   let jsContent = ''
   let context: IFrameContext | undefined
   if (~fwNames.indexOf('storage')) {
     [context, jsContent] = generateContext()
   }
-  if (style) {
-    content += `\n<style>\n${style}\n</style>`
-  }
-  if (fwHtmls && fwHtmls.length) {
-    content += `\n${fwHtmls.join('\n')}\n`
+
+  if (fwJs && fwJs.length) {
+    jsContent += `<script>\n${fwJs.join('\n')}\n</script>`
   }
 
   if (jsData) {
     jsContent += `<script>\nwindow.appData=${jsData}\n</script>\n`
     hasData = true
   }
-  if (fwJss && fwJss.length) {
-    jsContent += `<script>\n${fwJss.join('\n')}\n</script>`
-  }
 
   if (script) {
     jsContent += `<script>\n${script}\n</script>\n`
   }
 
-  jsContent = `${content}\n${jsContent}`
+  jsContent = `${jsContent}\n${content}`
 
-  return [getDataUrl(content), jsContent ? getDataUrl(jsContent) : undefined, hasData, context]
+  return { contentUrl: getDataUrl(content), jsContentUrl: jsContent ? getDataUrl(jsContent) : undefined, hasData, context }
 }
 
 function IFrameWithoutJs (props: { src: string }) {
@@ -90,11 +125,24 @@ const IFrameWithJsMemo = memo(IFrameWithJs)
 const IFrameWithoutJsMemo = memo(IFrameWithoutJs)
 
 export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
-  const [data] = useState(combineContent(new Map(props.sections.map(s => [s.name!, s]))))
-  const [contentUrl, jsContentUrl, hasData, context] = data
-  const [running, setRunning] = useState(!!hasData)
-  const [canRunning] = useState(!!jsContentUrl)
+  const [data, setData] = useState<IData|undefined>()
+  const [running, setRunning] = useState(false)
+  const [canRunning, setCanRunning] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
+  const locator = useServicesLocator()
+  useEffect(() => {
+    combineContent(locator.locate(IArticleAppservice), new Map(props.sections.map(s => [s.name!, s]))).then(data => {
+      if (data) {
+        setData(data)
+        setRunning(!!data.hasData)
+        setCanRunning(!!data.jsContentUrl)
+      }
+    })
+  }, [])
+  if (!data) {
+    return <></>
+  }
+  const { contentUrl, jsContentUrl, hasData, context } = data
   if (!((running && jsContentUrl) || (!running && contentUrl))) {
     return <></>
   }

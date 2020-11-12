@@ -86,4 +86,31 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
         .getArticleType(this.locate(IConfigsService), type!, type!.subTypeTag ? article.tagsDict?.get(type!.subTypeTag!)?.value : undefined)
       return [article, contentType, type]
     }
+
+    private articlesCaches = new Map<string, Map<string, any>>()
+
+    private nonArticle = {}
+
+    async getCacheOrFetch<TValue> (group:string, path:string, converter:{(article:Article):Promise<TValue|undefined>}):Promise<TValue|undefined> {
+      if (!this.articlesCaches.has(group)) {
+        this.articlesCaches.set(group, new Map<string, object>())
+      }
+      const cache = this.articlesCaches.get(group)!
+      if (cache.has(path)) {
+        const value = cache.get(path)
+        return value === this.nonArticle ? undefined : value as unknown as TValue
+      }
+      const [article] = await this.fetchArticleByPath(path, true)
+      if (!article) {
+        cache.set(path, this.nonArticle)
+        return undefined
+      }
+      const value = await converter(article)
+      if (!value) {
+        cache.set(path, this.nonArticle)
+        return undefined
+      }
+      cache.set(path, value)
+      return value
+    }
 }
