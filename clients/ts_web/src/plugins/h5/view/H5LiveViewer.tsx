@@ -27,9 +27,9 @@ interface IData{
     hasData?:boolean;
      context?:IFrameContext;
 }
-
-const getFwPath = (name:string) => `/apps/frameworks/${name}`
-const editorCache = 'EDITORS'
+const fwBase = '/apps/frameworks'
+const getFwPath = (name:string) => `${fwBase}/${name}`
+const fwsCache = fwBase
 const converter = async (article:Article):Promise<IFramework> => {
   const sections = new Map(article?.content?.sections?.map(s => [s.name!, s]))
   const html = sections.get(SectionNames.html)?.content
@@ -47,7 +47,7 @@ const combineContent = async (articleService:IArticleAppservice, sections: Map<s
   const frameworks = sections.get(SectionNames.frameworks)?.content
   const fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
   const fws = await Promise.all(fwNames.map(name =>
-    articleService.getCacheOrFetch(editorCache, getFwPath(name), converter).then(fw => ({ name, fw }))))
+    articleService.getCacheOrFetch(fwsCache, getFwPath(name), converter).then(fw => ({ name, fw }))))
   const missingFws = fws.filter(f => !f.fw).map(f => f.name)
   console.log('Missing frameworks:', missingFws)
   const fwHtml = fws && fws.map(f => f.fw?.html).filter(s => s)
