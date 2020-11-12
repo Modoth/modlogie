@@ -1,16 +1,15 @@
 :host {
-  --csi-color-0: rgb(1, 1, 1);
-  --csi-color-1: rgb(222, 56, 43);
-  --csi-color-2: rgb(57, 181, 74);
-  --csi-color-3: rgb(255, 199, 6);
-  --csi-color-4: rgb(0, 111, 184);
-  --csi-color-5: rgb(118, 38, 113);
-  --csi-color-6: rgb(44, 181, 233);
-  --csi-color-7: rgb(204, 204, 204);
-  padding: 8px;
+  --csi-color-0: #7d8b8f;
+  --csi-color-1: #b23a52;
+  --csi-color-2: #789b6a;
+  --csi-color-3: #b9ac4a;
+  --csi-color-4: #2a7fac;
+  --csi-color-5: #bd4f5a;
+  --csi-color-6: #44a799;
+  --csi-color-7: #f2f8f9;
 }
 .screen {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 2em;
   font-family: monospace;
   width: 100%;
@@ -43,7 +42,7 @@
   animation: blink 1s infinite;
   user-select: none;
   shape-outside: content-box;
-  color:var(--csi-color-4);
+  color: var(--csi-color-4);
 }
 .csi-1 {
   font-weight: bold;
