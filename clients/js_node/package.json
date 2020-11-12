@@ -5,8 +5,9 @@
   "main": "spack.config.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "node tools/spack/index.js publish",
-    "rebuild": "npm run clean && npm run build && (npx eslint --fix dist/**/*.js 2> /dev/null || true) && npx prettier --write dist/**/*.{html,css}",
+    "lint/dist":"(npx eslint --fix dist/**/*.js 2> /dev/null || true) && npx prettier --write dist/**/*.{html,css}",
+    "build": "node tools/spack/index.js publish && npm run lint/dist",
+    "rebuild": "npm run clean && npm run build",
     "start": "node tools/spack/index.js serve --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
