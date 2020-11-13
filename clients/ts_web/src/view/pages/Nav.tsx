@@ -110,7 +110,7 @@ function Nav () {
                 <Link to={'/' + t.route}>{t.displayName || t.name}</Link>
               </Menu.Item>)
           }
-          <Menu.Divider></Menu.Divider>
+          {user.editingPermission ? <Menu.Divider></Menu.Divider> : undefined}
           {user.editingPermission ? (
             <SubMenu
               icon={<SettingOutlined />}
@@ -135,7 +135,7 @@ function Nav () {
               </Menu.Item>
             </SubMenu>
           ) : null}
-          <Menu.Divider></Menu.Divider>
+          { (editors && editors.length) || (viewers && viewers.length) ? <Menu.Divider></Menu.Divider> : undefined}
           {
             (editors && editors.length) || (viewers && viewers.length)
               ? <SubMenu
