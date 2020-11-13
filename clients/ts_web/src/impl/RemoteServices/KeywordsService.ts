@@ -67,7 +67,7 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
       k.id = item.getId()
       const url = item.getUrl()
       k.url = url
-      const tokens = Seperators.seperateFields(url)
+      const tokens = Seperators.seperateItems(url)
       for (const token of tokens) {
         let [proto, path] = token.split('://')
         if (!proto) {
