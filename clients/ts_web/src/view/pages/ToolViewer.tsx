@@ -36,7 +36,7 @@ export function ToolViewer () {
       <Button type="text" icon={<CloseOutlined />} onClick={() => setFile(undefined)}></Button>
     </div>
     {
-      file ? <ExternalFileViewerMemo file={file}></ExternalFileViewerMemo> : undefined
+      file ? <ExternalFileViewerMemo file={file}></ExternalFileViewerMemo> : <div onClick={selectFile} className="external-viewer"></div>
     }
     <div className="status"></div>
   </div>
