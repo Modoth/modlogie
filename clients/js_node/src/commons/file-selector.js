@@ -30,7 +30,7 @@ export class FileSelector {
       this.btnFile_.click()
       return
     }
-    window.$localStorage.openFile(mimeType, format).then((res) => {
+    window.$fileservice.openFile(mimeType, format).then((res) => {
       callback(res)
     })
   }

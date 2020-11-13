@@ -1,6 +1,7 @@
 export class TextReader {
-  constructor (file) {
+  constructor (file, buffSize = 10 * 1024) {
     this.file = file
+    this.buffSize = buffSize
     this.decoder = new TextDecoder(this.label)
     this._value = ''
   }
@@ -14,7 +15,7 @@ export class TextReader {
   }
 
   async read () {
-    const [buff, finished] = await this.file.read()
+    const [buff, finished] = await this.file.read(this.buffSize)
     const newValue = this.decoder.decode(buff, { stream: true })
     this._value += newValue
     return [newValue, finished]

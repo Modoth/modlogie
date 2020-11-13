@@ -8,6 +8,7 @@ import IFile from '../../infrac/Lang/IFile'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { memo, useState } from 'react'
+import WebFile from '../../infrac/Lang/WebFile'
 
 const ExternalFileViewerMemo = memo(ExternalFileViewer)
 
@@ -25,7 +26,7 @@ export function ToolViewer () {
       }
     ], async (file:File) => {
       setFile(undefined)
-      setFile(new BufferFile(file.name, await file.arrayBuffer()))
+      setFile(new WebFile(file))
       setName(file.name)
       return true
     }, false)
@@ -37,7 +38,7 @@ export function ToolViewer () {
       <Button type="text" icon={<CloseOutlined />} onClick={() => setFile(undefined)}></Button>
     </div>
     {
-      file ? <ExternalFileViewer file={file}></ExternalFileViewer> : <div onClick={selectFile} className="external-viewer"></div>
+      file ? <ExternalFileViewerMemo file={file}></ExternalFileViewerMemo> : <div onClick={selectFile} className="external-viewer"></div>
     }
     <div className="status"></div>
   </div>
