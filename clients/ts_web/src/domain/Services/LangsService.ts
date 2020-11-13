@@ -13,7 +13,7 @@ export default class LangsService implements ILangsService {
   }
 
   get (name: string): string {
-    const key = name.toString()
+    const key = name?.toString()
     return this.langs[key] || key
   }
 

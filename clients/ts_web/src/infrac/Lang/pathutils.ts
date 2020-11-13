@@ -13,11 +13,7 @@ export function rootname (path:string|undefined|null) {
   if (!path) {
     return
   }
-  var idx = path.indexOf('/')
-  if (~idx) {
-    return path.slice(0, idx)
-  }
-  return path
+  return path.split('/').find(s => s)
 }
 
 export function extname (path:string|undefined|null) {
