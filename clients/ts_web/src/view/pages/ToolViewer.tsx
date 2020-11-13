@@ -24,6 +24,7 @@ export function ToolViewer () {
         value: undefined
       }
     ], async (file:File) => {
+      setFile(undefined)
       setFile(new BufferFile(file.name, await file.arrayBuffer()))
       setName(file.name)
       return true
@@ -36,7 +37,7 @@ export function ToolViewer () {
       <Button type="text" icon={<CloseOutlined />} onClick={() => setFile(undefined)}></Button>
     </div>
     {
-      file ? <ExternalFileViewerMemo file={file}></ExternalFileViewerMemo> : <div onClick={selectFile} className="external-viewer"></div>
+      file ? <ExternalFileViewer file={file}></ExternalFileViewer> : <div onClick={selectFile} className="external-viewer"></div>
     }
     <div className="status"></div>
   </div>
