@@ -6,24 +6,26 @@ import { ResExternal } from './ResFileViewers/ResExternal'
 import { ResFile } from '../ResFile'
 import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
 import { ResImage } from './ResFileViewers/ResImage'
+import { useServicesLocator } from '../../../view/common/Contexts'
 import classNames from 'classnames'
 import FullscreenWraper from '../../../infrac/components/FullscreenWraper'
+import IEditorsService from '../../../app/Interfaces/IEditorsService'
 import Markdown from '../../../infrac/components/Markdown'
 import React, { useEffect, useState } from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
 import yaml from 'yaml'
 
-const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.Element } | undefined => {
+const getViewer = async (editorService :IEditorsService, ext: string): Promise<{ (props: ResFileViewerProps): JSX.Element } | undefined> => {
   switch (ext?.toLocaleLowerCase()) {
-    case 'txt':
-    case 'json':
-      return ResExternal
     case 'jpeg':
     case 'png':
     case 'jpg':
     case 'gif':
       return ResImage
     default:
+      if (await editorService.getViewerType(ext)) {
+        return ResExternal
+      }
   }
 }
 
@@ -33,7 +35,9 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
   const [downloadReq, setDownloadReq] = useState<XMLHttpRequest | undefined>()
   const [failed, setFailed] = useState(false)
   const [preview, setPreview] = useState(false)
+  const locator = useServicesLocator()
   const [downloadProgress, setDownloadProgress] = useState(0)
+  const [PreviewView, setPreviewView] = useState<{view:{(props: ResFileViewerProps): JSX.Element } |undefined}>()
   const setDownloadProgressAndRaise = (progress: number) => {
     setDownloadProgress(progress)
     if (props.onProgress) {
@@ -84,8 +88,15 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
       downloadReq.send()
     }
   }, [downloadReq])
-
   useEffect(() => {
+    const editorService = locator.locate(IEditorsService)
+    const type = extname(props.name)
+
+    getViewer(editorService, type || props.name).then(view => {
+      if (view) {
+        setPreviewView({ view })
+      }
+    })
     return () => {
       if (downloadReq) {
         downloadReq.onload = null
@@ -98,8 +109,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
       }
     }
   }, [])
-  const type = extname(props.name)
-  const Preview = getViewer(type)
+  const Preview = PreviewView?.view
   return <>
     <div className="summary">
       <span className="progress" style={{ width: `${downloadProgress}%` }}></span>

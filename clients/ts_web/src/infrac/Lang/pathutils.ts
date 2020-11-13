@@ -24,4 +24,5 @@ export function extname (path:string|undefined|null) {
   if (~idx) {
     return path.slice(idx + 1)
   }
+  return path
 }

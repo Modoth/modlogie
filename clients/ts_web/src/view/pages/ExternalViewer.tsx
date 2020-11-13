@@ -1,5 +1,4 @@
 import './ExternalViewer.less'
-import { extname } from '../../infrac/Lang/pathutils'
 import { genetateFileApi } from './iframeutils'
 import { srcToUrl } from '../../infrac/Lang/srcToUrl'
 import { useServicesLocator } from '../common/Contexts'
@@ -7,46 +6,16 @@ import Article from '../../domain/ServiceInterfaces/Article'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
+import IEditorsService from '../../app/Interfaces/IEditorsService'
 import IFile from '../../infrac/Lang/IFile'
 import IFrameWithJs, { generateContext, IFrameContext } from '../../infrac/components/IFrameWithJs'
 import React, { memo, useEffect, useState } from 'react'
-import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 const IFrameWithJsMemo = memo(IFrameWithJs)
 
 export interface ExternalViewerProps{
     file:IFile
     type?:string
-}
-
-let viewerTypes:Promise<ViewerType[]>
-
-interface ViewerType {
-  name:string;
-  accept:RegExp
-}
-
-const fetchViewerTypes = async (configs:IConfigsService) :Promise<ViewerType[]> => {
-  const cfgStr = await configs.getValueOrDefault(ConfigKeys.VIEWER_TYPES)
-  const types :ViewerType[] = []
-  for (let str of Seperators.seperateItems(cfgStr)) {
-    str = str.trim()
-    if (!str) {
-      continue
-    }
-    let [name, regStr] = Seperators.seperateFields(str)
-    name = name.trim()
-    regStr = regStr.trim()
-    if (!name || !regStr) {
-      continue
-    }
-    try {
-      types.push({ name, accept: new RegExp(regStr, 'i') })
-    } catch (e) {
-      console.log('invalid config', cfgStr, str)
-    }
-  }
-  return types
 }
 
 const generateViewerData = async (article:Article, file:IFile):Promise<[IFrameContext, string]> => {
@@ -93,16 +62,11 @@ export default function ExternalViewer (props:ExternalViewerProps) {
   const locator = useServicesLocator()
   const [type, setType] = useState(props.type)
   const fetchType = async () => {
-    const ext = extname(await props.file.name())
-    if (!ext) {
-      return
+    const editorsService = locator.locate(IEditorsService)
+    const type = await editorsService.getViewerType(await props.file.name())
+    if (type) {
+      setType(type)
     }
-    if (!viewerTypes) {
-      viewerTypes = fetchViewerTypes(locator.locate(IConfigsService))
-    }
-    const types = await viewerTypes
-    const type = types.find(t => t.accept.test(ext || ''))?.name
-    setType(type)
   }
   useEffect(() => {
     if (!type) {

@@ -19,6 +19,7 @@ import Chart from './plugins/chart'
 import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
 import DefaultConfigs from './app/Interfaces/DefaultConfigs'
 import DictService from './domain/Services/DictService'
+import EditorsServiceSingleton from './app/AppServices/EditorsServiceSingleton'
 import ExternalBlog from './plugins/externalblog'
 import FavoritesServerSingleton from './domain/Services/FavoritesServerSingleton'
 import H5 from './plugins/h5'
@@ -29,6 +30,7 @@ import IArticleService from './domain/ServiceInterfaces/IArticleService'
 import IAutoAccountService from './domain/ServiceInterfaces/IAutoAccountService'
 import IConfigsService, { Config, ConfigType } from './domain/ServiceInterfaces/IConfigsSercice'
 import IDictService from './domain/ServiceInterfaces/IDictService'
+import IEditorsService from './app/Interfaces/IEditorsService'
 import IFavoritesServer from './domain/ServiceInterfaces/IFavoritesServer'
 import IFavoritesStorage from './domain/ServiceInterfaces/IFavoritesStorage'
 import IKeywordsService from './domain/ServiceInterfaces/IKeywordsService'
@@ -221,6 +223,7 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(ISubjectsExporter, new SubjectsExporter())
   serviceLocator.registerInstance(IUsersService, new UsersService())
   serviceLocator.registerInstance(IUserLoginService, new UserLoginService())
+  serviceLocator.registerInstance(IEditorsService, new EditorsServiceSingleton())
   serviceLocator.registerInstance(
     IRemoteServiceInvoker,
     new RemoteServiceInvoker()
