@@ -783,6 +783,7 @@ class Server {
 
   resFile (res, name) {
     res.setHeader('content-type', 'text/html')
+    res.setHeader('Access-Control-Allow-Origin', '*')
     if (this.results[name]) {
       res.write(
         this.results[name].dataWithTemplate + this.getInjectScript(name) ||

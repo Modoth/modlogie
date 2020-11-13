@@ -2,10 +2,10 @@ import './ResFileViewer.less'
 import { Button } from 'antd'
 import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownCircleOutlined, UpCircleOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons'
 import { extname } from '../../../infrac/Lang/pathutils'
+import { ResExternal } from './ResFileViewers/ResExternal'
 import { ResFile } from '../ResFile'
 import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
 import { ResImage } from './ResFileViewers/ResImage'
-import { ResPlain } from './ResFileViewers/ResPlain'
 import classNames from 'classnames'
 import FullscreenWraper from '../../../infrac/components/FullscreenWraper'
 import Markdown from '../../../infrac/components/Markdown'
@@ -17,7 +17,7 @@ const getViewer = (ext: string | undefined): { (props: ResFileViewerProps): JSX.
   switch (ext?.toLocaleLowerCase()) {
     case 'txt':
     case 'json':
-      return ResPlain
+      return ResExternal
     case 'jpeg':
     case 'png':
     case 'jpg':
@@ -116,7 +116,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
             : <Button type="text" className="download" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
       }
     </div>
-    { Preview && preview ? <FullscreenWraper className="preview" View={Preview} url={blobUrl || props.url} buff={buff}></FullscreenWraper> : undefined}
+    { Preview && preview ? <FullscreenWraper enable={true} className="preview" name={props.name} View={Preview} url={blobUrl || props.url} buff={buff}></FullscreenWraper> : undefined}
   </>
 }
 

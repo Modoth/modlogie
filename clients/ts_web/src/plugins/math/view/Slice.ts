@@ -1,5 +1,5 @@
 import { ArticleFile } from '../../../domain/ServiceInterfaces/Article'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 } from 'uuid'
 
 export enum SliceType {
     Normal = 1,
@@ -15,7 +15,7 @@ export class ArticleSlice {
     id: string;
     constructor (public type: SliceType, public content: string | SliceFile,
         public start: number, public end: number) {
-      this.id = uuidv4()
+      this.id = v4()
     }
 }
 

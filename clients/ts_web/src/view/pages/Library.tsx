@@ -7,7 +7,7 @@ import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowRightOutlined, HeartF
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { useServicesLocator, useUser } from '../common/Contexts'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 } from 'uuid'
 import Article, { ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import ArticleListSummary from './ArticleListSummary'
 import ArticleView from './ArticleView'
@@ -178,7 +178,7 @@ export default function Library (props: LibraryProps) {
   const bottomRef = React.createRef<HTMLDivElement>()
 
   const convertArticle = (article: Article) => {
-    (article as any)!.key = uuidv4()
+    (article as any)!.key = v4()
     return article
   }
 
@@ -459,7 +459,7 @@ export default function Library (props: LibraryProps) {
 
   const addArticle = () => {
     if (props.type.noTitle) {
-      return addArticleWithTags(uuidv4())
+      return addArticleWithTags(v4())
     }
     viewService.prompt(
       langs.get(LangKeys.Create),

@@ -1,32 +1,25 @@
+import './ExternalViewer.less'
 import { extname } from '../../infrac/Lang/pathutils'
+import { genetateFileApi } from './iframeutils'
+import { srcToUrl } from '../../infrac/Lang/srcToUrl'
 import { useServicesLocator } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import IFrameWithJs from '../../plugins/h5/view/IFrameWithJs'
-import React, { useEffect, useState } from 'react'
+import IFile from '../../infrac/Lang/IFile'
+import IFrameWithJs, { generateContext, IFrameContext } from '../../infrac/components/IFrameWithJs'
+import React, { memo, useEffect, useState } from 'react'
 import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
-export interface SimpleFile{
-  name:string,
-  size(): Promise<number>,
-  read(count?:number): Promise<[ArrayBuffer, boolean]>
-}
+const IFrameWithJsMemo = memo(IFrameWithJs)
 
-export interface SimpleViewerWraperProps{
-    file:SimpleFile
+export interface ExternalViewerProps{
+    file:IFile
     type?:string
 }
 
-export interface SimpleEditorWraperProps extends SimpleViewerWraperProps{
-    readonly?:boolean;
-    onSave?(buffer:ArrayBuffer):void
-}
-
 let viewerTypes:Promise<ViewerType[]>
-
-const nonViewer = { name: '', accept: '' }
 
 interface ViewerType {
   name:string;
@@ -48,7 +41,7 @@ const fetchViewerTypes = async (configs:IConfigsService) :Promise<ViewerType[]> 
       continue
     }
     try {
-      types.push({ name, accept: new RegExp(str, 'i') })
+      types.push({ name, accept: new RegExp(regStr, 'i') })
     } catch (e) {
       console.log('invalid config', cfgStr, str)
     }
@@ -56,23 +49,36 @@ const fetchViewerTypes = async (configs:IConfigsService) :Promise<ViewerType[]> 
   return types
 }
 
-const converter = async (article:Article):Promise<string> => {
+const generateViewerData = async (article:Article, file:IFile):Promise<[IFrameContext, string]> => {
+  const [context, jsContent] = generateContext([genetateFileApi(file)])
   const sections = new Map(article?.content?.sections?.map(s => [s.name!, s]))
+  let url = sections.get('url')?.content
+  if (url) {
+    const html = await (await fetch(url, { mode: 'cors' })).text()
+    url = srcToUrl(`<script>\n${jsContent}\n</script>\n${html || ''}\n`)
+    return [context, url]
+  }
   const html = sections.get('html')?.content
   const css = sections.get('css')?.content
   const js = sections.get('js')?.content
-  return `${html || ''}\n<style>\n${css || ''}\n</style>\n<script>\n${js || ''}\n</script>\n`
+  url = srcToUrl(`${html || ''}\n<style>\n${css || ''}\n</style>\n<script>\n${jsContent}\n${js || ''}\n</script>\n`)
+  return [context, url]
 }
 
-export function SimpleTypeViewer (props:SimpleViewerWraperProps) {
+function ExternalViewerFixedType (props:ExternalViewerProps) {
   const [url, setUrl] = useState('')
+  const [context, setContext] = useState<IFrameContext|undefined>()
   const locator = useServicesLocator()
   const fetchViewer = async () => {
     const articleService = locator.locate(IArticleAppservice)
     const configsService = locator.locate(IConfigsService)
     const viewerbase = await configsService.getValueOrDefault(ConfigKeys.VIEWER_PATH)
-    const url = await articleService.getCacheOrFetch(viewerbase, `${viewerbase}/${props.type!}`, converter)
-    setUrl(url || '')
+    const article = await articleService.getCacheOrFetch(viewerbase, `${viewerbase}/${props.type!}`, async a => a)
+    if (article) {
+      const [context, url] = await generateViewerData(article, props.file)
+      setContext(context)
+      setUrl(url || '')
+    }
   }
   useEffect(() => {
     fetchViewer()
@@ -80,14 +86,14 @@ export function SimpleTypeViewer (props:SimpleViewerWraperProps) {
   if (!url) {
     return <></>
   }
-  return <IFrameWithJs src={url}/>
+  return <IFrameWithJsMemo context={context} src={url}/>
 }
 
-export function SimpleViewerWraper (props:SimpleViewerWraperProps) {
+export default function ExternalViewer (props:ExternalViewerProps) {
   const locator = useServicesLocator()
   const [type, setType] = useState(props.type)
   const fetchType = async () => {
-    const ext = extname(props.file.name)
+    const ext = extname(await props.file.name())
     if (!ext) {
       return
     }
@@ -106,13 +112,5 @@ export function SimpleViewerWraper (props:SimpleViewerWraperProps) {
   if (!type) {
     return <></>
   }
-  return <SimpleTypeViewer {...props}/>
-}
-
-export function SimpleEditorWraper (props:SimpleEditorWraperProps) {
-  const locator = useServicesLocator()
-  if (props.readonly) {
-    return <SimpleViewerWraper {...props} />
-  }
-  return <></>
+  return <div className="external-viewer"><ExternalViewerFixedType {...props} type={type}/></div>
 }

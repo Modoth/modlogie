@@ -2,22 +2,20 @@ import './H5LiveViewer.less'
 import { AdditionalSectionViewerProps } from '../../../pluginbase/base/view/SectionViewerProps'
 import { Button } from 'antd'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
+import { generateFileService } from '../../../view/pages/iframeutils'
 import { SectionNames } from './Sections'
+import { srcToUrl } from '../../../infrac/Lang/srcToUrl'
 import { useServicesLocator } from '../../../view/common/Contexts'
 import Article, { ArticleSection } from '../../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleAppservice from '../../../app/Interfaces/IArticleAppservice'
 import IConfigsService from '../../../domain/ServiceInterfaces/IConfigsSercice'
-import IFrameWithJs, { generateContext, IFrameContext } from './IFrameWithJs'
+import IFrameWithJs, { generateContext, IFrameContext } from '../../../infrac/components/IFrameWithJs'
 import IServicesLocator from '../../../infrac/ServiceLocator/IServicesLocator'
 import React, { memo, useEffect, useState } from 'react'
 import Seperators from '../../../domain/ServiceInterfaces/Seperators'
 import YAML from 'yaml'
-
-const getDataUrl = (content: string) => {
-  return 'data:text/html;charset=utf-8,' + encodeURIComponent(content)
-}
 
 interface IFramework{
   html?:string;
@@ -39,6 +37,8 @@ const converter = async (article:Article):Promise<IFramework> => {
   return { html, css, js }
 }
 
+const storageFw = 'storage'
+
 const combineContent = async (locator:IServicesLocator, sections: Map<string, ArticleSection>): Promise<IData> => {
   const url = sections.get(SectionNames.url)?.content || ''
   if (url) {
@@ -47,7 +47,10 @@ const combineContent = async (locator:IServicesLocator, sections: Map<string, Ar
   const html = sections.get(SectionNames.html)?.content || ''
   const frameworks = sections.get(SectionNames.frameworks)?.content
   const fwNames = frameworks ? Seperators.seperateItems(frameworks) : []
-
+  const storageIdx = fwNames.findIndex(s => s === storageFw)
+  if (~storageIdx) {
+    fwNames.splice(storageIdx, 1)
+  }
   let fws : {name:string, fw?:IFramework}[] = []
   if (fwNames) {
     const articleService = locator.locate(IArticleAppservice)
@@ -108,8 +111,9 @@ const combineContent = async (locator:IServicesLocator, sections: Map<string, Ar
   }
   let jsContent = ''
   let context: IFrameContext | undefined
-  if (~fwNames.indexOf('storage')) {
-    [context, jsContent] = generateContext()
+  if (~storageIdx) {
+    [context, jsContent] = generateContext([generateFileService(locator)])
+    jsContent = `<script>\n${jsContent}\n</script>`
   }
 
   if (fwJs && fwJs.length) {
@@ -127,7 +131,7 @@ const combineContent = async (locator:IServicesLocator, sections: Map<string, Ar
 
   jsContent = `${jsContent}\n${content}`
 
-  return { contentUrl: getDataUrl(content), jsContentUrl: jsContent ? getDataUrl(jsContent) : undefined, hasData, context }
+  return { contentUrl: srcToUrl(content), jsContentUrl: jsContent ? srcToUrl(jsContent) : undefined, hasData, context }
 }
 
 function IFrameWithoutJs (props: { src: string }) {

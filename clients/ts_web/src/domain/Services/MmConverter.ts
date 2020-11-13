@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { v4 } from 'uuid'
 import IMmConverter from '../ServiceInterfaces/IMmConverter'
 import Subject from '../ServiceInterfaces/Subject'
 
@@ -47,7 +47,7 @@ export default class MmConverter implements IMmConverter {
     let root: Element = xml.getRootNode().childNodes[0] as Element
     const handleSubject = (subject: Subject, parentNode: Node) => {
       const node = xml.createElement('node')
-      node.setAttribute('ID', uuidv4())
+      node.setAttribute('ID', v4())
       node.setAttribute('TEXT', subject.name)
       if (subject.children && subject.children.length) {
         subject.children.forEach(c => handleSubject(c, node))
@@ -56,7 +56,7 @@ export default class MmConverter implements IMmConverter {
     }
     if (subjects.length > 1) {
       const newRoot = xml.createElement('node')
-      newRoot.setAttribute('ID', uuidv4())
+      newRoot.setAttribute('ID', v4())
       newRoot.setAttribute('TEXT', rootNodeName || '')
       root.appendChild(newRoot)
       root = newRoot

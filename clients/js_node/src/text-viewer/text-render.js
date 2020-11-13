@@ -1,6 +1,5 @@
-const sleep = (timeout) => {
-  return new Promise(resolve => setTimeout(resolve, timeout))
-}
+import { sleep } from '../commons/sleep.js'
+
 class LineInfo {
   constructor (
     /** @type number */ x,
