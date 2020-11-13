@@ -51,12 +51,12 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
       if (!value) {
         return []
       }
-      return Seperators.seperateFields(value)
+      return Seperators.seperateItems(value)
     }
 
     async getFieldsOrDefault (key: string): Promise<string[][]> {
       const values = await this.getValuesOrDefault(key)
-      return values.map(value => Seperators.seperateItems(value))
+      return values.map(value => Seperators.seperateFields(value))
     }
 
     private cloneConfig (config: Config): Config {
