@@ -8,6 +8,7 @@ import { ManageTags } from './ManageTags'
 import { ManageUsers } from './ManageUsers'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { Switch, Route } from 'react-router-dom'
+import { ToolViewer } from './ToolViewer'
 import { useServicesLocator } from '../common/Contexts'
 import Account from './Account'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -61,6 +62,9 @@ function NavContent () {
       </Route>
       <Route path="/login">
         <Login />
+      </Route>
+      <Route path="/tools/viewer">
+        <ToolViewer />
       </Route>
       <Route path="/articleid/:typeId/:articleId" exact>
         <ArticleIdRedirect />

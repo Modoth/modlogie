@@ -2,12 +2,13 @@ import './Nav.less'
 import { Link } from 'react-router-dom'
 import { Menu, Drawer } from 'antd'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
-import { UserOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
+import { UserOutlined, MinusOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocator } from '../common/Contexts'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
+import IEditorsService, { EditorInfo } from '../../app/Interfaces/IEditorsService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -25,6 +26,8 @@ function Nav () {
   const [allowLogin, setAllowLogin] = useState(false)
   const [logo, setLogo] = useState('')
   const [avatar, setAvatar] = useState('')
+  const [editors, setEditors] = useState<EditorInfo[]>([])
+  const [viewers, setViewers] = useState<EditorInfo[]>([])
   const onComponentDidMount = async () => {
     const configService = locator.locate(IConfigsService)
     const nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
@@ -33,6 +36,11 @@ function Nav () {
     const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
     const avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR)
     const allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN)
+    const editorsService = locator.locate(IEditorsService)
+    // const editors = await editorsService.getEditors()
+    const viewers = await editorsService.getViewers()
+    setViewers(viewers)
+    // setEditors(editors)
     document.title = title
     setTitile(title)
     setLogoTitleImg(logoTitle!)
@@ -127,6 +135,28 @@ function Nav () {
               </Menu.Item>
             </SubMenu>
           ) : null}
+          <Menu.Divider></Menu.Divider>
+          {
+            (editors && editors.length) || (viewers && viewers.length)
+              ? <SubMenu
+                icon={<RocketOutlined />}
+                title={langs.get(LangKeys.Tools)}
+              >
+                {
+                  (viewers && viewers.length)
+                    ? <Menu.Item icon={<ReadOutlined />} >
+                      <Link to="/tools/viewer/">{langs.get(LangKeys.Viewers)}</Link>
+                    </Menu.Item> : <></>
+                }
+                {
+                  (editors && editors.length)
+                    ? <Menu.Item icon={<EditOutlined />} >
+                      <Link to="/tools/editor/">{langs.get(LangKeys.Editors)}</Link>
+                    </Menu.Item> : <></>
+                }
+              </SubMenu>
+              : <></>
+          }
           <Menu.Divider></Menu.Divider>
           {user.name ? (
             <Menu.Item

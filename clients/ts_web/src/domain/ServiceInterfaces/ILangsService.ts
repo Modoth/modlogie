@@ -26,6 +26,7 @@ export class LangKeysInterface {
   Dislike = 'Dislike';
   Download = 'Download';
   Edit = 'Edit';
+  Editors = 'Editors';
   Email = 'Email';
   EnableAutoLogin = 'EnableAutoLogin';
   Enabled = 'Enabled';
@@ -58,6 +59,7 @@ export class LangKeysInterface {
   NewPassword = 'NewPassword';
   NotFount = 'NotFount';
   Ok = 'Ok';
+  Open = 'Open';
   Order = 'Order';
   Paging = 'Paging';
   Password = 'Password';
@@ -75,12 +77,14 @@ export class LangKeysInterface {
   Subject = 'Subject';
   Tags = 'Tags';
   Themes = 'Themes';
+  Tools = 'Tools';
   Type = 'Type';
   UnknownError = 'UnknownError';
   Url = 'Url';
   User = 'User';
   UserName = 'UserName';
   Value = 'Value';
+  Viewers = 'Viewers';
   Welcome = 'Welcome';
 }
 

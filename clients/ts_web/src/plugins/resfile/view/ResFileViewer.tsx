@@ -23,7 +23,7 @@ const getViewer = async (editorService :IEditorsService, ext: string): Promise<{
     case 'gif':
       return ResImage
     default:
-      if (await editorService.getViewerType(ext)) {
+      if (await editorService.getViewerByFileName(ext)) {
         return ResExternal
       }
   }

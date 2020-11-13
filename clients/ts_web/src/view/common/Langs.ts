@@ -65,17 +65,11 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Dislike = '踩';
   Download = '下载';
   Edit = '编辑';
+  Editors = '编辑器';
   Email = '邮箱';
   EnableAutoLogin = '自动登陆';
   Enabled = '激活';
   EnumValue = '枚举值';
-  MSG_ERROR_ENTITY_CONFLICT = '数据冲突';
-  MSG_ERROR_INVALID_ARGUMENTS = '客户端错误';
-  MSG_ERROR_INVALID_OPERATION = '客户端错误';
-  MSG_ERROR_INVALID_USER_OR_PWD = '用户名或密码错误';
-  MSG_ERROR_NEED_LOGIN = '未登录';
-  MSG_ERROR_NO_PERMISSION = '没有权限';
-  MSG_ERROR_NO_SUCH_ENTITY = '无此数据';
   Favorite = '收藏';
   FreeDraw = '涂鸦';
   Home = '首页';
@@ -88,8 +82,15 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Manage = '管理';
   Menu = '目录';
   Modify = '修改';
+  MSG_ERROR_ENTITY_CONFLICT = '数据冲突';
+  MSG_ERROR_INVALID_ARGUMENTS = '客户端错误';
   MSG_ERROR_INVALID_FILE = '无效文件';
+  MSG_ERROR_INVALID_OPERATION = '客户端错误';
+  MSG_ERROR_INVALID_USER_OR_PWD = '用户名或密码错误';
+  MSG_ERROR_NEED_LOGIN = '未登录';
   MSG_ERROR_NETWORK = '网络错误';
+  MSG_ERROR_NO_PERMISSION = '没有权限';
+  MSG_ERROR_NO_SUCH_ENTITY = '无此数据';
   MSG_ERROR_SITE_CONFIG = '配置错误';
   MSG_ERROR_USER_OR_PWD = '用户名或密码错误';
   Name = '名称';
@@ -97,6 +98,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   NewPassword = '新密码';
   NotFount = '未找到';
   Ok = '确定';
+  Open = '打开';
   Order = '顺序';
   Paging = '分页(Beta)';
   Password = '密码';
@@ -114,12 +116,14 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Subject = '主题';
   Tags = '标签';
   Themes = '主题(Beta)';
+  Tools = '工具';
   Type = '类型';
   UnknownError = '失败了';
   Url = 'Url';
   User = '用户';
   UserName = '用户名';
   Value = '值';
+  Viewers = '阅读器';
   Welcome = '感谢使用';
 }
 
