@@ -64,6 +64,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import RemoteServiceInvoker from './app/AppServices/RemoteServiceInvoker'
 import ResFile from './plugins/resfile'
+import Seperators from './domain/ServiceInterfaces/Seperators'
 import ServicesLocator from './infrac/ServiceLocator/ServicesLocator'
 import SubjectsExporter from './domain/Services/SubjectsExporter'
 import SubjectsServiceSingleton from './impl/RemoteServices/SubjectsServiceSingleton'
@@ -85,18 +86,10 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       )
   const configsService = serviceLocator.locate(IConfigsService)
   const tagsService = serviceLocator.locate(ITagsService)
-  const enabledPlugins = await (
-    await configsService.getValueOrDefault(ConfigKeys.PLUGINS)
-  )
-    .split(',')
-    .map((c) => c.trim())
-    .filter((c) => c)
+  const enabledPlugins = await configsService.getFieldsOrDefault(ConfigKeys.PLUGINS)
   const plugins = []
   for (const p of enabledPlugins) {
     let [pluginName, ...names] = p
-      .split(' ')
-      .map((c) => c.trim())
-      .filter((c) => c)
     let plugin: IPluginInfo | undefined
     let hiddenPlugin = false
     pluginName = pluginName.toLocaleLowerCase()
@@ -145,7 +138,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
               new Config(
                 getArticleSections(t.name),
                 ConfigType.STRING,
-                t.defaultSections
+                Seperators.joinItems(t.defaultSections || [])
               )
             ]
             : []

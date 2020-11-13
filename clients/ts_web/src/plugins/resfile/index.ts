@@ -14,7 +14,7 @@ export default class ResFile extends PluginInfoBase implements IPluginInfo {
       CreateSectionEditor({ addSectionFileContent, removeSectionFileContent, viewer: CreateSectionViewer((_) => 'yml') }),
       undefined,
       {
-        defaultSections: `${SectionNames.info}`,
+        defaultSections: [SectionNames.info],
         fixedSections: true
       })
   }

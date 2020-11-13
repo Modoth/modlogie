@@ -1,5 +1,6 @@
 import { Config, ConfigType } from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ConfigKeys, { ConfigKeysInterface } from '../../domain/ServiceInterfaces/ConfigKeys'
+import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export const UserRoleKeys = {
   UNLOGIN: 'UNLOGIN',
@@ -17,8 +18,7 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   EDITORS_PATH=new Config(ConfigKeys.EDITORS_PATH, ConfigType.STRING, '/apps/editors');
   FRAMEWORKS_PATH=new Config(ConfigKeys.FRAMEWORKS_PATH, ConfigType.STRING, '/apps/frameworks');
   IMPORT_SUBJECTS_AUTOFIX = new Config(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX, ConfigType.BOOLEAN, 'false');
-  // eslint-disable-next-line no-template-curly-in-string
-  KEYWORDS_QRERY_TEMPLAES = new Config(ConfigKeys.KEYWORDS_QRERY_TEMPLAES, ConfigType.STRING, 'default https://www.google.com/search?q=${keyword}');
+  KEYWORDS_QRERY_TEMPLAES = new Config(ConfigKeys.KEYWORDS_QRERY_TEMPLAES, ConfigType.STRING, `default${Seperators.Fields}https://www.google.com/search?q=\${keyword}`);
   LANGS_SERVER = new Config(ConfigKeys.LANGS_SERVER, ConfigType.STRING, '');// https://www.modoth.cn:8000/$LANG/$CODE,perl,bash
   MAX_FAVORITES_PER_TYPE = new Config(ConfigKeys.MAX_FAVORITES_PER_TYPE, ConfigType.NUMBER, '1000');
   MAX_PRINT_COUNT = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, '100');

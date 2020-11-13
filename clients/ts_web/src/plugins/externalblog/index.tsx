@@ -16,7 +16,7 @@ export default class ExternalBlog extends PluginInfoBase implements IPluginInfo 
       CreateSectionEditor({ getSectionFileContent }),
       ExternalBlogViewer,
       {
-        defaultSections: `-${SectionNames.summary} -${SectionNames.path}`,
+        defaultSections: [`-${SectionNames.summary}`, `-${SectionNames.path}`],
         fixedSections: true
       }, Langs, TypeDefaultConfigs)
   }

@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import React, { useState, useRef } from 'react'
 import SectionEditorProps from './SectionEditorProps'
 import SectionViewerProps from './SectionViewerProps'
+import Seperators from '../../../domain/ServiceInterfaces/Seperators'
 import TextArea from 'antd/lib/input/TextArea'
 
 type Modifiers =
@@ -83,7 +84,7 @@ export default function CreateSectionEditor (modifiers: Modifiers = {}) {
             if (!e.clipboardData || !modifiers.getPasteSectionContent) {
               return
             }
-            const types = e.clipboardData.types.join(' ')
+            const types = Seperators.joinItems(e.clipboardData.types)
             const getContent = modifiers.getPasteSectionContent(props.section.name!, types!)
             if (getContent) {
               e.preventDefault()

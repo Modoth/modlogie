@@ -14,7 +14,7 @@ export default class H5App extends PluginInfoBase implements IPluginInfo {
       CreateSectionEditor({ getSectionFileContent }),
       H5AppLiveViewer,
       {
-        defaultSections: `?${SectionNames.yml} ?${SectionNames.json} ?${SectionNames.text} ?${SectionNames.yml} -${SectionNames.type}`,
+        defaultSections: [`?${SectionNames.yml}`, `?${SectionNames.json}`, `?${SectionNames.text}`, `?${SectionNames.yml}`, `-${SectionNames.type}`],
         fixedSections: true
       })
   }

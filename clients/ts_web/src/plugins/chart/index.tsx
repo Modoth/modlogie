@@ -14,7 +14,7 @@ export default class Chart extends PluginInfoBase implements IPluginInfo {
       CreateSectionEditor({ getSectionFileContent }),
       ChartLiveViewer,
       {
-        defaultSections: `-${SectionNames.data} -${SectionNames.type}`,
+        defaultSections: [`-${SectionNames.data}`, `-${SectionNames.type}`],
         fixedSections: true
       })
   }

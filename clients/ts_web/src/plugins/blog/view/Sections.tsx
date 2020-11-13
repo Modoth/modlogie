@@ -1,5 +1,5 @@
 import { getMdFileContent } from '../../../pluginbase/base/common/GetFileContents'
-
+import Seperators from '../../../domain/ServiceInterfaces/Seperators'
 import TurndownService from 'turndown'
 
 export const getSectionFileContent = (_: string) => {
@@ -21,9 +21,9 @@ const getContentFromClipboardData = (data: DataTransferItem) =>
 
 export const getPasteSectionContent = (_: string, types: string) => {
   switch (types) {
-    case 'text/plain text/html':
+    case `text/plain${Seperators.Items}text/html`:
       return (data: DataTransfer) => getContentFromClipboardData(data.items[1])
-    case 'text/html text/plain':
+    case `text/html${Seperators.Items}text/plain`:
       return (data: DataTransfer) => getContentFromClipboardData(data.items[0])
     default:
   }

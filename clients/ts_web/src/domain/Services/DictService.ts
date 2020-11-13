@@ -1,3 +1,4 @@
+import { extname } from '../../infrac/Lang/pathutils'
 import { JsonDictParser } from './DictService.JsonDictParser'
 import { LangKeys } from '../ServiceInterfaces/ILangsService'
 import { MdxDictParser } from './DictService.MdxDictParser'
@@ -102,7 +103,7 @@ export default class DictService implements IDictService {
     }
 
     async parseDict (file: File): Promise<[string, DictItem][]> {
-      const type = file.name.split('.').pop()
+      const type = extname(file.name)
       if (!type || !this.parsers.has(type)) {
         throw new Error(LangKeys.MSG_ERROR_INVALID_FILE)
       }

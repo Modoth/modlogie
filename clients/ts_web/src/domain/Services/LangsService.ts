@@ -1,4 +1,5 @@
 import ILangsService from '../ServiceInterfaces/ILangsService'
+import Seperators from '../ServiceInterfaces/Seperators'
 
 export default class LangsService implements ILangsService {
   private langs: { [key: string]: string }
@@ -17,10 +18,10 @@ export default class LangsService implements ILangsService {
   }
 
   getConfig (name: string): string {
-    if (name.indexOf(':') < 0) {
+    if (name.indexOf(Seperators.LangFields) < 0) {
       return this.get(name)
     }
-    const [prefix, key] = name.split(':')
+    const [prefix, key] = Seperators.seperateLangFields(name)
     return `${prefix}:${this.langs[key] || key}`
   }
 }

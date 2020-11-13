@@ -7,6 +7,7 @@ import classNames from 'classnames'
 import MathSectionViewer from './MathSectionViewer'
 import React, { useState, useRef } from 'react'
 import SectionEditorProps from '../../../pluginbase/base/view/SectionEditorProps'
+import Seperators from '../../../domain/ServiceInterfaces/Seperators'
 
 const TextArea = Input.TextArea
 
@@ -177,15 +178,15 @@ export default function MathSectionEditor (props: SectionEditorProps) {
           if (!e.clipboardData) {
             return
           }
-          const types = e.clipboardData.types.join(' ')
+          const types = Seperators.joinItems(e.clipboardData.types)
           switch (types) {
-            case 'text/plain text/html text/rtf':
-            case 'text/plain text/html text/rtf Files':
+            case `text/plain${Seperators.Items}text/html${Seperators.Items}text/rtf`:
+            case `text/plain${Seperators.Items}text/html${Seperators.Items}text/rtf${Seperators.Items}Files`:
               e.preventDefault()
               e.clipboardData.items[0].getAsString(s => insertContent(translateWordContent(s)))
               return
             case 'Files':
-            case 'text/html Files':
+            case `text/html${Seperators.Items}Files`:
               e.preventDefault()
               // eslint-disable-next-line no-case-declarations
               const file = e.clipboardData.files[0]

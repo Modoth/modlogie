@@ -6,6 +6,7 @@ import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IKeywordsService, { Keyword } from '../../domain/ServiceInterfaces/IKeywordsService'
 import IRemoteServiceInvoker from '../../infrac/ServiceLocator/IRemoteServiceInvoker'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
+import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export default class KeywordsService extends IServicesLocator implements IKeywordsService {
     private _caches?: Map<string, Keyword | undefined>;
@@ -30,8 +31,7 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
       }
 
       if (!this._templates) {
-        const templatesStr = await this.locate(IConfigsService).getValueOrDefault(ConfigKeys.KEYWORDS_QRERY_TEMPLAES) || ''
-        const templates: [string, string][] = templatesStr.split(',').map(s => s.trim()).filter(s => s).map(s => s.split(' ').map(s => s.trim()).filter(s => s)).filter(s => s[0] && s[1]).map(s => [s[0], s[1]])
+        const templates: [string, string][] = await this.locate(IConfigsService).getFieldsOrDefault(ConfigKeys.KEYWORDS_QRERY_TEMPLAES) as any
         this._templates = new Map(templates)
         this._templates.set('article', `${window.location.protocol}//${window.location.host}/#/article/\${keyword}`)
       }
@@ -67,7 +67,7 @@ export default class KeywordsService extends IServicesLocator implements IKeywor
       k.id = item.getId()
       const url = item.getUrl()
       k.url = url
-      const tokens = url.split(',').map(s => s.trim()).filter(s => s)
+      const tokens = Seperators.seperateFields(url)
       for (const token of tokens) {
         let [proto, path] = token.split('://')
         if (!proto) {

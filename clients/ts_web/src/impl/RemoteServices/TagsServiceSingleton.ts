@@ -6,6 +6,7 @@ import { TagsServiceClient } from '../remote-apis/TagsServiceClientPb'
 import IRemoteServiceInvoker from '../../infrac/ServiceLocator/IRemoteServiceInvoker'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import ITagsService, { Tag, TagType } from '../../domain/ServiceInterfaces/ITagsService'
+import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export default class TagsServiceSingleton extends IServicesLocator implements ITagsService {
   private cached: boolean;
@@ -16,7 +17,7 @@ export default class TagsServiceSingleton extends IServicesLocator implements IT
     if (!values) {
       return undefined
     }
-    return values.split(' ').map(s => s.trim()).filter(s => s)
+    return Seperators.seperateItems(values)
   }
 
   private idTags: Map<string, Tag>
@@ -41,7 +42,7 @@ export default class TagsServiceSingleton extends IServicesLocator implements IT
 
   async add (name: string, type: TagType, values?: string[] | undefined): Promise<Tag> {
     await this.fetchCache()
-    const req = new TagDto().setName(name).setType(type as number).setValues(values ? values.join(' ') : '')
+    const req = new TagDto().setName(name).setType(type as number).setValues(values ? Seperators.joinItems(values) : '')
     const newItem = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(TagsServiceClient).add(req, null))).getTag()!
     const tag = this.tagFrom(newItem)
     this.nameTags.set(tag.name, tag)
@@ -79,7 +80,7 @@ export default class TagsServiceSingleton extends IServicesLocator implements IT
     if (!tag) {
       throw new Error(LangKeys.MSG_ERROR_NO_SUCH_ENTITY)
     }
-    await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(TagsServiceClient).updateValues(new TagDto().setId(tag!.id).setValues(values ? values.join(' ') : ''), null))
+    await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(TagsServiceClient).updateValues(new TagDto().setId(tag!.id).setValues(values ? Seperators.joinItems(values) : ''), null))
     tag.values = values
   }
 

@@ -1,6 +1,7 @@
 import './MarkdownViewer.less'
 import { ArticlePreview } from '../../../view/pages/ArticlePreview'
 import { EditOutlined } from '@ant-design/icons'
+import { filename } from '../../../infrac/Lang/pathutils'
 import { previewArticleByPath } from '../../../view/pages/ServiceView'
 import { useServicesLocator, useUser } from '../../../view/common/Contexts'
 import classNames from 'classnames'
@@ -9,6 +10,7 @@ import IServicesLocator from '../../../infrac/ServiceLocator/IServicesLocator'
 import Markdown from '../../../infrac/components/Markdown'
 import React from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
+
 const proto = 'article:'
 const getRenders = (locator: IServicesLocator) => {
   const user = useUser()
@@ -31,7 +33,7 @@ const getRenders = (locator: IServicesLocator) => {
           content: props.value,
           type
         }] : []
-        return <div className="ref-article">{user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locator, path, path.split('/').pop())} /> : undefined}
+        return <div className="ref-article">{user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locator, path, filename(path))} /> : undefined}
           <ArticlePreview dataSections={dataSections} path={path}></ArticlePreview>
         </div>
       }

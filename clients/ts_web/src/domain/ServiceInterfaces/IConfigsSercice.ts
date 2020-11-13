@@ -50,6 +50,10 @@ export default class IConfigsService {
     throw new Error('Method not implemented')
   }
 
+  getFieldsOrDefault (key: string): Promise<string[][]> {
+    throw new Error('Method not implemented')
+  }
+
   set (key: string, value: string): Promise<Config | undefined> {
     throw new Error('Method not implemented')
   }

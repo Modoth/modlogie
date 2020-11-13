@@ -6,7 +6,7 @@ type Tag = any;
 export interface ArticleType {
   additionalConfigs?:Map<string, string>;
   admOnly?: boolean;
-  defaultSections?: string;
+  defaultSections?: string[];
   displayName?: string;
   fixedSections?: boolean;
   icon: React.ReactNode;

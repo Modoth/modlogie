@@ -1,5 +1,6 @@
 import { ArticleContentType, ArticleType, PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { getArticleSections } from '../../domain/ServiceInterfaces/ConfigKeys'
+import { rootname } from '../../infrac/Lang/pathutils'
 import { TagNames } from '../../domain/ServiceInterfaces/ITagsService'
 import Article from '../../domain/ServiceInterfaces/Article'
 import IArticleAppservice from '../Interfaces/IArticleAppservice'
@@ -19,7 +20,7 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
       }
       const parentType = subTypeName ? await this.getArticleType(configsService, articleType) : { smartHiddenSections: new Set<string>(), hiddenSections: new Set<string>(), additionalSections: new Set<string>(), allSections: new Set<string>() }
       const type: ArticleContentType = Object.assign({}, parentType, { noTitle: articleType.noTitle, articleType, Viewer: articleType.Viewer, name: typeName })
-      const allsections = articleType.fixedSections ? (articleType.defaultSections?.split(' ').map(s => s.trim()).filter(s => s) || []) : (await configsService.getValuesOrDefault(getArticleSections(typeName, subTypeName)))
+      const allsections = articleType.fixedSections ? (articleType.defaultSections || []) : (await configsService.getValuesOrDefault(getArticleSections(typeName, subTypeName)))
       if (allsections.length) {
         type.allSections = new Set()
         type.additionalSections = new Set()
@@ -46,7 +47,7 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
     }
 
     async fetchArticleByPath (path: string, loadingAddition = false): Promise<[Article | undefined, ArticleContentType | undefined, ArticleType | undefined]> {
-      const root = path.split('/').find(s => s)
+      const root = rootname(path)
       const rootId = (await this.locate(ISubjectsService).getByPath('/' + root))?.id
       if (!rootId) {
         return [undefined, undefined, undefined]

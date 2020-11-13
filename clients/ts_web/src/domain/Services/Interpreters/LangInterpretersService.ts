@@ -27,9 +27,9 @@ export default class LangInterpretersService extends IServicesLocator implements
       if (this.interpretersPromise) {
         return this.interpretersPromise
       }
-      const configs = await this.locate(IConfigsService).getValuesOrDefault(ConfigKeys.LANGS_SERVER)
+      const configs = await this.locate(IConfigsService).getFieldsOrDefault(ConfigKeys.LANGS_SERVER)
       for (const config of configs) {
-        const [server, ...langs] = config.split(',')
+        const [server, ...langs] = config
         if (!langs.length || !server) {
           continue
         }

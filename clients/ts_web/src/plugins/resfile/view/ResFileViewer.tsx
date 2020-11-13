@@ -1,6 +1,7 @@
 import './ResFileViewer.less'
 import { Button } from 'antd'
 import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownCircleOutlined, UpCircleOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons'
+import { extname } from '../../../infrac/Lang/pathutils'
 import { ResFile } from '../ResFile'
 import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
 import { ResImage } from './ResFileViewers/ResImage'
@@ -97,7 +98,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
       }
     }
   }, [])
-  const type = props.name.split('.').pop()
+  const type = extname(props.name)
   const Preview = getViewer(type)
   return <>
     <div className="summary">

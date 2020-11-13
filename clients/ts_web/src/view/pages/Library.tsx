@@ -25,19 +25,11 @@ import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
 import ITagsService, { Tag, TagType } from '../../domain/ServiceInterfaces/ITagsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect, memo } from 'react'
+import Seperators from '../../domain/ServiceInterfaces/Seperators'
 import Subject from '../../domain/ServiceInterfaces/Subject'
 import SubjectViewModel from './SubjectViewModel'
 
 const ArticleViewerMemo = memo(ArticleView)
-
-const getTagEnums = (values?: string) => {
-  return values
-    ? values
-      .split(' ')
-      .map((s) => s.trim())
-      .filter((s) => s)
-    : []
-}
 
 export class LibraryProps {
   type: ArticleType;
@@ -573,7 +565,7 @@ export default function Library (props: LibraryProps) {
               </span>
             </>
           ) : (
-            effectiveSubjects.map((sbj) => sbj.name).join(',') ||
+            Seperators.joinItems(effectiveSubjects.map((sbj) => sbj.name)) ||
             type?.displayName ||
             ''
           )}

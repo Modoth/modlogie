@@ -1,12 +1,12 @@
-import { type } from 'os'
-import React, { useEffect, useState } from 'react'
-import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
+import { extname } from '../../infrac/Lang/pathutils'
+import { useServicesLocator } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import { extname } from '../../infrac/Lang/extname'
 import IFrameWithJs from '../../plugins/h5/view/IFrameWithJs'
-import { useServicesLocator } from '../common/Contexts'
+import React, { useEffect, useState } from 'react'
+import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export interface SimpleFile{
   name:string,
@@ -36,12 +36,12 @@ interface ViewerType {
 const fetchViewerTypes = async (configs:IConfigsService) :Promise<ViewerType[]> => {
   const cfgStr = await configs.getValueOrDefault(ConfigKeys.VIEWER_TYPES)
   const types :ViewerType[] = []
-  for (let str of cfgStr.split(';')) {
+  for (let str of Seperators.seperateItems(cfgStr)) {
     str = str.trim()
     if (!str) {
       continue
     }
-    let [name, regStr] = str.split(',')
+    let [name, regStr] = Seperators.seperateFields(str)
     name = name.trim()
     regStr = regStr.trim()
     if (!name || !regStr) {

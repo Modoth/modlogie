@@ -8,6 +8,7 @@ import IRemoteServiceInvoker from '../../infrac/ServiceLocator/IRemoteServiceInv
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
 import ITagsService, { TagNames, TagType } from '../../domain/ServiceInterfaces/ITagsService'
+import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export class ConfigsServiceSingleton extends IServicesLocator implements IConfigsSercice {
     private configs: Map<string, Config>
@@ -50,7 +51,12 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
       if (!value) {
         return []
       }
-      return value.split(' ').map(s => s.trim()).filter(s => s)
+      return Seperators.seperateFields(value)
+    }
+
+    async getFieldsOrDefault (key: string): Promise<string[][]> {
+      const values = await this.getValuesOrDefault(key)
+      return values.map(value => Seperators.seperateItems(value))
     }
 
     private cloneConfig (config: Config): Config {
@@ -132,7 +138,7 @@ export class ConfigsServiceSingleton extends IServicesLocator implements IConfig
             }
           }
         }
-        await this.set(ConfigNames.INCREASABLE_TAGS, values.join(' '))
+        await this.set(ConfigNames.INCREASABLE_TAGS, Seperators.joinItems(values))
       }
       return this.cloneConfig(config)
     }

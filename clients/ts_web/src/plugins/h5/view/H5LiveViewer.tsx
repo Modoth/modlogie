@@ -12,6 +12,7 @@ import IConfigsService from '../../../domain/ServiceInterfaces/IConfigsSercice'
 import IFrameWithJs, { generateContext, IFrameContext } from './IFrameWithJs'
 import IServicesLocator from '../../../infrac/ServiceLocator/IServicesLocator'
 import React, { memo, useEffect, useState } from 'react'
+import Seperators from '../../../domain/ServiceInterfaces/Seperators'
 import YAML from 'yaml'
 
 const getDataUrl = (content: string) => {
@@ -45,7 +46,7 @@ const combineContent = async (locator:IServicesLocator, sections: Map<string, Ar
   }
   const html = sections.get(SectionNames.html)?.content || ''
   const frameworks = sections.get(SectionNames.frameworks)?.content
-  const fwNames = frameworks ? frameworks.split(' ').filter(s => s) : []
+  const fwNames = frameworks ? Seperators.seperateItems(frameworks) : []
 
   let fws : {name:string, fw?:IFramework}[] = []
   if (fwNames) {

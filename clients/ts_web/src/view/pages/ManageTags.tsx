@@ -1,12 +1,13 @@
 import './ManageTags.less'
-import { Table, Button } from 'antd'
 import { PlusOutlined, DeleteFilled } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
+import { Table, Button } from 'antd'
 import { useUser, useServicesLocator } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ITagsService, { Tag, TagType, TagNames } from '../../domain/ServiceInterfaces/ITagsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
+import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export function ManageTags () {
   const user = useUser()
@@ -57,7 +58,7 @@ export function ManageTags () {
           if (!newTagValue) {
             return
           }
-          values = newTagValue.split(' ').map(s => s.trim()).filter(s => s)
+          values = Seperators.seperateItems(newTagValue)
           if (!values.length) {
             return
           }
@@ -106,7 +107,7 @@ export function ManageTags () {
       [
         {
           type: 'Text',
-          value: tag.values ? tag.values.join(' ') : '',
+          value: tag.values ? Seperators.joinItems(tag.values) : '',
           hint: langs.get(LangKeys.Tags)
         }
       ],
@@ -115,7 +116,7 @@ export function ManageTags () {
           if (!newTagValue) {
             return
           }
-          const values = newTagValue.split(' ').map(s => s.trim()).filter(s => s)
+          const values = Seperators.seperateItems(newTagValue)
           if (!values.length) {
             return
           }
@@ -170,7 +171,7 @@ export function ManageTags () {
         return
       }
       updateTagValues(tag)
-    }}>{tag.values ? tag.values.join(' ') : ''}</span>
+    }}>{tag.values ? Seperators.joinItems(tag.values) : ''}</span>
   }
 
   const renderDelete = (_: string, tag: Tag) => {
