@@ -50,6 +50,7 @@ export function ArticlePreview (props: {
       content={article.content!}
       files={article.files}
       type={type}
+      articleId = {article.id!}
     ></type.Viewer>
   )
 }

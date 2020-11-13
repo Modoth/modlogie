@@ -39,7 +39,7 @@ const converter = async (article:Article):Promise<IFramework> => {
 
 const storageFw = 'storage'
 
-const combineContent = async (locator:IServicesLocator, sections: Map<string, ArticleSection>): Promise<IData> => {
+const combineContent = async (locator:IServicesLocator, id:string, sections: Map<string, ArticleSection>): Promise<IData> => {
   const url = sections.get(SectionNames.url)?.content || ''
   if (url) {
     return { contentUrl: url, jsContentUrl: url }
@@ -112,7 +112,7 @@ const combineContent = async (locator:IServicesLocator, sections: Map<string, Ar
   let jsContent = ''
   let context: IFrameContext | undefined
   if (~storageIdx) {
-    [context, jsContent] = generateContext([generateFileService(locator)])
+    [context, jsContent] = generateContext([generateFileService(locator)], id)
     jsContent = `<script>\n${jsContent}\n</script>`
   }
 
@@ -148,7 +148,7 @@ export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
   const [fullscreen, setFullscreen] = useState(false)
   const locator = useServicesLocator()
   useEffect(() => {
-    combineContent(locator, new Map(props.sections.map(s => [s.name!, s]))).then(data => {
+    combineContent(locator, props.articleId, new Map(props.sections.map(s => [s.name!, s]))).then(data => {
       if (data) {
         setData(data)
         setRunning(!!data.hasData)

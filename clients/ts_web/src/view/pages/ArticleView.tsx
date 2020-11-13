@@ -425,6 +425,7 @@ export default function ArticleView (props: {
                 files={files}
                 callbacks={editorRefs}
                 type={type}
+                articleId = {props.article.id!}
               />
               <Collapse className={classNames('editing-preview')} >
                 <Panel header={
@@ -442,12 +443,12 @@ export default function ArticleView (props: {
                       onClick={() => addFile()}
                     ></Button>
                   </div>} key="1">
-                  <props.type.Viewer showAdditionals={true} content={content} files={files} type={type} />
+                  <props.type.Viewer articleId={props.article.id!} showAdditionals={true} content={content} files={files} type={type} />
                 </Panel>
               </Collapse>
             </>
           ) : (
-            <props.type.Viewer content={content} files={files} type={type} />
+            <props.type.Viewer articleId={props.article.id!} content={content} files={files} type={type} />
           )}
           {
             (hasMore) ? <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div> : null

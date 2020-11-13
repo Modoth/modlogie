@@ -3,6 +3,7 @@ import { ArticleType } from '../../IPluginInfo'
 import { MouseEventHandler } from 'react'
 
 export interface AdditionalSectionViewerProps {
+    articleId:string
     type:ArticleType,
     sections: ArticleSection[],
     filesDict: Map<string, ArticleFile>

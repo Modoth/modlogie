@@ -61,6 +61,7 @@ export class ArticleContentViewerProps {
   showAdditionals?: boolean;
   viewerCallbacks?: ArticleContentViewerCallbacks;
   print?: boolean;
+  articleId:string
 }
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {

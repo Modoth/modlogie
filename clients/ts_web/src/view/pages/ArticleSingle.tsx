@@ -170,7 +170,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
         </div>
       </div>
       <div ref={ref} className={classNames('article')}>
-        <props.type.Viewer published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+        <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
         <FreeDrawMask earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
       </div>
       {

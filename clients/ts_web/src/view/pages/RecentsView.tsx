@@ -55,6 +55,7 @@ function RecentArticle (props: {
           content={props.article.content!}
           files={props.article.files}
           type={props.contentType}
+          articleId={props.article.id!}
         ></props.contentType.Viewer>
       </div>
     </div>

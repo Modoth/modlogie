@@ -17,7 +17,7 @@ export interface ExternalViewerProps{
 }
 
 const generateViewerData = async (article:Article, file:IFile):Promise<[IFrameContext, string]> => {
-  const [context, jsContent] = generateContext([genetateFileApi(file)])
+  const [context, jsContent] = generateContext([genetateFileApi(file)], article.id!)
   const sections = new Map(article?.content?.sections?.map(s => [s.name!, s]))
   let url = sections.get('url')?.content
   if (url) {
