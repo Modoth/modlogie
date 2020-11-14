@@ -72,17 +72,17 @@ export class MdxDictParser implements DictParser {
       return u8s.buffer
     }
 
-    readKeyBlockInfos = (buffer: ArrayBuffer, blockCount: number, _: TextDecoder, codingUnit: number): KeyBlockInfo[] => {
+    readKeyBlockInfos = (buffer: ArrayBuffer, blockCount: number, decoder: TextDecoder, codingUnit: number): KeyBlockInfo[] => {
       const reader: DataReader = this.createDataReader(buffer)
       const blocks: KeyBlockInfo[] = []
       for (let i = 0; i < blockCount; i++) {
         const keysCount = reader.getBigUint64(reader.position)
         reader.position += 8
-        const firstWordLength = codingUnit * reader.getUint16(reader.position) + 1
+        const firstWordLength = codingUnit * reader.getUint16(reader.position) + codingUnit
         reader.position += 2
         // const firstWord = decoder.decode(new Uint8Array(buffer, reader.position, firstWordLength))
         reader.position += firstWordLength
-        const lastWordLength = codingUnit * reader.getUint16(reader.position) + 1
+        const lastWordLength = codingUnit * reader.getUint16(reader.position) + codingUnit
         reader.position += 2
         // const lastWord = decoder.decode(new Uint8Array(buffer, reader.position, lastWordLength))
         reader.position += lastWordLength
@@ -95,29 +95,33 @@ export class MdxDictParser implements DictParser {
       return blocks
     }
 
-    readString (reader: DataReader, decoder: TextDecoder): string {
-      const [str, len] = this.findString(reader, reader.position, decoder)
+    readString (reader: DataReader, decoder: TextDecoder, codingUnit:number): string {
+      const [str, len] = this.findString(reader, reader.position, decoder, codingUnit)
       reader.position += len
       return str
     }
 
-    findString = (reader: DataView, start: number, decoder: TextDecoder): [string, number] => {
+    findString = (reader: DataView, start: number, decoder: TextDecoder, codingUnit:number): [string, number] => {
       let i = 0
-      while (reader.getUint8(start + i)) {
-        i++
+      let notEnding = (pos:number) => reader.getUint8(pos)
+      if (codingUnit === 2) {
+        notEnding = (pos:number) => reader.getUint16(pos)
+      }
+      while (notEnding(start + i)) {
+        i += codingUnit
       }
       const str = decoder.decode(new Uint8Array(reader.buffer, start, i))
-      i++
+      i += codingUnit
       return [str, i]
     }
 
-    readKeyInfos = (buffer: ArrayBuffer, keyInfosCount: number, decoder: TextDecoder): KeyInfo[] => {
+    readKeyInfos = (buffer: ArrayBuffer, keyInfosCount: number, decoder: TextDecoder, codingUnit:number): KeyInfo[] => {
       const reader: DataReader = this.createDataReader(buffer)
       const keys: KeyInfo[] = []
       for (let i = 0; i < keyInfosCount; i++) {
         const offset = reader.getBigUint64(reader.position)
         reader.position += 8
-        const key = this.readString(reader, decoder)
+        const key = this.readString(reader, decoder, codingUnit)
         keys.push(new KeyInfo(key, Number(offset)))
       }
       return keys
@@ -211,7 +215,7 @@ export class MdxDictParser implements DictParser {
       const allKeys: KeyInfo[] = []
       for (const keyBlockInfo of keyBlockInfos) {
         const blockBuffer = this.decompAndDecryptBuffer(reader, keyBlockInfo.compSize)
-        const keys = this.readKeyInfos(blockBuffer, keyBlockInfo.keysCount, decoder)
+        const keys = this.readKeyInfos(blockBuffer, keyBlockInfo.keysCount, decoder, codingUnit)
         allKeys.push(...keys)
       }
       return allKeys
@@ -231,7 +235,7 @@ export class MdxDictParser implements DictParser {
       const items: [string, DictItem][] = []
       for (const i of keys) {
         const key = i.key.trim()
-        const [str] = this.findString(recbufferView, i.offset, decoder)
+        const [str] = this.findString(recbufferView, i.offset, decoder, codingUnit)
         items.push([key.trim(), new DictItem(key, str)])
       }
       return items
