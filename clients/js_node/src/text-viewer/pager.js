@@ -1,12 +1,11 @@
 export class Pager {
-  constructor (value, reader, render) {
-    this.value = value
+  constructor (reader, render) {
     this.reader = reader
     this.render = render
     this.fetchMoreTask = false
-    this.value = this.value || ''
-    this.getValue = this.reader ? () => this.reader.cache() : () => this.value
-    this.canFetchMore = !!this.reader
+    this.value = ''
+    this.getValue = () => this.reader.cache()
+    this.canFetchMore = true
   }
 
   fetchMore () {

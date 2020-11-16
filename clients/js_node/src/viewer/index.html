@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width, maximum-scale=1.0,user-scalable=no, initial-scale=1" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="transparent" />
+<imports slot></imports>
 <script src="./index.js" type="module"></script>
 <style>
   html,
@@ -17,6 +18,13 @@
 
 <body>
   <div id="app">
+    <div id="logoContainer">
+      <span id="help">?</span>
+      <span id="logo">阅</span>
+    </div>
+    <div id="helpContent" class="hidden">
+    </div>
+    <div id="readerContainer" class="hidden"></div>
   </div>
 </body>
 

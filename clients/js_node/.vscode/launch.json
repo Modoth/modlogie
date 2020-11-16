@@ -11,7 +11,11 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/tools/spack/index.js"
+            "program": "${workspaceFolder}/tools/spack/index.js",
+            "args": [
+                "serve",
+                "--watch"
+            ]
         }
     ]
 }

@@ -46,7 +46,7 @@ const getLocalConfigs = async () => {
     let template
     let extractCss = true
     const includeTemplate = false
-    for (const fileName of ['index.html', 'app.html', 'app.js']) {
+    for (const fileName of ['index.html', 'app.html', 'app.js', 'viewer.html']) {
       const file = path.join(srcFolder, subfolder, fileName)
       if (await FileUtils.exists(file)) {
         indexFile = file
@@ -58,11 +58,14 @@ const getLocalConfigs = async () => {
           case 'app.js':
             template = 'src/simple/index.html'
             break
+          case 'viewer.html':
+            template = 'src/viewer/index.html'
+            break
         }
         break
       }
     }
-    if (subfolder === 'fast' || subfolder === 'simple') {
+    if (subfolder === 'fast' || subfolder === 'simple' || subfolder === 'viewer') {
       extractCss = false
     }
     if (!indexFile) {

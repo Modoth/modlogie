@@ -1,4 +1,5 @@
-export class FileBase {
+'use strict'
+class FileBase {
   constructor (_name) {
     this._name = _name
     this.fetchedSize = 0
@@ -30,8 +31,7 @@ export class FileBase {
     return [buff, this.fetchedSize >= size]
   }
 }
-
-export class WebFile extends FileBase {
+class WebFile extends FileBase {
   constructor (file) {
     super(file.name)
     this.file = file
@@ -75,5 +75,21 @@ export class WebFile extends FileBase {
 
   async size () {
     return this.file.size
+  }
+}
+class BufferFile extends FileBase {
+  constructor (name, buffer) {
+    super(name)
+    this.buffer = buffer
+  }
+
+  async getRange (start, buffSize) {
+    return this.buffer.slice(start, buffSize === undefined
+      ? this.buffer.byteLength - start
+      : Math.min(start + buffSize))
+  }
+
+  async size () {
+    return this.buffer.byteLength
   }
 }

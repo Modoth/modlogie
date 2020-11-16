@@ -1,3 +1,4 @@
+/* eslint-disable node/no-callback-literal */
 import { readFile } from './readFile.js'
 
 export class FileSelector {
@@ -11,9 +12,9 @@ export class FileSelector {
   }
 
   selectFile (
-    mimeType = '*',
-    /** @type { 'ArrayBuffer' | 'DataURL' | 'Text' } */ format = 'ArrayBuffer',
-    /** @type { { (result :{file:File, data: ArrayBuffer | String }):any} } */
+    mimeType,
+    /** @type { 'ArrayBuffer' | 'DataURL' | 'Text' } */ format,
+    /** @type { { (result :{file:File, data?: ArrayBuffer | String }):void} } */
     callback
   ) {
     if (this.btnFile_) {
@@ -22,6 +23,10 @@ export class FileSelector {
         this.btnFile_.onchange = null
         const file = this.btnFile_.files[0]
         if (!file) {
+          return
+        }
+        if (!format) {
+          callback({ file })
           return
         }
         const data = await readFile(file, format)
