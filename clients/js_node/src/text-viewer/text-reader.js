@@ -20,4 +20,8 @@ export class TextReader {
     this._value += newValue
     return [newValue, finished]
   }
+
+  async name () {
+    return this.file.name()
+  }
 }

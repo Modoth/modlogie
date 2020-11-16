@@ -1,8 +1,13 @@
 export class ResizeWatcher {
+  dispose () {
+    this.target_.removeEventListener('resize', this.onResize_)
+  }
+
   constructor (target = window, delay = 0) {
     /** @type Window & typeof globalThis */
     this.target_ = target
-    this.target_.onresize = (ev) => this.onResize_(ev)
+    this.onResize_ = this.onResize_.bind(this)
+    this.target_.addEventListener('resize', this.onResize_)
     this.resizeThreshold_ = 10
     this.callbacks_ = []
     this.isWatching_ = false

@@ -1,3 +1,4 @@
+import { EditorInfo } from '../../app/Interfaces/IEditorsService'
 import { genetateFileApi } from './iframeutils'
 import { srcToUrl } from '../../infrac/Lang/srcToUrl'
 import { useServicesLocator } from '../common/Contexts'
@@ -7,7 +8,6 @@ import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IFile from '../../infrac/Lang/IFile'
 import IFrameWithJs, { generateContext, IFrameContext } from '../../infrac/components/IFrameWithJs'
 import React, { memo, useEffect, useState } from 'react'
-import { EditorInfo } from '../../app/Interfaces/IEditorsService'
 
 const IFrameWithJsMemo = memo(IFrameWithJs)
 

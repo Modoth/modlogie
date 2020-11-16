@@ -473,87 +473,89 @@ export class TextRender {
       }
       const offsetBk = offset
       let page = 0
-      while (offset < content.length) {
-        const pageRes = this.measurePage_(
-          this.measureCanvas_,
-          content,
-          offset,
-          this.fontSize_,
-          this.fontFamily_,
-          this.measureCanvas_.width,
-          this.measureCanvas_.height,
-          this.lineHeight_,
-          this.padding_,
-          false,
-          true
-        )
-        onpage && onpage(page, offset, undefined, pageRes.offset >= content.length)
-        offset = pageRes.offset
-        page++
-        await sleep(0)
-        if (cancleToken.cancled) {
-          resolve()
-          return
-        }
-      }
       if (!pagingBack) {
+        while (offset < content.length) {
+          const pageRes = this.measurePage_(
+            this.measureCanvas_,
+            content,
+            offset,
+            this.fontSize_,
+            this.fontFamily_,
+            this.measureCanvas_.width,
+            this.measureCanvas_.height,
+            this.lineHeight_,
+            this.padding_,
+            false,
+            true
+          )
+          onpage && onpage(page, offset, undefined, pageRes.offset >= content.length)
+          offset = pageRes.offset
+          page++
+          await sleep(0)
+          if (cancleToken.cancled) {
+            resolve()
+            return
+          }
+        }
+
         resolve()
         return
-      }
-      page = 0
-      offset = offsetBk
-      while (offset > 0) {
-        const maxOffset = this.measurePage_(
-          this.measureCanvas_,
-          content,
-          offset,
-          this.fontSize_,
-          this.fontFamily_,
-          this.measureCanvas_.width,
-          this.measureCanvas_.height,
-          this.lineHeight_,
-          this.padding_,
-          false,
-          true
-        ).offset
+      } else {
+        page = 0
+        offset = offsetBk
+        while (offset > 0) {
+          const maxOffset = this.measurePage_(
+            this.measureCanvas_,
+            content,
+            offset,
+            this.fontSize_,
+            this.fontFamily_,
+            this.measureCanvas_.width,
+            this.measureCanvas_.height,
+            this.lineHeight_,
+            this.padding_,
+            false,
+            true
+          ).offset
 
-        const res = this.findMax_(
-          0,
-          offset,
-          this.fullPageLength_,
-          maxOffset - offset,
-          maxOffset / this.fullPageLength_,
-          (x, _, dx) => {
-            x += dx
-            const pageRes = this.measurePage_(
-              this.measureCanvas_,
-              content,
-              offset - x,
-              this.fontSize_,
-              this.fontFamily_,
-              this.measureCanvas_.width,
-              this.measureCanvas_.height,
-              this.lineHeight_,
-              this.padding_,
-              false,
-              true
-            )
-            return {
-              x: x,
-              y: maxOffset - pageRes.offset
+          const res = this.findMax_(
+            0,
+            offset,
+            this.fullPageLength_,
+            maxOffset - offset,
+            maxOffset / this.fullPageLength_,
+            (x, _, dx) => {
+              x += dx
+              const pageRes = this.measurePage_(
+                this.measureCanvas_,
+                content,
+                offset - x,
+                this.fontSize_,
+                this.fontFamily_,
+                this.measureCanvas_.width,
+                this.measureCanvas_.height,
+                this.lineHeight_,
+                this.padding_,
+                false,
+                true
+              )
+              return {
+                x: x,
+                y: maxOffset - pageRes.offset
+              }
             }
+          )
+          this.fullPageLength_ = Math.floor(maxOffset / res.xinit)
+          const nextOffset = offset
+          offset -= res.x
+          page--
+          onpage &&
+                      onpage(page, Math.max(offset, 0), offset > 0 ? nextOffset : undefined)
+          await sleep(0)
+          if (cancleToken.cancled) {
+            resolve()
+            return
           }
-        )
-        this.fullPageLength_ = Math.floor(maxOffset / res.xinit)
-        const nextOffset = offset
-        offset -= res.x
-        page--
-        onpage &&
-                    onpage(page, Math.max(offset, 0), offset > 0 ? nextOffset : undefined)
-        await sleep(0)
-        if (cancleToken.cancled) {
-          resolve()
-          return
         }
       }
       resolve()

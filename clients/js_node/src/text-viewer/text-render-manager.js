@@ -1,24 +1,22 @@
-import { TextRender } from './text-render.js'
+import { Pager } from './pager.js'
 import { ResizeWatcher } from '../commons/resize-watcher.js'
+import { TextRender } from './text-render.js'
 
 export class TextRenderManager {
   constructor (value, reader) {
     this.value = value
     this.reader = reader
-    this.clickResions = [
-      '112',
-      '102',
-      '122'
-    ]
-    this.clickResionsHeight = this.clickResions.length
-    this.clickResionsWidth = this.clickResions[0].length
+    try {
+      this.storage_ = window.$localStorage || window.localStorage
+    } catch {
+      this.storage_ = {
+        getItem: () => '',
+        setItem: () => true
+      }
+    }
     this.currentPageIdx = 0
     this.lastPagedOffset = 0
     this.lastPagedPage = 0
-    this.fetchingMore = false
-    this.value = this.value || ''
-    this.getValue = this.reader ? () => this.reader.cache() : () => this.value
-    this.hadMoreContent = !!this.reader
     this.resizeWatcher = new ResizeWatcher()
     const tryReload = () => {
       if (this.container) {
@@ -26,28 +24,6 @@ export class TextRenderManager {
       }
     }
     this.resizeWatcher.register(tryReload)
-  }
-
-  handleClicks (ev) {
-    const { offsetX: x, offsetY: y } = ev
-    const px = Math.floor((x * this.clickResionsWidth) / this.container.clientWidth)
-    const py = Math.floor((y * this.clickResionsHeight) / this.container.clientHeight)
-    switch (parseInt(this.clickResions[py][px])) {
-      case 1:
-        this.pageUp()
-        break
-      case 2:
-        this.pageDown()
-        break
-      case 3:
-        break
-      case 4:
-        break
-      case 5:
-        break
-      case 6:
-        break
-    }
   }
 
   async pageUp () {
@@ -58,68 +34,28 @@ export class TextRenderManager {
     await this.loadPage(this.currentPageIdx + 1)
   }
 
-  async fetchMore () {
-    const [_, finished] = await this.reader.read()
-    this.hadMoreContent = !finished
-  }
-
-  async paging () {
-    if (this.reloadCancleSource) {
-      this.reloadCancleSource.cancled = true
-    }
-    const cancleSource = { cancled: false }
-    this.reloadCancleSource = cancleSource
-    const startPage = this.lastPagedPage
-    const startOffset = this.lastPagedOffset
-    const onpage = (page, offset, nextOffset, finished) => {
-      if (finished && this.hadMoreContent) {
-        this.lastPagedOffset = offset
-        this.lastPagedPage += page
-        return
-      }
-      page += startPage
-      this.pages.set(page, { offset, nextOffset })
-    }
-    await this.render.page(this.getValue(), startOffset, false, onpage, cancleSource)
-  }
-
   async loadPage (pageIdx) {
-    if (pageIdx < 0) {
-      return
-    }
-    if (this.pages.has(pageIdx)) {
+    const page = await this.pager.getPage(pageIdx)
+    if (page) {
       this.currentPageIdx = pageIdx
-      const page = this.pages.get(this.currentPageIdx)
-      const nextOffset = page.offset +
-              this.render.rend(this.getValue(), page.offset, page.nextOffset)
-      if (this.pages.has(this.currentPageIdx + 1) &&
-              this.pages.get(this.currentPageIdx + 1).offset !== nextOffset &&
-              nextOffset !== this.getValue.length) {
-        this.paging()
+      this.currentOffset = page.offset
+      this.render.rend(this.pager.getValue(), page.offset, page.nextOffset)
+      if (this.fileName) {
+        this.storage_.setItem(`${this.fileName}_offset`, this.currentOffset)
       }
-    } else if (this.hadMoreContent && !this.fetchingMore) {
-      this.fetchingMore = true
-      await this.fetchMore()
-      this.paging()
-      this.fetchingMore = false
-      this.loadPage(pageIdx)
     }
   }
 
   async reload () {
     this.currentPageIdx = 0
-    this.lastPagedPage = 0
-    this.lastPagedOffset = 0
-    this.fetchingMore = false
-    this.pages = new Map()
     const style = window.getComputedStyle(this.container)
     this.currentTheme = { fontSize: parseInt(style.fontSize), fontFamily: style.fontFamily, color: style.color, hightcolor: '#ff0000' }
     this.render.setStyle(this.currentTheme)
-    this.paging()
+    this.pager.reset(this.currentOffset)
     await this.loadPage(0)
   }
 
-  connect (newContainer) {
+  async connect (newContainer) {
     if (this.container === newContainer) {
       return
     }
@@ -131,10 +67,20 @@ export class TextRenderManager {
     if (!container) {
       return
     }
-    container.onclick = this.handleClicks.bind(this)
     container.innerHTML = ''
     const render = new TextRender(container)
     this.render = render
+    this.pager = new Pager(this.value, this.reader, this.render)
+    this.fileName = this.reader ? (await this.reader.name()) : undefined
+    this.fileSize = this.reader ? (await this.reader.size()) : this.value.length
+    this.currentOffset = 0
+    if (this.fileName) {
+      const offset = await this.storage_.getItem(`${this.fileName}_offset`) || 0
+      this.currentOffset = Math.min(
+        parseInt(offset) || 0,
+        this.fileSize
+      )
+    }
     this.reload()
   }
 
