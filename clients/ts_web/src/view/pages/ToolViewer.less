@@ -1,49 +1,55 @@
-.tool-viewer {
+.tool-viewer-wraper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-top: -10px !important;
-  .menu {
-    display: flex;
-    background: #0004;
-    color: #f5f5f5;
-    padding: 2px 0;
-    button {
-      color: unset;
-    }
-    .menu-title {
-      flex: 1;
-      text-align: center;
-      text-overflow: ellipsis;
-      display: inline-block;
-      align-self: center;
-    }
-  }
-  .external-viewer {
+  .tool-viewer {
     flex: 1;
     display: flex;
     flex-direction: column;
-    iframe {
-      width: 100%;
+    border: 1px solid #f0f0f0;
+    background: #fffa;
+    margin: 5px 15px 15px 15px;
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px #0000002c;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    .menu {
+      display: flex;
+      padding: 5px 10px;
+      color: #251202a0;
+      border-bottom: 1px solid #0000000c;
+      button {
+        color: unset;
+      }
+      .menu-title {
+        flex: 1;
+        text-align: center;
+        text-overflow: ellipsis;
+        display: inline-block;
+        align-self: center;
+      }
+    }
+    .external-viewer {
       flex: 1;
-      border: none;
+      display: flex;
+      flex-direction: column;
+      iframe {
+        width: 100%;
+        flex: 1;
+        border: none;
+      }
     }
   }
-
   .status {
-    height: 8rem;
-    border-top: 1px solid #0001;
+    height: 12em;
   }
 }
 
-@media (min-width: 780px) {
-  .tool-viewer {
-    margin-top: 10px !important;
-    .external-viewer {
-      background: #0001;
-    }
+@media (min-width: 780) {
+  .tool-viewer-wraper {
     .status {
-      height: 2rem;
+      height: 2em;
     }
   }
 }

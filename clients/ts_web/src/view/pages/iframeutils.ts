@@ -20,50 +20,7 @@ const copyFileInfo = (file:File) => {
   }
 }
 
-export const generateFileService = (locator:IServicesLocator) => ({
-  name: '$fileservice',
-  methods: [
-    {
-      name: 'openFile',
-      handler: (mimeType:string, resultType:string) => new Promise(resolve => {
-        console.log('openfile')
-        const viewService = locator.locate(IViewService)
-        const langs = locator.locate(ILangsService)
-        viewService.prompt(
-          langs.get(LangKeys.Import),
-          [
-            {
-              type: 'File',
-              value: null,
-              accept: mimeType
-            }
-          ],
-          async (file: File) => {
-            (() => {
-              const reader : FileReader & {[key:string]:Function} = new FileReader() as any
-              const readAs = `readAs${resultType || 'ArrayBuffer'}`
-              if (!reader[readAs]) {
-                resolve({ file: copyFileInfo(file) })
-                return
-              }
-              reader.onabort = () => resolve(null)
-              reader.onerror = () => resolve(null)
-              reader.onload = () => {
-                resolve({
-                  file: copyFileInfo(file),
-                  data: reader.result
-                })
-              }
-              reader[readAs](file)
-            })()
-            return true
-          }, false)
-      })
-    }
-  ]
-})
-
-export const genetateFileApi = (file:IFile) => ({
+export const genetateFileApi = (file:IFile):ApiInfo => ({
   name: '$file',
   methods: [{
     name: 'size',
@@ -103,8 +60,94 @@ export interface IData{
   context?:IFrameContext;
 }
 
-const fwnameStorage = 'storage'
 const fwnameIsFw = 'self'
+
+type FwBuilderArgs = {ns:string, locator:IServicesLocator }
+
+export const EmbededFrameworks = {
+  Storage: 'storage',
+  FileService: '$fileservice'
+}
+
+const allEmdebdedFws: Map<string, {(args:FwBuilderArgs):ApiInfo[]}> = new Map([
+  [EmbededFrameworks.Storage, ({ ns }:FwBuilderArgs):ApiInfo[] => {
+    const getSecureKey = (key: string) => `H5Apps_${ns}_${key}`
+    return [
+      {
+        name: '$sessionStorage',
+        methods: [
+          {
+            name: 'getItem',
+            handler: (key:string) => window.sessionStorage.getItem(getSecureKey(key))
+          },
+          {
+            name: 'setItem',
+            handler: (key:string, value:string) => window.sessionStorage.setItem(
+              getSecureKey(key),
+              value
+            )
+          }
+        ]
+      }, {
+        name: '$localStorage',
+        methods: [
+          {
+            name: 'getItem',
+            handler: (key:string) => window.localStorage.getItem(getSecureKey(key))
+          },
+          {
+            name: 'setItem',
+            handler: (key:string, value:string) => window.localStorage.setItem(
+              getSecureKey(key),
+              value
+            )
+          }
+        ]
+      }
+    ]
+  }],
+  [EmbededFrameworks.FileService, ({ locator }:FwBuilderArgs):ApiInfo[] => ([{
+    name: '$fileservice',
+    methods: [
+      {
+        name: 'openFile',
+        handler: (mimeType:string, resultType:string) => new Promise(resolve => {
+          const viewService = locator.locate(IViewService)
+          const langs = locator.locate(ILangsService)
+          viewService.prompt(
+            langs.get(LangKeys.Import),
+            [
+              {
+                type: 'File',
+                value: null,
+                accept: mimeType
+              }
+            ],
+            async (file: File) => {
+              (() => {
+                const reader : FileReader & {[key:string]:Function} = new FileReader() as any
+                const readAs = `readAs${resultType || 'ArrayBuffer'}`
+                if (!reader[readAs]) {
+                  resolve({ file: copyFileInfo(file) })
+                  return
+                }
+                reader.onabort = () => resolve(null)
+                reader.onerror = () => resolve(null)
+                reader.onload = () => {
+                  resolve({
+                    file: copyFileInfo(file),
+                    data: reader.result
+                  })
+                }
+                reader[readAs](file)
+              })()
+              return true
+            }, false)
+        })
+      }
+    ]
+  }])
+  ]])
 
 const converter = async (article:Article):Promise<IFramework> => {
   const sections = new Map(article?.content?.sections?.map(s => [s.name!, s]))
@@ -124,22 +167,24 @@ const tryGetContent = async (url:string):Promise<string> => {
 }
 
 export const buildIframeData = async (locator:IServicesLocator, id:string, sections: Map<string, ArticleSection>, defaultFws :string[] = [], apiInfos:ApiInfo[]): Promise<IData> => {
+  const frameworks = sections.get('frameworks')?.content
+  let fwNames = Array.from(new Set(defaultFws.concat(frameworks ? Seperators.seperateItems(frameworks) : [])))
+  if (~fwNames.findIndex(s => s === fwnameIsFw)) {
+    return {}
+  }
+
+  const emdebdedFws = new Map(fwNames.filter(s => allEmdebdedFws.has(s)).map(s => [s, allEmdebdedFws.get(s)!]))
+  if (emdebdedFws.size) {
+    fwNames = fwNames.filter(s => !emdebdedFws.has(s))
+  }
   const url = sections.get('url')?.content || ''
   const html = url ? (await tryGetContent(url)) : sections.get('html')?.content || ''
   if (url) {
     sections = new Map()
-    defaultFws = []
-    apiInfos = []
+    fwNames = []
+    // apiInfos = []
   }
-  const frameworks = sections.get('frameworks')?.content
-  const fwNames = Array.from(new Set(defaultFws.concat(frameworks ? Seperators.seperateItems(frameworks) : [])))
-  if (~fwNames.findIndex(s => s === fwnameIsFw)) {
-    return {}
-  }
-  const storageIdx = fwNames.findIndex(s => s === fwnameStorage)
-  if (~storageIdx) {
-    fwNames.splice(storageIdx, 1)
-  }
+
   let fws : {name:string, fw?:IFramework}[] = []
   if (fwNames) {
     const articleService = locator.locate(IArticleAppservice)
@@ -200,7 +245,8 @@ export const buildIframeData = async (locator:IServicesLocator, id:string, secti
   }
   let jsContent = ''
   let context: IFrameContext | undefined
-  if (~storageIdx) {
+  apiInfos = Array.from(emdebdedFws, ([_, build]) => build({ ns: id, locator })).flat().concat(apiInfos)
+  if (~emdebdedFws) {
     [context, jsContent] = generateContext(apiInfos, id)
     jsContent = `<script>\n${jsContent}\n</script>`
   }

@@ -126,7 +126,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
             : <Button type="text" className="download" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
       }
     </div>
-    { Preview && preview ? <FullscreenWraper enable={true} className="preview" name={props.name} View={Preview} url={blobUrl || props.url} buff={buff}></FullscreenWraper> : undefined}
+    { Preview && preview ? <FullscreenWraper enabled={true} className="preview" name={props.name} View={Preview} url={blobUrl || props.url} buff={buff}></FullscreenWraper> : undefined}
   </>
 }
 

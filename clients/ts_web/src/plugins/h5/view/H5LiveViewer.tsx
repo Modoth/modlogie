@@ -1,6 +1,6 @@
 import './H5LiveViewer.less'
 import { AdditionalSectionViewerProps } from '../../../pluginbase/base/view/SectionViewerProps'
-import { buildIframeData, generateFileService, IData } from '../../../view/pages/iframeutils'
+import { buildIframeData, IData } from '../../../view/pages/iframeutils'
 import { Button } from 'antd'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
 import { useServicesLocator } from '../../../view/common/Contexts'
@@ -22,7 +22,7 @@ export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
   const [fullscreen, setFullscreen] = useState(false)
   const locator = useServicesLocator()
   useEffect(() => {
-    buildIframeData(locator, props.articleId, new Map(props.sections.map(s => [s.name!, s])), [], [generateFileService(locator)]).then(data => {
+    buildIframeData(locator, props.articleId, new Map(props.sections.map(s => [s.name!, s])), [], []).then(data => {
       if (data) {
         setData(data)
         setRunning(!!data.hasData)

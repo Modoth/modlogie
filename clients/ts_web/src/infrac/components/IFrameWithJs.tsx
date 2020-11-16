@@ -35,50 +35,13 @@ interface ExcuteApiInfos{
   handlers:{[token: string]: Function;}
 }
 
-const getDefaultApi = (ns:string) => {
-  const getSecureKey = (key: string) => `H5Apps_${ns}_${key}`
-  return [
-    {
-      name: '$sessionStorage',
-      methods: [
-        {
-          name: 'getItem',
-          handler: (key:string) => window.sessionStorage.getItem(getSecureKey(key))
-        },
-        {
-          name: 'setItem',
-          handler: (key:string, value:string) => window.sessionStorage.setItem(
-            getSecureKey(key),
-            value
-          )
-        }
-      ]
-    }, {
-      name: '$localStorage',
-      methods: [
-        {
-          name: 'getItem',
-          handler: (key:string) => window.localStorage.getItem(getSecureKey(key))
-        },
-        {
-          name: 'setItem',
-          handler: (key:string, value:string) => window.localStorage.setItem(
-            getSecureKey(key),
-            value
-          )
-        }
-      ]
-    }
-  ]
-}
-
 export const generateContext = (apiInfos:ApiInfo[], ns:string): [IFrameContext, string] => {
   const taskTypes = {
     hostMessage: v4(),
     heartBeat: v4()
   }
   const handlers = {} as {[token: string]: Function;}
-  const apis = apiInfos.concat(getDefaultApi(ns)).map(i => Object.assign({}, i, {
+  const apis = apiInfos.map(i => Object.assign({}, i, {
     methods: i.methods.map(m => {
       const token = v4()
       handlers[token] = m.handler
