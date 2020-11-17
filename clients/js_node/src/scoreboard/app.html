@@ -9,9 +9,11 @@
           <progress max.="maxScore" value.="score.value"></progress>
         </div>
         <div class="score-name">
-          <span inner-text$.="score.name"></span>(
+          <span inner-text$.="score.name" if.="score.name"></span>
+          <span if.="score.name">(</span>
           <span inner-text$.="score.value"></span>/
-          <span inner-text$.="maxScore"></span>)
+          <span inner-text$.="maxScore"></span>
+          <span if.="score.name">)</span>
         </div>
       </div>
     </div>
@@ -135,7 +137,7 @@
 </template>
 <style>
   body {
-    --primary: tomato;
+    --primary: coral;
     --primary-color: whitesmoke;
     color: var(--primary);
     background-image: radial-gradient(var(--primary),
