@@ -223,6 +223,8 @@ class Type {
     this.ordinal = Ordinal.getOrdinal(desc.ordinal)
     /** @type { NumberIterator } */
     this.counts = new NumberIterator(new NumberGenerator(desc.counts))
+    /** @type { number } */
+    this.randomName = desc.randomName ? (parseInt(desc.randomName) || 2) : 0
     /** @type { [number] } */
     this.increments = new NumberGenerator(desc.increments).toFiniteArray()
     this.incrementsRestraint = IncrementsRestraint.parse(
@@ -281,6 +283,11 @@ class App {
   }
 
   initData (data) {
+    if (data.theme) {
+      const host = document.body
+      host.style.setProperty('--primary', data.theme.primary)
+      host.style.setProperty('--primary-color', data.theme.primaryColor)
+    }
     if (data.ordinals) {
       for (const oridinal of data.ordinals) {
         Ordinal.setOridinal(oridinal)
@@ -303,10 +310,13 @@ class App {
       new MenuItem('撤销', () => this.undo_()),
       this.decreaseMenuItem,
       this.increaseMenuItem,
-      ...Array.from(
-        this.types,
-        (type) => new MenuItem(type.name, () => this.useType_(type))
-      )
+      ...(
+        this.types && this.types.length > 1
+          ? Array.from(
+              this.types,
+              (type) => new MenuItem(type.name, () => this.useType_(type))
+            )
+          : [])
     ]
     /** @type { [Score ] } */
     this.scores
@@ -361,7 +371,7 @@ class App {
     }
     if (isNaN(this.currentType_.maxScore)) {
       const sortedScore = [...this.scores].sort((l, r) => r.value - l.value)
-      this.maxScore = Math.max(sortedScore[0].value, 1)
+      this.maxScore = Math.max(sortedScore[0].value, 0)
     }
     for (const score of this.scores) {
       score.bestScore = score.value >= this.maxScore
@@ -372,7 +382,7 @@ class App {
     this.scores.forEach((s) => s.reset())
     this.generateScores_()
     this.maxScore = isNaN(this.currentType_.maxScore)
-      ? 1
+      ? 0
       : this.currentType_.maxScore
   }
 
@@ -404,7 +414,7 @@ class App {
             new Score(
               this.currentType_,
               i + this.scores.length,
-              this.nameGenerator_.generate(3),
+              this.currentType_.randomName ? this.nameGenerator_.generate(this.currentType_.randomName) : '',
               this.colors_[(i + this.scores.length) % this.colors_.length]
             )
         )

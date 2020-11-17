@@ -219,18 +219,15 @@ export const buildIframeData = async (locator:IServicesLocator, id:string, secti
   if (data) {
     try {
       switch (dataType) {
-        case 'yml':
-        case 'yaml':
-          jsData = JSON.stringify(YAML.parse(data))
-          break
         case 'json':
           jsData = JSON.stringify(JSON.parse(data))
           break
         default:
-          jsData = JSON.stringify(data)
+          jsData = JSON.stringify(YAML.parse(data))
       }
     } catch (e) {
       console.log(e)
+      jsData = JSON.stringify(data)
     }
   }
 
@@ -248,20 +245,21 @@ export const buildIframeData = async (locator:IServicesLocator, id:string, secti
     content += `<style>\n${style}\n$</style>\n`
   }
   let jsContent = ''
+  if (jsData) {
+    jsContent += `<script>\nwindow.appData=${jsData}\n</script>\n`
+    hasData = true
+  }
+
   let context: IFrameContext | undefined
+  let jsc = ''
   apiInfos = Array.from(emdebdedFws, ([_, build]) => build({ ns: id, locator })).flat().concat(apiInfos)
   if (~emdebdedFws) {
-    [context, jsContent] = generateContext(apiInfos, id)
-    jsContent = `<script>\n${jsContent}\n</script>`
+    [context, jsc] = generateContext(apiInfos, id)
+    jsContent += `<script>\n${jsc}\n</script>\n`
   }
 
   if (fwJs && fwJs.length) {
     jsContent += `<script>\n${fwJs.join('\n')}\n</script>`
-  }
-
-  if (jsData) {
-    jsContent += `<script>\nwindow.appData=${jsData}\n</script>\n`
-    hasData = true
   }
 
   if (script) {

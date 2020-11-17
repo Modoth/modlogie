@@ -1,4 +1,8 @@
 {
+  "theme": {
+    "primary": "tomato",
+    "primaryColor": "whitesmoke"
+  },
   "colors": [
     "#cc9999",
     "#e9ae6a",
@@ -18,9 +22,10 @@
   "types": [
     {
       "name": "累加",
-      "ordinal": "数字",
+      "ordinal": "天干",
       "counts": "[2...]",
-      "increments": "1"
+      "increments": "1",
+      "randomName": "4"
     },
     {
       "name": "摆2",
@@ -32,7 +37,7 @@
         "value": 100
       },
       "maxScore": 500,
-      "sort": true
+      "sort": false
     }
   ]
 }
