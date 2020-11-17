@@ -23,7 +23,6 @@ import EditorsServiceSingleton from './app/AppServices/EditorsServiceSingleton'
 import ExternalBlog from './plugins/externalblog'
 import FavoritesServerSingleton from './domain/Services/FavoritesServerSingleton'
 import H5 from './plugins/h5'
-import H5App from './plugins/h5app'
 import IArticleAppservice from './app/Interfaces/IArticleAppservice'
 import IArticleListService from './app/Interfaces/IArticleListService'
 import IArticleService from './domain/ServiceInterfaces/IArticleService'
@@ -81,7 +80,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     string,
     { new(typeNames: string[]): IPluginInfo }
       >(
-      [Blog, Chart, ExternalBlog, H5, H5App, Math, ModLang, ResFile].map((i) => [
+      [Blog, Chart, ExternalBlog, H5, Math, ModLang, ResFile].map((i) => [
         i.typeName.toLocaleLowerCase(),
         i
       ])

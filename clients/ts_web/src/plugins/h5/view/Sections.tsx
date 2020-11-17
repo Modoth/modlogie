@@ -12,7 +12,7 @@ export const SectionNames = {
 export const getSectionType = (name: string) => {
   switch (name) {
     case SectionNames.data:
-      return 'data'
+      return 'yml'
     case SectionNames.frameworks:
     case SectionNames.url:
       return 'txt'
