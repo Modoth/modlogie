@@ -106,6 +106,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   QrCode = '网址';
   Recommend = '推荐';
   RemoveFromArticleList = '移除';
+  Rename = '重命名';
   Reset = '重置';
   ScreenShot = '截图';
   Scroll = '滚动';

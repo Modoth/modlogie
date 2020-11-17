@@ -67,6 +67,7 @@ export class LangKeysInterface {
   QrCode = 'QrCode';
   Recommend = 'Recommend';
   RemoveFromArticleList = 'RemoveFromArticleList';
+  Rename = 'Rename';
   Reset = 'Reset';
   ScreenShot = 'ScreenShot';
   Scroll = 'Scroll';

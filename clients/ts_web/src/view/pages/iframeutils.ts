@@ -180,7 +180,11 @@ export const buildIframeData = async (locator:IServicesLocator, id:string, secti
   const url = sections.get('url')?.content || ''
   const html = url ? (await tryGetContent(url)) : sections.get('html')?.content || ''
   if (url) {
+    const ds = sections.get('data')
     sections = new Map()
+    if (ds) {
+      sections.set('data', ds)
+    }
     fwNames = []
     // apiInfos = []
   }

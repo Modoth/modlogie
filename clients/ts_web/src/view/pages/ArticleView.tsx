@@ -2,24 +2,8 @@ import './ArticleView.less'
 import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
+import { UploadOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocator } from '../common/Contexts'
-import {
-  UploadOutlined,
-  CheckOutlined,
-  EditOutlined,
-  PrinterFilled,
-  UpSquareOutlined,
-  UpSquareFilled,
-  HeartOutlined,
-  HeartFilled,
-  LikeOutlined,
-  DislikeOutlined,
-  ExpandOutlined,
-  PrinterOutlined,
-  CaretLeftOutlined,
-  QrcodeOutlined,
-  DeleteOutlined
-} from '@ant-design/icons'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -370,7 +354,7 @@ export default function ArticleView (props: {
     <Card className={classNames('article-view', recommendView ? '' : '')}>
       <div className="article-title">
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
-        }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={(user.editingPermission && !props.type.noTitle) ? updateArticleName : openDetail}>{name}</div>}
+        }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
         {
           (editing || recommendView) ? null : (<Menu mode="horizontal" className={classNames('actions-list')}>{[
             favoriteService ? <MenuItem key="toogle-fav"><Badge>
@@ -405,6 +389,8 @@ export default function ArticleView (props: {
             ...(user.editingPermission ? [
               <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />} onClick={toogleRecommend}
               ><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
+              (!props.type.noTitle) ? <MenuItem key="rename"> <Button type="link" icon={ <FontColorsOutlined /> } onClick={updateArticleName}
+              ><span className="action-name">{langs.get(LangKeys.Rename)}</span></Button></MenuItem> : undefined,
               <MenuItem key="edit"> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
               ><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,
               <MenuItem key="fullscreen"><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
