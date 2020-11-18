@@ -1,4 +1,4 @@
-import { ApiInfo, generateContext, IFrameContext } from '../../infrac/components/IFrameWithJs'
+import { ApiInfo, FullScreenApiInfo, generateContext, IFrameContext } from '../../infrac/components/IFrameWithJs'
 import { srcToUrl } from '../../infrac/Lang/srcToUrl'
 import { toJsDataStr } from '../../infrac/Lang/DataUtils'
 import Article, { ArticleSection } from '../../domain/ServiceInterfaces/Article'
@@ -147,7 +147,10 @@ const allEmdebdedFws: Map<string, {(args:FwBuilderArgs):ApiInfo[]}> = new Map([
       }
     ]
   }])
-  ]])
+  ],
+  [FullScreenApiInfo.name, (_:FwBuilderArgs) => [FullScreenApiInfo]]
+]
+)
 
 const converter = async (article:Article):Promise<IFramework> => {
   const sections = new Map(article?.content?.sections?.map(s => [s.name!, s]))

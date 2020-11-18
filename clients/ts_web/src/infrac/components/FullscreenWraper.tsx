@@ -11,9 +11,14 @@ export function FullscreenWrap<TProp> (view:{ (props:TProp):JSX.Element}):{ (pro
   }
 }
 
-export default function FullscreenWraper<TProp> (props: TProp & { enabled?: boolean, className?: string, View: { (props: TProp): JSX.Element } }) {
+export type FullscreenWraperCallbacks = {toogle?():void}
+
+export default function FullscreenWraper<TProp> (props: TProp & { callbacks?:FullscreenWraperCallbacks, enabled?: boolean, className?: string, View: { (props: TProp): JSX.Element } }) {
   const [fullscreen, setFullscreen] = useState(false)
   const [View] = useState(memo(props.View) as any)
+  if (props.callbacks) {
+    props.callbacks.toogle = () => setFullscreen(!fullscreen)
+  }
   return <div className={classNames(props.className, 'fullscreen-wraper', fullscreen ? 'fullscreen' : '')}><View {...Object.assign({}, props, { classNames: undefined, View: undefined, enabled: undefined })}></View>
     {props.enabled ? <div className="float-menu">
       <Button size="large" type="link" onClick={() => setFullscreen(!fullscreen)}

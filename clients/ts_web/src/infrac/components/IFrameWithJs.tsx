@@ -1,6 +1,6 @@
 import { v4 } from 'uuid'
-import React, { useEffect } from 'react'
-import FullscreenWraper from './FullscreenWraper'
+import React, { useEffect, useState } from 'react'
+import FullscreenWraper, { FullscreenWraperCallbacks } from './FullscreenWraper'
 
 export type IFrameContext = {
     token: string,
@@ -19,6 +19,16 @@ export interface MethodInfo{
 export interface ApiInfo{
   name:string,
   methods:MethodInfo[]
+}
+
+export const FullScreenApiInfo:ApiInfo = {
+  name: '$fullscreen',
+  methods: [
+    {
+      name: 'toogle',
+      handler: () => {}
+    }
+  ]
 }
 
 interface ExcuteMethodInfo extends MethodInfo{
@@ -107,12 +117,32 @@ export const generateContext = (apiInfos:ApiInfo[], ns:string): [IFrameContext, 
   return [context, jsContent]
 }
 
-export default function IFrameWithJs (props: { src: string, context?: IFrameContext, allowFullscreen?:boolean }) {
+type IFrameWithJsProps = { src: string, context?: IFrameContext, allowFullscreen?:boolean }
+
+const createCallbacks = (props:IFrameWithJsProps):FullscreenWraperCallbacks|undefined => {
+  if (props.context?.apiInfos?.apis) {
+    const fullscreenApi = props.context.apiInfos.apis.find(a => a.name === FullScreenApiInfo.name)
+    if (fullscreenApi) {
+      const callbacks:FullscreenWraperCallbacks = {}
+      const handlers = props.context.apiInfos.handlers
+      handlers[fullscreenApi.methods[0].token] = () => {
+        if (callbacks.toogle) {
+          callbacks.toogle()
+        }
+      }
+      return callbacks
+    }
+  }
+}
+
+export default function IFrameWithJs (props: IFrameWithJsProps) {
+  const [callbacks] = useState(createCallbacks(props))
   useEffect(() => {
     if (!props.context) {
       return
     }
     const { token, taskTypes } = props.context
+
     let lastHeartBeatTime = Date.now()
     let clientWindow: Window
     const listener = async (ev: MessageEvent) => {
@@ -148,5 +178,5 @@ export default function IFrameWithJs (props: { src: string, context?: IFrameCont
       window.removeEventListener('message', listener)
     }
   }, [])
-  return <FullscreenWraper enabled={props.allowFullscreen} View={IFrame} src={props.src} ></FullscreenWraper>
+  return <FullscreenWraper callbacks={callbacks} enabled={props.allowFullscreen && !callbacks} View={IFrame} src={props.src} ></FullscreenWraper>
 }

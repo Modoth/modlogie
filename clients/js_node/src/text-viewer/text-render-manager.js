@@ -28,13 +28,38 @@ export class TextRenderManager {
     }
   }
 
+  async toogleTheme () {
+    let idx = this.themes.findIndex((t) => t === this.currentTheme)
+    idx = (idx + 1) % this.themes.length
+    this.currentTheme = this.themes[idx]
+    document.body.style.background = this.currentTheme.background
+    this.render.setStyle(this.currentTheme)
+    this.pager.reset(this.currentOffset)
+    await this.loadPage()
+  }
+
   async reloadCurrent () {
     this.currentPageIdx = 0
     const style = window.getComputedStyle(this.container)
-    const theme = { fontSize: parseInt(style.fontSize), fontFamily: style.fontFamily, color: style.color, hightcolor: '#ff0000' }
-    this.render.setStyle(theme)
-    this.pager.reset(this.currentOffset)
-    await this.loadPage()
+    const theme = { fontSize: parseInt(style.fontSize), fontFamily: style.fontFamily, color: style.color, hightcolor: '#ff0000', background: 'transparent' }
+    this.themes = [
+      theme,
+      {
+        fontSize: 18,
+        color: 'darkslateblue',
+        hightcolor: 'red',
+        fontFamily: 'serif',
+        background: '#f6f6e2'
+      },
+      {
+        fontSize: 18,
+        color: '#eee',
+        hightcolor: 'red',
+        fontFamily: 'serif',
+        background: '#333'
+      }
+    ]
+    this.toogleTheme()
   }
 
   async pageUp () {

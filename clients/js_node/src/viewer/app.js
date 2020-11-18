@@ -22,7 +22,8 @@ export class App {
         storage: this.storage,
         resizeWatcher: this.resizeWatcher,
         selectFile: () => this.selectFile(),
-        showHelp: () => this.showHelp()
+        showHelp: () => this.showHelp(),
+        toogleFullscreen: window.$fullscreen && window.$fullscreen.toogle ? () => window.$fullscreen.toogle() : () => {}
       })
     this.manager = manager
     this.clickRegions = clickRegions || []
@@ -113,6 +114,7 @@ export class App {
 
   async launch () {
     if (window.$file) {
+      this.showHelp()
       this.loadFile(window.$file)
     }
   }
