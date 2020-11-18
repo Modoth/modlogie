@@ -1,5 +1,6 @@
 import { v4 } from 'uuid'
 import React, { useEffect } from 'react'
+import FullscreenWraper from './FullscreenWraper'
 
 export type IFrameContext = {
     token: string,
@@ -33,6 +34,10 @@ interface ExcuteApiInfo{
 interface ExcuteApiInfos{
   apis:ExcuteApiInfo[]
   handlers:{[token: string]: Function;}
+}
+
+function IFrame (props:any) {
+  return <iframe {...props} sandbox="allow-scripts"></iframe>
 }
 
 export const generateContext = (apiInfos:ApiInfo[], ns:string): [IFrameContext, string] => {
@@ -102,8 +107,7 @@ export const generateContext = (apiInfos:ApiInfo[], ns:string): [IFrameContext, 
   return [context, jsContent]
 }
 
-export default function IFrameWithJs (props: { src: string, context?: IFrameContext }) {
-  const ref = React.createRef<HTMLIFrameElement>()
+export default function IFrameWithJs (props: { src: string, context?: IFrameContext, allowFullscreen?:boolean }) {
   useEffect(() => {
     if (!props.context) {
       return
@@ -144,5 +148,5 @@ export default function IFrameWithJs (props: { src: string, context?: IFrameCont
       window.removeEventListener('message', listener)
     }
   }, [])
-  return <iframe ref={ref} src={props.src} sandbox="allow-scripts"></iframe>
+  return <FullscreenWraper enabled={props.allowFullscreen} View={IFrame} src={props.src} ></FullscreenWraper>
 }

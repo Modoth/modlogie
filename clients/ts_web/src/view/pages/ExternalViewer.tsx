@@ -33,5 +33,5 @@ export default function ExternalViewer (props:ExternalViewerProps) {
   if (!url) {
     return <></>
   }
-  return <IFrameWithJsMemo context={context} src={url}/>
+  return <IFrameWithJsMemo allowFullscreen={true} context={context} src={url}/>
 }

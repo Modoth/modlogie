@@ -37,7 +37,7 @@ export function ToolViewer () {
         <Button type="text" icon={<CloseOutlined />} onClick={() => setFile(undefined)}></Button>
       </div>
       {
-        file ? <FullscreenWraper enabled={true} View={ExternalFileViewer} className="external-viewer" file={file}></FullscreenWraper> : <div onClick={selectFile} className="external-viewer"></div>
+        file ? <ExternalFileViewer file={file}></ExternalFileViewer> : <div onClick={selectFile} className="external-viewer"></div>
       }
     </div>
     <div className="status"></div>

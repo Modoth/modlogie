@@ -2,18 +2,20 @@ import './ResFileViewer.less'
 import { Button } from 'antd'
 import { CloudDownloadOutlined, InfoCircleOutlined, FileOutlined, DownCircleOutlined, UpCircleOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons'
 import { extname } from '../../../infrac/Lang/pathutils'
+import { FullscreenWrap } from '../../../infrac/components/FullscreenWraper'
 import { ResExternal } from './ResFileViewers/ResExternal'
 import { ResFile } from '../ResFile'
 import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
 import { ResImage } from './ResFileViewers/ResImage'
 import { useServicesLocator } from '../../../view/common/Contexts'
 import classNames from 'classnames'
-import FullscreenWraper from '../../../infrac/components/FullscreenWraper'
 import IEditorsService from '../../../app/Interfaces/IEditorsService'
 import Markdown from '../../../infrac/components/Markdown'
 import React, { useEffect, useState } from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
 import yaml from 'yaml'
+
+const ResImageFullscreen = FullscreenWrap(ResImage)
 
 const getViewer = async (editorService :IEditorsService, ext: string): Promise<{ (props: ResFileViewerProps): JSX.Element } | undefined> => {
   switch (ext?.toLocaleLowerCase()) {
@@ -21,7 +23,7 @@ const getViewer = async (editorService :IEditorsService, ext: string): Promise<{
     case 'png':
     case 'jpg':
     case 'gif':
-      return ResImage
+      return ResImageFullscreen
     default:
       if (await editorService.getViewerByFileName(ext)) {
         return ResExternal
@@ -126,7 +128,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
             : <Button type="text" className="download" icon={<CloudDownloadOutlined />} onClick={startDownload}></Button>)
       }
     </div>
-    { Preview && preview ? <FullscreenWraper enabled={true} className="preview" name={props.name} View={Preview} url={blobUrl || props.url} buff={buff}></FullscreenWraper> : undefined}
+    { Preview && preview ? <div className="preview"><Preview name={props.name} url={blobUrl || props.url} buff={buff}></Preview></div> : undefined}
   </>
 }
 
