@@ -137,7 +137,7 @@
 </template>
 <style>
   body {
-    --primary: coral;
+    --primary: #cc9999;
     --primary-color: whitesmoke;
     color: var(--primary);
     background-image: radial-gradient(var(--primary),
@@ -151,5 +151,6 @@
   }
 </style>
 <script>
-  window.appData = window.appData || /**@imports json */ './app-data.json'
+  const defaultData = /**@imports json */ './app-data.json'
+  window.appData = Object.assign({}, defaultData, window.appData || {})
 </script>
