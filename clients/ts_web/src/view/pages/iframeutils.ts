@@ -1,5 +1,6 @@
 import { ApiInfo, generateContext, IFrameContext } from '../../infrac/components/IFrameWithJs'
 import { srcToUrl } from '../../infrac/Lang/srcToUrl'
+import { toJsDataStr } from '../../infrac/Lang/DataUtils'
 import Article, { ArticleSection } from '../../domain/ServiceInterfaces/Article'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
@@ -9,7 +10,6 @@ import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsSe
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import IViewService from '../../app/Interfaces/IViewService'
 import Seperators from '../../domain/ServiceInterfaces/Seperators'
-import YAML from 'yaml'
 
 const copyFileInfo = (file:File) => {
   return {
@@ -207,7 +207,6 @@ export const buildIframeData = async (locator:IServicesLocator, id:string, secti
   const fwHtml = fws && fws.map(f => f.fw?.html).filter(s => s)
   const fwCss = fws && fws.map(f => f.fw?.css).filter(s => s)
   const fwJs = fws && fws.map(f => f.fw?.js).filter(s => s)
-  let jsData = ''
   if (!html && !(fwHtml && fwHtml.length)) {
     return {}
   }
@@ -216,20 +215,7 @@ export const buildIframeData = async (locator:IServicesLocator, id:string, secti
   const data = sections.get('data')?.content
   const dataType = sections.get('data')?.type?.toLocaleLowerCase()
   let hasData = false
-  if (data) {
-    try {
-      switch (dataType) {
-        case 'json':
-          jsData = JSON.stringify(JSON.parse(data))
-          break
-        default:
-          jsData = JSON.stringify(YAML.parse(data))
-      }
-    } catch (e) {
-      console.log(e)
-      jsData = JSON.stringify(data)
-    }
-  }
+  const jsData = toJsDataStr(dataType || 'yml', data)
 
   let content = ''
   if (fwHtml && fwHtml.length) {

@@ -15,8 +15,8 @@ import App from './view/App'
 import AppArticleServiceSingleton from './app/AppServices/ArticleAppservice'
 import ArticleService from './impl/RemoteServices/ArticleService'
 import Blog from './plugins/blog'
-import Chart from './plugins/chart'
 import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
+import Data from './plugins/data'
 import DefaultConfigs from './app/Interfaces/DefaultConfigs'
 import DictService from './domain/Services/DictService'
 import EditorsServiceSingleton from './app/AppServices/EditorsServiceSingleton'
@@ -80,7 +80,7 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
     string,
     { new(typeNames: string[]): IPluginInfo }
       >(
-      [Blog, Chart, ExternalBlog, H5, Math, ModLang, ResFile].map((i) => [
+      [Blog, Data, ExternalBlog, H5, Math, ModLang, ResFile].map((i) => [
         i.typeName.toLocaleLowerCase(),
         i
       ])

@@ -2,14 +2,16 @@ import { getMdFileContent } from '../../../pluginbase/base/common/GetFileContent
 
 export const SectionNames = {
   type: 'type',
-  data: 'data'
+  yml: 'yml',
+  json: 'json',
+  xml: 'xml',
+  text: 'text'
 }
 
 export const getSectionType = (name: string) => {
   switch (name) {
-    case SectionNames.data:
-      return 'yml'
     case SectionNames.type:
+    case SectionNames.text:
       return 'txt'
     default:
       return name

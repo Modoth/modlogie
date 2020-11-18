@@ -1,11 +1,11 @@
 import './Timeline.less'
 import { BranchesOutlined } from '@ant-design/icons'
-import { ChartViewerProps } from '../ChartLiveViewer'
 import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/react'
-import { previewArticleByPath } from '../../../../view/pages/ServiceView'
-import { useServicesLocator } from '../../../../view/common/Contexts'
-import React from 'react'
+import { HighlightLiveViewerProps } from '..'
+import { previewArticleByPath } from '../../ServiceView'
+import { useServicesLocator } from '../../../common/Contexts'
 import Markdown from '../../../../infrac/components/Markdown'
+import React from 'react'
 
 class Node {
     id: string
@@ -56,7 +56,7 @@ const getColor = (t: string) => {
   return color
 }
 
-export function Timeline (props: ChartViewerProps) {
+export function Timeline (props: HighlightLiveViewerProps) {
   const nodes = parseNodes(props.data)
   const locator = useServicesLocator()
   return <div className="branch">

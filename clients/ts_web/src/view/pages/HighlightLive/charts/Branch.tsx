@@ -1,9 +1,9 @@
 import './Branch.less'
 import { BranchesOutlined } from '@ant-design/icons'
-import { ChartViewerProps } from '../ChartLiveViewer'
 import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/react'
-import { previewArticleByPath } from '../../../../view/pages/ServiceView'
-import { useServicesLocator } from '../../../../view/common/Contexts'
+import { HighlightLiveViewerProps } from '..'
+import { previewArticleByPath } from '../../ServiceView'
+import { useServicesLocator } from '../../../common/Contexts'
 import Markdown from '../../../../infrac/components/Markdown'
 import React from 'react'
 
@@ -78,7 +78,7 @@ const template = templateExtend(TemplateName.Metro, {
   }
 })
 
-export function Branch (props: ChartViewerProps) {
+export function Branch (props: HighlightLiveViewerProps) {
   const nodes = parseNodes(props.data)
   const locator = useServicesLocator()
   const width = 300

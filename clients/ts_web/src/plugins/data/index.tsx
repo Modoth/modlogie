@@ -1,20 +1,20 @@
 import { getSectionFileContent, getSectionType, SectionNames } from './view/Sections'
-import ChartLiveViewer from './view/ChartLiveViewer'
 import CreateSectionEditor from '../../pluginbase/base/view/SectionEditor'
 import CreateSectionViewer from '../../pluginbase/base/view/SectionViewer'
+import DataViewer from './view/DataViewer'
 import IPluginInfo from '../../pluginbase/IPluginInfo'
 import PluginInfoBase from '../../pluginbase/base'
 
-export default class Chart extends PluginInfoBase implements IPluginInfo {
-  static get typeName () { return 'Chart' }
+export default class Data extends PluginInfoBase implements IPluginInfo {
+  static get typeName () { return 'Data' }
   constructor (typeNames: string[]) {
-    super(Chart.typeName,
+    super(Data.typeName,
       typeNames,
       CreateSectionViewer(getSectionType),
       CreateSectionEditor({ getSectionFileContent }),
-      ChartLiveViewer,
+      DataViewer,
       {
-        defaultSections: [`-${SectionNames.data}`, `-${SectionNames.type}`],
+        defaultSections: [`-${SectionNames.type}`, `?${SectionNames.yml}`, `?${SectionNames.xml}`, `?${SectionNames.json}`, `?${SectionNames.text}`],
         fixedSections: true
       })
   }
