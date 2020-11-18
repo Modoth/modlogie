@@ -70,7 +70,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   const [captureDict, setCaptureDict] = useState(loadCaptureDict())
   const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
   const [currentTheme, setCurrentTheme] = useState(smallScreen ? loadTheme() : 0)
-  const [paging, setPaging] = useState(smallScreen ? loadPaging() : false)
+  const [paging, setPaging] = useState(false)// useState(smallScreen ? loadPaging() : false)
   const ref = React.createRef<HTMLDivElement>()
   const [callbacks] = useState({} as ArticleContentViewerCallbacks)
   const [locateRef] = useState({} as LocatableViewCallbacks)
@@ -152,17 +152,18 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                           }
                           }
                         >{langs.get(LangKeys.Themes)}</Button>
-                      </Menu.Item>,
-                      <Menu.Item key="pading">
-                        <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
-                          onClick={() => {
-                            const nextPaging = !paging
-                            setPaging(nextPaging)
-                            savePaging(nextPaging)
-                          }
-                          }
-                        >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
-                      </Menu.Item>] : null}
+                      </Menu.Item>
+                      // <Menu.Item key="paging">
+                      //   <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
+                      //     onClick={() => {
+                      //       const nextPaging = !paging
+                      //       setPaging(nextPaging)
+                      //       savePaging(nextPaging)
+                      //     }
+                      //     }
+                      //   >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
+                      // </Menu.Item>
+                      ] : null}
                     </Menu>}>
                     <Button className="single-article-content-menu-btn" type="link" size="large" icon={<MenuOutlined />} onClick={(e) => e.preventDefault()} ></Button>
                   </Dropdown>

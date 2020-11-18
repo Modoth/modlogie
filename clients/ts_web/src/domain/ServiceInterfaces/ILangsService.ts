@@ -35,6 +35,7 @@ export class LangKeysInterface {
   FreeDraw = 'FreeDraw';
   Home = 'Home';
   Import = 'Import';
+  ItemsCount = 'ItemsCount';
   Keyword = 'Keyword';
   Latest = 'Latest';
   Like = 'Like';
