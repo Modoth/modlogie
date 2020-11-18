@@ -36,8 +36,8 @@ function RecentArticle (props: {
   }
   const goto = () => setRedirect(true)
   return (
-    <div className={classNames('recent-article-wraper')}>
-      <div className="recent-article" onClick={goto}>
+    <div className={classNames('recent-article-wraper')} onClick={goto}>
+      <div className="recent-article" >
         {(props.recommendView && props.recommendTitle) ||
         !props.type.noTitle ? (
             <span className="article-title">

@@ -14,29 +14,9 @@
   & .recent-article-wraper {
     background-color: #fff8;
     touch-action: none;
-    .article-title {
-      word-break: break-all;
-      border-bottom: 1px groove #0000000c;
-      padding: 10px 10px 5px 20px;
-      color: #251202a0;
-      font-weight: 550;
-      margin: -1px -1px 0px -1px;
-      border-radius: 2px 2px 0 0;
-      display: flex;
-      align-items: center;
-      text-overflow: ellipsis;
-      overflow-x: hidden;
-      white-space: nowrap;
-      touch-action: none;
-      display: none;
-      .recommend-button {
-        margin: 0 10px 0 0;
-        opacity: 1;
-        color: rgb(120, 20, 20, 0.65) !important;
-        padding: 0;
-        color: #251202a5;
-      }
-    }
+    position: relative;
+    width: 100%;
+    padding-top: 61.8%;
 
     a.recent-article {
       color: unset;
@@ -44,16 +24,14 @@
 
     & .recent-article {
       overflow: hidden;
-      height: 14em;
       display: flex;
       flex-direction: column;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
     }
-  }
-
-  & .title {
-    font-weight: bold;
-    margin: 10px 20px 0 20px;
-    padding: 0;
   }
 
   .ant-carousel .slick-dots li {
@@ -76,6 +54,4 @@
   }
 }
 
-.recent-article {
-  @import "./RecentsView.Article.less";
-}
+@import "./RecentsView.Article.less";
