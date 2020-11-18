@@ -28,6 +28,7 @@ function Nav () {
   const [avatar, setAvatar] = useState('')
   const [editors, setEditors] = useState<EditorInfo[]>([])
   const [viewers, setViewers] = useState<EditorInfo[]>([])
+  const ref = React.createRef<HTMLDivElement>()
   const onComponentDidMount = async () => {
     const configService = locator.locate(IConfigsService)
     const nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
@@ -96,10 +97,19 @@ function Nav () {
     onComponentDidMount()
   }, [])
 
-  const [showMenu, setShowMenu] = useState(locator.locate(IViewService).showMenu)
-  locator.locate(IViewService).onShowMenuChanged = (s) => s === showMenu || setShowMenu(s)
+  const [store] = useState({ showMenu: locator.locate(IViewService).showMenu })
+  locator.locate(IViewService).onShowMenuChanged = (s) => {
+    store.showMenu = s
+    if (ref.current) {
+      if (store.showMenu) {
+        ref.current.classList.remove('hidden')
+      } else {
+        ref.current.classList.add('hidden')
+      }
+    }
+  }
   return (
-    <>
+    <div ref={ref} className={classNames(store.showMenu ? '' : 'hidden')}>
       <Drawer className="side-nav-panel" visible={showDrawer} onClose={() => setShowDrawer(false)} closable={false} placement="left">
         <Menu className="side-nav" mode="inline" onClick={() => setShowDrawer(false)} >
           {
@@ -177,7 +187,7 @@ function Nav () {
         </Menu>
       </Drawer>
 
-      <Menu mode="horizontal" className={classNames('nav', showMenu ? '' : 'hidden')}>
+      <Menu mode="horizontal" className={classNames('nav')}>
         <Menu.Item className="nav-open-menu" icon={<MenuOutlined />} onClick={() => setShowDrawer(true)}>
         </Menu.Item>
         {
@@ -192,7 +202,7 @@ function Nav () {
           </Menu.Item> : null)
         }
       </Menu>
-    </>
+    </div>
   )
 }
 

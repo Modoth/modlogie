@@ -493,9 +493,6 @@ export default function Library (props: LibraryProps) {
 
   articleHandlers.onDelete = deleteArticle
 
-  const subjectTreeRef = React.createRef<TreeSelect<any>>()
-
-  viewService.setShowMenu(false)
   useEffect(() => {
     viewService.setShowMenu(false)
     fetchSubjects().then(() => fetchTags());

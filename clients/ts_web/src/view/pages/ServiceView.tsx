@@ -126,7 +126,7 @@ export default function ServiceView (props: {
     resolveModalPromise(success)
   }
 
-  const viewService = new ViewService(
+  const [viewService] = useState(new ViewService(
     setLoading,
     async (
       title: string | { title: string, subTitle: string },
@@ -293,7 +293,7 @@ export default function ServiceView (props: {
         viewService.setLoading(false)
       }
     }
-  )
+  ))
   props.provide && props.provide(viewService)
 
   const previewImgRef = React.createRef<HTMLImageElement>()
