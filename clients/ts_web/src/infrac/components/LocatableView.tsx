@@ -1,3 +1,4 @@
+import { useLocatableOffset } from '../../view/common/Contexts'
 import React from 'react'
 
 export interface LocatableViewCallbacks {
@@ -11,10 +12,10 @@ export function Div (props: any) {
 
 export default function LocatableView<TProp> (props: TProp & { callbacks?: LocatableViewCallbacks, View: { (props: TProp): JSX.Element } }) {
   const ref = React.createRef<HTMLSpanElement>()
+  const offset = useLocatableOffset() || 0
   if (props.callbacks) {
     props.callbacks.locate = (direct?:boolean) => {
       if (ref.current) {
-        const offset = 0
         const bodyPos = document.body.getBoundingClientRect().top
         const elementPos = ref.current.nextElementSibling!.getBoundingClientRect().top
         const offsetPosition = elementPos - bodyPos - offset

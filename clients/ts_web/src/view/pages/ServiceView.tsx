@@ -56,11 +56,13 @@ class ViewService implements IViewService {
     }
   }
 
-  constructor (public setLoading: any, public prompt: any, public previewImage: any, public previewArticleList: any, public previewArticle: any,
-    public captureElement: {
-      (element: HTMLElement): void
-    },
-    public onShowMenuChanged?: { (showMenu: boolean): void }) { }
+  constructor (public setLoading: any,
+    public prompt: any,
+    public previewImage: any,
+    public previewArticleList: any,
+    public previewArticle: any,
+    public captureElement: any,
+    public onShowMenuChanged: any) { }
 }
 
 export default function ServiceView (props: {
@@ -125,175 +127,181 @@ export default function ServiceView (props: {
     setModalFileFieldData(undefined)
     resolveModalPromise(success)
   }
-
-  const [viewService] = useState(new ViewService(
-    setLoading,
-    async (
-      title: string | { title: string, subTitle: string },
-      fields: IPromptField<any, any>[],
-      onOk: (...paras: any) => Promise<boolean | undefined>,
-      tryPreviewFile = true
-    ): Promise<boolean> => {
-      return new Promise(resolve => {
-        resolveModalPromise(false)
-        modalPromise.resolve = resolve
-        const setStates = () => {
-          if (typeof title === 'string') {
-            setModalTitle(title)
-          } else {
-            setModalTitle(title.title)
-            setModalSubTitle(title.subTitle)
-          }
-          setModalFileds(fields)
-          setOnModalOk({ onOk })
-          setModalVisible(true)
-          setModalFileFieldData(undefined)
+  const fPrompt = async (
+    title: string | { title: string, subTitle: string },
+    fields: IPromptField<any, any>[],
+    onOk: (...paras: any) => Promise<boolean | undefined>,
+    tryPreviewFile = true
+  ): Promise<boolean> => {
+    return new Promise(resolve => {
+      resolveModalPromise(false)
+      modalPromise.resolve = resolve
+      const setStates = () => {
+        if (typeof title === 'string') {
+          setModalTitle(title)
+        } else {
+          setModalTitle(title.title)
+          setModalSubTitle(title.subTitle)
         }
-        const singleField = fields.length === 1 ? fields[0] : undefined
-        if (!singleField) {
-          setStates()
-          return
-        }
-        const imageField = singleField.type === 'Image'
-        const textFileField = singleField.type === 'TextFile'
-        const videoFileField = singleField.type === 'Video'
-        const binFileField = singleField.type === 'File'
-        const fileField = binFileField || imageField || textFileField || videoFileField
-        setModalViewField((singleField.type === 'View'))
-        if (!fileField) {
-          setStates()
-          return
-        }
-        const allAccept = '*/*'
-        let accept = allAccept
-        let onchange: (file: File) => void
-
-        const handleImage = (file: File) => {
-          setStates()
-          setModalFileFieldData(file)
-          setModalImageField(true)
-        }
-        const handleText = (file: File) => {
-          const reader = new FileReader()
-          reader.onload = () => {
-            setStates()
-            setModalFileds([{
-              ...fields[0],
-              value: binFileField
-                ? Object.assign(file, { preview: true, previewContent: reader.result })
-                : reader.result
-            }])
-          }
-          reader.readAsText(file)
-        }
-        const handleVideo = (file: File) => {
-          onOk(file)
-          resolveModalPromise(true)
-        }
-
-        if (imageField) {
-          accept = 'image/*'
-          onchange = handleImage
-        } else if (textFileField) {
-          accept = 'text/*'
-          onchange = handleText
-        } else if (videoFileField) {
-          accept = 'video/*'
-          onchange = handleVideo
-        }
-
-        const handleFile = (file: File, e?: any) => {
-          if (onchange) {
-            onchange(file)
-            return
-          }
-          const startsWith = (s: string) => file.type.startsWith(s)
-          if (tryPreviewFile) {
-            if (
-              startsWith('text/') ||
-              startsWith('application/json') ||
-              startsWith('application/x-yaml')
-            ) {
-              singleField.type = 'TextFile'
-              handleText(file)
-              return
-            }
-            if (startsWith('image/')) {
-              singleField.type = 'Image'
-              handleImage(file)
-              return
-            }
-            if (startsWith('video/')) {
-              singleField.type = 'Video'
-              handleVideo(file)
-              if (e) {
-                e.target.value = ''
-              }
-              return
-            }
-          }
-          onOk(file)
-          resolveModalPromise(true)
-          if (e) {
-            e.target.value = ''
-          }
-        }
-
-        if (singleField.value) {
-          handleFile(singleField.value)
-          return
-        }
-
-        refFile.current!.accept = fields[0].accept || (accept !== allAccept ? accept : '')
-        refFile.current!.onchange = (e: any) => {
-          const file: File = e.target.files && e.target.files![0]
-          if (!file) {
-            return
-          }
-          handleFile(file, e)
-        }
-        refFile.current!.click()
-      })
-    },
-    (url: string) => {
-      setPreviewImgUrl(url)
-    },
-    (visiable: boolean): void => {
-      if (visiable === previewArticleList) {
+        setModalFileds(fields)
+        setOnModalOk({ onOk })
+        setModalVisible(true)
+        setModalFileFieldData(undefined)
+      }
+      const singleField = fields.length === 1 ? fields[0] : undefined
+      if (!singleField) {
+        setStates()
         return
       }
-      props.setContentVisiable(!visiable)
-      setPreviewArticleList(visiable)
-    },
-    (article: Article, type: ArticleContentType, onclose?: { (): void }): void => {
-      if (article) {
-        props.setContentVisiable(false)
-        setPreviewArticle({ article, type, onclose })
-      } else {
-        props.setContentVisiable(true)
-        setPreviewArticle(undefined)
-        if (onclose) {
-          onclose()
-        } else if (previewArticle?.onclose) {
-          previewArticle.onclose()
-        }
-      }
-    }, async (element: HTMLElement | undefined): Promise<void> => {
-      if (!element) {
+      const imageField = singleField.type === 'Image'
+      const textFileField = singleField.type === 'TextFile'
+      const videoFileField = singleField.type === 'Video'
+      const binFileField = singleField.type === 'File'
+      const fileField = binFileField || imageField || textFileField || videoFileField
+      setModalViewField((singleField.type === 'View'))
+      if (!fileField) {
+        setStates()
         return
       }
-      try {
-        viewService.setLoading(true)
-        const canvas = await html2canvas(element)
-        viewService.setLoading(false)
-        const imgUrl = canvas.toDataURL('image/png')
-        viewService.previewImage(imgUrl)
-      } catch (e) {
-        // viewService!.errorKey(locator.locate(ILangsService), LangKeys.UnknownError)
-        viewService.setLoading(false)
+      const allAccept = '*/*'
+      let accept = allAccept
+      let onchange: (file: File) => void
+
+      const handleImage = (file: File) => {
+        setStates()
+        setModalFileFieldData(file)
+        setModalImageField(true)
+      }
+      const handleText = (file: File) => {
+        const reader = new FileReader()
+        reader.onload = () => {
+          setStates()
+          setModalFileds([{
+            ...fields[0],
+            value: binFileField
+              ? Object.assign(file, { preview: true, previewContent: reader.result })
+              : reader.result
+          }])
+        }
+        reader.readAsText(file)
+      }
+      const handleVideo = (file: File) => {
+        onOk(file)
+        resolveModalPromise(true)
+      }
+
+      if (imageField) {
+        accept = 'image/*'
+        onchange = handleImage
+      } else if (textFileField) {
+        accept = 'text/*'
+        onchange = handleText
+      } else if (videoFileField) {
+        accept = 'video/*'
+        onchange = handleVideo
+      }
+
+      const handleFile = (file: File, e?: any) => {
+        if (onchange) {
+          onchange(file)
+          return
+        }
+        const startsWith = (s: string) => file.type.startsWith(s)
+        if (tryPreviewFile) {
+          if (
+            startsWith('text/') ||
+            startsWith('application/json') ||
+            startsWith('application/x-yaml')
+          ) {
+            singleField.type = 'TextFile'
+            handleText(file)
+            return
+          }
+          if (startsWith('image/')) {
+            singleField.type = 'Image'
+            handleImage(file)
+            return
+          }
+          if (startsWith('video/')) {
+            singleField.type = 'Video'
+            handleVideo(file)
+            if (e) {
+              e.target.value = ''
+            }
+            return
+          }
+        }
+        onOk(file)
+        resolveModalPromise(true)
+        if (e) {
+          e.target.value = ''
+        }
+      }
+
+      if (singleField.value) {
+        handleFile(singleField.value)
+        return
+      }
+
+      refFile.current!.accept = fields[0].accept || (accept !== allAccept ? accept : '')
+      refFile.current!.onchange = (e: any) => {
+        const file: File = e.target.files && e.target.files![0]
+        if (!file) {
+          return
+        }
+        handleFile(file, e)
+      }
+      refFile.current!.click()
+    })
+  }
+  const fPreviewImage = (url: string) => {
+    setPreviewImgUrl(url)
+  }
+  const fPreviewArticleList = (visiable: boolean): void => {
+    if (visiable === previewArticleList) {
+      return
+    }
+    props.setContentVisiable(!visiable)
+    setPreviewArticleList(visiable)
+  }
+  const fPreviewArticle = (article: Article, type: ArticleContentType, onclose?: { (): void }): void => {
+    if (article) {
+      props.setContentVisiable(false)
+      setPreviewArticle({ article, type, onclose })
+    } else {
+      props.setContentVisiable(true)
+      setPreviewArticle(undefined)
+      if (onclose) {
+        onclose()
+      } else if (previewArticle?.onclose) {
+        previewArticle.onclose()
       }
     }
-  ))
+  }
+  const fCaptureElement = async (element: HTMLElement | undefined): Promise<void> => {
+    if (!element) {
+      return
+    }
+    try {
+      viewService.setLoading(true)
+      const canvas = await html2canvas(element)
+      viewService.setLoading(false)
+      const imgUrl = canvas.toDataURL('image/png')
+      viewService.previewImage(imgUrl)
+    } catch (e) {
+      // viewService!.errorKey(locator.locate(ILangsService), LangKeys.UnknownError)
+      viewService.setLoading(false)
+    }
+  }
+  const [viewService] = useState(new ViewService(undefined, undefined, undefined, undefined, undefined, undefined, undefined))
+  Object.assign(viewService, {
+    setLoading,
+    prompt: fPrompt,
+    previewImage: fPreviewImage,
+    previewArticleList: fPreviewArticleList,
+    previewArticle: fPreviewArticle,
+    captureElement: fCaptureElement
+  })
   props.provide && props.provide(viewService)
 
   const previewImgRef = React.createRef<HTMLImageElement>()

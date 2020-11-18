@@ -1,11 +1,13 @@
 import './FloatDict.less'
 import { Button } from 'antd'
-import { useServicesLocator } from '../common/Contexts'
+import { useLocatableOffset, useServicesLocator } from '../common/Contexts'
 import IDictService, { CancleToken, DictInfo } from '../../domain/ServiceInterfaces/IDictService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
+
 export type FloatDictPosition = [number, number]|undefined
 export default function FloatDict (props:{word:string, position:FloatDictPosition}) {
+  const offset = useLocatableOffset()
   const [word, setWord] = useState('')
   const [origin, setOrigin] = useState('')
   const [url, setUrl] = useState<string | undefined>()
@@ -41,12 +43,13 @@ export default function FloatDict (props:{word:string, position:FloatDictPositio
       if (store.destoried) {
         return
       }
+      const position = (props.position?.[1] || 0) + 10 + offset + (document.scrollingElement?.scrollTop || 0)
       if (cancleToken === store.cancleToken) {
         clearLastCancleToken()
         if (url) {
           setWord(w)
           setUrl(url)
-          setPosition((props.position?.[1] || 0) + 20 + (document.scrollingElement?.scrollTop || 0))
+          setPosition(position)
         } else if (w.length > 1) {
           // && (!w[0].match(/[a-zA-Z0-9]/)) && w[0].match(/\p{Script=Han}/u)
           // await queryWord(w[0], w)
@@ -54,7 +57,7 @@ export default function FloatDict (props:{word:string, position:FloatDictPositio
         } else {
           setWord(origin)
           setUrl(url)
-          setPosition((props.position?.[1] || 0) + 20 + (document.scrollingElement?.scrollTop || 0))
+          setPosition(position)
         }
       }
     }

@@ -6,6 +6,10 @@ export const UserContext = React.createContext<ILoginUser>({} as ILoginUser)
 export const useUser = () => useContext(UserContext)
 export const UserProvider = UserContext.Provider
 
+export const LocatableOffsetContext = React.createContext<number>(0)
+export const useLocatableOffset = () => useContext(LocatableOffsetContext)
+export const LocatableOffsetProvider = LocatableOffsetContext.Provider
+
 export const ServicesLocatorContext = React.createContext<IServicesLocator>(null!)
 export const useServicesLocator = () => useContext(ServicesLocatorContext)
 export const ServicesLocatorProvider = ServicesLocatorContext.Provider
