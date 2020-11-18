@@ -73,6 +73,7 @@ export default function ServiceView (props: {
   const [modalSubTitle, setModalSubTitle] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
   const [modalImageField, setModalImageField] = useState(false)
+  const [modalViewField, setModalViewField] = useState(false)
   const [modalPromise, setModalPromise] = useState({ resolve: null as any, reject: null as any })
   const [modalFileFieldData, setModalFileFieldData] = useState<
     File | undefined
@@ -120,6 +121,7 @@ export default function ServiceView (props: {
     setModalFileds([])
     setOnModalOk(undefined)
     setModalImageField(false)
+    setModalViewField(false)
     setModalFileFieldData(undefined)
     resolveModalPromise(success)
   }
@@ -157,7 +159,7 @@ export default function ServiceView (props: {
         const videoFileField = singleField.type === 'Video'
         const binFileField = singleField.type === 'File'
         const fileField = binFileField || imageField || textFileField || videoFileField
-
+        setModalViewField((singleField.type === 'View'))
         if (!fileField) {
           setStates()
           return
@@ -270,7 +272,9 @@ export default function ServiceView (props: {
       } else {
         props.setContentVisiable(true)
         setPreviewArticle(undefined)
-        if (previewArticle?.onclose) {
+        if (onclose) {
+          onclose()
+        } else if (previewArticle?.onclose) {
           previewArticle.onclose()
         }
       }
@@ -309,7 +313,7 @@ export default function ServiceView (props: {
         visible={modalVisible}
         onOk={applyModal}
         onCancel={() => cancleModal(false)}
-        footer={modalImageField ? null : undefined}
+        footer={(modalImageField || modalViewField) ? null : undefined}
         bodyStyle={
           modalFields.length
             ? modalImageField
@@ -398,6 +402,14 @@ export default function ServiceView (props: {
                 )
               case 'TextFile':
                 return <textarea rows={10} value={field.value && (field.value as any).preview ? (field.value as any).previewContent : field.value}></textarea>
+              case 'View':
+              {
+                if (!(field.value instanceof Function)) {
+                  return <></>
+                }
+                const View = field.value
+                return <View></View>
+              }
               default:
                 return <span key={i}>{field.value}</span>
             }

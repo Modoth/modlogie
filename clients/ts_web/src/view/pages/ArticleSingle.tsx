@@ -98,6 +98,11 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
       locateRef.locate(direct)
     }
   }
+  const openManageDict = () => {
+    locator.locate(IViewService).previewArticle(undefined, undefined, () => {
+      window.location.href = '#/manage/dicts'
+    })
+  }
   callbacks.onSections = setSections
   callbacks.onSection = setCurrentSection
   return (
@@ -128,6 +133,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                           setCaptureDict(!captureDict)
                           saveCaptureDict(!captureDict)
                         }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <BulbOutlined />} onClick={openManageDict}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
                         <Menu.Divider></Menu.Divider>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => {
                           scrollToTop(true)
@@ -175,10 +181,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
       </div>
       {
         captureDict
-          ? <CaptureDict onclose={() => {
-            setCaptureDict(false)
-            saveCaptureDict(false)
-          }}></CaptureDict>
+          ? <CaptureDict offset={-50}></CaptureDict>
           : undefined}
     </LocatableView>
 

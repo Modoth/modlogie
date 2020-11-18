@@ -80,6 +80,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Login = '登陆';
   Logout = '注销';
   Manage = '管理';
+  ManageDict = '管理字典';
   Menu = '目录';
   Modify = '修改';
   MSG_ERROR_ENTITY_CONFLICT = '数据冲突';

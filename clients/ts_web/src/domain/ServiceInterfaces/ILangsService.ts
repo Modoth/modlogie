@@ -41,6 +41,7 @@ export class LangKeysInterface {
   Login = 'Login';
   Logout = 'Logout';
   Manage = 'Manage';
+  ManageDict = 'ManageDict';
   Menu = 'Menu';
   Modify = 'Modify';
   MSG_ERROR_ENTITY_CONFLICT = 'MSG_ERROR_ENTITY_CONFLICT';
