@@ -37,8 +37,8 @@ function Nav () {
     const avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR)
     const allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN)
     const editorsService = locator.locate(IEditorsService)
-    // const editors = await editorsService.getEditors()
-    const viewers = await editorsService.getViewers()
+    // const editors =  editorsService.getEditors()
+    const viewers = editorsService.getViewers()
     setViewers(viewers)
     // setEditors(editors)
     document.title = title

@@ -1,4 +1,5 @@
-.H5 {
+.H5,
+.Data {
   .h5-live-viewer {
     width: calc(100% + 40px);
     margin: -10px -20px 0 -20px;
@@ -30,8 +31,15 @@
   }
 }
 
+.highlight-live.ref-article {
+  .h5-live-viewer {
+    margin-top: -10px;
+  }
+}
+
 @media (max-width: 780px) {
-  .H5 {
+  .H5,
+  .Data {
     .section-viewer {
       & > .hightlight {
         font-size: 0.75em !important;
@@ -41,7 +49,8 @@
 }
 
 @media (min-width: 780px) {
-  .H5 {
+  .H5,
+  .Data {
     .h5-live-viewer {
       margin-top: 0;
     }

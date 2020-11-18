@@ -15,7 +15,7 @@ export const getSectionType = (name: string) => {
       return 'yml'
     case SectionNames.frameworks:
     case SectionNames.url:
-      return 'txt'
+      return 'raw'
     default:
       return name
   }

@@ -1,7 +1,7 @@
 import './Hightlight.less'
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { Prism } from 'react-syntax-highlighter'
-import { Slider } from 'antd'
+// import { Slider } from 'antd'
 import React, { useState } from 'react'
 
 export default function Highlight (props: {

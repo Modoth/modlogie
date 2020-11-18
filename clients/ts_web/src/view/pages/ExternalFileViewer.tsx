@@ -15,7 +15,7 @@ export default function ExternalFileViewer (props:ExternalFileViewerProps) {
   const [info, setInfo] = useState<EditorInfo|undefined>()
   const fetchType = async () => {
     const editorsService = locator.locate(IEditorsService)
-    const info = await editorsService.getViewerByFileName(await props.file.name())
+    const info = editorsService.getViewerByFileName(await props.file.name())
     if (info) {
       setInfo(info)
     }

@@ -7,7 +7,10 @@ import { previewArticleByPath } from '../ServiceView'
 import { Timeline } from './charts/Timeline'
 import { toJsObj } from '../../../infrac/Lang/DataUtils'
 import { useServicesLocator, useUser } from '../../common/Contexts'
+import BufferFile from '../../../infrac/Lang/BufferFile'
+import ExternalViewer from '../ExternalViewer'
 import Highlight from '../../../infrac/components/Hightlight'
+import IEditorsService from '../../../app/Interfaces/IEditorsService'
 import React from 'react'
 import Seperators from '../../../domain/ServiceInterfaces/Seperators'
 
@@ -43,10 +46,14 @@ export default function HighlightLive (props: { language: string, value: string,
       content: props.value,
       type: format
     }] : []
-    return <div className="ref-article">
+    return <div className="highlight-live ref-article">
       <ArticlePreview dataSections={dataSections} path={path}></ArticlePreview>
       {user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locator, path, filename(path))} /> : undefined}
     </div>
+  }
+  const viewerInfo = locator.locate(IEditorsService).getViewerByFileName(lang)
+  if (viewerInfo) {
+    return <div className="highlight-live h5-live-viewer"><ExternalViewer info={viewerInfo} file={new BufferFile('', new TextEncoder().encode(props.value).buffer)}></ExternalViewer></div>
   }
   const Viewer = viewers.get(lang)
   if (Viewer) {

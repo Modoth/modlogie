@@ -298,6 +298,7 @@ const bootstrap = async () => {
   const langsService = serviceLocator.locate(ILangsService)
   const plugins = serviceLocator.locate(PluginsConfig)
   const autoAccountService = serviceLocator.locate(IAutoAccountService)
+  const editorsService = serviceLocator.locate(IEditorsService)
   const account = await autoAccountService?.get()
   await Promise.all([
     langsService.load(Langs, ...plugins.Plugins.map((p) => p.langs)),
@@ -305,7 +306,8 @@ const bootstrap = async () => {
       ? loginService
         .login(account.userName!, account.password!)
         .catch((e) => console.log(e))
-      : loginService.checkLogin()
+      : loginService.checkLogin(),
+    editorsService.init()
   ])
   ReactDOM.render(
     <React.StrictMode>

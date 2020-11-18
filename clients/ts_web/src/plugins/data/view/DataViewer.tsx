@@ -7,10 +7,8 @@ import React from 'react'
 
 const getDataSection = (sections: Map<string, ArticleSection>): {type:string, data?:ArticleSection} => {
   const type = sections.get(SectionNames.type)?.content || ''
-  const data = sections.get(SectionNames.yml) ||
-   sections.get(SectionNames.json) ||
-  sections.get(SectionNames.xml) ||
-  sections.get(SectionNames.text)
+  const names = [SectionNames.yml, SectionNames.json, SectionNames.xml, SectionNames.text]
+  const data = names.map(name => sections.get(name)).find(s => s?.content)
   return { type, data }
 }
 

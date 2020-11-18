@@ -10,7 +10,7 @@ export const getSectionType = (name: string) => {
     case SectionNames.summary:
       return 'markdown'
     case SectionNames.path:
-      return 'txt'
+      return 'raw'
     default:
       return name
   }

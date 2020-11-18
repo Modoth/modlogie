@@ -12,7 +12,7 @@ export const getSectionType = (name: string) => {
   switch (name) {
     case SectionNames.type:
     case SectionNames.text:
-      return 'txt'
+      return 'raw'
     default:
       return name
   }
