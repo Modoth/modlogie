@@ -11,11 +11,13 @@ import { LoginServiceClient } from './impl/remote-apis/LoginServiceClientPb'
 import { ServicesLocatorProvider } from './view/common/Contexts'
 import { TagsServiceClient } from './impl/remote-apis/TagsServiceClientPb'
 import { UsersServiceClient } from './impl/remote-apis/UsersServiceClientPb'
+import AnkiWordsExporter from './domain/Services/AnkiWordsExporter'
 import App from './view/App'
 import AppArticleServiceSingleton from './app/AppServices/ArticleAppservice'
 import ArticleService from './impl/RemoteServices/ArticleService'
 import Blog from './plugins/blog'
 import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
+import CsvWordsExporter from './domain/Services/CsvWordsExporter'
 import Data from './plugins/data'
 import DefaultConfigs from './app/Interfaces/DefaultConfigs'
 import DictService from './domain/Services/DictService'
@@ -23,11 +25,13 @@ import EditorsServiceSingleton from './app/AppServices/EditorsServiceSingleton'
 import ExternalBlog from './plugins/externalblog'
 import FavoritesServerSingleton from './domain/Services/FavoritesServerSingleton'
 import H5 from './plugins/h5'
+import IAnkiWordsExporter from './domain/ServiceInterfaces/IAnkiWordsExporter'
 import IArticleAppservice from './app/Interfaces/IArticleAppservice'
 import IArticleListService from './app/Interfaces/IArticleListService'
 import IArticleService from './domain/ServiceInterfaces/IArticleService'
 import IAutoAccountService from './domain/ServiceInterfaces/IAutoAccountService'
 import IConfigsService, { Config, ConfigType } from './domain/ServiceInterfaces/IConfigsSercice'
+import ICsvWordsExporter from './domain/ServiceInterfaces/ICsvWordsExporter'
 import IDictService from './domain/ServiceInterfaces/IDictService'
 import IEditorsService from './app/Interfaces/IEditorsService'
 import IFavoritesServer from './domain/ServiceInterfaces/IFavoritesServer'
@@ -47,8 +51,10 @@ import ISubjectsExporter from './domain/ServiceInterfaces/ISubjectsExporter'
 import ISubjectsService from './domain/ServiceInterfaces/ISubjectsService'
 import ITagsService from './domain/ServiceInterfaces/ITagsService'
 import ITextImageService from './infrac/Image/ITextImageService'
+import IUserBlobStorage from './domain/ServiceInterfaces/IUserBlobStorage'
 import IUserLoginService from './domain/ServiceInterfaces/IUserLoginService'
 import IUsersService from './domain/ServiceInterfaces/IUsersService'
+import IWordsStorage from './domain/ServiceInterfaces/IWordsStorage'
 import KeywordsService from './impl/RemoteServices/KeywordsService'
 import LangInterpretersService from './domain/Services/Interpreters/LangInterpretersService'
 import Langs from './view/common/Langs'
@@ -56,6 +62,7 @@ import LangsService from './domain/Services/LangsService'
 import LikesService from './impl/RemoteServices/LikesService'
 import LocalFavoritesStorage from './impl/LocalStorages/LocalFavoritesStorage'
 import LocalPasswordStorage from './impl/LocalStorages/LocalPasswordStorage'
+import LocalUserBlobStorage from './impl/LocalStorages/LocalUserBlobStorage'
 import LoginService from './app/AppServices/LoginService'
 import Math from './plugins/math'
 import MmConverter from './domain/Services/MmConverter'
@@ -73,6 +80,7 @@ import TagsServiceSingleton from './impl/RemoteServices/TagsServiceSingleton'
 import TextImageServiceSingleton from './infrac/Image/TextImageServiceSingleton'
 import UserLoginService from './impl/RemoteServices/UserLoginService'
 import UsersService from './impl/RemoteServices/UsersService'
+import WordsStorageSingleton from './impl/WordsStorageSingleton'
 import zhCN from 'antd/es/locale/zh_CN'
 
 const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
@@ -245,6 +253,10 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(IDictService, new DictService())
   serviceLocator.register(ILikesService, LikesService)
   serviceLocator.register(INavigationService, NavigationService)
+  serviceLocator.register(IUserBlobStorage, LocalUserBlobStorage)
+  serviceLocator.register(IWordsStorage, WordsStorageSingleton)
+  serviceLocator.register(ICsvWordsExporter, CsvWordsExporter)
+  serviceLocator.register(IAnkiWordsExporter, AnkiWordsExporter)
 
   const interpretersService = new LangInterpretersService()
   serviceLocator.registerInstance(

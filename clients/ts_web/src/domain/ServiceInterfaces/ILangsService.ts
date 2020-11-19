@@ -1,9 +1,11 @@
 export class LangKeysInterface {
   About = 'About';
+  AddedTime = 'AddedTime';
   AddToArticleList = 'AddToArticleList';
   AdmLogin = 'AdmLogin';
   All = 'All';
   AlreadyLiked = 'AlreadyLiked';
+  Anki = 'Anki';
   AuthorisedUser = 'AuthorisedUser';
   BeyondMaxFavorites = 'BeyondMaxFavorites';
   Cancle = 'Cancle';
@@ -18,6 +20,7 @@ export class LangKeysInterface {
   Comment = 'Comment';
   Configs = 'Configs';
   Create = 'Create';
+  Csv = 'Csv';
   DefaultValue = 'DefaultValue';
   Delete = 'Delete';
   Description = 'Description';
@@ -31,6 +34,8 @@ export class LangKeysInterface {
   EnableAutoLogin = 'EnableAutoLogin';
   Enabled = 'Enabled';
   EnumValue = 'EnumValue';
+  Example = 'Example';
+  Export = 'Export';
   Favorite = 'Favorite';
   FreeDraw = 'FreeDraw';
   Home = 'Home';
@@ -38,6 +43,9 @@ export class LangKeysInterface {
   ItemsCount = 'ItemsCount';
   Keyword = 'Keyword';
   Latest = 'Latest';
+  LatestDay = 'LatestDay';
+  LatestMonth = 'LatestMonth';
+  LatestWeek = 'LatestWeek';
   Like = 'Like';
   Login = 'Login';
   Logout = 'Logout';
@@ -80,6 +88,7 @@ export class LangKeysInterface {
   Subject = 'Subject';
   Tags = 'Tags';
   Themes = 'Themes';
+  Time = 'Time';
   Tools = 'Tools';
   Type = 'Type';
   UnknownError = 'UnknownError';

@@ -39,10 +39,12 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LINK = '链接';
   [key: string]: string;
   About = '关于';
+  AddedTime = '时间';
   AddToArticleList = '添加';
   AdmLogin = '管理员登陆';
   All = '全部';
   AlreadyLiked = '已经点过了';
+  Anki = 'Anki';
   AuthorisedUser = 'VIP';
   BeyondMaxFavorites = '超出最大收藏';
   Cancle = '取消';
@@ -57,6 +59,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Comment = '备注';
   Configs = '配置';
   Create = '创建';
+  Csv = 'csv';
   DefaultValue = '默认值';
   Delete = '删除';
   Description = '描述';
@@ -70,6 +73,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   EnableAutoLogin = '自动登陆';
   Enabled = '激活';
   EnumValue = '枚举值';
+  Example = '原文';
+  Export = '导出';
   Favorite = '收藏';
   FreeDraw = '涂鸦';
   Home = '首页';
@@ -77,6 +82,9 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ItemsCount = '词条数';
   Keyword = '关键字';
   Latest = '最近更新';
+  LatestDay = '今天';
+  LatestMonth = '本周';
+  LatestWeek = '本月';
   Like = '赞';
   Login = '登陆';
   Logout = '注销';
@@ -119,6 +127,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Subject = '主题';
   Tags = '标签';
   Themes = '主题(Beta)';
+  Time = '时间';
   Tools = '工具';
   Type = '类型';
   UnknownError = '失败了';
