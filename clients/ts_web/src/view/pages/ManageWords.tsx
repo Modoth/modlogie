@@ -1,9 +1,11 @@
 import './ManageWords.less'
 import { Button, Pagination, Table } from 'antd'
-import { HeartFilled, HeartOutlined, SearchOutlined, DownloadOutlined } from '@ant-design/icons'
+import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
+import { MinusCircleOutlined, PlusCircleOutlined, SearchOutlined, DownloadOutlined, ClearOutlined } from '@ant-design/icons'
 import { useServicesLocator } from '../common/Contexts'
-import IAnkiWordsExporter from '../../domain/ServiceInterfaces/IAnkiWordsExporter'
-import ICsvWordsExporter from '../../domain/ServiceInterfaces/ICsvWordsExporter'
+import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
+import ICsvItemsExporter from '../../domain/ServiceInterfaces/ICsvItemsExporter'
+import IDictService from '../../domain/ServiceInterfaces/IDictService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import IWordsStorage, { Word } from '../../domain/ServiceInterfaces/IWordsStorage'
@@ -20,7 +22,7 @@ export default function ManageWrods () {
   const [filter, setFilter] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
-  const countPerPage = 100
+  const countPerPage = 10
   const fetchWords = async (page: number) => {
     if (page === undefined) {
       page = currentPage
@@ -44,8 +46,8 @@ export default function ManageWrods () {
     try {
       await locator.locate(IWordsStorage).add(word.value, word.eg)
       word.removed = undefined
-      words.splice(words.indexOf(word))
-      words.unshift(word)
+      // words.splice(words.indexOf(word), 1)
+      // words.unshift(word)
       setWords([...words!])
       return true
     } catch (e) {
@@ -81,7 +83,7 @@ export default function ManageWrods () {
     return <span >{word.value}</span>
   }
 
-  const renderEg = (_: string, word: WordModel) => {
+  const rendEg = (_: string, word: WordModel) => {
     const tokens = (word.eg || '').split(word.value)
     const ele:JSX.Element[] = []
     for (let i = 0; i < tokens.length; i++) {
@@ -93,10 +95,6 @@ export default function ManageWrods () {
     return <span >{ele}</span>
   }
 
-  const rendAdded = (_: string, word: WordModel) => {
-    return <span >{new Date(word.added).toLocaleDateString()}</span>
-  }
-
   const rendToogle = (_: string, word: WordModel) => {
     return (
       <Button onClick={() => {
@@ -105,17 +103,17 @@ export default function ManageWrods () {
         } else {
           reAddWord(word)
         }
-      }} type="link" icon={!word.removed ? < HeartFilled /> : <HeartOutlined />}></Button>
+      }} type="link" icon={!word.removed ? < MinusCircleOutlined /> : <PlusCircleOutlined />}></Button>
 
     )
   }
   return (
     <div className="manage-words">
       <Table
-        rowKey="id"
+        rowKey="value"
         columns={[
           {
-            title: langs.get(LangKeys.Name),
+            title: langs.get(LangKeys.Word),
             dataIndex: 'value',
             key: 'value',
             className: 'word-value-column',
@@ -126,14 +124,7 @@ export default function ManageWrods () {
             dataIndex: 'eg',
             key: 'eg',
             className: 'word-eg-column',
-            render: renderEg
-          },
-          {
-            title: langs.get(LangKeys.AddedTime),
-            dataIndex: 'added',
-            key: 'added',
-            className: 'word-added-column',
-            render: rendAdded
+            render: rendEg
           },
           {
             title: '',
@@ -178,57 +169,113 @@ export default function ManageWrods () {
         >
         </Button>
         <Button
+          icon={<ClearOutlined />}
+          type="primary"
+          size="large" shape="circle"
+          onClick={() => {
+            locator.locate(IViewService).prompt(langs.get(LangKeys.Delete), [],
+              async () => {
+                (async () => {
+                  try {
+                    viewService.setLoading(true)
+                    await locator.locate(IWordsStorage).deleteAll()
+                  } catch (e) {
+                    viewService!.errorKey(langs, e.message)
+                    viewService.setLoading(false)
+                    return false
+                  }
+                })()
+                return true
+              })
+          }}
+        >
+        </Button>
+        <Button
           icon={<DownloadOutlined />}
+          type="primary"
           size="large" shape="circle"
           onClick={() => {
             const timeEnum = [LangKeys.All, LangKeys.LatestDay, LangKeys.LatestWeek, LangKeys.LatestMonth].map(s => langs.get(s))
             const typeEnum = [LangKeys.Csv, LangKeys.Anki].map(s => langs.get(s))
-            const tryExport = async (timeFilter:string, typeFilter:string) => {
-              let exporter
-              const typeIdx = typeEnum.indexOf(typeFilter)
-              switch (typeIdx) {
-                case 0:
-                  exporter = locator.locate(ICsvWordsExporter)
-                  break
-                case 1:
-                  exporter = locator.locate(IAnkiWordsExporter)
-                  break
-                default:
-                  return
+            const includeExplain = [LangKeys.No, LangKeys.Yes].map(s => langs.get(s))
+            const tryExport = async (timeFilter:string, typeFilter:string, explain:string) => {
+              let a:HTMLAnchorElement
+              let filename:string
+              try {
+                viewService.setLoading(true)
+                let exporter
+                const exp = includeExplain.indexOf(explain) === 1
+                const typeIdx = typeEnum.indexOf(typeFilter)
+                switch (typeIdx) {
+                  case 0:
+                    exporter = locator.locate(ICsvItemsExporter)
+                    break
+                  case 1:
+                    exporter = locator.locate(IAnkiItemsExporter)
+                    break
+                  default:
+                    return
+                }
+                const timeIdx = timeEnum.indexOf(timeFilter)
+                let timeStart = 0
+                const now = new Date()
+                switch (timeIdx) {
+                  case 1:
+                    timeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).valueOf()
+                    break
+                  case 2:
+                    timeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()).valueOf()
+                    break
+                  case 3:
+                    timeStart = new Date(now.getFullYear(), now.getMonth()).valueOf()
+                    break
+                }
+                let _ = 0
+                let words
+                type WordWithExplain = Word & {explain?:string}
+                const wordsStorage = locator.locate(IWordsStorage)
+                if (timeStart) {
+                  words = await wordsStorage.getAfter(timeStart, filter)
+                } else {
+                  [_, words] = await wordsStorage.getAll(filter)
+                }
+                if (exp) {
+                  const dictSercice = locator.locate(IDictService)
+                  for (const w of words) {
+                    (w as WordWithExplain).explain = await dictSercice.query(w.value)
+                  }
+                }
+                const fields:FieldInfo<WordWithExplain>[] = [
+                  {
+                    name: langs.get(LangKeys.Word),
+                    get: (word:WordWithExplain) => word.value
+                  },
+                  {
+                    name: langs.get(LangKeys.Example),
+                    get: (word:WordWithExplain) => word.eg || ''
+                  }
+                ]
+                if (exp) {
+                  fields.push({
+                    name: langs.get(LangKeys.Explain),
+                    get: (word:WordWithExplain) => word.explain || ''
+                  })
+                }
+                const buffer = await exporter.export(words as WordWithExplain[], fields)
+                filename = `${Date.now()}.${exporter.ext}`
+                a = document.createElement('a')
+                a.target = '_blank'
+                a.download = filename
+                if (store.url) {
+                  URL.revokeObjectURL(store.url)
+                }
+                store.url = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }))
+                a.href = store.url!
+              } catch (e) {
+                viewService!.errorKey(langs, e.message)
+                viewService.setLoading(false)
+                return
               }
-              const timeIdx = timeEnum.indexOf(timeFilter)
-              let timeStart = 0
-              const now = new Date()
-              switch (timeIdx) {
-                case 1:
-                  timeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).valueOf()
-                  break
-                case 2:
-                  timeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()).valueOf()
-                  break
-                case 3:
-                  timeStart = new Date(now.getFullYear(), now.getMonth()).valueOf()
-                  break
-              }
-              let _ = 0
-              let words
-              const wordsStorage = locator.locate(IWordsStorage)
-              if (timeStart) {
-                words = await wordsStorage.getAfter(timeStart, filter)
-              } else {
-                [_, words] = await wordsStorage.getAll(filter)
-              }
-              console.log(words)
-              const buffer = await exporter.export(words)
-              const filename = `${Date.now()}.${exporter.ext}`
-              const a = document.createElement('a')
-              a.target = '_blank'
-              a.download = filename
-              if (store.url) {
-                URL.revokeObjectURL(store.url)
-              }
-              store.url = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }))
-              a.href = store.url!
 
               locator.locate(IViewService).prompt(`${langs.get(LangKeys.Export)}:${filename}`, [
               ], async () => {
@@ -248,9 +295,17 @@ export default function ManageWrods () {
                 type: 'Enum',
                 value: typeEnum[0],
                 values: typeEnum
+              },
+              {
+                hint: langs.get(LangKeys.Explain),
+                type: 'Enum',
+                value: includeExplain[0],
+                values: includeExplain
               }
-            ], async (timeFilter:string, typeFilter:string) => {
-              tryExport(timeFilter, typeFilter)
+            ], async (timeFilter:string, typeFilter:string, explain:string) => {
+              (() => {
+                tryExport(timeFilter, typeFilter, explain)
+              })()
               return true
             })
           }}

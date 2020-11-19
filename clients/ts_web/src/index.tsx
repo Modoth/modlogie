@@ -11,13 +11,13 @@ import { LoginServiceClient } from './impl/remote-apis/LoginServiceClientPb'
 import { ServicesLocatorProvider } from './view/common/Contexts'
 import { TagsServiceClient } from './impl/remote-apis/TagsServiceClientPb'
 import { UsersServiceClient } from './impl/remote-apis/UsersServiceClientPb'
-import AnkiWordsExporter from './domain/Services/AnkiWordsExporter'
+import AnkiItemsExporter from './domain/Services/AnkiItemsExporter'
 import App from './view/App'
 import AppArticleServiceSingleton from './app/AppServices/ArticleAppservice'
 import ArticleService from './impl/RemoteServices/ArticleService'
 import Blog from './plugins/blog'
 import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
-import CsvWordsExporter from './domain/Services/CsvWordsExporter'
+import CsvItemsExporter from './domain/Services/CsvItemsExporter'
 import Data from './plugins/data'
 import DefaultConfigs from './app/Interfaces/DefaultConfigs'
 import DictService from './domain/Services/DictService'
@@ -25,13 +25,13 @@ import EditorsServiceSingleton from './app/AppServices/EditorsServiceSingleton'
 import ExternalBlog from './plugins/externalblog'
 import FavoritesServerSingleton from './domain/Services/FavoritesServerSingleton'
 import H5 from './plugins/h5'
-import IAnkiWordsExporter from './domain/ServiceInterfaces/IAnkiWordsExporter'
+import IAnkiItemsExporter from './domain/ServiceInterfaces/IAnkiItemsExporter'
 import IArticleAppservice from './app/Interfaces/IArticleAppservice'
 import IArticleListService from './app/Interfaces/IArticleListService'
 import IArticleService from './domain/ServiceInterfaces/IArticleService'
 import IAutoAccountService from './domain/ServiceInterfaces/IAutoAccountService'
 import IConfigsService, { Config, ConfigType } from './domain/ServiceInterfaces/IConfigsSercice'
-import ICsvWordsExporter from './domain/ServiceInterfaces/ICsvWordsExporter'
+import ICsvItemsExporter from './domain/ServiceInterfaces/ICsvItemsExporter'
 import IDictService from './domain/ServiceInterfaces/IDictService'
 import IEditorsService from './app/Interfaces/IEditorsService'
 import IFavoritesServer from './domain/ServiceInterfaces/IFavoritesServer'
@@ -255,8 +255,8 @@ const buildServicesLocator = () => {
   serviceLocator.register(INavigationService, NavigationService)
   serviceLocator.register(IUserBlobStorage, LocalUserBlobStorage)
   serviceLocator.register(IWordsStorage, WordsStorageSingleton)
-  serviceLocator.register(ICsvWordsExporter, CsvWordsExporter)
-  serviceLocator.register(IAnkiWordsExporter, AnkiWordsExporter)
+  serviceLocator.register(ICsvItemsExporter, CsvItemsExporter)
+  serviceLocator.register(IAnkiItemsExporter, AnkiItemsExporter)
 
   const interpretersService = new LangInterpretersService()
   serviceLocator.registerInstance(

@@ -23,6 +23,7 @@ export class LangKeysInterface {
   Csv = 'Csv';
   DefaultValue = 'DefaultValue';
   Delete = 'Delete';
+  DeleteAll = 'DeleteAll';
   Description = 'Description';
   Detail = 'Detail';
   Dict = 'Dict';
@@ -35,6 +36,7 @@ export class LangKeysInterface {
   Enabled = 'Enabled';
   EnumValue = 'EnumValue';
   Example = 'Example';
+  Explain = 'Explain';
   Export = 'Export';
   Favorite = 'Favorite';
   FreeDraw = 'FreeDraw';
@@ -67,6 +69,7 @@ export class LangKeysInterface {
   Name = 'Name';
   NewName = 'NewName';
   NewPassword = 'NewPassword';
+  No = 'No';
   NotFount = 'NotFount';
   Ok = 'Ok';
   Open = 'Open';
@@ -98,6 +101,8 @@ export class LangKeysInterface {
   Value = 'Value';
   Viewers = 'Viewers';
   Welcome = 'Welcome';
+  Word = 'Word';
+  Yes = 'Yes';
 }
 
 export enum ErrorMessage {

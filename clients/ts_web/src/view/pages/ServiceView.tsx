@@ -367,11 +367,13 @@ export default function ServiceView (props: {
                 )
               case 'Enum':
                 return (
-                  <Radio.Group key={i} onChange={(e) => updateField(i, field, e.target.value)} value={field.value}>
-                    {
-                      field.values ? field.values.map(value => <Radio key={value} value={value}>{value}</Radio>) : []
-                    }
-                  </Radio.Group>
+                  <div key={i} className="enum"><span className="enum-title">{field.hint || ''}</span>
+                    <Radio.Group onChange={(e) => updateField(i, field, e.target.value)} value={field.value}>
+                      {
+                        field.values ? field.values.map(value => <Radio key={value} value={value}>{value}</Radio>) : []
+                      }
+                    </Radio.Group>
+                  </div>
                 )
               case 'Label':
                 return (

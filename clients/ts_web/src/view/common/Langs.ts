@@ -62,6 +62,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Csv = 'csv';
   DefaultValue = '默认值';
   Delete = '删除';
+  DeleteAll = '全部删除';
   Description = '描述';
   Detail = '详情';
   Dict = '字典';
@@ -74,6 +75,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Enabled = '激活';
   EnumValue = '枚举值';
   Example = '原文';
+  Explain = '释义';
   Export = '导出';
   Favorite = '收藏';
   FreeDraw = '涂鸦';
@@ -106,6 +108,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Name = '名称';
   NewName = '新名称';
   NewPassword = '新密码';
+  No = '否';
   NotFount = '未找到';
   Ok = '确定';
   Open = '打开';
@@ -137,6 +140,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Value = '值';
   Viewers = '阅读器';
   Welcome = '感谢使用';
+  Word = '单词';
+  Yes = '是';
 }
 
 const Langs = new LangKeysClass()
