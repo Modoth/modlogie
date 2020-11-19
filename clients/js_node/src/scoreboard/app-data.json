@@ -1,13 +1,10 @@
 {
   "theme": {
-    "primary": "#cc9999",
+    "primary": "lightslategray",
     "primaryColor": "whitesmoke"
   },
   "colors": [
-    "#cc9999",
-    "#e9ae6a",
-    "#ff6666",
-    "#99cc66"
+    "lightslategray"
   ],
   "ordinals": [
     {
