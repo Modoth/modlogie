@@ -53,7 +53,7 @@
 
 #logo,
 #help {
-  background: cadetblue;
+  background: var(--primary);
   border-radius: 20%;
   color: white;
   display: block;

@@ -45,14 +45,14 @@ export class TextRenderManager {
     this.themes = [
       theme,
       {
-        fontSize: 18,
+        fontSize: theme.fontSize,
         color: 'darkslateblue',
         hightcolor: 'red',
         fontFamily: 'serif',
         background: '#f6f6e2'
       },
       {
-        fontSize: 18,
+        fontSize: theme.fontSize,
         color: '#eee',
         hightcolor: 'red',
         fontFamily: 'serif',

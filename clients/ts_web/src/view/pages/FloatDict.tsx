@@ -43,7 +43,7 @@ export default function FloatDict (props:{word:string, position:FloatDictPositio
       if (store.destoried) {
         return
       }
-      const position = (props.position?.[1] || 0) + 10 + offset + (document.scrollingElement?.scrollTop || 0)
+      const position = (props.position?.[1] || 0) + 20 + offset + (document.scrollingElement?.scrollTop || 0)
       if (cancleToken === store.cancleToken) {
         clearLastCancleToken()
         if (url) {

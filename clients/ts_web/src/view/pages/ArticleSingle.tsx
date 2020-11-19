@@ -106,7 +106,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   callbacks.onSections = setSections
   callbacks.onSection = setCurrentSection
   return (
-    <LocatableOffsetProvider value={60}>
+    <LocatableOffsetProvider value={0}>
       <LocatableView View={Div} callbacks={locateRef} className={classNames('single-article', getThemeClass(currentTheme), paging ? 'paging' : '')}>
         <div className={classNames('menus')}>
           <div className={classNames('menus-bar')} onClick={e => e.stopPropagation()}>
