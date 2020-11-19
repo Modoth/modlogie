@@ -118,7 +118,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                   <Button onClick={nextPage} type="link" size="large" className="paging-button paging-button-right" icon={<RightCircleOutlined />} ></Button>
                 </div> : null}
                 {
-                  <Dropdown trigger={['click']} overlay={
+                  <Dropdown placement="bottomRight" trigger={['click']} overlay={
                     <Menu>
                       {paging ? null : [
                         <Menu.Item key="menu"><Button className="single-article-content-menu-btn" type="link" size="large" icon={<VerticalAlignTopOutlined />} onClick={() => scrollToTop()}>{langs.get(LangKeys.Menu)}</Button></Menu.Item>
