@@ -114,7 +114,6 @@ export class App {
 
   async launch () {
     if (window.$file) {
-      this.showHelp()
       this.loadFile(window.$file)
     }
   }
