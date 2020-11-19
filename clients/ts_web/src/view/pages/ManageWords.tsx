@@ -273,11 +273,12 @@ export default function ManageWrods () {
                 a.href = store.url!
               } catch (e) {
                 viewService!.errorKey(langs, e.message)
-                viewService.setLoading(false)
                 return
+              } finally {
+                viewService.setLoading(false)
               }
 
-              locator.locate(IViewService).prompt(`${langs.get(LangKeys.Export)}:${filename}`, [
+              locator.locate(IViewService).prompt(`${langs.get(LangKeys.Save)}:${filename}`, [
               ], async () => {
                 a.click()
                 return true

@@ -82,6 +82,7 @@ export class LangKeysInterface {
   RemoveFromArticleList = 'RemoveFromArticleList';
   Rename = 'Rename';
   Reset = 'Reset';
+  Save = 'Save';
   ScreenShot = 'ScreenShot';
   Scroll = 'Scroll';
   Search = 'Search';

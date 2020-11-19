@@ -121,6 +121,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   RemoveFromArticleList = '移除';
   Rename = '重命名';
   Reset = '重置';
+  Save = '保存';
   ScreenShot = '截图';
   Scroll = '滚动';
   Search = '搜索';
