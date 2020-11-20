@@ -2,8 +2,32 @@ import './CaptureDict.less'
 import FloatDict, { FloatDictPosition } from './FloatDict'
 import React, { useState, useEffect } from 'react'
 
+const isBlock = (n:Node):boolean => {
+  if (n.nodeType === 3) {
+    return false
+  }
+  if (n.nodeType !== 1) {
+    return true
+  }
+  const e = n as HTMLElement
+  const style = getComputedStyle(e)
+  return !!style.display.match(/block|flex|table|grid/i)
+}
+
+const getNodeParent = (n :Node) => {
+  let p:Node|null = n
+  while (p && !isBlock(p)) {
+    p = p.parentNode
+  }
+  return p
+}
+
+const textOffsetOfParent = (n:Node, p:Node) => {
+  return (p.textContent || '').indexOf(n.textContent || '')
+}
+
 const maxEgLength = 100
-const endingCharacters = /\.|\?|!|。|？|！|\n/
+const endingCharacters = new Set('.?!。？！\n')
 const getEg = (p:string, wordStart:number, wordEnd:number) => {
   const trim = (p:string) => {
     p = p.replace(/(\s|\n|,|:|：|、|，|“)*$/g, '')
@@ -13,27 +37,34 @@ const getEg = (p:string, wordStart:number, wordEnd:number) => {
   if (p.length <= maxEgLength) {
     return trim(p)
   }
-  let start = Math.max(wordStart - maxEgLength / 2)
-  if (start <= 0) {
+  let prefix = '...'
+  let start = wordEnd - maxEgLength
+  if (start < 0) {
     start = 0
-  } else {
-    const match = p.match(endingCharacters)
-    if (match && match.index !== undefined && match.index < wordStart) {
-      start += match.index + 1
+    prefix = ''
+  }
+  let preEndingCharIdx = start - 1
+  for (let i = wordStart - 1; i >= start; i--) {
+    if (endingCharacters.has(p[i])) {
+      preEndingCharIdx = i
+      prefix = ''
+      break
     }
   }
+  start = preEndingCharIdx + 1
   let end = start + maxEgLength
   let surfix = '...'
-  if (end >= p.length) {
-    end = p.length
-    surfix = ''
+  let nextEndingCharIdx = end - 1
+  for (let i = wordEnd; i < end; i++) {
+    if (endingCharacters.has(p[i])) {
+      nextEndingCharIdx = i
+      surfix = ''
+      break
+    }
   }
-  const match = p.slice(wordEnd).match(endingCharacters)
-  if (match && match.index !== undefined) {
-    end = wordEnd + match.index
-  }
+  end = nextEndingCharIdx + 1
   const eg = trim(p.slice(start, end))
-  return `${eg}${surfix}`
+  return `${prefix}${eg}${surfix}`
 }
 export default function CaptureDict (props:{offset:number}) {
   const [word, setWord] = useState('')
@@ -42,15 +73,24 @@ export default function CaptureDict (props:{offset:number}) {
   useEffect(() => {
     const handleSelected = async () => {
       const section = window.getSelection()
-      const node = section?.anchorNode as any
-      const p :string = (node?.innerText || node?.wholeText || '').trim()
       let w = section?.toString() || ''
       if (!w) {
         setWord('')
         setEg('')
         return
       }
-      const eg = getEg(p, section!.anchorOffset, section!.anchorOffset + w.length)
+      const node = section?.anchorNode!
+      let text = node.textContent!
+      let start = section!.anchorOffset!
+      const p = getNodeParent(node)
+      if (p) {
+        const offset = textOffsetOfParent(node, p)
+        if (~offset) {
+          text = p.textContent!
+          start += offset
+        }
+      }
+      const eg = getEg(text, start, start + w.length)
       w = w.trim()
       console.log(eg, w)
       setWord(w)
