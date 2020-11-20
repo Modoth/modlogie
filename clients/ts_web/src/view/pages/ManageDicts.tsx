@@ -111,7 +111,7 @@ export default function ManageDicts () {
         selectDictFile()
       }}></Button>
       <Button className="menu-title" type="link" >{langs.get(LangKeys.ItemsCount)}{importing ? `${importProgress}%` : <span className="info">{(info && info.itemCount) || ''}</span>}</Button>
-      <Button size="large" type="link" icon={<DeleteOutlined />} onClick={clearDict}></Button>
+      <Button size="large" type="link" danger icon={<DeleteOutlined />} onClick={clearDict}></Button>
     </div>
   </div >
 }

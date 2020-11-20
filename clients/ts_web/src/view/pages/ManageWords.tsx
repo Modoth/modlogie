@@ -3,13 +3,19 @@ import { Button, Pagination, Table } from 'antd'
 import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
 import { MinusCircleOutlined, PlusCircleOutlined, SearchOutlined, DownloadOutlined, ClearOutlined } from '@ant-design/icons'
 import { useServicesLocator } from '../common/Contexts'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import FloatDict, { FloatDictPosition } from './FloatDict'
 import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ICsvItemsExporter from '../../domain/ServiceInterfaces/ICsvItemsExporter'
 import IDictService from '../../domain/ServiceInterfaces/IDictService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import IWordsStorage, { Word } from '../../domain/ServiceInterfaces/IWordsStorage'
 import React, { useState, useEffect } from 'react'
+import sleep from '../../infrac/Lang/sleep'
+// eslint-disable-next-line camelcase
+import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
 
 type WordModel = Word & {removed?:boolean}
 
@@ -23,6 +29,8 @@ export default function ManageWrods () {
   const [currentPage, setCurrentPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
   const countPerPage = 10
+  const [word, setWord] = useState('')
+  const [mousePos, setMousePos] = useState<FloatDictPosition>()
   const fetchWords = async (page: number) => {
     if (page === undefined) {
       page = currentPage
@@ -79,8 +87,19 @@ export default function ManageWrods () {
     fetchWords(1)
   }, [filter])
 
+  const queryWord = (word:string, evr:React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    evr.stopPropagation()
+    const ev = evr.nativeEvent as MouseEvent | TouchEvent
+    const mousePos : FloatDictPosition = ev instanceof MouseEvent ? [ev.clientX, ev.clientY] : (ev.touches[0] ? [ev.touches[0].clientX, ev.touches[0].clientY] : undefined)
+    if (mousePos) {
+      mousePos[1] += 10
+    }
+    setMousePos(mousePos)
+    setWord(word)
+  }
+
   const rendValue = (_: string, word: WordModel) => {
-    return <span >{word.value}</span>
+    return <span className="word" onClick={(ev) => queryWord(word.value, ev)}>{word.value}</span>
   }
 
   const rendEg = (_: string, word: WordModel) => {
@@ -88,7 +107,7 @@ export default function ManageWrods () {
     const ele:JSX.Element[] = []
     for (let i = 0; i < tokens.length; i++) {
       if (i !== 0) {
-        ele.push(<span className="word">{word.value}</span>)
+        ele.push(<span className="word" onClick={(ev) => queryWord(word.value, ev)}>{word.value}</span>)
       }
       ele.push(<span>{tokens[i]}</span>)
     }
@@ -108,7 +127,13 @@ export default function ManageWrods () {
     )
   }
   return (
-    <div className="manage-words">
+    <div className="manage-words" onClick={
+      () => {
+        if (word) {
+          setWord('')
+        }
+      }
+    }>
       <Table
         rowKey="value"
         columns={[
@@ -171,6 +196,7 @@ export default function ManageWrods () {
         <Button
           icon={<ClearOutlined />}
           type="primary"
+          danger
           size="large" shape="circle"
           onClick={() => {
             locator.locate(IViewService).prompt(langs.get(LangKeys.Delete), [],
@@ -196,7 +222,7 @@ export default function ManageWrods () {
           size="large" shape="circle"
           onClick={() => {
             const timeEnum = [LangKeys.All, LangKeys.LatestDay, LangKeys.LatestWeek, LangKeys.LatestMonth].map(s => langs.get(s))
-            const typeEnum = [LangKeys.Csv, LangKeys.Anki].map(s => langs.get(s))
+            const typeEnum = [LangKeys.Anki, LangKeys.Csv].map(s => langs.get(s))
             const includeExplain = [LangKeys.No, LangKeys.Yes].map(s => langs.get(s))
             const tryExport = async (timeFilter:string, typeFilter:string, explain:string) => {
               let a:HTMLAnchorElement
@@ -204,14 +230,20 @@ export default function ManageWrods () {
               try {
                 viewService.setLoading(true)
                 let exporter
+                let exporterOpt
                 const exp = includeExplain.indexOf(explain) === 1
                 const typeIdx = typeEnum.indexOf(typeFilter)
                 switch (typeIdx) {
                   case 0:
-                    exporter = locator.locate(ICsvItemsExporter)
+                    exporter = locator.locate(IAnkiItemsExporter)
+                    exporterOpt = {
+                      front: '{{Front}}',
+                      back: '{{FrontSide}}\n\n<hr id="answer">\n\n{{Back}}',
+                      css: '.card {\n font-family: arial;\n font-size: 20px;\n text-align: center;\n color: black;\nbackground-color: white;\n}\n'
+                    }
                     break
                   case 1:
-                    exporter = locator.locate(IAnkiItemsExporter)
+                    exporter = locator.locate(ICsvItemsExporter)
                     break
                   default:
                     return
@@ -232,6 +264,7 @@ export default function ManageWrods () {
                 }
                 let _ = 0
                 let words
+                await sleep(0)
                 type WordWithExplain = Word & {explain?:string}
                 const wordsStorage = locator.locate(IWordsStorage)
                 if (timeStart) {
@@ -243,6 +276,7 @@ export default function ManageWrods () {
                   const dictSercice = locator.locate(IDictService)
                   for (const w of words) {
                     (w as WordWithExplain).explain = await dictSercice.query(w.value)
+                    await sleep(0)
                   }
                 }
                 const fields:FieldInfo<WordWithExplain>[] = [
@@ -261,8 +295,10 @@ export default function ManageWrods () {
                     get: (word:WordWithExplain) => word.explain || ''
                   })
                 }
-                const buffer = await exporter.export(words as WordWithExplain[], fields)
-                filename = `${Date.now()}.${exporter.ext}`
+                const siteName = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
+                const name = `${siteName}_${langs.get(LangKeys.FavoriteWords)}_${yyyyMMdd_HHmmss(new Date())}`
+                const buffer = await (exporter.export as any)(name, words as WordWithExplain[], fields, exporterOpt)
+                filename = `${name}.${exporter.ext}`
                 a = document.createElement('a')
                 a.target = '_blank'
                 a.download = filename
@@ -271,6 +307,12 @@ export default function ManageWrods () {
                 }
                 store.url = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }))
                 a.href = store.url!
+                try {
+                  a.click()
+                  return
+                } catch (e) {
+                  // ignore
+                }
               } catch (e) {
                 viewService!.errorKey(langs, e.message)
                 return
@@ -278,7 +320,7 @@ export default function ManageWrods () {
                 viewService.setLoading(false)
               }
 
-              locator.locate(IViewService).prompt(`${langs.get(LangKeys.Save)}:${filename}`, [
+              locator.locate(IViewService).prompt(langs.get(LangKeys.ExportComplete), [
               ], async () => {
                 a.click()
                 return true
@@ -292,18 +334,18 @@ export default function ManageWrods () {
                 values: timeEnum
               },
               {
-                hint: langs.get(LangKeys.Type),
-                type: 'Enum',
-                value: typeEnum[0],
-                values: typeEnum
-              },
-              {
                 hint: langs.get(LangKeys.Explain),
                 type: 'Enum',
                 value: includeExplain[0],
                 values: includeExplain
+              },
+              {
+                hint: langs.get(LangKeys.Type),
+                type: 'Enum',
+                value: typeEnum[0],
+                values: typeEnum
               }
-            ], async (timeFilter:string, typeFilter:string, explain:string) => {
+            ], async (timeFilter:string, explain:string, typeFilter:string) => {
               (() => {
                 tryExport(timeFilter, typeFilter, explain)
               })()
@@ -313,6 +355,7 @@ export default function ManageWrods () {
         >
         </Button>
       </div>
+      <FloatDict word={word} position={mousePos} hidenMenu={true}></FloatDict>
     </div >
   )
 }

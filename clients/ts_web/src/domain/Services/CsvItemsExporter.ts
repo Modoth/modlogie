@@ -14,7 +14,7 @@ export default class CsvItemsExporter implements ICsvItemsExporter {
     return 'csv'
   }
 
-  async export<TItem> (items: TItem[], fields: FieldInfo<TItem>[]): Promise<ArrayBuffer> {
+  async export<TItem> (name:string, items: TItem[], fields: FieldInfo<TItem>[]): Promise<ArrayBuffer> {
     const content = fields.map(f => f.name).join(csvSplit) +
     '\n' +
     items.map(w => fields.map(f => toCsvStr(f.get(w))).join(csvSplit)).join('\n')

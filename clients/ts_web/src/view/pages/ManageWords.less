@@ -1,5 +1,6 @@
 .manage-words {
-  padding: 10px 10px 40px 10px;
+  padding: 0 10px;
+  flex: 1;
 
   & .word-value-column {
     width: 96px;
@@ -13,10 +14,15 @@
 
   .word {
     color: #e8912e;
+    user-select: all;
   }
 
   .ant-table {
     border-radius: 10px;
     box-shadow: var(--shadow);
-}
+  }
+
+  .ant-btn-dangerous.ant-btn-primary {
+    box-shadow: 1px 1px 3px #0008;
+  }
 }

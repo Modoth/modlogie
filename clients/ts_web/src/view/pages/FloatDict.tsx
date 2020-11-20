@@ -9,7 +9,8 @@ import IWordsStorage from '../../domain/ServiceInterfaces/IWordsStorage'
 import React, { useState, useEffect } from 'react'
 
 export type FloatDictPosition = [number, number]|undefined
-export default function FloatDict (props:{word:string, eg?:string, position:FloatDictPosition}) {
+
+export default function FloatDict (props:{word:string, eg?:string, position:FloatDictPosition, hidenMenu?:boolean}) {
   const offset = useLocatableOffset()
   const [word, setWord] = useState('')
   const [origin, setOrigin] = useState('')
@@ -112,8 +113,12 @@ export default function FloatDict (props:{word:string, eg?:string, position:Floa
     {url ? <div style={{ top: position }} className='float-dict'>
       <div className="title">
         <Button type="link" className='word'>{word || ''}</Button>
-        <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}></Button>
+        {
+          props.hidenMenu ? undefined
+            : <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}></Button>
+        }
       </div>
+
       <iframe src={url} sandbox=""></iframe> </div> : undefined
     }
   </div>

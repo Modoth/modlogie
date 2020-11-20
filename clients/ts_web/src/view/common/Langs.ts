@@ -77,7 +77,9 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Example = '原文';
   Explain = '释义';
   Export = '导出';
+  ExportComplete = '导出完成、确定保存';
   Favorite = '收藏';
+  FavoriteWords = '生词表';
   FreeDraw = '涂鸦';
   Home = '首页';
   Import = '导入';

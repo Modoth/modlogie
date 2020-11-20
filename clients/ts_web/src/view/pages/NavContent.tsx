@@ -16,7 +16,8 @@ import Home from './Home'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import Library from './Library'
 import Login from './Login'
-import ManageDictsAndWords from './ManageDictsAndWords'
+import ManageDicts from './ManageDicts'
+import ManageWords from './ManageWords'
 import Markdown from '../../infrac/components/Markdown'
 import React, { useState, useEffect } from 'react'
 
@@ -62,7 +63,10 @@ function NavContent () {
         <ManageUsers />
       </Route>
       <Route path="/manage/dicts">
-        <ManageDictsAndWords />
+        <ManageDicts />
+      </Route>
+      <Route path="/manage/words">
+        <ManageWords />
       </Route>
       <Route path="/login">
         <Login />

@@ -38,7 +38,9 @@ export class LangKeysInterface {
   Example = 'Example';
   Explain = 'Explain';
   Export = 'Export';
+  ExportComplete = 'ExportComplete';
   Favorite = 'Favorite';
+  FavoriteWords = 'FavoriteWords';
   FreeDraw = 'FreeDraw';
   Home = 'Home';
   Import = 'Import';
