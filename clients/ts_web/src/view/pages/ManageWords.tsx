@@ -4,7 +4,7 @@ import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
 import { MinusCircleOutlined, PlusCircleOutlined, SearchOutlined, DownloadOutlined, ClearOutlined } from '@ant-design/icons'
 import { useServicesLocator } from '../common/Contexts'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
-import FloatDict, { FloatDictPosition } from './FloatDict'
+import DictView from './DictView'
 import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ICsvItemsExporter from '../../domain/ServiceInterfaces/ICsvItemsExporter'
@@ -25,12 +25,11 @@ export default function ManageWrods () {
   const viewService = locator.locate(IViewService)
   const [store] = useState<{url?:string}>({})
   const [words, setWords] = useState<WordModel[]>([])
+  const [queryWord, setQueryWord] = useState<WordModel|undefined>()
   const [filter, setFilter] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
   const countPerPage = 10
-  const [word, setWord] = useState('')
-  const [mousePos, setMousePos] = useState<FloatDictPosition>()
   const fetchWords = async (page: number) => {
     if (page === undefined) {
       page = currentPage
@@ -39,6 +38,7 @@ export default function ManageWrods () {
       viewService.setLoading(true)
       const [total, words] = await locator.locate(IWordsStorage).getAll(filter, countPerPage * (page! - 1), countPerPage)
       setWords(words)
+      setQueryWord(words[0])
       setTotalCount(total)
       setCurrentPage(page)
     } catch (e) {
@@ -83,23 +83,20 @@ export default function ManageWrods () {
     }
   }, [])
 
+  const toogleWord = (word:WordModel) => {
+    if (queryWord !== word) {
+      setQueryWord(word)
+    } else {
+      setQueryWord(undefined)
+    }
+  }
+
   useEffect(() => {
     fetchWords(1)
   }, [filter])
 
-  const queryWord = (word:string, evr:React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-    evr.stopPropagation()
-    const ev = evr.nativeEvent as MouseEvent | TouchEvent
-    const mousePos : FloatDictPosition = ev instanceof MouseEvent ? [ev.clientX, ev.clientY] : (ev.touches[0] ? [ev.touches[0].clientX, ev.touches[0].clientY] : undefined)
-    if (mousePos) {
-      mousePos[1] += 10
-    }
-    setMousePos(mousePos)
-    setWord(word)
-  }
-
   const rendValue = (_: string, word: WordModel) => {
-    return <span className="word" onClick={(ev) => queryWord(word.value, ev)}>{word.value}</span>
+    return <span className="word" onClick={() => toogleWord(word)}>{word.value}</span>
   }
 
   const rendEg = (_: string, word: WordModel) => {
@@ -107,11 +104,14 @@ export default function ManageWrods () {
     const ele:JSX.Element[] = []
     for (let i = 0; i < tokens.length; i++) {
       if (i !== 0) {
-        ele.push(<span className="word" onClick={(ev) => queryWord(word.value, ev)}>{word.value}</span>)
+        ele.push(<span className="word">{word.value}</span>)
       }
       ele.push(<span>{tokens[i]}</span>)
     }
-    return <span >{ele}</span>
+    return <div onClick={() => toogleWord(word)}><div >{ele}</div>
+      {word === queryWord
+        ? <div className="dict"><DictView word={word.value} hidenMenu={true}></DictView></div> : undefined}
+    </div>
   }
 
   const rendToogle = (_: string, word: WordModel) => {
@@ -127,15 +127,10 @@ export default function ManageWrods () {
     )
   }
   return (
-    <div className="manage-words" onClick={
-      () => {
-        if (word) {
-          setWord('')
-        }
-      }
-    }>
+    <div className="manage-words">
       <Table
         rowKey="value"
+        showHeader={false}
         columns={[
           {
             title: langs.get(LangKeys.Word),
@@ -355,7 +350,6 @@ export default function ManageWrods () {
         >
         </Button>
       </div>
-      <FloatDict word={word} position={mousePos} hidenMenu={true}></FloatDict>
     </div >
   )
 }

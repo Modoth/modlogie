@@ -1,5 +1,5 @@
 import './CaptureDict.less'
-import FloatDict, { FloatDictPosition } from './FloatDict'
+import DictView, { FloatDictPosition } from './DictView'
 import React, { useState, useEffect } from 'react'
 
 const isBlock = (n:Node):boolean => {
@@ -116,5 +116,5 @@ export default function CaptureDict (props:{offset:number}) {
       document.removeEventListener('mousemove', handlePosition)
     }
   }, [])
-  return <FloatDict word={word} eg={eg} position={mousePos}></FloatDict>
+  return <DictView word={word} eg={eg} position={mousePos}></DictView>
 }

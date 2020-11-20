@@ -1,7 +1,8 @@
-import './FloatDict.less'
+import './DictView.less'
 import { Button } from 'antd'
 import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import { useLocatableOffset, useServicesLocator } from '../common/Contexts'
+import classNames from 'classnames'
 import IDictService, { CancleToken, DictInfo } from '../../domain/ServiceInterfaces/IDictService'
 import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -10,13 +11,12 @@ import React, { useState, useEffect } from 'react'
 
 export type FloatDictPosition = [number, number]|undefined
 
-export default function FloatDict (props:{word:string, eg?:string, position:FloatDictPosition, hidenMenu?:boolean}) {
+export default function DictView (props:{word:string, eg?:string, position?:FloatDictPosition, hidenMenu?:boolean}) {
   const offset = useLocatableOffset()
   const [word, setWord] = useState('')
   const [origin, setOrigin] = useState('')
   const [url, setUrl] = useState<string | undefined>()
-  const [info, setInfo] = useState<DictInfo | undefined>()
-  const [position, setPosition] = useState<number>(0)
+  const [position, setPosition] = useState<number|undefined>()
   const locator = useServicesLocator()
   const [favorite, setFavorite] = useState(false)
   const [store] = useState<{ cancleToken?: CancleToken, destoried?: boolean }>({})
@@ -63,7 +63,7 @@ export default function FloatDict (props:{word:string, eg?:string, position:Floa
       if (store.destoried) {
         return
       }
-      const position = (props.position?.[1] || 0) + 20 + offset + (document.scrollingElement?.scrollTop || 0)
+      const position = !props.position ? undefined : (props.position?.[1] || 0) + 20 + offset + (document.scrollingElement?.scrollTop || 0)
       if (cancleToken === store.cancleToken) {
         let fav = false
         if (url) {
@@ -90,35 +90,17 @@ export default function FloatDict (props:{word:string, eg?:string, position:Floa
     await queryWord(w, w)
   }
   useEffect(() => {
-    (async () => {
-      store.cancleToken = { cancled: false }
-      viewService.setLoading(true)
-      try {
-        const info = await dictServer.info(store.cancleToken)
-        if (!store.destoried) {
-          setInfo(info)
-        }
-      } catch (e) {
-        console.log(e)
-      } finally {
-        clearLastCancleToken()
-        viewService.setLoading(false)
-      }
-    })()
-  }, [])
-  useEffect(() => {
     tryQuery()
   }, [props.word])
-  return <div className="float-dict-wraper">
-    {url ? <div style={{ top: position }} className='float-dict'>
-      <div className="title">
-        <Button type="link" className='word'>{word || ''}</Button>
-        {
-          props.hidenMenu ? undefined
-            : <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}></Button>
-        }
-      </div>
-
+  return <div className={classNames('dict-view-wraper', props.position ? 'floating' : '')}>
+    {url ? <div style={{ top: position }} className='dict-view'>
+      {
+        props.hidenMenu ? undefined
+          : <div className="title">
+            <Button type="link" className='word'>{word || ''}</Button>
+            <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}></Button>
+          </div>
+      }
       <iframe src={url} sandbox=""></iframe> </div> : undefined
     }
   </div>
