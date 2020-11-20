@@ -5,7 +5,7 @@ import IWordsStorage, { Word } from '../domain/ServiceInterfaces/IWordsStorage'
 export default class WordsStorageSingleton extends IServicesLocator implements IWordsStorage {
   private _cache :Promise<Word[]>
   private _namedCache: Promise<Map<string, Word>>
-  private maxWordsCount = 10000;
+  private maxWordsCount = 5000;
   private StorageKey = 'WordsStorage'
   private getCache () {
     if (!this._cache) {

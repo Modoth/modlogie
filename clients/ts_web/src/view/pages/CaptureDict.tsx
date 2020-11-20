@@ -3,13 +3,37 @@ import FloatDict, { FloatDictPosition } from './FloatDict'
 import React, { useState, useEffect } from 'react'
 
 const maxEgLength = 100
-const getEg = (p:string, anchorOffset:number) => {
-  if (p.length <= maxEgLength) {
+const endingCharacters = /\.|\?|!|。|？|！|\n/
+const getEg = (p:string, wordStart:number, wordEnd:number) => {
+  const trim = (p:string) => {
+    p = p.replace(/(\s|\n|,|:|：|、|，|“)*$/g, '')
+    p = p.replace(/^(\s|\n|,|:|：|、|，|”)*/g, '')
     return p
   }
-  const start = Math.max(anchorOffset - p.length / 2, 0)
-  const end = start + maxEgLength
-  return `${start === 0 ? '' : '...'}${p.slice(start, end)}${start === p.length ? '' : '...'}`
+  if (p.length <= maxEgLength) {
+    return trim(p)
+  }
+  let start = Math.max(wordStart - maxEgLength / 2)
+  if (start <= 0) {
+    start = 0
+  } else {
+    const match = p.match(endingCharacters)
+    if (match && match.index !== undefined && match.index < wordStart) {
+      start += match.index + 1
+    }
+  }
+  let end = start + maxEgLength
+  let surfix = '...'
+  if (end >= p.length) {
+    end = p.length
+    surfix = ''
+  }
+  const match = p.slice(wordEnd).match(endingCharacters)
+  if (match && match.index !== undefined) {
+    end = wordEnd + match.index
+  }
+  const eg = trim(p.slice(start, end))
+  return `${eg}${surfix}`
 }
 export default function CaptureDict (props:{offset:number}) {
   const [word, setWord] = useState('')
@@ -20,8 +44,15 @@ export default function CaptureDict (props:{offset:number}) {
       const section = window.getSelection()
       const node = section?.anchorNode as any
       const p :string = (node?.innerText || node?.wholeText || '').trim()
-      const eg = getEg(p, section!.anchorOffset)
-      const w = section?.toString()?.trim() || ''
+      let w = section?.toString() || ''
+      if (!w) {
+        setWord('')
+        setEg('')
+        return
+      }
+      const eg = getEg(p, section!.anchorOffset, section!.anchorOffset + w.length)
+      w = w.trim()
+      console.log(eg, w)
       setWord(w)
       setEg(eg)
     }
