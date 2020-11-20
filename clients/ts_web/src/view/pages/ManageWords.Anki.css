@@ -1,0 +1,46 @@
+.card {
+  font-family: arial;
+  font-size: 20px;
+  text-align: center;
+  color: #2d2d2d;
+  background: transparent;
+}
+
+#answer {
+  margin: 10px 0;
+  opacity: 0;
+}
+
+.front > div {
+  font-size: 2em;
+  text-shadow: 3px 3px 5px #0004;
+}
+
+.back > div {
+  border: 1px solid #0002;
+  border-radius: 10px;
+  text-align: left;
+  padding: 10px;
+}
+
+.back > div ~ div {
+  background: #0001;
+  font-size: 0.8em;
+}
+
+.nightMode.card {
+  color: #ccc;
+}
+
+.nightMode.card .front > div {
+  text-shadow: 3px 3px 5px #fff4;
+}
+
+.nightMode.card .back > div {
+  border-color: #fff1;
+  background: #fff2;
+}
+
+.nightMode.card .back > div ~ div {
+  background: #fff1;
+}

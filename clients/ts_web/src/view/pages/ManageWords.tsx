@@ -14,6 +14,8 @@ import IViewService from '../../app/Interfaces/IViewService'
 import IWordsStorage, { Word } from '../../domain/ServiceInterfaces/IWordsStorage'
 import React, { useState, useEffect } from 'react'
 import sleep from '../../infrac/Lang/sleep'
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import ankiCss from '!!raw-loader!./ManageWords.Anki.css'
 // eslint-disable-next-line camelcase
 import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
 
@@ -245,9 +247,9 @@ export default function ManageWrods () {
                   case 0:
                     exporter = locator.locate(IAnkiItemsExporter)
                     exporterOpt = {
-                      front: '{{Front}}',
-                      back: '{{FrontSide}}\n\n<hr id="answer">\n\n{{Back}}',
-                      css: '.card {\n font-family: arial;\n font-size: 20px;\n text-align: center;\n color: black;\nbackground-color: white;\n}\n'
+                      front: '<div class="front">{{Front}}</div>',
+                      back: '{{FrontSide}}\n\n<hr id="answer">\n\n<div class="back">{{Back}}</div>',
+                      css: ankiCss
                     }
                     break
                   case 1:
