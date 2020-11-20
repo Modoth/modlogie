@@ -1,7 +1,7 @@
 import './ManageWords.less'
 import { Button, Pagination, Table } from 'antd'
 import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
-import { MinusCircleOutlined, PlusCircleOutlined, SearchOutlined, DownloadOutlined, ClearOutlined } from '@ant-design/icons'
+import { MinusCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusCircleOutlined, SearchOutlined, DownloadOutlined, ClearOutlined } from '@ant-design/icons'
 import { useServicesLocator } from '../common/Contexts'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import DictView from './DictView'
@@ -96,7 +96,11 @@ export default function ManageWrods () {
   }, [filter])
 
   const rendValue = (_: string, word: WordModel) => {
-    return <span className="word" onClick={() => toogleWord(word)}>{word.value}</span>
+    return <span >{word.value}</span>
+  }
+
+  const rendToogleDetail = (_: string, word: WordModel) => {
+    return <span >{word === queryWord ? <UpCircleOutlined /> : <DownCircleOutlined />}</span>
   }
 
   const rendEg = (_: string, word: WordModel) => {
@@ -108,7 +112,7 @@ export default function ManageWrods () {
       }
       ele.push(<span>{tokens[i]}</span>)
     }
-    return <div onClick={() => toogleWord(word)}><div >{ele}</div>
+    return <div><div >{ele}</div>
       {word === queryWord
         ? <div className="dict"><DictView word={word.value} hidenMenu={true}></DictView></div> : undefined}
     </div>
@@ -133,18 +137,28 @@ export default function ManageWrods () {
         showHeader={false}
         columns={[
           {
+            title: '',
+            dataIndex: 'toogleDetail',
+            key: 'toogleDetail',
+            className: 'word-toogle-detail-column',
+            render: rendToogleDetail,
+            onCell: (word) => ({ onClick: () => toogleWord(word) })
+          },
+          {
             title: langs.get(LangKeys.Word),
             dataIndex: 'value',
             key: 'value',
             className: 'word-value-column',
-            render: rendValue
+            render: rendValue,
+            onCell: (word) => ({ onClick: () => toogleWord(word) })
           },
           {
             title: langs.get(LangKeys.Example),
             dataIndex: 'eg',
             key: 'eg',
             className: 'word-eg-column',
-            render: rendEg
+            render: rendEg,
+            onCell: (word) => ({ onClick: () => toogleWord(word) })
           },
           {
             title: '',
