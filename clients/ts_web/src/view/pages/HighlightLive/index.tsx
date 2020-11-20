@@ -34,7 +34,7 @@ export default function HighlightLive (props: { language: string, value: string,
   const user = useUser()
   const locator = useServicesLocator()
   let format = props.format
-  let lang = props.language
+  let lang = props.language || ''
     ;[lang, format] = splitFormat(lang, format)
   if (lang && lang.startsWith(proto)) {
     const path = lang.slice(proto.length).trim()

@@ -26,8 +26,19 @@ const textOffsetOfParent = (n:Node, p:Node) => {
   return (p.textContent || '').indexOf(n.textContent || '')
 }
 
-const maxEgLength = 100
-const endingCharacters = new Set('.?!。？！\n')
+const maxEgLength = 150
+const endingCharacters = new Set('。？！\n')
+const endingCharactersWithSpace = new Set('.?!')
+const isEndingChar = (p:string, i:number):boolean => {
+  if (endingCharacters.has(p[i])) {
+    return true
+  }
+  if (endingCharactersWithSpace.has(p[i])) {
+    const next = p[i + 1]
+    return next === ' ' || next === undefined || next === '\n'
+  }
+  return false
+}
 const getEg = (p:string, wordStart:number, wordEnd:number) => {
   const trim = (p:string) => {
     p = p.replace(/(\s|\n|,|:|：|、|，|“)*$/g, '')
@@ -45,7 +56,7 @@ const getEg = (p:string, wordStart:number, wordEnd:number) => {
   }
   let preEndingCharIdx = start - 1
   for (let i = wordStart - 1; i >= start; i--) {
-    if (endingCharacters.has(p[i])) {
+    if (isEndingChar(p, i)) {
       preEndingCharIdx = i
       prefix = ''
       break
@@ -56,7 +67,7 @@ const getEg = (p:string, wordStart:number, wordEnd:number) => {
   let surfix = '...'
   let nextEndingCharIdx = end - 1
   for (let i = wordEnd; i < end; i++) {
-    if (endingCharacters.has(p[i])) {
+    if (isEndingChar(p, i)) {
       nextEndingCharIdx = i
       surfix = ''
       break
