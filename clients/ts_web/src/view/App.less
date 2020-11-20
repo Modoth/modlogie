@@ -99,12 +99,6 @@ body {
   }
 }
 
-@media print {
-  body {
-    background-color: transparent;
-  }
-}
-
 pre {
   background: transparent !important;
 }
@@ -120,4 +114,37 @@ span.token {
 
 .code {
   padding: 0 20px;
+}
+
+.ant-pagination-item-link {
+  background-color: transparent !important;
+  border: none !important;
+}
+.ant-pagination-item {
+  display: inline-flex;
+  min-width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background-color: #fff8;
+}
+
+.ant-pagination-item {
+  display: none;
+}
+
+.ant-pagination-item-active {
+  display: inline-flex;
+  background: transparent;
+  border: none;
+  a {
+    color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+@media print {
+  body {
+    background-color: transparent;
+  }
 }

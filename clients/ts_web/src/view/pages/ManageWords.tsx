@@ -38,7 +38,6 @@ export default function ManageWrods () {
       viewService.setLoading(true)
       const [total, words] = await locator.locate(IWordsStorage).getAll(filter, countPerPage * (page! - 1), countPerPage)
       setWords(words)
-      setQueryWord(words[0])
       setTotalCount(total)
       setCurrentPage(page)
     } catch (e) {
