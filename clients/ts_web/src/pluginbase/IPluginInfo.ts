@@ -14,6 +14,7 @@ export interface ArticleType {
   initArticleCount?: number;
   loadAdditionalsSync?: boolean;
   name: string;
+  pluginName: string;
   noTitle?: boolean;
   orderBy?: string,
   orderByDesc?: boolean,

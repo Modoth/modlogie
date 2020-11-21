@@ -522,7 +522,7 @@ export default function Library (props: LibraryProps) {
   }, [rootSubject, favorite])
 
   return (
-    <div className="library">
+    <div className={classNames('library', type?.name || '', type?.pluginName || '')}>
       <div className="searched-subjects">
         <Link to="/">
           <Button
@@ -639,7 +639,7 @@ export default function Library (props: LibraryProps) {
           </Badge>
         ) : null}
         <Button
-          type="default"
+          type={filter || (selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId) ? 'primary' : 'default'}
           size="large"
           shape="circle"
           onClick={() => setShowFilter(true)}

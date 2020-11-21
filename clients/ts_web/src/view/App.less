@@ -85,11 +85,11 @@ body {
 
 .float-menus {
   position: fixed;
-  right: 0;
+  left: 0;
   margin: 10px;
   z-index: 2;
   display: flex;
-  bottom: 1em;
+  bottom: 2em;
   flex-direction: column;
   opacity: 0.8;
 
@@ -140,6 +140,12 @@ span.token {
   border: none;
   a {
     color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+@media (orientation: portrait) {
+  .nav-content-wrapper {
+    min-height: -webkit-fill-available;
   }
 }
 

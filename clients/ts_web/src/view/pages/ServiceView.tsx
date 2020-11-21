@@ -460,7 +460,7 @@ export default function ServiceView (props: {
       {
         previewArticle ? <ArticleSingle {...previewArticle}></ArticleSingle> : null
       }
-      <Spin spinning={loading} delay={250} indicator={<div className="loading-panel ">
+      <Spin spinning={loading} delay={250} indicator={<div className="loading-panel">
         <div className="loading-small"></div>
       </div>} />
     </>

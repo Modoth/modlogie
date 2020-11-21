@@ -27,6 +27,7 @@ const textOffsetOfParent = (n:Node, p:Node) => {
 }
 
 const maxEgLength = 150
+const minEgLength = 30
 const endingCharacters = new Set('。？！\n')
 const endingCharactersWithSpace = new Set('.?!')
 const isEndingChar = (p:string, i:number):boolean => {
@@ -45,7 +46,7 @@ const getEg = (p:string, wordStart:number, wordEnd:number) => {
     p = p.replace(/^(\s|\n|,|:|：|、|，|”)*/g, '')
     return p
   }
-  if (p.length <= maxEgLength) {
+  if (p.length <= minEgLength) {
     return trim(p)
   }
   let prefix = '...'

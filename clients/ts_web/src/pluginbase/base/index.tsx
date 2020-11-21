@@ -28,6 +28,7 @@ export default class PluginInfoBase implements IPluginInfo {
       return {
         route: typeName,
         name: typeName,
+        pluginName: name,
         rootSubject: typeName,
         noTitle,
         icon: <BookOutlined />,

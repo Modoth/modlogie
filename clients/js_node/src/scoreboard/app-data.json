@@ -1,10 +1,10 @@
 {
   "theme": {
-    "primary": "#e8912eb0",
-    "primaryColor": "whitesmoke"
+    "primary": "cadetblue",
+    "primaryColor": "#f8f8f8"
   },
   "colors": [
-    "#e8912eb0"
+    "cadetblue"
   ],
   "ordinals": [
     {
