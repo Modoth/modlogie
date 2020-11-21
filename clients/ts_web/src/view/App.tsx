@@ -1,4 +1,5 @@
 import './App.less'
+import './App.css'
 import { HashRouter } from 'react-router-dom'
 import { uriTransformer } from 'react-markdown'
 import { UserContext, useServicesLocator } from './common/Contexts'

@@ -1,0 +1,7 @@
+@media not all and (min-resolution: 0.001dpcm) {
+  @media {
+    .nav-content-wrapper {
+      min-height: -webkit-fill-available;
+    }
+  }
+}
