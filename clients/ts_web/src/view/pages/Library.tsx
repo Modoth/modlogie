@@ -524,14 +524,8 @@ export default function Library (props: LibraryProps) {
   return (
     <div className={classNames('library', type?.name || '', type?.pluginName || '')}>
       <div className="searched-subjects">
-        <Link to="/">
-          <Button
-            type="link"
-            size="large"
-            icon={logo ? <img className="home-icon" src={logo} /> : null}
-          />
-        </Link>
-        <span
+        {logo ? <Link to="/"><img className="home-icon" src={logo} /></Link> : null}
+        <div
           onClick={() => {
             if (articleId) {
               fetchArticles(1, true)
@@ -566,7 +560,7 @@ export default function Library (props: LibraryProps) {
             type?.displayName ||
             ''
           )}
-        </span>
+        </div>
         <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
       </div>
       {articles.length || recommendsArticles.length ? null : (

@@ -1,9 +1,9 @@
 import './DictView.less'
 import { Button } from 'antd'
-import { HeartFilled, HeartOutlined } from '@ant-design/icons'
+import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { useLocatableOffset, useServicesLocator } from '../common/Contexts'
 import classNames from 'classnames'
-import IDictService, { CancleToken, DictInfo } from '../../domain/ServiceInterfaces/IDictService'
+import IDictService, { CancleToken } from '../../domain/ServiceInterfaces/IDictService'
 import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import IWordsStorage from '../../domain/ServiceInterfaces/IWordsStorage'
@@ -98,7 +98,7 @@ export default function DictView (props:{word:string, eg?:string, position?:Floa
         props.hidenMenu ? undefined
           : <div className="title">
             <Button type="link" className='word'>{word || ''}</Button>
-            <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}></Button>
+            <Button onClick={toogleFavorite} type="link" icon={favorite ? < MinusCircleOutlined /> : <PlusCircleOutlined />}></Button>
           </div>
       }
       <iframe src={url} sandbox=""></iframe> </div> : undefined

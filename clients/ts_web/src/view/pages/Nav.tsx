@@ -1,8 +1,8 @@
 import './Nav.less'
 import { Link } from 'react-router-dom'
-import { Menu, Drawer, Button } from 'antd'
+import { Menu, Drawer } from 'antd'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
-import { UserOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
+import { UserOutlined, FileWordOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocator } from '../common/Contexts'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -137,28 +137,27 @@ function Nav () {
               </Menu.Item>
             </SubMenu>
           ) : null}
-          {(editors && editors.length) || (viewers && viewers.length) ? <Menu.Divider></Menu.Divider> : undefined}
-          {
-            (editors && editors.length) || (viewers && viewers.length)
-              ? <SubMenu
-                icon={<RocketOutlined />}
-                title={langs.get(LangKeys.Tools)}
-              >
-                {
-                  (viewers && viewers.length)
-                    ? <Menu.Item icon={<ReadOutlined />} >
-                      <Link to="/tools/viewer/">{langs.get(LangKeys.Viewers)}</Link>
-                    </Menu.Item> : <></>
-                }
-                {
-                  (editors && editors.length)
-                    ? <Menu.Item icon={<EditOutlined />} >
-                      <Link to="/tools/editor/">{langs.get(LangKeys.Editors)}</Link>
-                    </Menu.Item> : <></>
-                }
-              </SubMenu>
-              : <></>
-          }
+          <Menu.Divider></Menu.Divider>
+          <SubMenu
+            icon={<RocketOutlined />}
+            title={langs.get(LangKeys.Tools)}
+          >
+            <Menu.Item icon={<FileWordOutlined />} >
+              <Link to="/manage/words/">{langs.get(LangKeys.FavoriteWords)}</Link>
+            </Menu.Item>
+            {
+              (viewers && viewers.length)
+                ? <Menu.Item icon={<ReadOutlined />} >
+                  <Link to="/tools/viewer/">{langs.get(LangKeys.Viewers)}</Link>
+                </Menu.Item> : <></>
+            }
+            {
+              (editors && editors.length)
+                ? <Menu.Item icon={<EditOutlined />} >
+                  <Link to="/tools/editor/">{langs.get(LangKeys.Editors)}</Link>
+                </Menu.Item> : <></>
+            }
+          </SubMenu>
           <Menu.Divider></Menu.Divider>
           {user.name ? (
             <Menu.Item
@@ -181,18 +180,16 @@ function Nav () {
 
       <div className={classNames('nav')}>
         {
-          logoTitleImg ? <div className="nav-home" >
-            <Link to="/"><img
+          logoTitleImg
+            ? <Link className="nav-home" to="/"><img
               src={logoTitleImg}
             /></Link>
-          </div> : (title ? <div className="nav-home" >
-            <Link to="/"><img
-              src={logo}
-            />{title}</Link>
-          </div> : null)
+            : (title
+              ? <Link className="nav-home" to="/">{title}</Link>
+              : null)
         }
-        <Button className="nav-open-menu" icon={<MenuOutlined />} onClick={() => setShowDrawer(true)}>
-        </Button>
+        <MenuOutlined className="nav-open-menu" onClick={() => setShowDrawer(true)}>
+        </MenuOutlined>
       </div>
     </div>
   )
