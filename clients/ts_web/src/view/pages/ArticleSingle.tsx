@@ -129,14 +129,14 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                           }}>
                             <Button className="single-article-content-menu-btn title" type="text" size="small" icon={<MinusOutlined />}>{section}</Button>
                           </Menu.Item>).concat(
-                          <Menu.Divider></Menu.Divider>,
+                          <Menu.Divider key="divider1"></Menu.Divider>,
                           <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
                             setCaptureDict(!captureDict)
                             saveCaptureDict(!captureDict)
                           }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
                           <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <BulbOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
                           <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <HeartOutlined />} onClick={() => jumpTo('#/manage/words')}>{langs.get(LangKeys.FavoriteWords)}</Button></Menu.Item>,
-                          <Menu.Divider></Menu.Divider>,
+                          <Menu.Divider key="divider2"></Menu.Divider>,
                           <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => {
                             scrollToTop(true)
                             setTimeout(() => locator.locate(IViewService).captureElement(ref.current!), 50)

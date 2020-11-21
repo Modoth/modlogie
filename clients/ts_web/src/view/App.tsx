@@ -66,14 +66,6 @@ export default function App () {
     <>
       <UserContext.Provider value={user}>
         <ServiceView
-          provide={(s) => {
-            const viewService = locator.locate(IViewService)
-            locator.registerInstance(IViewService, s)
-            if (viewService) {
-              s.onShowMenuChanged = viewService.onShowMenuChanged
-              s.setShowMenu(viewService.showMenu)
-            }
-          }}
           setContentVisiable={(v) => {
             if (!ref.current) {
               return

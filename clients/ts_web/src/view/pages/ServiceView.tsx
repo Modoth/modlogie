@@ -3,6 +3,7 @@ import { ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { ArticlePreview } from './ArticlePreview'
 import { CloseOutlined, SaveOutlined } from '@ant-design/icons'
 import { Spin, message, Modal, Input, Space, Radio, TreeSelect, Button } from 'antd'
+import { useServicesLocator } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import ArticleList from './ArticleList'
 import ArticleSingle from './ArticleSingle'
@@ -34,7 +35,7 @@ export const previewArticleByPath = (locator: IServicesLocator, path: string | u
   }
 }
 
-class ViewService implements IViewService {
+export class ViewService implements IViewService {
   errorKey (langs: ILangsService, key: any, timeout?: number | undefined): void {
     this.error(langs.get(key), timeout)
   }
@@ -66,9 +67,10 @@ class ViewService implements IViewService {
 }
 
 export default function ServiceView (props: {
-  provide: { (viewService: IViewService): void };
   setContentVisiable: { (visiable: boolean): void }
 }) {
+  const locator = useServicesLocator()
+  const viewService = locator.locate(IViewService)
   const refFile = useRef<HTMLInputElement | null>(null)
   const [loading, setLoading] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
@@ -293,7 +295,6 @@ export default function ServiceView (props: {
       viewService.setLoading(false)
     }
   }
-  const [viewService] = useState(new ViewService(undefined, undefined, undefined, undefined, undefined, undefined, undefined))
   Object.assign(viewService, {
     setLoading,
     prompt: fPrompt,
@@ -302,7 +303,6 @@ export default function ServiceView (props: {
     previewArticle: fPreviewArticle,
     captureElement: fCaptureElement
   })
-  props.provide && props.provide(viewService)
 
   const previewImgRef = React.createRef<HTMLImageElement>()
 

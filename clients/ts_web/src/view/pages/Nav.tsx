@@ -2,7 +2,7 @@ import './Nav.less'
 import { Link } from 'react-router-dom'
 import { Menu, Drawer, Button } from 'antd'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
-import { UserOutlined, MinusOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
+import { UserOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocator } from '../common/Contexts'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -29,6 +29,7 @@ function Nav () {
   const [editors, setEditors] = useState<EditorInfo[]>([])
   const [viewers, setViewers] = useState<EditorInfo[]>([])
   const ref = React.createRef<HTMLDivElement>()
+  const [showMenu, setShowMenu] = useState(locator.locate(IViewService).showMenu)
   const onComponentDidMount = async () => {
     const configService = locator.locate(IConfigsService)
     const nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
@@ -97,19 +98,10 @@ function Nav () {
     onComponentDidMount()
   }, [])
 
-  const [store] = useState({ showMenu: locator.locate(IViewService).showMenu })
-  locator.locate(IViewService).onShowMenuChanged = (s) => {
-    store.showMenu = s
-    if (ref.current) {
-      if (store.showMenu) {
-        ref.current.classList.remove('hidden')
-      } else {
-        ref.current.classList.add('hidden')
-      }
-    }
-  }
+  locator.locate(IViewService).onShowMenuChanged = setShowMenu
+
   return (
-    <div ref={ref} className={classNames(store.showMenu ? '' : 'hidden')}>
+    <div ref={ref} className={classNames(showMenu ? '' : 'hidden')}>
       <Drawer className="side-nav-panel" visible={showDrawer} onClose={() => setShowDrawer(false)} closable={false} placement="left">
         <Menu className="side-nav" mode="inline" onClick={() => setShowDrawer(false)} >
           {

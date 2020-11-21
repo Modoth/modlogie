@@ -40,11 +40,11 @@ export default function Library (props: LibraryProps) {
   const langs = locator.locate(ILangsService)
   const viewService = locator.locate(IViewService)
   const location = useLocation()
-  const params: {
+  const params = (location.state || {}) as {
     subjectId?: string;
     articleId?: string;
     recommendView?: boolean;
-  } = location.state || {}
+  }
   let type:ArticleType|undefined
   if (!params.articleId) {
     const config = locator.locate(PluginsConfig)

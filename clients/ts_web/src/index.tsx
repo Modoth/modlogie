@@ -11,6 +11,7 @@ import { LoginServiceClient } from './impl/remote-apis/LoginServiceClientPb'
 import { ServicesLocatorProvider } from './view/common/Contexts'
 import { TagsServiceClient } from './impl/remote-apis/TagsServiceClientPb'
 import { UsersServiceClient } from './impl/remote-apis/UsersServiceClientPb'
+import { ViewService } from './view/pages/ServiceView'
 import AnkiItemsExporter from './domain/Services/AnkiItemsExporter'
 import App from './view/App'
 import AppArticleServiceSingleton from './app/AppServices/ArticleAppservice'
@@ -54,6 +55,7 @@ import ITextImageService from './infrac/Image/ITextImageService'
 import IUserBlobStorage from './domain/ServiceInterfaces/IUserBlobStorage'
 import IUserLoginService from './domain/ServiceInterfaces/IUserLoginService'
 import IUsersService from './domain/ServiceInterfaces/IUsersService'
+import IViewService from './app/Interfaces/IViewService'
 import IWordsStorage from './domain/ServiceInterfaces/IWordsStorage'
 import KeywordsService from './impl/RemoteServices/KeywordsService'
 import LangInterpretersService from './domain/Services/Interpreters/LangInterpretersService'
@@ -295,6 +297,8 @@ const buildServicesLocator = () => {
     KeywordsServiceClient,
     () => new KeywordsServiceClient(clientHost, credentials, options)
   )
+
+  serviceLocator.registerInstance(IViewService, new ViewService(undefined, undefined, undefined, undefined, undefined, undefined, undefined))
 
   const w = window as any
   if (w.autoAccountService) {
