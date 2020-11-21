@@ -1,6 +1,7 @@
 import { v4 } from 'uuid'
-import React, { useEffect, useState } from 'react'
 import FullscreenWraper, { FullscreenWraperCallbacks } from './FullscreenWraper'
+import IFrameWraper from './IFrameWraper'
+import React, { useEffect, useState } from 'react'
 
 export type IFrameContext = {
     token: string,
@@ -44,10 +45,6 @@ interface ExcuteApiInfo{
 interface ExcuteApiInfos{
   apis:ExcuteApiInfo[]
   handlers:{[token: string]: Function;}
-}
-
-function IFrame (props:any) {
-  return <iframe {...props} sandbox="allow-scripts"></iframe>
 }
 
 export const generateContext = (apiInfos:ApiInfo[], ns:string): [IFrameContext, string] => {
@@ -117,7 +114,7 @@ export const generateContext = (apiInfos:ApiInfo[], ns:string): [IFrameContext, 
   return [context, jsContent]
 }
 
-type IFrameWithJsProps = { src: string, context?: IFrameContext, allowFullscreen?:boolean }
+type IFrameWithJsProps = { src: string, context?: IFrameContext, allowFullscreen?:boolean, withMask?:boolean }
 
 const createCallbacks = (props:IFrameWithJsProps):FullscreenWraperCallbacks|undefined => {
   if (props.context?.apiInfos?.apis) {
@@ -178,5 +175,5 @@ export default function IFrameWithJs (props: IFrameWithJsProps) {
       window.removeEventListener('message', listener)
     }
   }, [])
-  return <FullscreenWraper callbacks={callbacks} enabled={props.allowFullscreen && !callbacks} View={IFrame} src={props.src} ></FullscreenWraper>
+  return <FullscreenWraper callbacks={callbacks} withMask={props.withMask} enabled={props.allowFullscreen && !callbacks} View={IFrameWraper} src={props.src} sandbox="allow-scripts"></FullscreenWraper>
 }

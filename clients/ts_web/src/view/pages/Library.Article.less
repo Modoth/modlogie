@@ -29,8 +29,11 @@
   & > .H5,
   & > .Data {
     min-height: 4em;
-    .h5-live-viewer:last-of-type > iframe {
-      border-radius: 0 0 10px 10px;
+    .h5-live-viewer:last-of-type > .fullscreen-wraper > .iframe-wraper {
+      & > iframe,
+      & > .foreground-iframe-wraper {
+        border-radius: 0 0 10px 10px;
+      }
     }
   }
 

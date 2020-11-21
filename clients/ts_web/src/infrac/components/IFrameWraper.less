@@ -1,0 +1,19 @@
+.iframe-wraper {
+  .foreground-iframe-wraper {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: #0000;
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    .foreground-iframe {
+      background: #fff8;
+      position: unset;
+      --scale: 0.75;
+      transform: scale(var(--scale));
+      border-radius: 10px;
+      box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    }
+  }
+}
