@@ -30,22 +30,31 @@
   padding: 2px 0;
   margin-bottom: 10px;
   border-bottom: none;
+  position: relative;
+  height: 49px;
 
   .nav-open-menu {
-    padding-left: 11px;
+    padding: 10px;
+    border: none !important;
+    background: transparent !important;
   }
 
   & .nav-home {
     flex: 1;
-    text-align: center;
-    // margin-left: 10px;
-    margin-right: 50px;
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
 
     img {
       height: 1.25em;
       object-fit: contain;
-      margin-right: 5px;
-      margin-top: -0.125em;
+      margin-right: 10px;
+      vertical-align: text-bottom;
     }
 
     span a {

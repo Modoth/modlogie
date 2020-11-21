@@ -1,6 +1,6 @@
 import './Nav.less'
 import { Link } from 'react-router-dom'
-import { Menu, Drawer } from 'antd'
+import { Menu, Drawer, Button } from 'antd'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { UserOutlined, MinusOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocator } from '../common/Contexts'
@@ -145,7 +145,7 @@ function Nav () {
               </Menu.Item>
             </SubMenu>
           ) : null}
-          { (editors && editors.length) || (viewers && viewers.length) ? <Menu.Divider></Menu.Divider> : undefined}
+          {(editors && editors.length) || (viewers && viewers.length) ? <Menu.Divider></Menu.Divider> : undefined}
           {
             (editors && editors.length) || (viewers && viewers.length)
               ? <SubMenu
@@ -187,21 +187,21 @@ function Nav () {
         </Menu>
       </Drawer>
 
-      <Menu mode="horizontal" className={classNames('nav')}>
-        <Menu.Item className="nav-open-menu" icon={<MenuOutlined />} onClick={() => setShowDrawer(true)}>
-        </Menu.Item>
+      <div className={classNames('nav')}>
         {
-          logoTitleImg ? <Menu.Item className="nav-home" icon={<img
-            src={logoTitleImg}
-          />}>
-            <Link to="/"></Link>
-          </Menu.Item> : (title ? <Menu.Item className="nav-home" icon={<img
-            src={logo}
-          />}>
-            <Link to="/">{title}</Link>
-          </Menu.Item> : null)
+          logoTitleImg ? <div className="nav-home" >
+            <Link to="/"><img
+              src={logoTitleImg}
+            /></Link>
+          </div> : (title ? <div className="nav-home" >
+            <Link to="/"><img
+              src={logo}
+            />{title}</Link>
+          </div> : null)
         }
-      </Menu>
+        <Button className="nav-open-menu" icon={<MenuOutlined />} onClick={() => setShowDrawer(true)}>
+        </Button>
+      </div>
     </div>
   )
 }
