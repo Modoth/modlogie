@@ -229,7 +229,7 @@ export default function RecentsView (props: { type: ArticleType }) {
     return <></>
   }
   return (
-    <div className="recents-view">
+    <div className={classNames('recents-view', type.pluginName, type.name)}>
       {/* <Button type="link" className="title">{langs.get(LangKeys.Latest)}</Button> */}
       <Carousel>
         {recommendsArticles.map((article) => (

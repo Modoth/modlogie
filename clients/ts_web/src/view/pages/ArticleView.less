@@ -198,6 +198,31 @@
   }
 }
 
+.library {
+  &.H5,
+  &.Data {
+    max-width: 400px;
+    margin: 0 auto;
+    .articles {
+      column-count: unset;
+    }
+    .article-view {
+      margin: 20px 50px;
+      padding: 0 10px 10px 10px;
+      --border-radius: 10px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+      .article-title {
+        border-bottom: none;
+        padding-bottom: 10px;
+      }
+      .h5-live-viewer .fullscreen-wraper {
+        padding-top: 140%;
+      }
+    }
+  }
+}
+
 @media (max-width: 780px) {
   .article-view {
     .editing-preview {

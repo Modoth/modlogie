@@ -17,13 +17,28 @@
   }
   & > .H5,
   & > .Data {
+    .section-name {
+      text-transform: uppercase;
+    }
     & > .h5-live-viewer {
       margin-left: -20px;
       margin-right: -20px;
       width: calc(100% + 40px);
 
+      iframe {
+        box-shadow: var(--shadow);
+        @media (min-width: 780px) {
+          box-shadow: unset;
+          border: 1px #0002 solid;
+          border-width: 1px 0;
+        }
+      }
+
       &:first-of-type {
         margin-top: -10px;
+        iframe {
+          border-top-width: 0;
+        }
       }
     }
   }
