@@ -29,7 +29,7 @@ export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
   if (!data) {
     return <></>
   }
-  const { contentUrl, jsContentUrl, hasData, context } = data
+  const { contentUrl, jsContentUrl, context } = data
   if (!((running && jsContentUrl) || (!running && contentUrl))) {
     return <></>
   }

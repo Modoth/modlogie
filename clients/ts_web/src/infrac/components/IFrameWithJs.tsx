@@ -175,5 +175,5 @@ export default function IFrameWithJs (props: IFrameWithJsProps) {
       window.removeEventListener('message', listener)
     }
   }, [])
-  return <FullscreenWraper callbacks={callbacks} withMask={props.withMask} enabled={props.allowFullscreen && !callbacks} View={IFrameWraper} src={props.src} sandbox="allow-scripts"></FullscreenWraper>
+  return <FullscreenWraper callbacks={callbacks} blurBg={props.withMask} enabled={props.allowFullscreen && !callbacks} View={IFrameWraper} src={props.src} sandbox="allow-scripts"></FullscreenWraper>
 }

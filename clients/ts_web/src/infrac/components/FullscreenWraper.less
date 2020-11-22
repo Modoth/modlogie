@@ -6,7 +6,7 @@
     right: 10px;
     user-select: none;
     button {
-      color: #0003;
+      color: #0002;
       user-select: none;
     }
   }
@@ -17,10 +17,14 @@
     top: 0;
     bottom: 0;
     background: #f8f8f8;
-    z-index: 3;
     padding-top: 0 !important;
     margin: 0 !important;
     width: unset;
     height: unset;
+    z-index: 999;
+
+    .hidden-fullscreen {
+      display: none !important;
+    }
   }
 }

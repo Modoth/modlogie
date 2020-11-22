@@ -1,11 +1,11 @@
 import './IFrameWraper.less'
 import React from 'react'
 
-export default function IFrameWraper (props:React.IframeHTMLAttributes<HTMLIFrameElement> & {withMask?:boolean}) {
-  const withMask = props.withMask
-  const p = Object.assign({}, props, { withMask: undefined })
+export default function IFrameWraper (props:React.IframeHTMLAttributes<HTMLIFrameElement> & {blurBg?:boolean}) {
+  const blurBg = props.blurBg
+  const p = Object.assign({}, props, { blurBg: undefined })
   return <div className="iframe-wraper">
-    <iframe {...p} sandbox="allow-scripts"></iframe>
-    {withMask ? <div className="foreground-iframe-wraper"><iframe {...p} className="foreground-iframe" sandbox="allow-scripts"></iframe></div> : undefined}
+    {blurBg ? <iframe className="iframe-bg hidden-fullscreen" sandbox="allow-scripts"></iframe> : undefined}
+    <iframe className={blurBg ? 'with-bg' : '' } {...p} sandbox="allow-scripts"></iframe>
   </div>
 }
