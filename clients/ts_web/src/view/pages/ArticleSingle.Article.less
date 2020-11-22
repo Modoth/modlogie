@@ -21,21 +21,29 @@
       text-transform: uppercase;
     }
     & > .h5-live-viewer {
-      margin-left: -20px;
-      margin-right: -20px;
-      width: calc(100% + 40px);
-
+      margin-left: -10px;
+      margin-right: -10px;
+      width: calc(100% + 20px);
+      @media (min-width: 780px) {
+        padding: unset;
+        margin-left: -20px;
+        margin-right: -20px;
+        width: calc(100% + 40px);
+      }
+      // margin-top: 10px;
       iframe {
         box-shadow: var(--shadow);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+        border-radius: 10px;
         @media (min-width: 780px) {
           box-shadow: unset;
           border: 1px #0002 solid;
+          border-radius: unset;
           border-width: 1px 0;
         }
       }
 
       &:first-of-type {
-        margin-top: -10px;
         iframe {
           border-top-width: 0;
         }
