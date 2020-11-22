@@ -1,5 +1,5 @@
 import './ToolViewer.less'
-import { Button, Table } from 'antd'
+import { Button } from 'antd'
 import { FileOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { useServicesLocator } from '../common/Contexts'
 import ExternalFileViewer from './ExternalFileViewer'
@@ -36,7 +36,7 @@ export function ToolViewer () {
         <Button type="link" icon={<CloseCircleOutlined />} onClick={() => setFile(undefined)}></Button>
       </div>
       {
-        file ? <ExternalFileViewer file={file}></ExternalFileViewer> : <div onClick={selectFile} className="external-viewer external-viewer-open"><FileOutlined /></div>
+        file ? <ExternalFileViewer file={file}></ExternalFileViewer> : <div onClick={selectFile} className="external-viewer"></div>
       }
     </div>
   </div>

@@ -1,6 +1,7 @@
 import './TitleBar.less'
-import React from 'react'
+import { Button } from 'antd'
 import { Link } from 'react-router-dom'
+import React from 'react'
 
 type LinkOrClick = ({link:string}|{onClick():void})
 
@@ -20,9 +21,11 @@ export default function TitleBar (props:TitleBarProps) {
   return <div className="title-bar-wraper">
     <div className="title-bar">
       {
-          props.menus?.map(menu => 'link' in menu
-            ? <Link key={menu.title} className="menu-item" to={menu.link}>{menu.icon}</Link>
-            : <a key={menu.title} className="menu-item" onClick={menu.onClick}>{menu.icon}</a>)
+          props.menus?.map(menu =>
+            <Button key={menu.title} className="menu-item"
+              onClick={'link' in menu ? undefined : menu.onClick}
+              icon={'link' in menu ? <Link to={menu.link}>{menu.icon}</Link> : menu.icon}>
+            </Button>)
       }
       {
         'link' in props ? <Link to="" className="title">
