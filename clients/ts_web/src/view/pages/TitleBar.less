@@ -1,6 +1,6 @@
-.title-bar-wraper,
-.title-bar {
-  height: 49px;
+.title-bar-wraper {
+  --height: 49px;
+  height: var(--height);
 }
 .title-bar {
   display: flex;
@@ -10,7 +10,9 @@
   margin-bottom: 10px;
   border-bottom: none;
   position: fixed;
-  top: 0;
+  top: calc(0px - var(--overflow-top));
+  padding-top: var(--overflow-top);
+  height: calc(var(--height) + var(--overflow-top));
   left: 0;
   width: 100%;
   justify-content: space-between;
@@ -42,6 +44,7 @@
     position: absolute;
     top: 0;
     left: 0;
+    padding-top: var(--overflow-top);
     width: 100%;
     height: 100%;
     align-items: center;

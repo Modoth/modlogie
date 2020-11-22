@@ -8,7 +8,7 @@
   overflow: hidden;
   .menus {
     position: fixed;
-    top: 0;
+    top: calc(0px - var(--overflow-top));
     left: 0;
     right: 0;
     padding: 0 5px;
@@ -44,6 +44,7 @@
     }
     .menus-bar {
       padding: 5px 0;
+      padding-top: calc(5px + var(--overflow-top));
       display: flex;
       .ant-btn-primary {
         background: transparent;
