@@ -1,11 +1,11 @@
 import './Library.css'
 import './Library.less'
 import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase/IPluginInfo'
-import { Link, useLocation, Redirect } from 'react-router-dom'
+import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { MmIcon } from '../common/Icons'
-import { PlusOutlined, SearchOutlined, CloseOutlined, ArrowRightOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, AppstoreOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
-import { TreeSelect, Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
+import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocator, useUser } from '../common/Contexts'
 import { v4 } from 'uuid'
 import Article, { ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
@@ -28,6 +28,7 @@ import React, { useState, useEffect, memo } from 'react'
 import Seperators from '../../domain/ServiceInterfaces/Seperators'
 import Subject from '../../domain/ServiceInterfaces/Subject'
 import SubjectViewModel from './SubjectViewModel'
+import TitleBar from './TitleBar'
 
 const ArticleViewerMemo = memo(ArticleView)
 
@@ -523,46 +524,29 @@ export default function Library (props: LibraryProps) {
 
   return (
     <div className={classNames('library', type?.name || '', type?.pluginName || '')}>
-      <div className="searched-subjects">
-        {logo ? <Link to="/"><img className="home-icon" src={logo} /></Link> : null}
-        <div
-          onClick={() => {
-            if (articleId) {
-              fetchArticles(1, true)
-            } else {
-              setShowFilter(true)
-            }
-          }}
-          className="searched-subjects-title"
-        >
-          {articleId ? (
-            <Button
-              type="link"
-              danger
-              className="go-back-btn"
-              icon={<ArrowRightOutlined />}
-            ></Button>
-          ) : undefined}
-          {rootSubject && effectiveSubjects.length < 2 ? (
-            <>
-              <img
-                className="subject-icon"
-                src={(effectiveSubjects[0] || rootSubject).resourceUrl}
-              ></img>
-              <span>
-                {effectiveSubjects[0]?.id === rootSubject?.id
-                  ? type?.displayName
-                  : (effectiveSubjects[0] || rootSubject).name}
-              </span>
-            </>
-          ) : (
-            Seperators.joinItems(effectiveSubjects.map((sbj) => sbj.name)) ||
-            type?.displayName ||
-            ''
-          )}
-        </div>
-        <Button onClick={exportMm} type="link" size="large" icon={<MmIcon />} />
-      </div>
+      <TitleBar
+        icon={rootSubject && effectiveSubjects.length < 2 ? (effectiveSubjects[0] || rootSubject).resourceUrl : ''}
+        title={rootSubject && effectiveSubjects.length < 2
+          ? (effectiveSubjects[0]?.id === rootSubject?.id ? type?.displayName || '' : (effectiveSubjects[0] || rootSubject).name)
+          : (Seperators.joinItems(effectiveSubjects.map((sbj) => sbj.name)) || type?.displayName || '') }
+        onClick={() => {
+          if (articleId) {
+            fetchArticles(1, true)
+          } else {
+            setShowFilter(true)
+          }
+        }} menus={[
+          {
+            title: langs.get(LangKeys.Home),
+            link: '/',
+            icon: <AppstoreOutlined />
+          }, {
+            title: langs.get(LangKeys.Export),
+            onClick: exportMm,
+            icon: <MmIcon></MmIcon>
+          }
+        ]}></TitleBar>
+
       {articles.length || recommendsArticles.length ? null : (
         <Table
           rowKey="name"

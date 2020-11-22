@@ -13,6 +13,7 @@ import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsSe
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useEffect, useState } from 'react'
+import TitleBar from './TitleBar'
 
 const { SubMenu } = Menu
 function Nav () {
@@ -178,19 +179,13 @@ function Nav () {
         </Menu>
       </Drawer>
 
-      <div className={classNames('nav')}>
+      <TitleBar title={logoTitleImg ? undefined : title} icon={ logoTitleImg || logo} link="/" menus={[
         {
-          logoTitleImg
-            ? <Link className="nav-home" to="/"><img
-              src={logoTitleImg}
-            /></Link>
-            : (title
-              ? <Link className="nav-home" to="/">{title}</Link>
-              : null)
+          title: langs.get(LangKeys.Menu),
+          onClick: () => setShowDrawer(true),
+          icon: <MenuOutlined></MenuOutlined>
         }
-        <MenuOutlined className="nav-open-menu" onClick={() => setShowDrawer(true)}>
-        </MenuOutlined>
-      </div>
+      ]}></TitleBar>
     </div>
   )
 }
