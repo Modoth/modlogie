@@ -46,8 +46,13 @@
       padding: 5px 0;
       padding-top: calc(5px + var(--overflow-top));
       display: flex;
+      .single-article-content-menu-btn-draw {
+        margin-right: 5px;
+      }
       .ant-btn-primary {
-        background: transparent;
+        background: #e8912e80;
+        border-color: #e8912e80;
+        border-radius: 10px;
       }
       .pen-size {
         width: 60%;
@@ -105,6 +110,7 @@
   & > .article {
     max-width: 780px;
     user-select: text;
+    position: relative;
   }
 
   .paging {

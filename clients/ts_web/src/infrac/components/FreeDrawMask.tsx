@@ -8,23 +8,31 @@ export default function FreeDrawMask (props: { enabled: boolean, size: number, c
   p = props
   useEffect(() => {
     const canvas = ref.current!
-    canvas.height = parseFloat(getComputedStyle(canvas).height)
-    canvas.width = parseFloat(getComputedStyle(canvas).width)
+    const style = getComputedStyle(canvas)
+    canvas.height = parseFloat(style.height)
+    canvas.width = parseFloat(style.width)
     const getPos = (ev: MouseEvent | TouchEvent): [number, number] => {
       const rec = canvas.getClientRects()
+      let x:number
+      let y:number
       if (ev instanceof MouseEvent) {
-        return [ev.x - rec[0].x, ev.y - rec[0].y]
+        [x, y] = [ev.x - rec[0].x, ev.y - rec[0].y]
       } else {
-        const e = ev.touches[0]
-        return [e.clientX - rec[0].x, e.clientY - rec[0].y]
+        const e = ev.touches[0];
+        [x, y] = [e.clientX - rec[0].x, e.clientY - rec[0].y]
       }
+      const sx = canvas.width / parseFloat(style.width)
+      const sy = canvas.height / parseFloat(style.height)
+      return [x * sx, y * sy]
     }
     let drawing = false
     let x = 0
     let y = 0
+    let lastPos:[number, number]|undefined
     const startDraw = (ev: MouseEvent | TouchEvent) => {
       drawing = true;
       [x, y] = getPos(ev)
+      lastPos = undefined
     }
     const stopDraw = () => {
       drawing = false
@@ -42,8 +50,9 @@ export default function FreeDrawMask (props: { enabled: boolean, size: number, c
       const [tx, ty] = getPos(ev)
       const ctx = canvas.getContext('2d')!
       ctx.save()
+      ctx.lineCap = 'round'
       if (p.earse) {
-        ctx.clearRect(Math.min(x, tx), Math.min(y, ty), Math.abs(x - tx), Math.abs(y - ty))
+        ctx.clearRect(Math.min(x, tx) - p.size, Math.min(y, ty) - p.size, Math.abs(x - tx) + p.size, Math.abs(y - ty) + p.size)
       } else {
         ctx.strokeStyle = p.color
         ctx.lineWidth = p.size
@@ -51,8 +60,10 @@ export default function FreeDrawMask (props: { enabled: boolean, size: number, c
         ctx.moveTo(x, y)
         ctx.lineTo(tx, ty)
         ctx.stroke()
+        ctx.closePath()
       }
 
+      lastPos = [x, y]
       x = tx
       y = ty
       ctx.restore()

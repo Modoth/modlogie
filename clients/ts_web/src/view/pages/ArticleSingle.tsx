@@ -53,8 +53,8 @@ const saveCaptureDict = (captureDict: boolean) => {
     localStorage.removeItem(getCaptureDictKey())
   }
 }
-const drawSizes = [1, 5, 15]
-const drawColors = ['#2d2d2d', '#ff0000', '#ffff0080']
+const drawSizes = [1, 5]//, 15]
+const drawColors = ['#2d2d2d', '#ff0000']//, '#ffff0040']
 export default function ArticleSingle (props: { article: Article, type: ArticleContentType }) {
   const locator = useServicesLocator()
   const [sections, setSections] = useState<string[]>([])
@@ -163,15 +163,14 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                     <Button className="single-article-content-menu-btn" type="link" size="large" icon={<MenuOutlined />} onClick={(e) => e.preventDefault()} ></Button>
                   </Dropdown>
                 }</>) : (<>
-                {drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
-                {drawColors.map(c => <Button key={c} className="single-article-content-menu-btn" type={c === drawColor ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
-                <Button className="single-article-content-menu-btn" size="large" type={earse ? 'primary' : 'link'} icon={<ClearOutlined style={{ color: drawColor }} />} onClick={() => setEarse(!earse)}></Button>
+                {drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
+                {drawColors.map(c => <Button key={c} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={c === drawColor ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
+                <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ClearOutlined />} onClick={() => setEarse(!earse)}></Button>
                 <div className={classNames('title')}></div>
                 <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
               </>)
             }
           </div>
-
         </div>
         <div className={classNames('side', sidePopup ? 'show-pop' : '')} onClick={() => {
           sidePopup && setSidePopup(false)
@@ -199,7 +198,9 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
           </div>
         </div>
         <div ref={ref} className={classNames('article')}>
-          <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+          <div className="article-content">
+            <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+          </div>
           <FreeDrawMask earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
           {
             captureDict
