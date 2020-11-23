@@ -6,11 +6,14 @@ let p = {} as any
 export default function FreeDrawMask (props: { enabled: boolean, size: number, color: string, earse: boolean, hidden: boolean }) {
   const ref = React.createRef<HTMLCanvasElement>()
   p = props
+  const scale = Math.min(window.devicePixelRatio || 1, 1)
+  const delay = 10
+  const minDist = 1
   useEffect(() => {
     const canvas = ref.current!
     const style = getComputedStyle(canvas)
-    canvas.height = parseFloat(style.height)
-    canvas.width = parseFloat(style.width)
+    canvas.height = parseFloat(style.height) * scale
+    canvas.width = parseFloat(style.width) * scale
     const getPos = (ev: MouseEvent | TouchEvent): [number, number] => {
       const rec = canvas.getClientRects()
       let x:number
@@ -29,10 +32,12 @@ export default function FreeDrawMask (props: { enabled: boolean, size: number, c
     let x = 0
     let y = 0
     let lastPos:[number, number]|undefined
+    let lastMoveTime = 0
     const startDraw = (ev: MouseEvent | TouchEvent) => {
       drawing = true;
       [x, y] = getPos(ev)
       lastPos = undefined
+      lastMoveTime = 0
     }
     const stopDraw = () => {
       drawing = false
@@ -46,8 +51,14 @@ export default function FreeDrawMask (props: { enabled: boolean, size: number, c
       }
       ev.stopPropagation()
       ev.preventDefault()
+      if (Date.now() - lastMoveTime <= delay) {
+        return
+      }
 
       const [tx, ty] = getPos(ev)
+      if (Math.hypot(tx - x, ty - y) < scale * minDist) {
+        return
+      }
       const ctx = canvas.getContext('2d')!
       ctx.save()
       ctx.lineCap = 'round'
@@ -67,6 +78,7 @@ export default function FreeDrawMask (props: { enabled: boolean, size: number, c
       x = tx
       y = ty
       ctx.restore()
+      lastMoveTime = Date.now()
     }
     canvas.onmousedown = startDraw
     canvas.ontouchstart = startDraw
