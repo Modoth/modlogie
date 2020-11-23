@@ -2,7 +2,7 @@ import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocator } from '../common/Contexts'
-import { MenuOutlined, FileWordOutlined, VerticalAlignTopOutlined, MinusOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MenuOutlined, OrderedListOutlined, FileWordOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -67,6 +67,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   }
   const langs = locator.locate(ILangsService)
   const [freeDraw, setFreeDraw] = useState(false)
+  const [sidePopup, setSidePopup] = useState(false)
   const [captureDict, setCaptureDict] = useState(loadCaptureDict())
   const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
   const [currentTheme, setCurrentTheme] = useState(smallScreen ? loadTheme() : 0)
@@ -120,29 +121,22 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                 {
                   <Dropdown placement="bottomRight" trigger={['click']} overlay={
                     <Menu>
-                      {paging ? null : [
-                        <Menu.Item key="menu"><Button className="single-article-content-menu-btn" type="link" size="large" icon={<VerticalAlignTopOutlined />} onClick={() => scrollToTop()}>{langs.get(LangKeys.Menu)}</Button></Menu.Item>
-                      ].concat(
-                        sections.map(section =>
-                          <Menu.Item key={section + 'menu'} onClick={() => {
-                            callbacks.gotoSection && callbacks.gotoSection(section)
-                          }}>
-                            <Button className="single-article-content-menu-btn title" type="text" size="small" icon={<MinusOutlined />}>{section}</Button>
-                          </Menu.Item>).concat(
-                          <Menu.Divider key="divider1"></Menu.Divider>,
-                          <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
-                            setCaptureDict(!captureDict)
-                            saveCaptureDict(!captureDict)
-                          }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
-                          <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <BulbOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
-                          <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <FileWordOutlined />} onClick={() => jumpTo('#/manage/words')}>{langs.get(LangKeys.FavoriteWords)}</Button></Menu.Item>,
-                          <Menu.Divider key="divider2"></Menu.Divider>,
-                          <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => {
-                            scrollToTop(true)
-                            setTimeout(() => locator.locate(IViewService).captureElement(ref.current!), 50)
-                          }} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>,
-                          <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>
-                        ))
+                      {paging ? null : ([
+                        <Menu.Item key="capture"><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>
+                      ]).concat(
+                        <Menu.Divider ></Menu.Divider>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
+                          setCaptureDict(!captureDict)
+                          saveCaptureDict(!captureDict)
+                        }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <FileAddOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <FileWordOutlined />} onClick={() => jumpTo('#/manage/words')}>{langs.get(LangKeys.FavoriteWords)}</Button></Menu.Item>,
+                        <Menu.Divider key="divider2"></Menu.Divider>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => {
+                          scrollToTop(true)
+                          setTimeout(() => locator.locate(IViewService).captureElement(ref.current!), 50)
+                        }} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>
+                      )
                       }
                       {smallScreen ? [<Menu.Item key="theme">
                         <Button className="single-article-content-menu-btn" type="link" size="large" icon={<BgColorsOutlined />}
@@ -177,15 +171,41 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
               </>)
             }
           </div>
+
+        </div>
+        <div className={classNames('side', sidePopup ? 'show-pop' : '')} onClick={() => {
+          sidePopup && setSidePopup(false)
+        }}>
+          <div className="float-menus" onClick={ev => ev.stopPropagation()}>
+            <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
+              size="large"
+              shape="circle" onClick={() => setSidePopup(true)}>
+            </Button>
+          </div>
+          <div className="catelog" onClick={ev => ev.stopPropagation()}>
+            <div className="top" onClick={() => {
+              setSidePopup(false)
+              scrollToTop()
+            }}><span>{langs.get(LangKeys.Top)}</span></div>
+            {
+              sections.map(section =>
+                <div key={section + 'menu'} className="item" onClick={() => {
+                  setSidePopup(false)
+                  callbacks.gotoSection && callbacks.gotoSection(section)
+                }}>
+                  <span >{section}</span>
+                </div>)
+            }
+          </div>
         </div>
         <div ref={ref} className={classNames('article')}>
           <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
           <FreeDrawMask earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
+          {
+            captureDict
+              ? <CaptureDict offset={-50}></CaptureDict>
+              : undefined}
         </div>
-        {
-          captureDict
-            ? <CaptureDict offset={-50}></CaptureDict>
-            : undefined}
       </LocatableView>
     </LocatableOffsetProvider>
   )

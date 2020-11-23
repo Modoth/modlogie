@@ -118,6 +118,51 @@
       max-height: calc(100% - 61px);
     }
   }
+
+  .side {
+    .catelog {
+      display: none;
+      & > div {
+        margin: 10px 5px;
+        font-size: 1.05em;
+        padding: 5px;
+        &.top {
+          color: #e8912e;
+        }
+        &.item {
+          border-top: 1px solid #0001;
+        }
+      }
+    }
+
+    &.show-pop {
+      background: #0000;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      touch-action: none;
+      z-index: 3;
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+      .float-menus {
+        display: none;
+      }
+      .catelog {
+        display: block;
+        background: #fffa;
+        max-height: 80%;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        padding: 5px 2em;
+        margin: 1em;
+      }
+    }
+  }
 }
 
 .single-article-content-menu-btn.title {
@@ -132,20 +177,38 @@
 
 @media (min-width: 780px) {
   .single-article {
-    background-color: transparent;
+    background-color: #fff;
     color: #000;
-
+    margin-left: 25%;
     .menus {
-      background: #fff;
+      left: 25%;
+      background-color: #fff;
+      box-shadow: unset;
+      border-bottom: 1px solid #0001;
     }
 
     .article {
-      box-shadow: var(--shadow);
-      border-radius: 5px;
-      padding-top: 10px;
+      padding-top: 30px;
       background: #fff;
       margin: 0 auto;
-      margin-top: 10px;
+    }
+
+    .side {
+      background: #f8f8f8;
+      width: 25%;
+      position: fixed;
+      height: 100%;
+      top: 0;
+      left: 0;
+      padding-top: 50px;
+      .float-menus > .catelog-btn {
+        display: none;
+      }
+      .catelog {
+        min-width: 10em;
+        padding: 0 1em;
+        display: block;
+      }
     }
   }
 }
@@ -166,6 +229,7 @@
     position: unset;
     margin-top: unset;
     margin-bottom: unset;
+    margin-left: unset;
     min-height: unset;
     background-color: transparent;
     color: #000;
@@ -174,7 +238,8 @@
       display: none;
     }
 
-    .menus {
+    .menus,
+    .side {
       display: none;
     }
 

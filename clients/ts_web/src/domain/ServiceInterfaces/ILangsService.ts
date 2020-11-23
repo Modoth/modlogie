@@ -106,6 +106,7 @@ export class LangKeysInterface {
   Welcome = 'Welcome';
   Word = 'Word';
   Yes = 'Yes';
+  Top = 'Top';
 }
 
 export enum ErrorMessage {

@@ -80,7 +80,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ExportComplete = '导出完成、确定保存';
   Favorite = '收藏';
   FavoriteWords = '生词表';
-  FreeDraw = '涂鸦';
+  FreeDraw = '记号笔';
   Home = '首页';
   Import = '导入';
   ItemsCount = '词条数';
@@ -145,6 +145,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Welcome = '感谢使用';
   Word = '单词';
   Yes = '是';
+  Top = '回到顶部';
 }
 
 const Langs = new LangKeysClass()
