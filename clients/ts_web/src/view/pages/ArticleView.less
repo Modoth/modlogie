@@ -201,10 +201,14 @@
 .library {
   &.H5,
   &.Data {
-    max-width: 400px;
-    margin: 0 auto;
+    max-width: unset;
+    padding: 0 10px;
+    box-sizing: border-box;
     .articles {
       column-count: unset;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 360px);
+      justify-content: center;
     }
     .article-view {
       margin: 20px 50px;
