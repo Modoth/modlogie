@@ -50,4 +50,18 @@
       display: none;
     }
   }
+  max-width: unset;
+  padding: 0 10px;
+  box-sizing: border-box;
+  .articles {
+    column-count: unset;
+    @media (min-width: 780px) {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 400px);
+      justify-content: center;
+      .article-view-wraper {
+        padding: 10px;
+      }
+    }
+  }
 }

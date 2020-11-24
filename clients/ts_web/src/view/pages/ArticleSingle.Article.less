@@ -21,17 +21,28 @@
       text-transform: uppercase;
     }
     & > .h5-live-viewer {
-      margin: 10px 0;
+      margin: 10px -20px;
+      width: calc(100% + 40px);
       @media (min-width: 780px) {
+        margin: 10px 0;
+        width: calc(100% + 20px);
         padding: unset;
       }
+
       iframe {
-        border-radius: 10px;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border: solid #0001;
+        border-width: 1px 0;
         @media (min-width: 780px) {
-          box-shadow: unset;
+          border-radius: 10px;
           border: 1px solid #f8f8f8;
+          border-width: 1px;
           background: #f8f8f8;
+        }
+      }
+      &:first-of-type {
+        margin-top: 0px;
+        iframe {
+          border-top: none;
         }
       }
     }
