@@ -29,8 +29,11 @@ export default function FullscreenWraper<TProp> (props: TProp & { callbacks?:Ful
   }
   return <div className={classNames(props.className, 'fullscreen-wraper', fullscreen ? 'fullscreen' : '')}><View {...Object.assign({}, props, { classNames: undefined, View: undefined, enabled: undefined })}></View>
     {props.enabled ? <div className="float-menu">
-      <Button size="large" type="link" onClick={() => setFullscreen(!fullscreen)}
-        icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}>
+      <Button size="large" type="link" onClick={(ev) => {
+        ev.stopPropagation()
+        setFullscreen(!fullscreen)
+      }}
+      icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}>
       </Button>
     </div> : undefined}
   </div>

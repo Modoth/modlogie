@@ -525,7 +525,7 @@ export default function Library (props: LibraryProps) {
   return (
     <div className={classNames('library', type?.name || '', type?.pluginName || '')}>
       <TitleBar
-        icon={rootSubject && effectiveSubjects.length < 2 ? (effectiveSubjects[0] || rootSubject).resourceUrl : ''}
+        icon={(rootSubject && effectiveSubjects.length < 2 ? (effectiveSubjects[0] || rootSubject).resourceUrl : '') || logo}
         title={rootSubject && effectiveSubjects.length < 2
           ? (effectiveSubjects[0]?.id === rootSubject?.id ? type?.displayName || '' : (effectiveSubjects[0] || rootSubject).name)
           : (Seperators.joinItems(effectiveSubjects.map((sbj) => sbj.name)) || type?.displayName || '') }
