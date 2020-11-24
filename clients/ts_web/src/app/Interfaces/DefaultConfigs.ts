@@ -10,7 +10,6 @@ export const UserRoleKeys = {
 }
 
 class DefaultConfigsClass implements ConfigKeysInterface<Config> {
-  ADDITIONAL_STYLE = new Config(ConfigKeys.ADDITIONAL_STYLE, ConfigType.RESOURCE, '/配置/样式');
   ALLOW_LIKES = new Config(ConfigKeys.ALLOW_LIKES, ConfigType.BOOLEAN, 'false');
   ALLOW_LOGIN = new Config(ConfigKeys.ALLOW_LOGIN, ConfigType.BOOLEAN, 'false');
   ALLOW_PRINT = new Config(ConfigKeys.ALLOW_PRINT, ConfigType.ENUM, UserRoleKeys.UNLOGIN, '', [UserRoleKeys.UNLOGIN, UserRoleKeys.NORMAL, UserRoleKeys.AUTHORISED, UserRoleKeys.ADM]);

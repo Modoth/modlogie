@@ -10,7 +10,6 @@ import defaultLogo from '../assets/logo.png'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IEditorsService, { EditorInfo } from '../../app/Interfaces/IEditorsService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
-import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useEffect, useState } from 'react'
 import TitleBar from './TitleBar'
@@ -70,30 +69,6 @@ function Nav () {
     appTouchIcon.rel = 'apple-touch-icon'
     appTouchIcon.href = logo
     document.head.appendChild(appTouchIcon)
-    for (const type of locator.locate(PluginsConfig).AllTypes) {
-      const styleId = 'additional-style-' + type.name
-      const existedStyle = document.getElementById(styleId)
-      if (existedStyle) {
-        existedStyle.remove()
-      }
-
-      const additionalStylePath = await configService.getValueOrDefault(ConfigKeys.ADDITIONAL_STYLE) + '/' + type.name
-      const additionalStyleUrl = (await locator.locate(ISubjectsService).getByPath(additionalStylePath))?.resourceUrl
-      let additionalStyleContent = ''
-      if (additionalStyleUrl) {
-        try {
-          additionalStyleContent = await (await fetch(additionalStyleUrl)).text()
-        } catch (e) {
-          console.log('Invalid style')
-        }
-      }
-      if (additionalStyleContent) {
-        const additionalStyle = document.createElement('style')
-        additionalStyle.id = styleId
-        additionalStyle.innerText = additionalStyleContent
-        document.head.appendChild(additionalStyle)
-      }
-    }
   }
   useEffect(() => {
     onComponentDidMount()

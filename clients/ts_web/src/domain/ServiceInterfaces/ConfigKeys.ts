@@ -1,5 +1,4 @@
 export class ConfigKeysInterface<T> {
-    ADDITIONAL_STYLE: T = <any>'ADDITIONAL_STYLE';
     ALLOW_LIKES: T = <any>'ALLOW_LIKES';
     ALLOW_LOGIN: T = <any>'ALLOW_LOGIN';
     ALLOW_PRINT: T = <any>'ALLOW_PRINT';
