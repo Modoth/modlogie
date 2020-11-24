@@ -39,10 +39,11 @@ export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
         ? <IFrameWithJsMemo withMask={withMask} allowFullscreen={true} src={jsContentUrl!} context={context} />
         : <IFrameWithoutJsMemo withMask={withMask} allowFullscreen={!canRunning} src={contentUrl!} />
     }
-    {running ? undefined : <div onClick={() => {
+    {running ? undefined : <div onClick={(e) => {
+      e.stopPropagation()
       if (canRunning) {
         setRunning(true)
       }
-    }} className="mask"></div>}
+    }} className="mask" ></div>}
   </div>
 }
