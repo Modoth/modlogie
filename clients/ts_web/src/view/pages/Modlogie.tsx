@@ -77,8 +77,11 @@ export default function Modlogie () {
       }
       const moving = (pos:DragPosition) => {
         current = pos
-        div.style.left = `calc(${left} + ${current[0] - init[0]}px)`
-        div.style.bottom = `calc(${bottom} - ${current[1] - init[1]}px)`
+        const styleLeft = parseFloat(left) + current[0] - init[0]
+        const styleBottom = parseFloat(bottom) + init[1] - current[1]
+        div.style.left = `${styleLeft}px`
+        div.style.right = 'unset'
+        div.style.bottom = `${styleBottom}px`
       }
       const end = () => {
         const style = getComputedStyle(div)
