@@ -23,16 +23,17 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   MAX_PRINT_COUNT = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, '100');
   PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, '');
   RECOMMENT_COUNT = new Config(ConfigKeys.RECOMMENT_COUNT, ConfigType.NUMBER, '');
-  RECOMMENT_TITLE = new Config(ConfigKeys.RECOMMENT_TITLE, ConfigType.STRING, '推荐');
+  RECOMMENT_TITLE = new Config(ConfigKeys.RECOMMENT_TITLE, ConfigType.STRING, 'Recommends');
   SHADOW_SECTION_PRIVATE = new Config(ConfigKeys.SHADOW_SECTION_PRIVATE, ConfigType.BOOLEAN, 'false');
   VIEWER_PATH=new Config(ConfigKeys.VIEWER_PATH, ConfigType.STRING, '/apps/viewers');
   VIEWER_TYPES=new Config(ConfigKeys.VIEWER_TYPES, ConfigType.STRING, '');// txt txt;
-  WEB_SITE_AVATAR = new Config(ConfigKeys.WEB_SITE_AVATAR, ConfigType.RESOURCE, '/配置/AVATAR');
+  WEB_SITE_AVATAR = new Config(ConfigKeys.WEB_SITE_AVATAR, ConfigType.RESOURCE, '/configs/avatar');
   WEB_SITE_DESCRIPTION = new Config(ConfigKeys.WEB_SITE_DESCRIPTION, ConfigType.TEXT, '');
   WEB_SITE_FOOTER = new Config(ConfigKeys.WEB_SITE_FOOTER, ConfigType.TEXT, '');
-  WEB_SITE_LOGO = new Config(ConfigKeys.WEB_SITE_LOGO, ConfigType.RESOURCE, '/配置/LOGO');
-  WEB_SITE_LOGO_TITLE = new Config(ConfigKeys.WEB_SITE_LOGO_TITLE, ConfigType.RESOURCE, '/配置/标题LOGO');
-  WEB_SITE_NAME = new Config(ConfigKeys.WEB_SITE_NAME, ConfigType.STRING, '博客');
+  WEB_SITE_ICON = new Config(ConfigKeys.WEB_SITE_ICON, ConfigType.RESOURCE, '/configs/icon');
+  WEB_SITE_LOGO = new Config(ConfigKeys.WEB_SITE_LOGO, ConfigType.RESOURCE, '/configs/logo');
+  WEB_SITE_LOGO_TITLE = new Config(ConfigKeys.WEB_SITE_LOGO_TITLE, ConfigType.RESOURCE, '/configs/long_logo');
+  WEB_SITE_NAME = new Config(ConfigKeys.WEB_SITE_NAME, ConfigType.STRING, 'Blog');
 }
 const DefaultConfigs: Config[] = Array.from(Object.values(new DefaultConfigsClass()))
 

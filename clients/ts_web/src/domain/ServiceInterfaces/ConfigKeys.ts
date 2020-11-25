@@ -19,6 +19,7 @@ export class ConfigKeysInterface<T> {
     WEB_SITE_AVATAR: T = <any>'WEB_SITE_AVATAR';
     WEB_SITE_DESCRIPTION: T = <any>'WEB_SITE_DESCRIPTION';
     WEB_SITE_FOOTER: T = <any>'WEB_SITE_FOOTER';
+    WEB_SITE_ICON: T = <any>'WEB_SITE_ICON';
     WEB_SITE_LOGO_TITLE: T = <any>'WEB_SITE_LOGO_TITLE';
     WEB_SITE_LOGO: T = <any>'WEB_SITE_LOGO';
     WEB_SITE_NAME: T = <any>'WEB_SITE_NAME';

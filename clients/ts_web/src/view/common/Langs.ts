@@ -29,6 +29,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   WEB_SITE_AVATAR = '站长头像';
   WEB_SITE_DESCRIPTION = '网站描述';
   WEB_SITE_FOOTER = '网站脚注';
+  WEB_SITE_ICON = '网站图标';
   WEB_SITE_LOGO = '网站Logo';
   WEB_SITE_LOGO_TITLE = '网站标题Logo';
   WEB_SITE_NAME = '网站名';

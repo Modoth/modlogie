@@ -7,6 +7,7 @@ import { useUser, useServicesLocator } from '../common/Contexts'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
+import defaultIcon from '../assets/icon.png'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IEditorsService, { EditorInfo } from '../../app/Interfaces/IEditorsService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
@@ -36,6 +37,7 @@ function Nav () {
     const title = nameConfig?.value || nameConfig?.defaultValue || langs.get(LangKeys.Home)
     const logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE)
     const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
+    const siteIcon = await configService.getResource(ConfigKeys.WEB_SITE_ICON) || await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultIcon
     const avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR)
     const allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN)
     const editorsService = locator.locate(IEditorsService)
@@ -67,7 +69,7 @@ function Nav () {
     const appTouchIcon = document.createElement('link')
     appTouchIcon.id = 'apple-touch-icon'
     appTouchIcon.rel = 'apple-touch-icon'
-    appTouchIcon.href = logo
+    appTouchIcon.href = siteIcon
     document.head.appendChild(appTouchIcon)
   }
   useEffect(() => {
