@@ -9,6 +9,7 @@
   height: 100%;
   z-index: 999;
   padding: 10px;
+  box-sizing: border-box;
 }
 
 .toast-panel {
@@ -45,6 +46,7 @@
   background-color: white;
   border-radius: 8px;
   width: 80%;
+  box-sizing: border-box;
   margin: auto;
   padding: 10px 20px;
   border: #c0c0c0 solid 1px;
