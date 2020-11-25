@@ -15,6 +15,7 @@ import NavContent from './pages/NavContent'
 import React, { useState, useEffect } from 'react'
 import ServicesLocator from '../infrac/ServiceLocator/ServicesLocator'
 import ServiceView from './pages/ServiceView'
+import Modlogie from './pages/Modlogie'
 
 let savedScrollTop = 0
 let savedScrollElement: HTMLElement | null = null
@@ -97,6 +98,7 @@ export default function App () {
             <NavContent></NavContent>
           </HashRouter>
         </div>
+        <Modlogie></Modlogie>
       </UserContext.Provider>
     </>
   )
