@@ -10,6 +10,8 @@ type Store = {
 
 const LastModlogiePosKey = 'LastModlogiePosKey'
 
+const transition = '1s cubic-bezier(0.175, 0.885, 0.32, 1.275) left,1s cubic-bezier(0.175, 0.885, 0.32, 1.275) right'
+
 type ModlogiePos = {right:boolean, bottom:number}
 
 const getLastModlogiePos = ():ModlogiePos => {
@@ -74,6 +76,7 @@ export default function Modlogie () {
         const style = getComputedStyle(div)
         left = style.left
         bottom = style.bottom
+        div.style.transition = ''
       }
       const moving = (pos:DragPosition) => {
         current = pos
@@ -92,9 +95,22 @@ export default function Modlogie () {
           right = true
         }
         const pos = { right, bottom }
-        setLastModlogiePos(pos)
-        store.pos = pos
-        applyStyleFromPos(div.style, pos)
+        const delay = 20
+        const updatePos = () => {
+          setLastModlogiePos(pos)
+          store.pos = pos
+          div.style.transition = transition
+          applyStyleFromPos(div.style, pos)
+        }
+        if (!pos.right) {
+          setTimeout(updatePos, delay)
+          return
+        }
+        if (pos.right) {
+          div.style.right = getComputedStyle(div).right
+          div.style.left = 'unset'
+          setTimeout(updatePos, delay)
+        }
       }
       store.destory = registerDragMove(document, div, start, moving, end)
     }}></div>
