@@ -158,7 +158,7 @@ function Nav () {
         {
           title: langs.get(LangKeys.Menu),
           onClick: () => setShowDrawer(true),
-          icon: <MenuOutlined></MenuOutlined>
+          icon: <MenuOutlined className="menu-icon"></MenuOutlined>
         }
       ]}></TitleBar>
     </div>

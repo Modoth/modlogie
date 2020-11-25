@@ -22,7 +22,7 @@ export default function TitleBar (props:TitleBarProps) {
     <div className="title-bar">
       {
           props.menus?.map(menu =>
-            <Button key={menu.title} className="menu-item"
+            <Button key={menu.title} size="large" className="menu-item"
               onClick={'link' in menu ? undefined : menu.onClick}
               icon={'link' in menu ? <Link to={menu.link}>{menu.icon}</Link> : menu.icon}>
             </Button>)

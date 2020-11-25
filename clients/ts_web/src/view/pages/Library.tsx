@@ -3,7 +3,7 @@ import './Library.less'
 import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { MmIcon } from '../common/Icons'
-import { PlusOutlined, AppstoreOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, HomeOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocator, useUser } from '../common/Contexts'
@@ -539,7 +539,7 @@ export default function Library (props: LibraryProps) {
           {
             title: langs.get(LangKeys.Home),
             link: '/',
-            icon: <AppstoreOutlined />
+            icon: <HomeOutlined />
           }, {
             title: langs.get(LangKeys.Export),
             onClick: exportMm,
