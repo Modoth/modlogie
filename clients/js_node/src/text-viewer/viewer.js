@@ -1,13 +1,13 @@
 import TextRenderManager from './text-render-manager.js'
 
 class Viewer {
-  init ({ storage, resizeWatcher, selectFile, showHelp, toogleFullscreen }) {
+  init ({ storage, resizeWatcher, selectFile, jumpTo, showHelp, toogleFullscreen }) {
     this.manager = new TextRenderManager(storage, resizeWatcher)
     return {
       clickRegions: [
-        'tof',
+        'foj',
         'phn',
-        'pnn'
+        'pnt'
       ],
       clickCommands: [
         { sym: 'p', name: '上一页', exec: () => this.manager.pageUp() },
@@ -15,6 +15,7 @@ class Viewer {
         { sym: 'o', name: '打开', exec: () => selectFile() },
         { sym: 'h', name: '', exec: () => showHelp() },
         { sym: 'f', name: '全屏', exec: () => toogleFullscreen() },
+        { sym: 'j', name: '转到', exec: () => jumpTo() },
         { sym: 't', name: '主题', exec: () => this.manager.toogleTheme() }
       ],
       accept: 'text/plain',

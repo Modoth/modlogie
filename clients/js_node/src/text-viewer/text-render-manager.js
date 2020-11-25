@@ -20,21 +20,36 @@ export class TextRenderManager {
     const page = await this.pager.getPage(pageIdx)
     if (page) {
       this.currentPageIdx = pageIdx
-      this.currentOffset = page.offset
+      this.currentPosition = page.offset
       this.render.rend(this.pager.getValue(), page.offset, page.nextOffset)
       if (this.fileName) {
-        this.storage.setItem(`${this.fileName}_offset`, this.currentOffset)
+        this.storage.setItem(`${this.fileName}_offset`, this.currentPosition)
       }
     }
+  }
+
+  async jumpTo (pos = 0) {
+    const defaultLastPageSize = 10
+    pos = Math.min(
+      parseInt(pos) || 0,
+      Math.max(0, this.totalLength - defaultLastPageSize)
+    )
+    this.currentPosition = pos
+    this.reloadCurrent()
   }
 
   async toogleTheme () {
     let idx = this.themes.findIndex((t) => t === this.currentTheme)
     idx = (idx + 1) % this.themes.length
+    await this.setTheme(idx)
+  }
+
+  async setTheme (idx = 0) {
     this.currentTheme = this.themes[idx]
+    await this.storage.setItem('theme', idx)
     document.body.style.background = this.currentTheme.background
     this.render.setStyle(this.currentTheme)
-    this.pager.reset(this.currentOffset)
+    this.pager.reset(this.currentPosition)
     await this.loadPage()
   }
 
@@ -59,7 +74,8 @@ export class TextRenderManager {
         background: '#333'
       }
     ]
-    this.toogleTheme()
+    const currentThemeIdx = (parseInt(await this.storage.getItem('theme')) || 0) % this.themes.length
+    this.setTheme(currentThemeIdx)
   }
 
   async pageUp () {
@@ -86,15 +102,8 @@ export class TextRenderManager {
     this.render = new TextRender(this.container)
     this.pager = new Pager(this.reader, this.render)
     this.fileName = await this.reader.name()
-    this.fileSize = await this.reader.size()
-    this.currentOffset = 0
-    if (this.fileName) {
-      const offset = await this.storage.getItem(`${this.fileName}_offset`) || 0
-      this.currentOffset = Math.min(
-        parseInt(offset) || 0,
-        this.fileSize
-      )
-    }
-    this.reloadCurrent()
+    this.totalLength = await this.reader.size() / 2
+    const currentPosition = this.fileName ? await this.storage.getItem(`${this.fileName}_offset`) || 0 : 0
+    this.jumpTo(currentPosition)
   }
 }

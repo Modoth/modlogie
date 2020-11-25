@@ -1,4 +1,5 @@
 import { FileSelector } from '../commons/file-selector.js'
+import { Modal } from '../commons/modal.js'
 import { ResizeWatcher } from '../commons/resize-watcher.js'
 import { WebFile, BufferFile } from '../commons/ifile.js'
 
@@ -12,6 +13,7 @@ export class App {
         setItem: () => true
       }
     }
+    this.modal = new Modal()
     this.resizeWatcher = new ResizeWatcher()
     const viewer = this.tryGetView()
     if (!viewer) {
@@ -23,6 +25,7 @@ export class App {
         resizeWatcher: this.resizeWatcher,
         selectFile: () => this.selectFile(),
         showHelp: () => this.showHelp(),
+        jumpTo: () => this.jumpTo(),
         toogleFullscreen: window.$fullscreen && window.$fullscreen.toogle ? () => window.$fullscreen.toogle() : () => {}
       })
     this.manager = manager
@@ -101,6 +104,28 @@ export class App {
     if (cmd && cmd.exec) {
       cmd.exec()
     }
+  }
+
+  async jumpTo () {
+    if (!this.manager) {
+      return
+    }
+    const res = await this.modal.prompt(
+      '转到',
+      Math.floor((this.manager.currentPosition * 100) / this.manager.totalLength),
+      {
+        type: 'range',
+        max: 100,
+        min: 0
+      }
+    )
+    if (!res) {
+      return
+    }
+    const jumpTo = Math.floor(
+      (this.manager.totalLength * (res >>> 0)) / 100
+    )
+    this.manager.jumpTo(jumpTo)
   }
 
   async loadFile (file) {

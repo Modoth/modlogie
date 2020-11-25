@@ -53,11 +53,11 @@
 }
 
 .modal-panel > div > h1 {
-  font-size: 1.25em;
+  font-size: 1em;
   margin-block-start: 0.33em;
 }
 
-.modal-panel > div > input[type='input'] {
+.modal-panel > div > input[type="input"] {
   background: #fff;
   /* flex: 1; */
   height: 3em;
@@ -71,18 +71,21 @@
   background-color: -internal-light-dark-color(white, black);
 }
 
+.modal-panel > div > input[type="range" i] {
+  outline: none !important;
+}
+
 .btn-groups {
   display: flex;
   margin: 0 auto;
   flex-direction: row-reverse;
 }
 
-.btn-groups > input[type='button'] {
-  font-size: 1.05em;
-  border-radius: 8px;
+.btn-groups > input[type="button"] {
   margin: 8px;
   padding: 2px 8px;
   flex: 1;
+  border: none;
 }
 
 .close {
@@ -104,7 +107,7 @@
 .close:after {
   position: absolute;
   left: var(--half-size);
-  content: ' ';
+  content: " ";
   height: var(--size);
   width: 2px;
   top: 4px;
