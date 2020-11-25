@@ -2,7 +2,7 @@ import './Nav.less'
 import { Link } from 'react-router-dom'
 import { Menu, Drawer } from 'antd'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
-import { UserOutlined, FileWordOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
+import { UserOutlined, ReloadOutlined, FileWordOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocator } from '../common/Contexts'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -133,6 +133,10 @@ function Nav () {
                   <Link to="/tools/editor/">{langs.get(LangKeys.Editors)}</Link>
                 </Menu.Item> : <></>
             }
+            <Menu.Divider></Menu.Divider>
+            <Menu.Item icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
+              {langs.get(LangKeys.Refresh)}
+            </Menu.Item>
           </SubMenu>
           <Menu.Divider></Menu.Divider>
           {user.name ? (

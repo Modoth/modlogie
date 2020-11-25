@@ -120,6 +120,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Preview = '预览';
   QrCode = '网址';
   Recommend = '推荐';
+  Refresh = '刷新页面';
   RemoveFromArticleList = '移除';
   Rename = '重命名';
   Reset = '重置';
