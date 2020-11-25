@@ -114,7 +114,7 @@ export const generateContext = (apiInfos:ApiInfo[], ns:string): [IFrameContext, 
   return [context, jsContent]
 }
 
-type IFrameWithJsProps = { src: string, context?: IFrameContext, allowFullscreen?:boolean, withMask?:boolean }
+type IFrameWithJsProps = { src?: string, srcDoc?: string, context?: IFrameContext, allowFullscreen?:boolean, withMask?:boolean }
 
 const createCallbacks = (props:IFrameWithJsProps):FullscreenWraperCallbacks|undefined => {
   if (props.context?.apiInfos?.apis) {
@@ -175,5 +175,5 @@ export default function IFrameWithJs (props: IFrameWithJsProps) {
       window.removeEventListener('message', listener)
     }
   }, [])
-  return <FullscreenWraper callbacks={callbacks} blurBg={props.withMask} enabled={props.allowFullscreen && !callbacks} View={IFrameWraper} src={props.src} sandbox="allow-scripts"></FullscreenWraper>
+  return <FullscreenWraper callbacks={callbacks} blurBg={props.withMask} enabled={props.allowFullscreen && !callbacks} View={IFrameWraper} src={props.src} srcDoc={props.srcDoc} sandbox="allow-scripts"></FullscreenWraper>
 }

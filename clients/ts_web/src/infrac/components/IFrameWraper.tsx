@@ -6,7 +6,7 @@ export default function IFrameWraper (props:React.IframeHTMLAttributes<HTMLIFram
   const blurBg = props.blurBg
   const p = Object.assign({}, props, { blurBg: undefined })
   return <div className="iframe-wraper">
-    {blurBg ? <iframe onClick={stopEvent} className="iframe-bg hidden-fullscreen" sandbox="allow-scripts"></iframe> : undefined}
-    <iframe onClick={stopEvent} className={blurBg ? 'with-bg' : '' } {...p} sandbox="allow-scripts"></iframe>
+    {blurBg ? <iframe onClick={stopEvent} className="iframe-bg hidden-fullscreen" {...p} ></iframe> : undefined}
+    <iframe onClick={stopEvent} className={blurBg ? 'with-bg' : '' } {...p} ></iframe>
   </div>
 }

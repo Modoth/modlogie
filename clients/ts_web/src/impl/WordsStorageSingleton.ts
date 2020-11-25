@@ -79,8 +79,14 @@ export default class WordsStorageSingleton extends IServicesLocator implements I
     await this.saveCache()
   }
 
-  deleteAll (): Promise<void> {
-    throw new Error('Method not implemented.')
+  async deleteAll (): Promise<void> {
+    const [cache, namedCache] = await this.caches()
+    if (!cache.length) {
+      return
+    }
+    cache.splice(0, cache.length)
+    namedCache.clear()
+    await this.saveCache()
   }
 
   async getAfter (timeFilter:number, filter?:string):Promise<Word[]> {

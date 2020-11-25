@@ -946,7 +946,9 @@ Connection: Upgrade
   }
   ws.onmessage = ({data}) => {
     console.log('ws received %s', data)
-    data === 'update' && window.location.reload()
+    if(data === 'update'){
+      (window.$location || window.location).reload()
+    }
   }
 </script>
 `

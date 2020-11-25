@@ -15,23 +15,23 @@ export interface ExternalViewerProps{
 }
 
 export default function ExternalViewer (props:ExternalViewerProps) {
-  const [url, setUrl] = useState('')
+  const [doc, setDoc] = useState('')
   const [context, setContext] = useState<IFrameContext|undefined>()
   const locator = useServicesLocator()
-  const fetchViewer = async () => {
+  const reload = async () => {
     const articleService = locator.locate(IArticleAppservice)
     const article = await articleService.getCacheOrFetch(ConfigKeys.VIEWER_PATH, props.info.path, async a => a)
     if (article) {
-      const { jsContentUrl, context } = await buildIframeData(locator, article.id!, new Map(article?.content?.sections?.map(s => [s.name!, s])), [], [genetateFileApi(props.file)])
+      const { doc, context } = await buildIframeData(new Map(article?.content?.sections?.map(s => [s.name!, s])), { locator, id: article.id!, defaultFws: [], apiInfos: [genetateFileApi(props.file)], reload: reload })
       setContext(context)
-      setUrl(jsContentUrl || '')
+      setDoc(doc || '')
     }
   }
   useEffect(() => {
-    fetchViewer()
+    reload()
   }, [])
-  if (!url) {
+  if (!doc) {
     return <></>
   }
-  return <IFrameWithJsMemo allowFullscreen={true} context={context} src={url}/>
+  return <IFrameWithJsMemo key={context?.token} allowFullscreen={true} context={context} srcDoc={doc}/>
 }

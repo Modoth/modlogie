@@ -79,7 +79,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Export = '导出';
   ExportComplete = '导出完成、确定保存';
   Favorite = '收藏';
-  FavoriteWords = '生词表';
+  FavoriteWords = '生词本';
   FreeDraw = '记号笔';
   Home = '首页';
   Import = '导入';

@@ -54,23 +54,24 @@ export interface IFramework{
 }
 
 export interface IData{
-  contentUrl?:string;
-  jsContentUrl?:string;
-  hasData?:boolean;
+  docWithoutJs?:string;
+  doc?:string;
+  contextWithoutJs?:IFrameContext;
   context?:IFrameContext;
 }
 
 const fwnameIsFw = 'self'
 
-type FwBuilderArgs = {ns:string, locator:IServicesLocator }
+type FwBuilderArgs = {id:string, locator:IServicesLocator, reload():any }
 
 export const EmbededFrameworks = {
   Storage: 'storage',
-  FileService: '$fileservice'
+  FileService: '$fileservice',
+  Location: '$location'
 }
 
-const allEmdebdedFws: Map<string, {(args:FwBuilderArgs):ApiInfo[]}> = new Map([
-  [EmbededFrameworks.Storage, ({ ns }:FwBuilderArgs):ApiInfo[] => {
+const allEmbededFws: Map<string, {(args:FwBuilderArgs):ApiInfo[]}> = new Map([
+  [EmbededFrameworks.Storage, ({ id: ns }:FwBuilderArgs):ApiInfo[] => {
     const getSecureKey = (key: string) => `H5Apps_${ns}_${key}`
     return [
       {
@@ -107,7 +108,7 @@ const allEmdebdedFws: Map<string, {(args:FwBuilderArgs):ApiInfo[]}> = new Map([
     ]
   }],
   [EmbededFrameworks.FileService, ({ locator }:FwBuilderArgs):ApiInfo[] => ([{
-    name: '$fileservice',
+    name: EmbededFrameworks.FileService,
     methods: [
       {
         name: 'openFile',
@@ -148,7 +149,18 @@ const allEmdebdedFws: Map<string, {(args:FwBuilderArgs):ApiInfo[]}> = new Map([
     ]
   }])
   ],
-  [FullScreenApiInfo.name, (_:FwBuilderArgs) => [FullScreenApiInfo]]
+  [FullScreenApiInfo.name, (_:FwBuilderArgs) => [FullScreenApiInfo]],
+  [EmbededFrameworks.Location, ({ reload }:FwBuilderArgs) => [{
+    name: EmbededFrameworks.Location,
+    methods: [
+      {
+        name: 'reload',
+        handler: () => new Promise(resolve => {
+          resolve(reload())
+        })
+      }
+    ]
+  }]]
 ]
 )
 
@@ -169,27 +181,35 @@ const tryGetContent = async (url:string):Promise<string> => {
   }
 }
 
-export const buildIframeData = async (locator:IServicesLocator, id:string, sections: Map<string, ArticleSection>, defaultFws :string[] = [], apiInfos:ApiInfo[]): Promise<IData> => {
+export type BuildIFrameDataArgs = { defaultFws :string[], apiInfos:ApiInfo[]} & FwBuilderArgs
+
+export const buildIframeData = async (sections: Map<string, ArticleSection>, { locator, id, defaultFws, apiInfos, reload }:BuildIFrameDataArgs): Promise<IData> => {
   const frameworks = sections.get('frameworks')?.content
   let fwNames = Array.from(new Set(defaultFws.concat(frameworks ? Seperators.seperateItems(frameworks) : [])))
   if (~fwNames.findIndex(s => s === fwnameIsFw)) {
     return {}
   }
 
-  const emdebdedFws = new Map(fwNames.filter(s => allEmdebdedFws.has(s)).map(s => [s, allEmdebdedFws.get(s)!]))
-  if (emdebdedFws.size) {
-    fwNames = fwNames.filter(s => !emdebdedFws.has(s))
+  const embededFws = new Map(fwNames.filter(s => allEmbededFws.has(s)).map(s => [s, allEmbededFws.get(s)!]))
+  const forceEmbededFws : typeof embededFws = new Map()
+  if (embededFws.size) {
+    fwNames = fwNames.filter(s => !embededFws.has(s))
   }
   const url = sections.get('url')?.content || ''
-  const html = url ? (await tryGetContent(url)) : sections.get('html')?.content || ''
+  let html = sections.get('html')?.content || ''
   if (url) {
-    const ds = sections.get('data')
+    html = (await tryGetContent(url)) || ''
+    forceEmbededFws.set(EmbededFrameworks.Location, allEmbededFws.get(EmbededFrameworks.Location)!)
+    embededFws.set(EmbededFrameworks.Location, allEmbededFws.get(EmbededFrameworks.Location)!)
+  }
+
+  if (url) {
+    const dataSection = sections.get('data')
     sections = new Map()
-    if (ds) {
-      sections.set('data', ds)
+    if (dataSection) {
+      sections.set('data', dataSection)
     }
     fwNames = []
-    // apiInfos = []
   }
 
   let fws : {name:string, fw?:IFramework}[] = []
@@ -217,7 +237,7 @@ export const buildIframeData = async (locator:IServicesLocator, id:string, secti
   const script = sections.get('js')?.content
   const data = sections.get('data')?.content
   const dataType = sections.get('data')?.type?.toLocaleLowerCase()
-  let hasData = false
+  let withData = false
   const jsData = toJsDataStr(dataType || 'yml', data)
 
   let content = ''
@@ -233,29 +253,40 @@ export const buildIframeData = async (locator:IServicesLocator, id:string, secti
   if (style) {
     content += `<style>\n${style}\n$</style>\n`
   }
-  let jsContent = ''
+  let doc = ''
   if (jsData) {
-    jsContent += `<script>\nwindow.appData=${jsData}\n</script>\n`
-    hasData = true
+    doc += `<script>\nwindow.appData=${jsData}\n</script>\n`
+    withData = true
   }
 
   let context: IFrameContext | undefined
-  let jsc = ''
-  apiInfos = Array.from(emdebdedFws, ([_, build]) => build({ ns: id, locator })).flat().concat(apiInfos)
-  if (~emdebdedFws) {
-    [context, jsc] = generateContext(apiInfos, id)
-    jsContent += `<script>\n${jsc}\n</script>\n`
+  let contextWithoutJs: IFrameContext | undefined
+  if (embededFws.size) {
+    let jsc = ''
+    const embededApis = Array.from(embededFws, ([_, build]) => build({ id: id, locator, reload })).flat()
+    ;[context, jsc] = generateContext(embededApis.concat(apiInfos), id)
+    doc += `<script>\n${jsc}\n</script>\n`
+  }
+  let docWithoutJs = ''
+  if (!withData) {
+    docWithoutJs = content
+    if (forceEmbededFws.size) {
+      let jsc = ''
+      const forcedApis = Array.from(forceEmbededFws, ([_, build]) => build({ id: id, locator, reload })).flat()
+      ;[contextWithoutJs, jsc] = generateContext(forcedApis, id)
+      docWithoutJs = `<script>\n${jsc}\n</script>\n${docWithoutJs}`
+    }
   }
 
   if (fwJs && fwJs.length) {
-    jsContent += `<script>\n${fwJs.join('\n')}\n</script>`
+    doc += `<script>\n${fwJs.join('\n')}\n</script>`
   }
 
   if (script) {
-    jsContent += `<script>\n${script}\n</script>\n`
+    doc += `<script>\n${script}\n</script>\n`
   }
 
-  jsContent = `${jsContent}\n${content}`
+  doc = `${doc}\n${content}`
 
-  return { contentUrl: srcToUrl(content), jsContentUrl: jsContent ? srcToUrl(jsContent) : undefined, hasData, context }
+  return { docWithoutJs, contextWithoutJs, doc, context }
 }

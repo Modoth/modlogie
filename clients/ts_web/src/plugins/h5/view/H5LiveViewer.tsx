@@ -17,27 +17,30 @@ export default function H5LiveViewer (props: AdditionalSectionViewerProps) {
   const [running, setRunning] = useState(false)
   const [canRunning, setCanRunning] = useState(false)
   const locator = useServicesLocator()
-  useEffect(() => {
-    buildIframeData(locator, props.articleId, new Map(props.sections.map(s => [s.name!, s])), [], []).then(data => {
+  const reload = () => {
+    buildIframeData(new Map(props.sections.map(s => [s.name!, s])), { locator, id: props.articleId, defaultFws: [], apiInfos: [], reload }).then(data => {
       if (data) {
         setData(data)
-        setRunning(!!data.hasData)
-        setCanRunning(!!data.jsContentUrl)
+        setRunning(!data.docWithoutJs)
+        setCanRunning(!!data.doc)
       }
     })
-  }, [])
+  }
+  useEffect(() => reload(), [])
   if (!data) {
     return <></>
   }
-  const { contentUrl, jsContentUrl, context } = data
-  if (!((running && jsContentUrl) || (!running && contentUrl))) {
+  const { docWithoutJs, doc, context, contextWithoutJs } = data
+  if (!((running && doc) || (!running && docWithoutJs))) {
     return <></>
   }
   return <div className={classNames('h5-live-viewer')}>
     {
       running
-        ? <IFrameWithJsMemo withMask={withMask} allowFullscreen={true} src={jsContentUrl!} context={context} />
-        : <IFrameWithoutJsMemo withMask={withMask} allowFullscreen={!canRunning} src={contentUrl!} />
+        ? <IFrameWithJsMemo key={context?.token} withMask={withMask} allowFullscreen={true} srcDoc={doc!} context={context} />
+        : (contextWithoutJs
+          ? <IFrameWithJsMemo key={contextWithoutJs?.token} withMask={withMask} allowFullscreen={!canRunning} srcDoc={docWithoutJs!} context={contextWithoutJs} />
+          : <IFrameWithoutJsMemo withMask={withMask} allowFullscreen={!canRunning} srcDoc={docWithoutJs!} />)
     }
     {running ? undefined : <div onClick={(e) => {
       e.stopPropagation()
