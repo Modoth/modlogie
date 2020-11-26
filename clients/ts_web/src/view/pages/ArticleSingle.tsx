@@ -10,7 +10,7 @@ import FreeDrawMask from '../../infrac/components/FreeDrawMask'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import LocatableView, { Div, LocatableViewCallbacks } from '../../infrac/components/LocatableView'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const themeCount = 3
 const getThemeClass = (idx: number) => idx > 0 ? `reading-theme reading-theme-${idx}` : ''
@@ -62,8 +62,9 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   const [drawSize, setDrawSize] = useState(drawSizes[0])
   const [drawColor, setDrawColors] = useState(drawColors[0])
   const [earse, setEarse] = useState(false)
+  const viewService = locator.locate(IViewService)
   const close = () => {
-    locator.locate(IViewService).previewArticle()
+    viewService.previewArticle()
   }
   const langs = locator.locate(ILangsService)
   const [freeDraw, setFreeDraw] = useState(false)
@@ -100,12 +101,29 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     }
   }
   const jumpTo = (url:string) => {
-    locator.locate(IViewService).previewArticle(undefined, undefined, () => {
+    viewService.previewArticle(undefined, undefined, () => {
       window.location.href = url
     })
   }
   callbacks.onSections = setSections
   callbacks.onSection = setCurrentSection
+  if (!sidePopup) {
+    viewService.setFloatingMenus?.(ArticleSingle.name, <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
+      size="large"
+      shape="circle" onClick={() => setSidePopup(true)}>
+    </Button>)
+     viewService.setShowFloatingMenu?.(true)
+  } else {
+    viewService.setFloatingMenus?.(ArticleSingle.name)
+    viewService.setShowFloatingMenu?.(false)
+  }
+
+  useEffect(() => {
+    return () => {
+      viewService.setFloatingMenus?.(ArticleSingle.name)
+      viewService.setShowFloatingMenu?.(true)
+    }
+  }, [])
   return (
     <LocatableOffsetProvider value={0}>
       <LocatableView View={Div} callbacks={locateRef} className={classNames('single-article', getThemeClass(currentTheme), paging ? 'paging' : '')}>
@@ -134,7 +152,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                         <Menu.Divider key="divider2"></Menu.Divider>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => {
                           scrollToTop(true)
-                          setTimeout(() => locator.locate(IViewService).captureElement(ref.current!), 50)
+                          setTimeout(() => viewService.captureElement(ref.current!), 50)
                         }} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>
                       )
                       }
@@ -172,16 +190,10 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
             }
           </div>
         </div>
-        <div className={classNames('side', sidePopup ? 'show-pop' : '')} onClick={() => {
+        <div className={classNames('side', sidePopup ? 'show-pop pop-up-wraper' : '')} onClick={() => {
           sidePopup && setSidePopup(false)
         }}>
-          <div className="float-menus" onClick={ev => ev.stopPropagation()}>
-            <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
-              size="large"
-              shape="circle" onClick={() => setSidePopup(true)}>
-            </Button>
-          </div>
-          <div className="catelog" onClick={ev => ev.stopPropagation()}>
+          <div className="catelog pop-up" onClick={ev => ev.stopPropagation()}>
             <div className="top" onClick={() => {
               setSidePopup(false)
               scrollToTop()

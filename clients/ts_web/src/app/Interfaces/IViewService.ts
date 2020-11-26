@@ -31,15 +31,15 @@ export default class IViewService {
     throw new Error('Method not implemented.')
   }
 
-  get showMenu (): boolean {
+  setShowTitle? (show?: boolean): boolean {
     throw new Error('Method not implemented.')
   }
 
-  setShowMenu (showMenu: boolean): void {
+  setShowFloatingMenu? (show?: boolean): boolean {
     throw new Error('Method not implemented.')
   }
 
-  onShowMenuChanged? (showMenu: boolean): void {
+  setFloatingMenus? (key:string, menus?:React.ReactNode, inc = false) {
     throw new Error('Method not implemented.')
   }
 

@@ -81,6 +81,7 @@ export default function ManageWrods () {
       if (store.url) {
         URL.revokeObjectURL(store.url)
       }
+      viewService.setFloatingMenus?.(ManageWrods.name)
     }
   }, [])
 
@@ -131,6 +132,188 @@ export default function ManageWrods () {
 
     )
   }
+  viewService.setFloatingMenus?.(ManageWrods.name, <>
+    <Button
+      icon={<SearchOutlined />}
+      type={filter ? 'primary' : 'default'}
+      size="large" shape="circle"
+      onClick={() => {
+        locator.locate(IViewService).prompt(langs.get(LangKeys.Search), [
+          {
+            type: 'Text',
+            value: filter || '',
+            hint: langs.get(LangKeys.Search)
+          }
+        ], async (filter: string) => {
+          setFilter(filter)
+          return true
+        })
+      }}
+    >
+    </Button>
+    <Button
+      icon={<ClearOutlined />}
+      type="primary"
+      danger
+      size="large" shape="circle"
+      onClick={() => {
+        locator.locate(IViewService).prompt(langs.get(LangKeys.Delete), [],
+          async () => {
+            (async () => {
+              try {
+                viewService.setLoading(true)
+                await locator.locate(IWordsStorage).deleteAll()
+              } catch (e) {
+              viewService!.errorKey(langs, e.message)
+              viewService.setLoading(false)
+              return false
+              }
+            })()
+            return true
+          })
+      }}
+    >
+    </Button>
+    <Button
+      icon={<DownloadOutlined />}
+      type="primary"
+      size="large" shape="circle"
+      onClick={() => {
+        const timeEnum = [LangKeys.All, LangKeys.LatestDay, LangKeys.LatestWeek, LangKeys.LatestMonth].map(s => langs.get(s))
+        const typeEnum = [LangKeys.Anki, LangKeys.Csv].map(s => langs.get(s))
+        const includeExplain = [LangKeys.No, LangKeys.Yes].map(s => langs.get(s))
+        const tryExport = async (timeFilter:string, typeFilter:string, explain:string) => {
+          let a:HTMLAnchorElement
+          let filename:string
+          try {
+            viewService.setLoading(true)
+            let exporter
+            let exporterOpt
+            const exp = includeExplain.indexOf(explain) === 1
+            const typeIdx = typeEnum.indexOf(typeFilter)
+            switch (typeIdx) {
+              case 0:
+                exporter = locator.locate(IAnkiItemsExporter)
+                exporterOpt = {
+                  front: '<div class="front">{{Front}}</div>',
+                  back: '{{FrontSide}}\n\n<hr id="answer">\n\n<div class="back">{{Back}}</div>',
+                  css: ankiCss
+                }
+                break
+              case 1:
+                exporter = locator.locate(ICsvItemsExporter)
+                break
+              default:
+                return
+            }
+            const timeIdx = timeEnum.indexOf(timeFilter)
+            let timeStart = 0
+            const now = new Date()
+            switch (timeIdx) {
+              case 1:
+                timeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).valueOf()
+                break
+              case 2:
+                timeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()).valueOf()
+                break
+              case 3:
+                timeStart = new Date(now.getFullYear(), now.getMonth()).valueOf()
+                break
+            }
+            let _ = 0
+            let words
+            await sleep(0)
+          type WordWithExplain = Word & {explain?:string}
+          const wordsStorage = locator.locate(IWordsStorage)
+          if (timeStart) {
+            words = await wordsStorage.getAfter(timeStart, filter)
+          } else {
+            [_, words] = await wordsStorage.getAll(filter)
+          }
+          if (exp) {
+            const dictSercice = locator.locate(IDictService)
+            for (const w of words) {
+              (w as WordWithExplain).explain = await dictSercice.query(w.value)
+              await sleep(0)
+            }
+          }
+          const fields:FieldInfo<WordWithExplain>[] = [
+            {
+              name: langs.get(LangKeys.Word),
+              get: (word:WordWithExplain) => word.value
+            },
+            {
+              name: langs.get(LangKeys.Example),
+              get: (word:WordWithExplain) => word.eg || ''
+            }
+          ]
+          if (exp) {
+            fields.push({
+              name: langs.get(LangKeys.Explain),
+              get: (word:WordWithExplain) => word.explain || ''
+            })
+          }
+          const siteName = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
+          const name = `${siteName}_${langs.get(LangKeys.FavoriteWords)}_${yyyyMMdd_HHmmss(new Date())}`
+          const buffer = await (exporter.export as any)(name, words as WordWithExplain[], fields, exporterOpt)
+          filename = `${name}.${exporter.ext}`
+          a = document.createElement('a')
+          a.target = '_blank'
+          a.download = filename
+          if (store.url) {
+            URL.revokeObjectURL(store.url)
+          }
+          store.url = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }))
+          a.href = store.url!
+          try {
+            a.click()
+            return
+          } catch (e) {
+            // ignore
+          }
+          } catch (e) {
+          viewService!.errorKey(langs, e.message)
+          return
+          } finally {
+            viewService.setLoading(false)
+          }
+
+          locator.locate(IViewService).prompt(langs.get(LangKeys.ExportComplete), [
+          ], async () => {
+            a.click()
+            return true
+          })
+        }
+        locator.locate(IViewService).prompt(langs.get(LangKeys.Export), [
+          {
+            hint: langs.get(LangKeys.Time),
+            type: 'Enum',
+            value: timeEnum[0],
+            values: timeEnum
+          },
+          {
+            hint: langs.get(LangKeys.Explain),
+            type: 'Enum',
+            value: includeExplain[0],
+            values: includeExplain
+          },
+          {
+            hint: langs.get(LangKeys.Type),
+            type: 'Enum',
+            value: typeEnum[0],
+            values: typeEnum
+          }
+        ], async (timeFilter:string, explain:string, typeFilter:string) => {
+          (() => {
+            tryExport(timeFilter, typeFilter, explain)
+          })()
+          return true
+        })
+      }}
+    >
+    </Button>
+  </>
+)
   return (
     <div className="manage-words">
       <Table
@@ -184,187 +367,6 @@ export default function ManageWrods () {
         </>
       ) : null}
 
-      <div className="float-menus">
-        <Button
-          icon={<SearchOutlined />}
-          type={filter ? 'primary' : 'default'}
-          size="large" shape="circle"
-          onClick={() => {
-            locator.locate(IViewService).prompt(langs.get(LangKeys.Search), [
-              {
-                type: 'Text',
-                value: filter || '',
-                hint: langs.get(LangKeys.Search)
-              }
-            ], async (filter: string) => {
-              setFilter(filter)
-              return true
-            })
-          }}
-        >
-        </Button>
-        <Button
-          icon={<ClearOutlined />}
-          type="primary"
-          danger
-          size="large" shape="circle"
-          onClick={() => {
-            locator.locate(IViewService).prompt(langs.get(LangKeys.Delete), [],
-              async () => {
-                (async () => {
-                  try {
-                    viewService.setLoading(true)
-                    await locator.locate(IWordsStorage).deleteAll()
-                  } catch (e) {
-                    viewService!.errorKey(langs, e.message)
-                    viewService.setLoading(false)
-                    return false
-                  }
-                })()
-                return true
-              })
-          }}
-        >
-        </Button>
-        <Button
-          icon={<DownloadOutlined />}
-          type="primary"
-          size="large" shape="circle"
-          onClick={() => {
-            const timeEnum = [LangKeys.All, LangKeys.LatestDay, LangKeys.LatestWeek, LangKeys.LatestMonth].map(s => langs.get(s))
-            const typeEnum = [LangKeys.Anki, LangKeys.Csv].map(s => langs.get(s))
-            const includeExplain = [LangKeys.No, LangKeys.Yes].map(s => langs.get(s))
-            const tryExport = async (timeFilter:string, typeFilter:string, explain:string) => {
-              let a:HTMLAnchorElement
-              let filename:string
-              try {
-                viewService.setLoading(true)
-                let exporter
-                let exporterOpt
-                const exp = includeExplain.indexOf(explain) === 1
-                const typeIdx = typeEnum.indexOf(typeFilter)
-                switch (typeIdx) {
-                  case 0:
-                    exporter = locator.locate(IAnkiItemsExporter)
-                    exporterOpt = {
-                      front: '<div class="front">{{Front}}</div>',
-                      back: '{{FrontSide}}\n\n<hr id="answer">\n\n<div class="back">{{Back}}</div>',
-                      css: ankiCss
-                    }
-                    break
-                  case 1:
-                    exporter = locator.locate(ICsvItemsExporter)
-                    break
-                  default:
-                    return
-                }
-                const timeIdx = timeEnum.indexOf(timeFilter)
-                let timeStart = 0
-                const now = new Date()
-                switch (timeIdx) {
-                  case 1:
-                    timeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).valueOf()
-                    break
-                  case 2:
-                    timeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()).valueOf()
-                    break
-                  case 3:
-                    timeStart = new Date(now.getFullYear(), now.getMonth()).valueOf()
-                    break
-                }
-                let _ = 0
-                let words
-                await sleep(0)
-                type WordWithExplain = Word & {explain?:string}
-                const wordsStorage = locator.locate(IWordsStorage)
-                if (timeStart) {
-                  words = await wordsStorage.getAfter(timeStart, filter)
-                } else {
-                  [_, words] = await wordsStorage.getAll(filter)
-                }
-                if (exp) {
-                  const dictSercice = locator.locate(IDictService)
-                  for (const w of words) {
-                    (w as WordWithExplain).explain = await dictSercice.query(w.value)
-                    await sleep(0)
-                  }
-                }
-                const fields:FieldInfo<WordWithExplain>[] = [
-                  {
-                    name: langs.get(LangKeys.Word),
-                    get: (word:WordWithExplain) => word.value
-                  },
-                  {
-                    name: langs.get(LangKeys.Example),
-                    get: (word:WordWithExplain) => word.eg || ''
-                  }
-                ]
-                if (exp) {
-                  fields.push({
-                    name: langs.get(LangKeys.Explain),
-                    get: (word:WordWithExplain) => word.explain || ''
-                  })
-                }
-                const siteName = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
-                const name = `${siteName}_${langs.get(LangKeys.FavoriteWords)}_${yyyyMMdd_HHmmss(new Date())}`
-                const buffer = await (exporter.export as any)(name, words as WordWithExplain[], fields, exporterOpt)
-                filename = `${name}.${exporter.ext}`
-                a = document.createElement('a')
-                a.target = '_blank'
-                a.download = filename
-                if (store.url) {
-                  URL.revokeObjectURL(store.url)
-                }
-                store.url = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }))
-                a.href = store.url!
-                try {
-                  a.click()
-                  return
-                } catch (e) {
-                  // ignore
-                }
-              } catch (e) {
-                viewService!.errorKey(langs, e.message)
-                return
-              } finally {
-                viewService.setLoading(false)
-              }
-
-              locator.locate(IViewService).prompt(langs.get(LangKeys.ExportComplete), [
-              ], async () => {
-                a.click()
-                return true
-              })
-            }
-            locator.locate(IViewService).prompt(langs.get(LangKeys.Export), [
-              {
-                hint: langs.get(LangKeys.Time),
-                type: 'Enum',
-                value: timeEnum[0],
-                values: timeEnum
-              },
-              {
-                hint: langs.get(LangKeys.Explain),
-                type: 'Enum',
-                value: includeExplain[0],
-                values: includeExplain
-              },
-              {
-                hint: langs.get(LangKeys.Type),
-                type: 'Enum',
-                value: typeEnum[0],
-                values: typeEnum
-              }
-            ], async (timeFilter:string, explain:string, typeFilter:string) => {
-              (() => {
-                tryExport(timeFilter, typeFilter, explain)
-              })()
-              return true
-            })
-          }}
-        >
-        </Button>
-      </div>
     </div >
   )
 }

@@ -87,24 +87,6 @@ body {
   background: #ffcccc40 !important;
 }
 
-.float-menus {
-  position: fixed;
-  left: 0;
-  margin: 10px;
-  z-index: 2;
-  display: flex;
-  bottom: 4em;
-  flex-direction: column;
-
-  & button {
-    box-shadow: 1px 1px 2px #0004;
-    margin-block-end: 10px;
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
-    opacity: 0.75;
-  }
-}
-
 pre {
   background: transparent !important;
 }
@@ -146,6 +128,31 @@ span.token {
   border: none;
   a {
     color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+.pop-up-wraper {
+  background: #0004;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  touch-action: none;
+  z-index: 3;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  .pop-up {
+    display: unset !important;
+    background: #fff;
+    max-height: 80%;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 5px 2em;
+    margin: 1em;
   }
 }
 

@@ -2,7 +2,7 @@ import './FullscreenWraper.less'
 import { Button } from 'antd'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { useServicesLocator } from '../../view/common/Contexts'
 import IViewService from '../../app/Interfaces/IViewService'
 
@@ -18,13 +18,13 @@ export type FullscreenWraperCallbacks = {toogle?():void}
 export default function FullscreenWraper<TProp> (props: TProp & { callbacks?:FullscreenWraperCallbacks, enabled?: boolean, className?: string, View: { (props: TProp): JSX.Element } }) {
   const [fullscreen, setFullscreen] = useState(false)
   const viewService = useServicesLocator().locate(IViewService)
-  const [originShowMenu] = useState(viewService.showMenu)
   const [View] = useState(memo(props.View) as any)
   if (props.callbacks) {
     props.callbacks.toogle = () => {
       const nextFullscreen = !fullscreen
-      viewService.setShowMenu(nextFullscreen ? false : originShowMenu)
+      viewService.setShowTitle?.(nextFullscreen ? false : undefined)
       setFullscreen(nextFullscreen)
+      viewService.setShowFloatingMenu?.(!nextFullscreen)
     }
   }
   return <div className={classNames(props.className, 'fullscreen-wraper', fullscreen ? 'fullscreen' : '')}><View {...Object.assign({}, props, { classNames: undefined, View: undefined, enabled: undefined })}></View>

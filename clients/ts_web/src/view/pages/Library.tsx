@@ -495,7 +495,7 @@ export default function Library (props: LibraryProps) {
   articleHandlers.onDelete = deleteArticle
 
   useEffect(() => {
-    viewService.setShowMenu(false)
+    viewService.setShowTitle?.(false)
     fetchSubjects().then(() => fetchTags());
     (async () => {
       const logo =
@@ -509,7 +509,8 @@ export default function Library (props: LibraryProps) {
       favoriteService.setCountChangedHandler(props.type.name, setFavoriteCount)
     }
     return () => {
-      viewService.setShowMenu(true)
+      viewService.setShowTitle?.(true)
+      viewService.setFloatingMenus?.(Library.name)
       favoriteService.unsetCountChangedHandler(props.type.name)
       viewService.previewArticle()
     }
@@ -522,6 +523,42 @@ export default function Library (props: LibraryProps) {
     fetchArticles(1)
   }, [rootSubject, favorite])
 
+  if (viewService.setFloatingMenus) {
+    viewService.setFloatingMenus(Library.name, <>
+      {user.printPermission ? (
+        <ArticleListSummary></ArticleListSummary>
+      ) : null}
+      {favoriteService && (favorite || favoriteCount) ? (
+        <Badge count={favoriteCount}>
+          <Button
+            icon={<HeartFilled />}
+            type={favorite ? 'primary' : 'default'}
+            size="large"
+            shape="circle"
+            onClick={() => {
+              setFavorite(!favorite)
+            }}
+          ></Button>
+        </Badge>
+      ) : null}
+      <Button
+        type={!filter && !(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId) ? 'default' : 'primary'}
+        size="large"
+        shape="circle"
+        onClick={() => setShowFilter(true)}
+        icon={<SearchOutlined />}
+      ></Button>
+      {user.editingPermission ? (
+        <Button
+          icon={<PlusOutlined />}
+          type="default"
+          size="large"
+          shape="circle"
+          onClick={addArticle}
+        ></Button>
+      ) : null}
+    </>)
+  }
   return (
     <div className={classNames('library', type?.name || '', type?.pluginName || '')}>
       <TitleBar
@@ -599,40 +636,6 @@ export default function Library (props: LibraryProps) {
           ></Pagination>
         </>
       ) : null}
-      <div className="float-menus">
-        {user.printPermission ? (
-          <ArticleListSummary></ArticleListSummary>
-        ) : null}
-        {favoriteService && (favorite || favoriteCount) ? (
-          <Badge count={favoriteCount}>
-            <Button
-              icon={<HeartFilled />}
-              type={favorite ? 'primary' : 'default'}
-              size="large"
-              shape="circle"
-              onClick={() => {
-                setFavorite(!favorite)
-              }}
-            ></Button>
-          </Badge>
-        ) : null}
-        <Button
-          type={filter || (selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId) ? 'primary' : 'default'}
-          size="large"
-          shape="circle"
-          onClick={() => setShowFilter(true)}
-          icon={<SearchOutlined />}
-        ></Button>
-        {user.editingPermission ? (
-          <Button
-            icon={<PlusOutlined />}
-            type="default"
-            size="large"
-            shape="circle"
-            onClick={addArticle}
-          ></Button>
-        ) : null}
-      </div>
       <Drawer
         closable={false}
         className={classNames('filter-panel')}

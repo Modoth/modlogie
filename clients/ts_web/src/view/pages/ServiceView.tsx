@@ -44,19 +44,6 @@ export class ViewService implements IViewService {
     message.error(msg, timeout / 1000)
   }
 
-  private _showMenu = true;
-
-  get showMenu () {
-    return this._showMenu
-  }
-
-  setShowMenu (showMenu: boolean): void {
-    this._showMenu = showMenu
-    if (this.onShowMenuChanged) {
-      this.onShowMenuChanged(this._showMenu)
-    }
-  }
-
   constructor (public setLoading: any,
     public prompt: any,
     public previewImage: any,

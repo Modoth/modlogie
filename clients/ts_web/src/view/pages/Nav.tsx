@@ -30,7 +30,7 @@ function Nav () {
   const [editors, setEditors] = useState<EditorInfo[]>([])
   const [viewers, setViewers] = useState<EditorInfo[]>([])
   const ref = React.createRef<HTMLDivElement>()
-  const [showMenu, setShowMenu] = useState(locator.locate(IViewService).showMenu)
+  const [showTitle, setShowTitle] = useState({ last: true, current: true })
   const onComponentDidMount = async () => {
     const configService = locator.locate(IConfigsService)
     const nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
@@ -76,10 +76,17 @@ function Nav () {
     onComponentDidMount()
   }, [])
 
-  locator.locate(IViewService).onShowMenuChanged = setShowMenu
+  locator.locate(IViewService).setShowTitle = (show?:boolean) => {
+    if (show === undefined) {
+      setShowTitle({ last: showTitle.current, current: showTitle.last })
+    } else {
+      setShowTitle({ last: showTitle.current, current: show })
+    }
+    return showTitle.current
+  }
 
   return (
-    <div ref={ref} className={classNames(showMenu ? '' : 'hidden')}>
+    <div ref={ref} className={classNames(showTitle.current ? '' : 'hidden')}>
       <Drawer className="side-nav-panel" visible={showDrawer} onClose={() => setShowDrawer(false)} closable={false} placement="left">
         <Menu className="side-nav" mode="inline" onClick={() => setShowDrawer(false)} >
           {

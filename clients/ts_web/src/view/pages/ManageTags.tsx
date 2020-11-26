@@ -184,6 +184,18 @@ export function ManageTags () {
       />
     )
   }
+  viewService.setFloatingMenus?.(ManageTags.name, <Button
+    icon={<PlusOutlined />}
+    type="default"
+    size="large" shape="circle"
+    onClick={addTag}
+  >
+  </Button>)
+  useEffect(() => {
+    return () => {
+      viewService.setFloatingMenus?.(ManageTags.name)
+    }
+  }, [])
   return (
     <div className="manage-tags">
       <Table
@@ -219,15 +231,6 @@ export function ManageTags () {
         dataSource={tags}
         pagination={false}
       ></Table>
-      <div className="float-menus">
-        <Button
-          icon={<PlusOutlined />}
-          type="default"
-          size="large" shape="circle"
-          onClick={addTag}
-        >
-        </Button>
-      </div>
     </div>
   )
 }

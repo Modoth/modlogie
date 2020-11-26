@@ -394,6 +394,27 @@ export function ManageSubjects () {
       ></Button>
     )
   }
+  viewService.setFloatingMenus?.(ManageSubjects.name, <>
+    <Button
+      icon={<SisternodeOutlined />}
+      type="default"
+      size="large" shape="circle"
+      onClick={() => addSubject()}
+    >
+    </Button>
+    <Button
+      icon={<UploadOutlined />}
+      type="default"
+      size="large" shape="circle"
+      onClick={() => importTo()}
+    >
+    </Button>
+  </>)
+  useEffect(() => {
+    return () => {
+      viewService.setFloatingMenus?.(ManageSubjects.name)
+    }
+  }, [])
   return (
     <div className="manage-subjects">
       <Table
@@ -444,22 +465,6 @@ export function ManageSubjects () {
         dataSource={subjects}
         pagination={false}
       ></Table>
-      <div className="float-menus">
-        <Button
-          icon={<SisternodeOutlined />}
-          type="default"
-          size="large" shape="circle"
-          onClick={() => addSubject()}
-        >
-        </Button>
-        <Button
-          icon={<UploadOutlined />}
-          type="default"
-          size="large" shape="circle"
-          onClick={() => importTo()}
-        >
-        </Button>
-      </div>
     </div>
   )
 }

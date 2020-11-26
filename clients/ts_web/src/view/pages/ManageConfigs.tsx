@@ -123,6 +123,18 @@ export function ManageConfigs () {
         />
     )
   }
+  viewService.setFloatingMenus?.(ManageConfigs.name, <Button
+    icon={<ClearOutlined />}
+    type="default"
+    size="large" shape="circle"
+    onClick={() => resetAll()}
+  >
+  </Button>)
+  useEffect(() => {
+    return () => {
+      viewService.setFloatingMenus?.(ManageConfigs.name)
+    }
+  }, [])
 
   return (
     <div className="manage-configs">
@@ -158,15 +170,6 @@ export function ManageConfigs () {
         dataSource={configs}
         pagination={false}
       ></Table>
-      <div className="float-menus">
-        <Button
-          icon={<ClearOutlined />}
-          type="default"
-          size="large" shape="circle"
-          onClick={() => resetAll()}
-        >
-        </Button>
-      </div>
     </div>
   )
 }

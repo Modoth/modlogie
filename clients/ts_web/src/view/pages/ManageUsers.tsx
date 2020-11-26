@@ -182,6 +182,18 @@ export function ManageUsers () {
       />
     )
   }
+  viewService.setFloatingMenus?.(ManageUsers.name, <Button
+    icon={<PlusOutlined />}
+    type="default"
+    size="large" shape="circle"
+    onClick={addUser}
+  >
+  </Button>)
+  useEffect(() => {
+    return () => {
+      viewService.setFloatingMenus?.(ManageUsers.name)
+    }
+  }, [])
   return (
     <div className="manage-users">
       <Table
@@ -249,15 +261,6 @@ export function ManageUsers () {
           ></Pagination>
         </>
       ) : null}
-      <div className="float-menus">
-        <Button
-          icon={<PlusOutlined />}
-          type="default"
-          size="large" shape="circle"
-          onClick={addUser}
-        >
-        </Button>
-      </div>
     </div>
   )
 }
