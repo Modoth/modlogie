@@ -149,15 +149,15 @@ export default function Modlogie () {
               setTimeout(updatePos, delay)
             }
           }
-          store.destory = registerDragMove(document, div, start, moving, end)
+          store.destory = registerDragMove(document, dot, start, moving, end)
         }}>
-          <Button size="large" type="primary" danger
+          <Button size="large" type="primary"
             shape="circle" icon={<DragOutlined /> } ></Button>
         </div>
         {open ? undefined : floatingMenus}
       </div>
 
-      {open ? <ModlogieView ></ModlogieView> : undefined}
+      <div className={open ? '' : 'hidden'}><ModlogieView ></ModlogieView></div>
     </div>
   </div>
 }

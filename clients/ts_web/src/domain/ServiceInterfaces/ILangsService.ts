@@ -7,6 +7,7 @@ export class LangKeysInterface {
   AlreadyLiked = 'AlreadyLiked';
   Anki = 'Anki';
   AuthorisedUser = 'AuthorisedUser';
+  BackgroundMusic = 'BackgroundMusic';
   BeyondMaxFavorites = 'BeyondMaxFavorites';
   Cancle = 'Cancle';
   CancleAutoLogin = 'CancleAutoLogin';
@@ -97,6 +98,7 @@ export class LangKeysInterface {
   Themes = 'Themes';
   Time = 'Time';
   Tools = 'Tools';
+  Top = 'Top';
   Type = 'Type';
   UnknownError = 'UnknownError';
   Url = 'Url';
@@ -107,7 +109,6 @@ export class LangKeysInterface {
   Welcome = 'Welcome';
   Word = 'Word';
   Yes = 'Yes';
-  Top = 'Top';
 }
 
 export enum ErrorMessage {

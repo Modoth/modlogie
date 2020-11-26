@@ -3,7 +3,7 @@ import './Library.less'
 import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { MmIcon } from '../common/Icons'
-import { PlusOutlined, HomeOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, PoweroffOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocator, useUser } from '../common/Contexts'
@@ -576,12 +576,13 @@ export default function Library (props: LibraryProps) {
           {
             title: langs.get(LangKeys.Home),
             link: '/',
-            icon: <HomeOutlined />
-          }, {
-            title: langs.get(LangKeys.Export),
-            onClick: exportMm,
-            icon: <MmIcon></MmIcon>
+            icon: <PoweroffOutlined className="menu-icon" />
           }
+          // , {
+          //   title: langs.get(LangKeys.Export),
+          //   onClick: exportMm,
+          //   icon: <MmIcon></MmIcon>
+          // }
         ]}></TitleBar>
 
       {articles.length || recommendsArticles.length ? null : (

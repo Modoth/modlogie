@@ -47,6 +47,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   AlreadyLiked = '已经点过了';
   Anki = 'Anki';
   AuthorisedUser = 'VIP';
+  BackgroundMusic = '背景音';
   BeyondMaxFavorites = '超出最大收藏';
   Cancle = '取消';
   CancleAutoLogin = '自动登录';

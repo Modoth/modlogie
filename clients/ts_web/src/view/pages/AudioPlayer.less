@@ -1,0 +1,22 @@
+.audio-player {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 5px 10px;
+  .menu {
+    display: flex;
+    width: 100%;
+    & > * {
+      margin: 0 5px;
+      height: unset;
+      padding: unset;
+    }
+    & > .controls {
+      height: 32px;
+      width: 32px;
+    }
+    .title {
+      flex: 1;
+    }
+  }
+}

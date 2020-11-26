@@ -1,6 +1,9 @@
 import './ModlogieView.less'
-import React, { useEffect, useState } from 'react'
+import AudioPlayer from './AudioPlayer'
+import React from 'react'
 
 export default function ModlogieView () {
-  return <div className="moglogie-view"></div>
+  return <div className="moglogie-view">
+    <AudioPlayer></AudioPlayer>
+  </div>
 }
