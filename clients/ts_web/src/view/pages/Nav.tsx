@@ -127,9 +127,17 @@ function Nav () {
             icon={<RocketOutlined />}
             title={langs.get(LangKeys.Tools)}
           >
+            <Menu.Item icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
+              {langs.get(LangKeys.Refresh)}
+            </Menu.Item>
+            <Menu.Divider></Menu.Divider>
+            <Menu.Item icon={<FileWordOutlined />} >
+              <Link to="/manage/dicts/">{langs.get(LangKeys.Dict)}</Link>
+            </Menu.Item>
             <Menu.Item icon={<FileWordOutlined />} >
               <Link to="/manage/words/">{langs.get(LangKeys.FavoriteWords)}</Link>
             </Menu.Item>
+            <Menu.Divider></Menu.Divider>
             {
               (viewers && viewers.length)
                 ? <Menu.Item icon={<ReadOutlined />} >
@@ -142,10 +150,6 @@ function Nav () {
                   <Link to="/tools/editor/">{langs.get(LangKeys.Editors)}</Link>
                 </Menu.Item> : <></>
             }
-            <Menu.Divider></Menu.Divider>
-            <Menu.Item icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
-              {langs.get(LangKeys.Refresh)}
-            </Menu.Item>
           </SubMenu>
           <Menu.Divider></Menu.Divider>
           {user.name ? (

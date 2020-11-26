@@ -1,7 +1,8 @@
 import './ManageDicts.less'
-import { Button } from 'antd'
+import { Button, Input } from 'antd'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useServicesLocator } from '../common/Contexts'
+import DictView from './DictView'
 import IDictService, { CancleToken, DictInfo } from '../../domain/ServiceInterfaces/IDictService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -13,6 +14,7 @@ export default function ManageDicts () {
   const [info, setInfo] = useState<DictInfo | undefined>()
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
+  const [query, setQuery] = useState('我')
   const [store] = useState<{ cancleToken?: CancleToken, importing?: boolean, destoried?: boolean }>({})
   const clearLastCancleToken = () => {
     if (store.cancleToken) {
@@ -102,16 +104,28 @@ export default function ManageDicts () {
       }
     })()
   }, [])
+  viewService.setFloatingMenus?.(ManageDicts.name, <>
+    <Button size="large" type="primary" shape="circle" icon={<PlusOutlined />} onClick={() => {
+      if (importing) {
+        return
+      }
+      selectDictFile()
+    }}></Button>
+    <Button size="large" type="primary" shape="circle" danger icon={<DeleteOutlined />} onClick={clearDict}></Button>
+  </>)
+  useEffect(() => {
+    return () => {
+      viewService.setFloatingMenus?.(ManageDicts.name)
+    }
+  }, [])
   return <div className="manage-dicts">
-    <div className='menu'>
-      <Button size="large" type="link" icon={<PlusOutlined />} onClick={() => {
-        if (importing) {
-          return
-        }
-        selectDictFile()
-      }}></Button>
-      <Button className="menu-title" type="link" >{langs.get(LangKeys.ItemsCount)}{importing ? `${importProgress}%` : <span className="info">{(info && info.itemCount) || ''}</span>}</Button>
-      <Button size="large" type="link" danger icon={<DeleteOutlined />} onClick={clearDict}></Button>
+    <div className="dict-query-wraper">
+      <div className='menu'>
+        <Input placeholder={langs.get(LangKeys.Dict)} className="query" value={query} onChange={(e) => setQuery(e.target.value)}></Input>
+        <Button className="menu-title" type="link" >{langs.get(LangKeys.ItemsCount)}{importing ? `${importProgress}%` : <span className="info">{(info && info.itemCount) || ''}</span>}</Button>
+      </div>
+      <div className="dict"> {query ? <DictView word={query} hidenMenu={true}></DictView> : undefined}</div>
+
     </div>
   </div >
 }
