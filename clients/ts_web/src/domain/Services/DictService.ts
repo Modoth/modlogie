@@ -15,9 +15,93 @@ export interface DictParser {
     parse(file: File): Promise<[string, DictItem][]>
 }
 
+class DataStore {
+  constructor (private storeName:string, private keyPath = 'key') {
+
+  }
+
+  private dbName = 'modlite'
+
+  private db: Promise<IDBDatabase>
+
+  private async getDb (): Promise<IDBDatabase> {
+    if (this.db) {
+      return this.db
+    }
+    const createStore = (db: IDBDatabase) => {
+      db.createObjectStore(this.storeName, { keyPath: this.keyPath })
+    }
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.dbName, 1)
+      request.onupgradeneeded = () => {
+        createStore(request.result)
+      }
+
+      request.onsuccess = () => {
+        const db = request.result
+        resolve(db)
+      }
+      request.onblocked = (ev) => {
+        reject(ev)
+      }
+      request.onerror = (ev) => {
+        reject(ev)
+      }
+    })
+  }
+
+  async transaction (action: { (store: IDBObjectStore): Promise<boolean | void> | boolean | void }): Promise<void> {
+    const db = await this.getDb()
+    const tx = db.transaction(this.storeName, 'readwrite')
+    const store = tx.objectStore(this.storeName)
+    const res = await action(store)
+    if (res) {
+      tx.abort()
+    }
+    return new Promise((resolve, reject) => {
+      tx.oncomplete = function () {
+        resolve()
+      }
+      tx.onerror = (ev) => reject(ev)
+    })
+  }
+
+  async query (key: string): Promise<string | undefined> {
+    const db = await this.getDb()
+    const tx = db.transaction(this.storeName, 'readonly')
+    const store = tx.objectStore(this.storeName)
+    const request = store.get(key)
+    return new Promise((resolve, reject) => {
+      request.onsuccess = function () {
+        const matching = request.result
+        if (matching !== undefined) {
+          resolve(matching.value)
+        } else {
+          resolve(undefined)
+        }
+      }
+      request.onerror = (ev) => reject(ev)
+    })
+  }
+
+  async count (): Promise<number> {
+    const db = await this.getDb()
+    const tx = db.transaction(this.storeName, 'readonly')
+    const store = tx.objectStore(this.storeName)
+    const request = store.count()
+    return new Promise((resolve, reject) => {
+      request.onsuccess = function () {
+        resolve(request.result)
+      }
+      request.onerror = (ev) => reject(ev)
+    })
+  }
+}
+
 export default class DictService implements IDictService {
+  store = new DataStore('dict')
   async info (token?: CancleToken): Promise<DictInfo> {
-    return new DictInfo(await this.countStore())
+    return new DictInfo(await this.store.count())
   }
 
     parsers = new Map<string, DictParser>([
@@ -25,82 +109,6 @@ export default class DictService implements IDictService {
       ['json', new JsonDictParser()],
       ['txt', new TxtDictParser()]
     ])
-
-    private _db: Promise<IDBDatabase>
-    private _dbName = 'modlite'
-    private _storeName = 'dict'
-    async getDb (): Promise<IDBDatabase> {
-      if (this._db) {
-        return this._db
-      }
-      const createStore = (db: IDBDatabase) => {
-        db.createObjectStore(this._storeName, { keyPath: 'key' })
-      }
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(this._dbName, 1)
-        request.onupgradeneeded = () => {
-          createStore(request.result)
-        }
-
-        request.onsuccess = () => {
-          const db = request.result
-          resolve(db)
-        }
-        request.onblocked = (ev) => {
-          reject(ev)
-        }
-        request.onerror = (ev) => {
-          reject(ev)
-        }
-      })
-    }
-
-    async bulkStore (action: { (store: IDBObjectStore): Promise<boolean | void> | boolean | void }): Promise<void> {
-      const db = await this.getDb()
-      const tx = db.transaction(this._storeName, 'readwrite')
-      const store = tx.objectStore(this._storeName)
-      const res = await action(store)
-      if (res) {
-        tx.abort()
-      }
-      return new Promise((resolve, reject) => {
-        tx.oncomplete = function () {
-          resolve()
-        }
-        tx.onerror = (ev) => reject(ev)
-      })
-    }
-
-    async queryStore (key: string): Promise<string | undefined> {
-      const db = await this.getDb()
-      const tx = db.transaction(this._storeName, 'readonly')
-      const store = tx.objectStore(this._storeName)
-      const request = store.get(key)
-      return new Promise((resolve, reject) => {
-        request.onsuccess = function () {
-          const matching = request.result
-          if (matching !== undefined) {
-            resolve(matching.value)
-          } else {
-            resolve(undefined)
-          }
-        }
-        request.onerror = (ev) => reject(ev)
-      })
-    }
-
-    async countStore (): Promise<number> {
-      const db = await this.getDb()
-      const tx = db.transaction(this._storeName, 'readonly')
-      const store = tx.objectStore(this._storeName)
-      const request = store.count()
-      return new Promise((resolve, reject) => {
-        request.onsuccess = function () {
-          resolve(request.result)
-        }
-        request.onerror = (ev) => reject(ev)
-      })
-    }
 
     async parseDict (file: File): Promise<[string, DictItem][]> {
       const type = extname(file.name)
@@ -112,7 +120,7 @@ export default class DictService implements IDictService {
     }
 
     async clean (): Promise<void> {
-      await this.bulkStore(store => {
+      await this.store.transaction(store => {
         store.clear()
       })
     }
@@ -136,7 +144,7 @@ export default class DictService implements IDictService {
         if (token?.cancled) {
           break
         }
-        await this.bulkStore(store => {
+        await this.store.transaction(store => {
           for (let i = 0; i < perBulk && i < remain; i++) {
             const idx = i + offset
             const item = items[idx][1]
@@ -151,18 +159,18 @@ export default class DictService implements IDictService {
         })
       }
 
-      return new DictInfo(await this.countStore())
+      return new DictInfo(await this.store.count())
     }
 
     async query (word: string, token?: CancleToken): Promise<string | undefined> {
-      return await this.queryStore(word) || undefined
+      return await this.store.query(word) || undefined
     }
 
     async queryUrl (word: string, token?: CancleToken): Promise<string | undefined> {
       if (token && token.cancled) {
         return ''
       }
-      const value = await this.queryStore(word)
+      const value = await this.store.query(word)
       return value && 'data:text/html;charset=utf-8,' + encodeURIComponent(`${value}<style>${style}</style>`)
     }
 }
