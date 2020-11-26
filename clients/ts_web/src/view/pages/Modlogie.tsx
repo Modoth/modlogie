@@ -70,6 +70,7 @@ export default function Modlogie () {
   const [store] = useState<Store>({ pos: getLastModlogiePos(), menus: [] })
   const [hidden, setHidden] = useState(false)
   const [floatingMenus, setFloatingMenus] = useState<React.ReactNode|undefined>()
+  const [opacity, setOpacity] = useState<boolean|undefined>()
   const clearUp = () => {
     if (store.destory) {
       store.destory()
@@ -78,12 +79,13 @@ export default function Modlogie () {
   }
   const viewService = useServicesLocator().locate(IViewService)
   viewService.setShowFloatingMenu = (show?:boolean) => { setHidden(!show); return !hidden }
-  viewService.setFloatingMenus = (key:string, menus?:React.ReactNode, inc?:boolean) => {
+  viewService.setFloatingMenus = (key:string, menus?:React.ReactNode, opacity?:boolean) => {
     store.menus = store.menus.filter(([k]) => k !== key)
     if (menus) {
-      store.menus.unshift([key, menus, inc])
+      store.menus.unshift([key, menus, opacity])
     }
     setFloatingMenus(store.menus[0]?.[1])
+    setOpacity(store.menus[0]?.[2])
   }
   const containerStyle = getContainerStyleFromPos(store.pos)
   const floatingStyle = getFloatingStyleFromPos(store.pos)
@@ -93,7 +95,7 @@ export default function Modlogie () {
   }, [])
   return <div className={classNames('modlogie-wraper', open ? 'open' : '')} onClick={() => setOpen(false)}>
     <div onClick={(ev) => ev.stopPropagation()} className={classNames('modlogie', hidden ? 'hidden' : '')} style={containerStyle}>
-      <div className="floating-menus" style={floatingStyle}>
+      <div className={classNames('floating-menus', opacity ? 'opacity' : '')} style={floatingStyle}>
         <div onClick={() => setOpen(!open)} className="modlogie-dot" ref={(dot) => {
           if (!dot) {
             clearUp()

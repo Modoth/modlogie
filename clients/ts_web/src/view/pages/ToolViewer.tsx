@@ -34,7 +34,7 @@ export function ToolViewer () {
       setFile(undefined)
       setName('')
     }}></Button> : undefined}
-  </>)
+  </>, !!file)
   useEffect(() => {
     return () => {
       viewService.setFloatingMenus?.(ToolViewer.name)

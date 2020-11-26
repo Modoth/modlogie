@@ -84,7 +84,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   FreeDraw = '记号笔';
   Home = '首页';
   Import = '导入';
-  ItemsCount = '词条数';
+  ItemsCount = '总词条数:';
   Keyword = '关键字';
   Latest = '最近更新';
   LatestDay = '今天';

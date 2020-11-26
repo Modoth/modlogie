@@ -112,7 +112,7 @@ export default function ManageDicts () {
       selectDictFile()
     }}></Button>
     <Button size="large" type="primary" shape="circle" danger icon={<DeleteOutlined />} onClick={clearDict}></Button>
-  </>)
+  </>, !!query)
   useEffect(() => {
     return () => {
       viewService.setFloatingMenus?.(ManageDicts.name)
@@ -122,7 +122,7 @@ export default function ManageDicts () {
     <div className="dict-query-wraper">
       <div className='menu'>
         <Input placeholder={langs.get(LangKeys.Dict)} className="query" value={query} onChange={(e) => setQuery(e.target.value)}></Input>
-        <Button className="menu-title" type="link" >{langs.get(LangKeys.ItemsCount)}{importing ? `${importProgress}%` : <span className="info">{(info && info.itemCount) || ''}</span>}</Button>
+        <Button className="menu-title" type="link" >{langs.get(LangKeys.ItemsCount)}{importing ? `${importProgress}%` : <span className="info">{(info && info.itemCount) || '0'}</span>}</Button>
       </div>
       <div className="dict"> {query ? <DictView word={query} hidenMenu={true}></DictView> : undefined}</div>
 
