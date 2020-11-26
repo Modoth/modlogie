@@ -14,7 +14,7 @@ export default function ManageDicts () {
   const [info, setInfo] = useState<DictInfo | undefined>()
   const locator = useServicesLocator()
   const langs = locator.locate(ILangsService)
-  const [query, setQuery] = useState('我')
+  const [query, setQuery] = useState('')
   const [store] = useState<{ cancleToken?: CancleToken, importing?: boolean, destoried?: boolean }>({})
   const clearLastCancleToken = () => {
     if (store.cancleToken) {
