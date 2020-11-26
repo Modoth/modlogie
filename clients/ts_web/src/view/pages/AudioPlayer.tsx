@@ -77,6 +77,6 @@ export default function AudioPlayer () {
       <Button size="large" type="link" onClick={selectFile} className="title" >{info.title || ''}</Button>
       {url ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined}
     </div>
-    <audio ref={ref}></audio>
+    <audio ref={ref} onEnded={() => setPlayging(false)} onPause={() => setPlayging(false)} onPlay={() => setPlayging(true)}></audio>
   </div>
 }
