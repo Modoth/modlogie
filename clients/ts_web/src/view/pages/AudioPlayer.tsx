@@ -37,8 +37,8 @@ export default function AudioPlayer () {
   const selectFile = () => {
     viewService.prompt(langs.get(LangKeys.Open), [{
       type: 'File',
-      value: null
-    //   accept: 'audio/*'
+      value: null,
+      accept: 'audio/mp3,audio/*'
     }], async (file:File) => {
       loadFile(file)
       return true
