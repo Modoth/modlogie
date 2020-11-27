@@ -11,7 +11,7 @@ import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IArticleListService from '../../app/Interfaces/IArticleListService'
 import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import IFavoritesServer from '../../domain/ServiceInterfaces/IFavoritesServer'
+import IFavoritesService from '../../domain/ServiceInterfaces/IFavoritesService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ILikesService from '../../domain/ServiceInterfaces/ILikesService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -63,7 +63,7 @@ export default function ArticleView (props: {
   const [content, setContent] = useState(props.article.content || {})
   const [published, setPublished] = useState(props.article.published)
   const [name, setName] = useState(props.article.name)
-  const [favoriteService] = useState(locator.locate(IFavoritesServer))
+  const [favoriteService] = useState(locator.locate(IFavoritesService))
   const [favorite, setFavorite] = useState(false)
   const [likesService, setLikesService] = useState<ILikesService | undefined>(undefined)
   const [canLike, setCanLike] = useState(false)

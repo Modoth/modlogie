@@ -35,11 +35,11 @@ import IConfigsService, { Config, ConfigType } from './domain/ServiceInterfaces/
 import ICsvItemsExporter from './domain/ServiceInterfaces/ICsvItemsExporter'
 import IDictService from './domain/ServiceInterfaces/IDictService'
 import IEditorsService from './app/Interfaces/IEditorsService'
-import IFavoritesServer from './domain/ServiceInterfaces/IFavoritesServer'
-import IFavoritesStorage from './domain/ServiceInterfaces/IFavoritesStorage'
+import IFavoritesService from './domain/ServiceInterfaces/IFavoritesService'
+import IKeyValueStorageManager, { ILocalKeyValueStorage, IRemoteKeyValueStorage } from './domain/ServiceInterfaces/IKeyValueStorage'
 import IKeywordsService from './domain/ServiceInterfaces/IKeywordsService'
 import ILangInterpretersService from './domain/ServiceInterfaces/ILangInterpretersService'
-import ILangsService from './domain/ServiceInterfaces/ILangsService'
+import ILangsService, { LangKeys } from './domain/ServiceInterfaces/ILangsService'
 import ILikesService from './domain/ServiceInterfaces/ILikesService'
 import ILoginAppservice from './app/Interfaces/ILoginAppservice'
 import IMmConverter from './domain/ServiceInterfaces/IMmConverter'
@@ -52,19 +52,18 @@ import ISubjectsExporter from './domain/ServiceInterfaces/ISubjectsExporter'
 import ISubjectsService from './domain/ServiceInterfaces/ISubjectsService'
 import ITagsService from './domain/ServiceInterfaces/ITagsService'
 import ITextImageService from './infrac/Image/ITextImageService'
-import IUserBlobStorage from './domain/ServiceInterfaces/IUserBlobStorage'
 import IUserLoginService from './domain/ServiceInterfaces/IUserLoginService'
 import IUsersService from './domain/ServiceInterfaces/IUsersService'
 import IViewService from './app/Interfaces/IViewService'
 import IWordsStorage from './domain/ServiceInterfaces/IWordsStorage'
+import KeyValueStorageManager from './domain/Services/KeyValueStorageManager'
 import KeywordsService from './impl/RemoteServices/KeywordsService'
 import LangInterpretersService from './domain/Services/Interpreters/LangInterpretersService'
 import Langs from './view/common/Langs'
 import LangsService from './domain/Services/LangsService'
 import LikesService from './impl/RemoteServices/LikesService'
-import LocalFavoritesStorage from './impl/LocalStorages/LocalFavoritesStorage'
+import LocalKeyValueStorage from './impl/LocalStorages/LocalKeyValueStorage'
 import LocalPasswordStorage from './impl/LocalStorages/LocalPasswordStorage'
-import LocalUserBlobStorage from './impl/LocalStorages/LocalUserBlobStorage'
 import LoginService from './app/AppServices/LoginService'
 import Math from './plugins/math'
 import MmConverter from './domain/Services/MmConverter'
@@ -237,25 +236,18 @@ const buildServicesLocator = () => {
     IRemoteServiceInvoker,
     new RemoteServiceInvoker()
   )
-  if (window.localStorage) {
-    serviceLocator.registerInstance(
-      IPasswordStorage,
-      new LocalPasswordStorage()
-    )
-    serviceLocator.registerInstance(
-      IFavoritesStorage,
-      new LocalFavoritesStorage()
-    )
-  }
   serviceLocator.registerInstance(
-    IFavoritesServer,
+    IPasswordStorage,
+    new LocalPasswordStorage()
+  )
+  serviceLocator.registerInstance(
+    IFavoritesService,
     new FavoritesServerSingleton()
   )
   serviceLocator.registerInstance(IKeywordsService, new KeywordsService())
   serviceLocator.registerInstance(IDictService, new DictService())
   serviceLocator.register(ILikesService, LikesService)
   serviceLocator.register(INavigationService, NavigationService)
-  serviceLocator.register(IUserBlobStorage, LocalUserBlobStorage)
   serviceLocator.register(IWordsStorage, WordsStorageSingleton)
   serviceLocator.register(ICsvItemsExporter, CsvItemsExporter)
   serviceLocator.register(IAnkiItemsExporter, AnkiItemsExporter)
@@ -267,6 +259,19 @@ const buildServicesLocator = () => {
   )
   interpretersService.set(new BashInterpreter())
   interpretersService.set(new CInterpreter())
+
+  serviceLocator.register(ILocalKeyValueStorage, LocalKeyValueStorage)
+  serviceLocator.register(IRemoteKeyValueStorage, IRemoteKeyValueStorage)
+  serviceLocator.registerInstance(IKeyValueStorageManager, new KeyValueStorageManager([
+    {
+      group: IFavoritesService,
+      name: LangKeys.Favorite
+    },
+    {
+      group: IWordsStorage,
+      name: LangKeys.FavoriteWords
+    }
+  ]))
 
   // eslint-disable-next-line no-undef
   const apiBase = (window.ENV_OVERRIDE || ENV).API_BASE

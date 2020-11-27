@@ -1,5 +1,5 @@
+import IKeyValueStorageManager, { IKeyValueStorage } from '../domain/ServiceInterfaces/IKeyValueStorage'
 import IServicesLocator from '../infrac/ServiceLocator/IServicesLocator'
-import IUserBlobStorage from '../domain/ServiceInterfaces/IUserBlobStorage'
 import IWordsStorage, { Word } from '../domain/ServiceInterfaces/IWordsStorage'
 
 export default class WordsStorageSingleton extends IServicesLocator implements IWordsStorage {
@@ -7,9 +7,17 @@ export default class WordsStorageSingleton extends IServicesLocator implements I
   private _namedCache: Promise<Map<string, Word>>
   private maxWordsCount = 5000;
   private StorageKey = 'WordsStorage'
+  private _storage :IKeyValueStorage<Word[]>
+  get storage () {
+    if (!this._storage) {
+      this._storage = this.locate(IKeyValueStorageManager).get<Word[]>(IWordsStorage)
+    }
+    return this._storage
+  }
+
   private getCache () {
     if (!this._cache) {
-      this._cache = this.locate(IUserBlobStorage).get(this.StorageKey).then(words => words || [])
+      this._cache = this.storage.get(this.StorageKey).then(words => words || [])
     }
     return this._cache
   }
@@ -27,7 +35,7 @@ export default class WordsStorageSingleton extends IServicesLocator implements I
 
   private async saveCache () {
     const cache = await this.getCache()
-    await this.locate(IUserBlobStorage).add(this.StorageKey, cache)
+    await this.storage.set(this.StorageKey, cache)
   }
 
   async add (value: string, eg?: string): Promise<void> {

@@ -104,15 +104,17 @@ export default function ManageDicts () {
       }
     })()
   }, [])
-  viewService.setFloatingMenus?.(ManageDicts.name, <>
-    <Button size="large" type="primary" shape="circle" icon={<PlusOutlined />} onClick={() => {
-      if (importing) {
-        return
-      }
-      selectDictFile()
-    }}></Button>
-    <Button size="large" type="primary" shape="circle" danger icon={<DeleteOutlined />} onClick={clearDict}></Button>
-  </>, !!query)
+  useEffect(() => {
+    viewService.setFloatingMenus?.(ManageDicts.name, <>
+      <Button size="large" type="primary" shape="circle" icon={<PlusOutlined />} onClick={() => {
+        if (importing) {
+          return
+        }
+        selectDictFile()
+      }}></Button>
+      <Button size="large" type="primary" shape="circle" danger icon={<DeleteOutlined />} onClick={clearDict}></Button>
+    </>, !!query)
+  })
   useEffect(() => {
     return () => {
       viewService.setFloatingMenus?.(ManageDicts.name)

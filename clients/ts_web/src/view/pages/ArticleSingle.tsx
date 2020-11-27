@@ -107,16 +107,18 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   }
   callbacks.onSections = setSections
   callbacks.onSection = setCurrentSection
-  if (!sidePopup) {
+  useEffect(() => {
+    if (!sidePopup) {
     viewService.setFloatingMenus?.(ArticleSingle.name, <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
       size="large"
       shape="circle" onClick={() => setSidePopup(true)}>
     </Button>)
      viewService.setShowFloatingMenu?.(true)
-  } else {
+    } else {
     viewService.setFloatingMenus?.(ArticleSingle.name)
     viewService.setShowFloatingMenu?.(false)
-  }
+    }
+  })
 
   useEffect(() => {
     return () => {

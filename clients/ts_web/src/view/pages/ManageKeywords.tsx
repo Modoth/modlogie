@@ -187,33 +187,36 @@ export function ManageKeywords () {
       />
     )
   }
-  viewService.setFloatingMenus?.(ManageKeywords.name, <>
-    <Button
-      icon={<SearchOutlined />}
-      type={filter ? 'primary' : 'default'}
-      size="large" shape="circle"
-      onClick={() => {
-        locator.locate(IViewService).prompt(langs.get(LangKeys.Search), [
-          {
-            type: 'Text',
-            value: filter || '',
-            hint: langs.get(LangKeys.Search)
-          }
-        ], async (filter: string) => {
-          setFilter(filter)
-          return true
-        })
-      }}
-    >
-    </Button>
-    <Button
-      icon={<PlusOutlined />}
-      type="default"
-      size="large" shape="circle"
-      onClick={addKeyword}
-    >
-    </Button>
-  </>)
+  useEffect(() => {
+    viewService.setFloatingMenus?.(ManageKeywords.name, <>
+      <Button
+        icon={<SearchOutlined />}
+        type={filter ? 'primary' : 'default'}
+        size="large" shape="circle"
+        onClick={() => {
+          locator.locate(IViewService).prompt(langs.get(LangKeys.Search), [
+            {
+              type: 'Text',
+              value: filter || '',
+              hint: langs.get(LangKeys.Search)
+            }
+          ], async (filter: string) => {
+            setFilter(filter)
+            return true
+          })
+        }}
+      >
+      </Button>
+      <Button
+        icon={<PlusOutlined />}
+        type="default"
+        size="large" shape="circle"
+        onClick={addKeyword}
+      >
+      </Button>
+    </>)
+  })
+
   useEffect(() => {
     return () => {
       viewService.setFloatingMenus?.(ManageKeywords.name)

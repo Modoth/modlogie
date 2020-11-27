@@ -182,6 +182,7 @@ export function ManageUsers () {
       />
     )
   }
+  useEffect(() => {
   viewService.setFloatingMenus?.(ManageUsers.name, <Button
     icon={<PlusOutlined />}
     type="default"
@@ -189,6 +190,7 @@ export function ManageUsers () {
     onClick={addUser}
   >
   </Button>)
+  })
   useEffect(() => {
     return () => {
       viewService.setFloatingMenus?.(ManageUsers.name)

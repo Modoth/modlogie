@@ -18,7 +18,7 @@ import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IArticleListService from '../../app/Interfaces/IArticleListService'
 import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import IFavoritesServer from '../../domain/ServiceInterfaces/IFavoritesServer'
+import IFavoritesService from '../../domain/ServiceInterfaces/IFavoritesService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ISubjectsExporter from '../../domain/ServiceInterfaces/ISubjectsExporter'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
@@ -172,7 +172,7 @@ export default function Library (props: LibraryProps) {
   const [totalCount, setTotalCount] = useState(0)
   const countPerPage = 10
 
-  const [favoriteService] = useState(locator.locate(IFavoritesServer))
+  const [favoriteService] = useState(locator.locate(IFavoritesService))
   const [favorite, setFavorite] = useState(false)
   const [favoriteCount, setFavoriteCount] = useState(0)
 
@@ -523,42 +523,45 @@ export default function Library (props: LibraryProps) {
     fetchArticles(1)
   }, [rootSubject, favorite])
 
-  if (viewService.setFloatingMenus) {
-    viewService.setFloatingMenus(Library.name, <>
-      {user.printPermission ? (
-        <ArticleListSummary></ArticleListSummary>
-      ) : null}
-      {favoriteService && (favorite || favoriteCount) ? (
-        <Badge count={favoriteCount}>
-          <Button
-            icon={<HeartFilled />}
-            type={favorite ? 'primary' : 'default'}
-            size="large"
-            shape="circle"
-            onClick={() => {
-              setFavorite(!favorite)
-            }}
-          ></Button>
-        </Badge>
-      ) : null}
-      <Button
-        type={!filter && !(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId) ? 'default' : 'primary'}
-        size="large"
-        shape="circle"
-        onClick={() => setShowFilter(true)}
-        icon={<SearchOutlined />}
-      ></Button>
-      {user.editingPermission ? (
+  useEffect(() => {
+    if (viewService.setFloatingMenus) {
+      viewService.setFloatingMenus(Library.name, <>
+        {user.printPermission ? (
+          <ArticleListSummary></ArticleListSummary>
+        ) : null}
+        {favoriteService && (favorite || favoriteCount) ? (
+          <Badge count={favoriteCount}>
+            <Button
+              icon={<HeartFilled />}
+              type={favorite ? 'primary' : 'default'}
+              size="large"
+              shape="circle"
+              onClick={() => {
+                setFavorite(!favorite)
+              }}
+            ></Button>
+          </Badge>
+        ) : null}
         <Button
-          icon={<PlusOutlined />}
-          type="default"
+          type={!filter && !(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId) ? 'default' : 'primary'}
           size="large"
           shape="circle"
-          onClick={addArticle}
+          onClick={() => setShowFilter(true)}
+          icon={<SearchOutlined />}
         ></Button>
-      ) : null}
-    </>)
-  }
+        {user.editingPermission ? (
+          <Button
+            icon={<PlusOutlined />}
+            type="default"
+            size="large"
+            shape="circle"
+            onClick={addArticle}
+          ></Button>
+        ) : null}
+      </>)
+    }
+  })
+
   return (
     <div className={classNames('library', type?.name || '', type?.pluginName || '')}>
       <TitleBar

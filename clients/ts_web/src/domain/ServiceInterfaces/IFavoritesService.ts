@@ -1,4 +1,4 @@
-export default class IFavoritesServer {
+export default class IFavoritesService {
   setCountChangedHandler (type: string, handler: { (count: number): void }) {
     throw new Error('Method not implemented.')
   }

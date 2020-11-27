@@ -28,6 +28,7 @@ export function ToolViewer () {
       return true
     }, false)
   }
+  useEffect(() => {
   viewService.setFloatingMenus?.(ToolViewer.name, <>
     <Button type="primary" size="large" shape="circle" icon={<FileOutlined />} onClick={selectFile}></Button>
     {file ? <Button type="primary" size="large" shape="circle" danger icon={<CloseOutlined />} onClick={() => {
@@ -35,6 +36,7 @@ export function ToolViewer () {
       setName('')
     }}></Button> : undefined}
   </>, !!file)
+  })
   useEffect(() => {
     return () => {
       viewService.setFloatingMenus?.(ToolViewer.name)
