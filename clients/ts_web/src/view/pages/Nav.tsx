@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Menu, Drawer } from 'antd'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { UserOutlined, ReloadOutlined, FileWordOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
@@ -17,9 +17,9 @@ import TitleBar from './TitleBar'
 
 const { SubMenu } = Menu
 function Nav () {
-  const locator = useServicesLocator()
-  const plugins = locator.locate(PluginsConfig)
-  const langs = locator.locate(ILangsService)
+  const locate = useServicesLocate()
+  const plugins = locate(PluginsConfig)
+  const langs = locate(ILangsService)
   const [showDrawer, setShowDrawer] = useState(false)
   const user = useUser()
   const [title, setTitile] = useState('')
@@ -32,7 +32,7 @@ function Nav () {
   const ref = React.createRef<HTMLDivElement>()
   const [showTitle, setShowTitle] = useState({ last: true, current: true })
   const onComponentDidMount = async () => {
-    const configService = locator.locate(IConfigsService)
+    const configService = locate(IConfigsService)
     const nameConfig = await configService.get(ConfigKeys.WEB_SITE_NAME)
     const title = nameConfig?.value || nameConfig?.defaultValue || langs.get(LangKeys.Home)
     const logoTitle = await configService.getResource(ConfigKeys.WEB_SITE_LOGO_TITLE)
@@ -40,7 +40,7 @@ function Nav () {
     const siteIcon = await configService.getResource(ConfigKeys.WEB_SITE_ICON) || await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultIcon
     const avatar = await configService.getResource(ConfigKeys.WEB_SITE_AVATAR)
     const allowLogin = await configService.getValueOrDefaultBoolean(ConfigKeys.ALLOW_LOGIN)
-    const editorsService = locator.locate(IEditorsService)
+    const editorsService = locate(IEditorsService)
     // const editors =  editorsService.getEditors()
     const viewers = editorsService.getViewers()
     setViewers(viewers)
@@ -76,7 +76,7 @@ function Nav () {
     onComponentDidMount()
   }, [])
 
-  locator.locate(IViewService).setShowTitle = (show?:boolean) => {
+  locate(IViewService).setShowTitle = (show?:boolean) => {
     if (show === undefined) {
       setShowTitle({ last: showTitle.current, current: showTitle.last })
     } else {

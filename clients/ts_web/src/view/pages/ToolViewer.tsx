@@ -1,7 +1,7 @@
 import './ToolViewer.less'
 import { Button } from 'antd'
 import { FileOutlined, CloseOutlined } from '@ant-design/icons'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import BufferFile from '../../infrac/Lang/BufferFile'
 import ExternalFileViewer from './ExternalFileViewer'
 import IFile from '../../infrac/Lang/IFile'
@@ -16,10 +16,10 @@ const RecentFileKey = 'ToolViewer'
 export function ToolViewer () {
   const [file, setFile] = useState<IFile|undefined>()
   const [name, setName] = useState<string|undefined>()
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
-  const fileService = locator.locate(IRecentFileService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
+  const fileService = locate(IRecentFileService)
   const selectFile = () => {
     viewService.prompt(langs.get(LangKeys.Open), [
       {

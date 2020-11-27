@@ -2,7 +2,7 @@ import './ManageWords.less'
 import { Button, Pagination, Table } from 'antd'
 import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
 import { MinusCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusCircleOutlined, SearchOutlined, DownloadOutlined, ClearOutlined } from '@ant-design/icons'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import DictView from './DictView'
 import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
@@ -22,9 +22,9 @@ import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
 type WordModel = Word & {removed?:boolean}
 
 export default function ManageWrods () {
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
   const [store] = useState<{url?:string}>({})
   const [words, setWords] = useState<WordModel[]>([])
   const [queryWord, setQueryWord] = useState<WordModel|undefined>()
@@ -38,7 +38,7 @@ export default function ManageWrods () {
     }
     try {
       viewService.setLoading(true)
-      const [total, words] = await locator.locate(IWordsStorage).getAll(filter, countPerPage * (page! - 1), countPerPage)
+      const [total, words] = await locate(IWordsStorage).getAll(filter, countPerPage * (page! - 1), countPerPage)
       setWords(words)
       setTotalCount(total)
       setCurrentPage(page)
@@ -53,7 +53,7 @@ export default function ManageWrods () {
 
   const reAddWord = async (word: WordModel) => {
     try {
-      await locator.locate(IWordsStorage).add(word.value, word.eg)
+      await locate(IWordsStorage).add(word.value, word.eg)
       word.removed = undefined
       // words.splice(words.indexOf(word), 1)
       // words.unshift(word)
@@ -66,7 +66,7 @@ export default function ManageWrods () {
 
   const deleteWord = async (word: WordModel) => {
     try {
-      await locator.locate(IWordsStorage).delete(word.value)
+      await locate(IWordsStorage).delete(word.value)
       word.removed = true
       setWords([...words!])
       return true
@@ -139,7 +139,7 @@ export default function ManageWrods () {
         type={filter ? 'primary' : 'default'}
         size="large" shape="circle"
         onClick={() => {
-          locator.locate(IViewService).prompt(langs.get(LangKeys.Search), [
+          locate(IViewService).prompt(langs.get(LangKeys.Search), [
             {
               type: 'Text',
               value: filter || '',
@@ -158,12 +158,12 @@ export default function ManageWrods () {
         danger
         size="large" shape="circle"
         onClick={() => {
-          locator.locate(IViewService).prompt(langs.get(LangKeys.Delete), [],
+          locate(IViewService).prompt(langs.get(LangKeys.Delete), [],
             async () => {
               (async () => {
                 try {
                   viewService.setLoading(true)
-                  await locator.locate(IWordsStorage).deleteAll()
+                  await locate(IWordsStorage).deleteAll()
                 } catch (e) {
                 viewService!.errorKey(langs, e.message)
                 viewService.setLoading(false)
@@ -194,7 +194,7 @@ export default function ManageWrods () {
               const typeIdx = typeEnum.indexOf(typeFilter)
               switch (typeIdx) {
                 case 0:
-                  exporter = locator.locate(IAnkiItemsExporter)
+                  exporter = locate(IAnkiItemsExporter)
                   exporterOpt = {
                     front: '<div class="front">{{Front}}</div>',
                     back: '{{FrontSide}}\n\n<hr id="answer">\n\n<div class="back">{{Back}}</div>',
@@ -202,7 +202,7 @@ export default function ManageWrods () {
                   }
                   break
                 case 1:
-                  exporter = locator.locate(ICsvItemsExporter)
+                  exporter = locate(ICsvItemsExporter)
                   break
                 default:
                   return
@@ -225,14 +225,14 @@ export default function ManageWrods () {
               let words
               await sleep(0)
             type WordWithExplain = Word & {explain?:string}
-            const wordsStorage = locator.locate(IWordsStorage)
+            const wordsStorage = locate(IWordsStorage)
             if (timeStart) {
               words = await wordsStorage.getAfter(timeStart, filter)
             } else {
               [_, words] = await wordsStorage.getAll(filter)
             }
             if (exp) {
-              const dictSercice = locator.locate(IDictService)
+              const dictSercice = locate(IDictService)
               for (const w of words) {
                 (w as WordWithExplain).explain = await dictSercice.query(w.value)
                 await sleep(0)
@@ -254,7 +254,7 @@ export default function ManageWrods () {
                 get: (word:WordWithExplain) => word.explain || ''
               })
             }
-            const siteName = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
+            const siteName = await locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
             const name = `${siteName}_${langs.get(LangKeys.FavoriteWords)}_${yyyyMMdd_HHmmss(new Date())}`
             const buffer = await (exporter.export as any)(name, words as WordWithExplain[], fields, exporterOpt)
             filename = `${name}.${exporter.ext}`
@@ -279,13 +279,13 @@ export default function ManageWrods () {
               viewService.setLoading(false)
             }
 
-            locator.locate(IViewService).prompt(langs.get(LangKeys.ExportComplete), [
+            locate(IViewService).prompt(langs.get(LangKeys.ExportComplete), [
             ], async () => {
               a.click()
               return true
             })
           }
-          locator.locate(IViewService).prompt(langs.get(LangKeys.Export), [
+          locate(IViewService).prompt(langs.get(LangKeys.Export), [
             {
               hint: langs.get(LangKeys.Time),
               type: 'Enum',

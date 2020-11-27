@@ -8,7 +8,7 @@ import { FilesServiceClient } from './impl/remote-apis/FilesServiceClientPb'
 import { KeyValuesServiceClient } from './impl/remote-apis/KeyvaluesServiceClientPb'
 import { KeywordsServiceClient } from './impl/remote-apis/KeywordsServiceClientPb'
 import { LoginServiceClient } from './impl/remote-apis/LoginServiceClientPb'
-import { ServicesLocatorProvider } from './view/common/Contexts'
+import { ServicesLocateProvider } from './view/common/Contexts'
 import { TagsServiceClient } from './impl/remote-apis/TagsServiceClientPb'
 import { UsersServiceClient } from './impl/remote-apis/UsersServiceClientPb'
 import { ViewService } from './view/pages/ServiceView'
@@ -340,11 +340,11 @@ const bootstrap = async () => {
   ])
   ReactDOM.render(
     <React.StrictMode>
-      <ServicesLocatorProvider value={serviceLocator}>
+      <ServicesLocateProvider value={serviceLocator.locate.bind(serviceLocator)}>
         <ConfigProvider locale={zhCN}>
           <App />
         </ConfigProvider>
-      </ServicesLocatorProvider>
+      </ServicesLocateProvider>
     </React.StrictMode>,
     document.getElementById('root')
   )

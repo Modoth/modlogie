@@ -3,7 +3,7 @@ import { Button } from 'antd'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 import React, { memo, useEffect, useState } from 'react'
-import { useServicesLocator } from '../../view/common/Contexts'
+import { useServicesLocate } from '../../view/common/Contexts'
 import IViewService from '../../app/Interfaces/IViewService'
 
 export function FullscreenWrap<TProp> (view:{ (props:TProp):JSX.Element}):{ (props:TProp):JSX.Element} {
@@ -17,7 +17,7 @@ export type FullscreenWraperCallbacks = {toogle?():void}
 
 export default function FullscreenWraper<TProp> (props: TProp & { callbacks?:FullscreenWraperCallbacks, enabled?: boolean, className?: string, View: { (props: TProp): JSX.Element } }) {
   const [fullscreen, setFullscreen] = useState(false)
-  const viewService = useServicesLocator().locate(IViewService)
+  const viewService = useServicesLocate()(IViewService)
   const [View] = useState(memo(props.View) as any)
   if (props.callbacks) {
     props.callbacks.toogle = () => {

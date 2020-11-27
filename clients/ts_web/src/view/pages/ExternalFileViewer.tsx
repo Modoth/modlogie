@@ -1,5 +1,5 @@
 import './ExternalFileViewer.less'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import ExternalViewer from './ExternalViewer'
 import IEditorsService, { EditorInfo } from '../../app/Interfaces/IEditorsService'
 import IFile from '../../infrac/Lang/IFile'
@@ -11,10 +11,10 @@ export interface ExternalFileViewerProps{
 }
 
 export default function ExternalFileViewer (props:ExternalFileViewerProps) {
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const [info, setInfo] = useState<EditorInfo|undefined>()
   const fetchType = async () => {
-    const editorsService = locator.locate(IEditorsService)
+    const editorsService = locate(IEditorsService)
     const info = editorsService.getViewerByFileName(await props.file.name())
     if (info) {
       setInfo(info)

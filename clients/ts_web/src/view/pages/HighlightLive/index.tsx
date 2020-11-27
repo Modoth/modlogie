@@ -6,7 +6,7 @@ import { filename } from '../../../infrac/Lang/pathutils'
 import { previewArticleByPath } from '../ServiceView'
 import { Timeline } from './charts/Timeline'
 import { toJsObj } from '../../../infrac/Lang/DataUtils'
-import { useServicesLocator, useUser } from '../../common/Contexts'
+import { useServicesLocate, useUser } from '../../common/Contexts'
 import BufferFile from '../../../infrac/Lang/BufferFile'
 import ExternalViewer from '../ExternalViewer'
 import Highlight from '../../../infrac/components/Hightlight'
@@ -32,7 +32,7 @@ const splitFormat = (lang:string, defaultFormat?:string):[string, string|undefin
 
 export default function HighlightLive (props: { language: string, value: string, format?:string }) {
   const user = useUser()
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   let format = props.format
   let lang = props.language || ''
     ;[lang, format] = splitFormat(lang, format)
@@ -48,10 +48,10 @@ export default function HighlightLive (props: { language: string, value: string,
     }] : []
     return <div className="highlight-live ref-article">
       <ArticlePreview dataSections={dataSections} path={path}></ArticlePreview>
-      {user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locator, path, filename(path))} /> : undefined}
+      {user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locate, path, filename(path))} /> : undefined}
     </div>
   }
-  const viewerInfo = locator.locate(IEditorsService).getViewerByFileName(lang)
+  const viewerInfo = locate(IEditorsService).getViewerByFileName(lang)
   if (viewerInfo) {
     return <div className="highlight-live h5-live-viewer"><ExternalViewer info={viewerInfo} file={new BufferFile('', new TextEncoder().encode(props.value).buffer)}></ExternalViewer></div>
   }

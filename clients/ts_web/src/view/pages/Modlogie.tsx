@@ -1,7 +1,7 @@
 import './Modlogie.less'
 import { Button } from 'antd'
 import { DragOutlined } from '@ant-design/icons'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import IViewService from '../../app/Interfaces/IViewService'
 import ModlogieView from './ModlogieView'
 import React, { useEffect, useState } from 'react'
@@ -77,7 +77,7 @@ export default function Modlogie () {
       store.destory = undefined
     }
   }
-  const viewService = useServicesLocator().locate(IViewService)
+  const viewService = useServicesLocate()(IViewService)
   viewService.setShowFloatingMenu = (show?:boolean) => { setHidden(!show); return !hidden }
   viewService.setFloatingMenus = (key:string, menus?:React.ReactNode, opacity?:boolean) => {
     store.menus = store.menus.filter(([k]) => k !== key)

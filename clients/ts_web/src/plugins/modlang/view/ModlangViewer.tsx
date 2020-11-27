@@ -2,7 +2,7 @@ import './ModlangViewer.less'
 import { ArticleContentViewerProps } from '../../../pluginbase/IPluginInfo'
 import { Button, Tabs } from 'antd'
 import { CaretRightOutlined, MinusOutlined, LoadingOutlined } from '@ant-design/icons'
-import { useServicesLocator } from '../../../view/common/Contexts'
+import { useServicesLocate } from '../../../view/common/Contexts'
 import classNames from 'classnames'
 import Highlight from '../../../infrac/components/Hightlight'
 import ILangInterpretersService, { ILangInterpreter, InterpretRequest } from '../../../domain/ServiceInterfaces/ILangInterpretersService'
@@ -17,7 +17,7 @@ export function ModlangInterpreter (props: { code: string, lang: string, version
   const [compilerOutput, setCompilerOutput] = useState('')
   const [running, setRunning] = useState(false)
   const [opened, setOpened] = useState(false)
-  const interpretersService = useServicesLocator().locate(ILangInterpretersService)
+  const interpretersService = useServicesLocate()(ILangInterpretersService)
   const [interpreter, setInterpreter] = useState<ILangInterpreter | undefined>()
   const [interpreterUrl, setInterpreterUrl] = useState<string | undefined>()
   const open = async () => {

@@ -2,7 +2,7 @@ import './ManageKeywords.less'
 import { Pagination, Table, Button } from 'antd'
 import { PlusOutlined, DeleteFilled, SearchOutlined, EditOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import IKeywordsService, { Keyword } from '../../domain/ServiceInterfaces/IKeywordsService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -14,9 +14,9 @@ export function ManageKeywords () {
     return <Redirect to="/" />
   }
 
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
 
   const [keywords, setKeywords] = useState<Keyword[]>([])
   const [filter, setFilter] = useState('')
@@ -29,7 +29,7 @@ export function ManageKeywords () {
     }
     try {
       viewService.setLoading(true)
-      const [total, keywords] = await locator.locate(IKeywordsService).getAll(filter, countPerPage * (page! - 1), countPerPage)
+      const [total, keywords] = await locate(IKeywordsService).getAll(filter, countPerPage * (page! - 1), countPerPage)
       setKeywords(keywords)
       setTotalCount(total)
       setCurrentPage(page)
@@ -55,7 +55,7 @@ export function ManageKeywords () {
           return
         }
         try {
-          await locator.locate(IKeywordsService).add(id, url, description)
+          await locate(IKeywordsService).add(id, url, description)
           setKeywords([...keywords!, { id, url, description }!])
           return true
         } catch (e) {
@@ -80,7 +80,7 @@ export function ManageKeywords () {
           return
         }
         try {
-          await locator.locate(IKeywordsService).updateUrl(keywword.id, url)
+          await locate(IKeywordsService).updateUrl(keywword.id, url)
           keywword!.url = url
           setKeywords([...keywords!])
           return true
@@ -104,7 +104,7 @@ export function ManageKeywords () {
       ],
       async (description: string) => {
         try {
-          await locator.locate(IKeywordsService).updateDescription(keywword.id, description)
+          await locate(IKeywordsService).updateDescription(keywword.id, description)
           keywword!.description = description
           setKeywords([...keywords!])
           return true
@@ -121,7 +121,7 @@ export function ManageKeywords () {
       [],
       async () => {
         try {
-          await locator.locate(IKeywordsService).delete(keyword.id)
+          await locate(IKeywordsService).delete(keyword.id)
           const idx = keywords!.indexOf(keyword)
           keywords!.splice(idx, 1)
           setKeywords([...keywords!])
@@ -146,8 +146,8 @@ export function ManageKeywords () {
       const title = keyword.id
       const url = keyword.url
       const desc = keyword.description
-      locator.locate(IViewService).prompt(
-        url ? { title, subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url } : title, [
+      locate(IViewService).prompt(
+        url ? { title, subTitle: locate(ILangsService).get(LangKeys.ComfireJump) + url } : title, [
           ...(desc ? [{
             type: 'Markdown',
             value: desc
@@ -194,7 +194,7 @@ export function ManageKeywords () {
         type={filter ? 'primary' : 'default'}
         size="large" shape="circle"
         onClick={() => {
-          locator.locate(IViewService).prompt(langs.get(LangKeys.Search), [
+          locate(IViewService).prompt(langs.get(LangKeys.Search), [
             {
               type: 'Text',
               value: filter || '',

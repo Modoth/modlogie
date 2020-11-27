@@ -1,5 +1,5 @@
 import { ApiInfo, FullScreenApiInfo, generateContext, IFrameContext } from '../../infrac/components/IFrameWithJs'
-import { srcToUrl } from '../../infrac/Lang/srcToUrl'
+import { LocateFunction } from '../../infrac/ServiceLocator/IServicesLocator'
 import { toJsDataStr } from '../../infrac/Lang/DataUtils'
 import Article, { ArticleSection } from '../../domain/ServiceInterfaces/Article'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -7,7 +7,6 @@ import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IFile from '../../infrac/Lang/IFile'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
-import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import IViewService from '../../app/Interfaces/IViewService'
 import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
@@ -62,7 +61,7 @@ export interface IData{
 
 const fwnameIsFw = 'self'
 
-type FwBuilderArgs = {id:string, locator:IServicesLocator, reload():any }
+type FwBuilderArgs = {id:string, locate: LocateFunction, reload():any }
 
 export const EmbededFrameworks = {
   Storage: 'storage',
@@ -107,14 +106,14 @@ const allEmbededFws: Map<string, {(args:FwBuilderArgs):ApiInfo[]}> = new Map([
       }
     ]
   }],
-  [EmbededFrameworks.FileService, ({ locator }:FwBuilderArgs):ApiInfo[] => ([{
+  [EmbededFrameworks.FileService, ({ locate }:FwBuilderArgs):ApiInfo[] => ([{
     name: EmbededFrameworks.FileService,
     methods: [
       {
         name: 'openFile',
         handler: (mimeType:string, resultType:string) => new Promise(resolve => {
-          const viewService = locator.locate(IViewService)
-          const langs = locator.locate(ILangsService)
+          const viewService = locate(IViewService)
+          const langs = locate(ILangsService)
           viewService.prompt(
             langs.get(LangKeys.Import),
             [
@@ -183,7 +182,7 @@ const tryGetContent = async (url:string):Promise<string> => {
 
 export type BuildIFrameDataArgs = { defaultFws :string[], apiInfos:ApiInfo[]} & FwBuilderArgs
 
-export const buildIframeData = async (sections: Map<string, ArticleSection>, { locator, id, defaultFws, apiInfos, reload }:BuildIFrameDataArgs): Promise<IData> => {
+export const buildIframeData = async (sections: Map<string, ArticleSection>, { locate, id, defaultFws, apiInfos, reload }:BuildIFrameDataArgs): Promise<IData> => {
   const frameworks = sections.get('frameworks')?.content
   let fwNames = Array.from(new Set(defaultFws.concat(frameworks ? Seperators.seperateItems(frameworks) : [])))
   if (~fwNames.findIndex(s => s === fwnameIsFw)) {
@@ -214,8 +213,8 @@ export const buildIframeData = async (sections: Map<string, ArticleSection>, { l
 
   let fws : {name:string, fw?:IFramework}[] = []
   if (fwNames) {
-    const articleService = locator.locate(IArticleAppservice)
-    const configsService = locator.locate(IConfigsService)
+    const articleService = locate(IArticleAppservice)
+    const configsService = locate(IConfigsService)
     const fwBase = await configsService.getValueOrDefault(ConfigKeys.FRAMEWORKS_PATH)
     const getFwPath = (name:string) => `${fwBase}/${name}`
     const fwsCache = fwBase
@@ -263,7 +262,7 @@ export const buildIframeData = async (sections: Map<string, ArticleSection>, { l
   let contextWithoutJs: IFrameContext | undefined
   if (embededFws.size) {
     let jsc = ''
-    const embededApis = Array.from(embededFws, ([_, build]) => build({ id: id, locator, reload })).flat()
+    const embededApis = Array.from(embededFws, ([_, build]) => build({ id: id, locate, reload })).flat()
     ;[context, jsc] = generateContext(embededApis.concat(apiInfos), id)
     doc += `<script>\n${jsc}\n</script>\n`
   }
@@ -272,7 +271,7 @@ export const buildIframeData = async (sections: Map<string, ArticleSection>, { l
     docWithoutJs = content
     if (forceEmbededFws.size) {
       let jsc = ''
-      const forcedApis = Array.from(forceEmbededFws, ([_, build]) => build({ id: id, locator, reload })).flat()
+      const forcedApis = Array.from(forceEmbededFws, ([_, build]) => build({ id: id, locate, reload })).flat()
       ;[contextWithoutJs, jsc] = generateContext(forcedApis, id)
       docWithoutJs = `<script>\n${jsc}\n</script>\n${docWithoutJs}`
     }

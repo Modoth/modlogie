@@ -1,6 +1,6 @@
 import './ArticlePreview.less'
 import { ArticleContentType } from '../../pluginbase/IPluginInfo'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import Article, { ArticleSection } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
@@ -12,18 +12,17 @@ export function ArticlePreview (props: {
   className?: string;
   dataSections?: ArticleSection[];
 }) {
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const [article, setArticle] = useState<Article | undefined>(undefined)
   const [type, setType] = useState<ArticleContentType | undefined>(undefined)
   useEffect(() => {
     (async () => {
-      const viewService = locator.locate(IViewService)
+      const viewService = locate(IViewService)
       viewService.setLoading(true)
       const ret = () => {
         viewService.setLoading(false)
       }
-      const [article, type] = await locator
-        .locate(IArticleAppservice)
+      const [article, type] = await locate(IArticleAppservice)
         .fetchArticleByPath(props.path)
       if (!article || !type) {
         return ret()

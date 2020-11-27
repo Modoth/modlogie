@@ -1,18 +1,18 @@
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { useParams, Redirect } from 'react-router-dom'
-import { useServicesLocator, useUser } from '../common/Contexts'
+import { useServicesLocate, useUser } from '../common/Contexts'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
 
 export function ArticleIdRedirect (props: {}) {
   const param = useParams<any>()
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const user = useUser()
   const [url, setUrl] = useState<any>(undefined)
 
   useEffect(() => {
     (async () => {
-      const viewService = locator.locate(IViewService)
+      const viewService = locate(IViewService)
       viewService.setLoading(true)
       const ret = () => {
         viewService.setLoading(false)
@@ -22,7 +22,7 @@ export function ArticleIdRedirect (props: {}) {
       if (!rootId) {
         return ret()
       }
-      const config = locator.locate(PluginsConfig)
+      const config = locate(PluginsConfig)
       const type = (user.editingPermission ? config.AllTypes : config.NormalTypes).find(t => t.rootSubjectId === rootId)
       if (!type) {
         return ret()

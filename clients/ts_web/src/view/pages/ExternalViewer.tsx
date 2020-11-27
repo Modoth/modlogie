@@ -1,6 +1,6 @@
 import { buildIframeData, genetateFileApi } from './iframeutils'
 import { EditorInfo } from '../../app/Interfaces/IEditorsService'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IFile from '../../infrac/Lang/IFile'
@@ -17,12 +17,12 @@ export interface ExternalViewerProps{
 export default function ExternalViewer (props:ExternalViewerProps) {
   const [doc, setDoc] = useState('')
   const [context, setContext] = useState<IFrameContext|undefined>()
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const reload = async () => {
-    const articleService = locator.locate(IArticleAppservice)
+    const articleService = locate(IArticleAppservice)
     const article = await articleService.getCacheOrFetch(ConfigKeys.VIEWER_PATH, props.info.path, async a => a)
     if (article) {
-      const { doc, context } = await buildIframeData(new Map(article?.content?.sections?.map(s => [s.name!, s])), { locator, id: article.id!, defaultFws: [], apiInfos: [genetateFileApi(props.file)], reload: reload })
+      const { doc, context } = await buildIframeData(new Map(article?.content?.sections?.map(s => [s.name!, s])), { locate, id: article.id!, defaultFws: [], apiInfos: [genetateFileApi(props.file)], reload: reload })
       setContext(context)
       setDoc(doc || '')
     }

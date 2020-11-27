@@ -2,7 +2,7 @@ import './Login.less'
 import { Input, Space, Button, Switch } from 'antd'
 import { Redirect } from 'react-router-dom'
 import { UserOutlined } from '@ant-design/icons'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ILoginAppservice from '../../app/Interfaces/ILoginAppservice'
 import IPasswordStorage from '../../domain/ServiceInterfaces/IPasswordStorage'
@@ -14,11 +14,11 @@ export default function Login () {
   if (user.name) {
     return <Redirect to="/account" />
   }
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const loginService = locator.locate(ILoginAppservice)
-  const notify = locator.locate(IViewService)
-  const pwdStorage = locator.locate(IPasswordStorage)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const loginService = locate(ILoginAppservice)
+  const notify = locate(IViewService)
+  const pwdStorage = locate(IPasswordStorage)
   const [name, setName] = useState((pwdStorage && pwdStorage.name) || '')
   const [pwd, setPwd] = useState((pwdStorage && pwdStorage.password) || '')
   const [autoLogin, setAutoLogin] = useState(pwdStorage && pwdStorage.autoLogin)

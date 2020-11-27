@@ -3,7 +3,7 @@ import { Badge, Tabs } from 'antd'
 import { generateRandomStyle } from './common'
 import { PluginsConfig, ArticleType } from '../../pluginbase/IPluginInfo'
 import { useHistory, Link } from 'react-router-dom'
-import { useServicesLocator, useUser } from '../common/Contexts'
+import { useServicesLocate, useUser } from '../common/Contexts'
 import classNames from 'classnames'
 import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
@@ -20,7 +20,7 @@ function sortSubjectByChildrenCount (subjects: Subject[]) {
 
 function SubjectView (props: { type: ArticleType, subject: Subject, deepth: number, parentPath: string, rootPath: string }) {
   const displayName = props.subject.path!.slice(props.rootPath.length)
-  const langs = useServicesLocator().locate(ILangsService)
+  const langs = useServicesLocate()(ILangsService)
   if (props.subject.children && props.subject.children.length) {
     const path = props.parentPath ? (props.parentPath + '/' + props.subject.name) : props.subject.name
     return (
@@ -44,15 +44,15 @@ function SubjectView (props: { type: ArticleType, subject: Subject, deepth: numb
 }
 
 function SingleTypeSubjectsView (props: { type: ArticleType }) {
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
   const [subjects, setSubjects] = useState<Subject[]>([])
   const history = useHistory()
   const type = props.type
 
   const fetchSubjects = async () => {
-    const service = locator.locate(ISubjectsService)
+    const service = locate(ISubjectsService)
     try {
       setSubjects([(await service.get(type.rootSubjectId!))!])
     } catch (e) {
@@ -71,8 +71,8 @@ function SingleTypeSubjectsView (props: { type: ArticleType }) {
 }
 
 export default function SubjectsView () {
-  const locator = useServicesLocator()
-  const plugins = locator.locate(PluginsConfig)
+  const locate = useServicesLocate()
+  const plugins = locate(PluginsConfig)
   const user = useUser()
   const types = user?.editingPermission ? plugins.AllTypes : plugins.NormalTypes
   return (<Tabs className="subjects-view">

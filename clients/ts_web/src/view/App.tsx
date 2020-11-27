@@ -2,7 +2,7 @@ import './App.less'
 import './App.css'
 import { HashRouter } from 'react-router-dom'
 import { uriTransformer } from 'react-markdown'
-import { UserContext, useServicesLocator } from './common/Contexts'
+import { UserContext, useServicesLocate } from './common/Contexts'
 import ConfigKeys from '../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from './assets/logo.png'
 import IConfigsService from '../domain/ServiceInterfaces/IConfigsSercice'
@@ -13,7 +13,6 @@ import LoginService from '../app/AppServices/LoginService'
 import Nav from './pages/Nav'
 import NavContent from './pages/NavContent'
 import React, { useState, useEffect } from 'react'
-import ServicesLocator from '../infrac/ServiceLocator/ServicesLocator'
 import ServiceView from './pages/ServiceView'
 import Modlogie from './pages/Modlogie'
 
@@ -21,8 +20,8 @@ let savedScrollTop = 0
 let savedScrollElement: HTMLElement | null = null
 
 export default function App () {
-  const locator = useServicesLocator() as ServicesLocator
-  const loginService: LoginService = (locator.locate(
+  const locate = useServicesLocate()
+  const loginService: LoginService = (locate(
     ILoginAppservice
   ) as any) as LoginService
   const [user, setUser] = useState<ILoginUser>(loginService.user || {})
@@ -30,17 +29,17 @@ export default function App () {
   const ref = React.createRef<HTMLDivElement>()
   const bgRef = React.createRef<HTMLStyleElement>()
   const navigateTo = async (title: string | undefined, url: string | undefined) => {
-    const viewService = locator.locate(IViewService)
+    const viewService = locate(IViewService)
     viewService.setLoading(true)
     try {
-      await locator.locate(INavigationService).promptGoto(title, url)
+      await locate(INavigationService).promptGoto(title, url)
     } finally {
       viewService.setLoading(false)
     }
   }
   useEffect(() => {
     (async () => {
-      const configService = locator.locate(IConfigsService)
+      const configService = locate(IConfigsService)
       const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
       if (!bgRef.current) {
         return

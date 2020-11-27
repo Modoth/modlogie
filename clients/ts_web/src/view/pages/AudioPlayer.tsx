@@ -1,7 +1,7 @@
 import './AudioPlayer.less'
 import { Button } from 'antd'
 import { FileAddOutlined, CloseOutlined, PauseOutlined, CaretRightOutlined } from '@ant-design/icons'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IRecentFileService from '../../domain/ServiceInterfaces/IRecentFileService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -13,11 +13,11 @@ export default function AudioPlayer () {
   const [url, setUrl] = useState('')
   const [info, setInfo] = useState({ title: '' })
   const [store] = useState({ url: '' })
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const [playing, setPlayging] = useState(false)
-  const viewService = locator.locate(IViewService)
-  const fileService = locator.locate(IRecentFileService)
-  const langs = locator.locate(ILangsService)
+  const viewService = locate(IViewService)
+  const fileService = locate(IRecentFileService)
+  const langs = locate(ILangsService)
   const ref = React.createRef<HTMLAudioElement>()
   const cleanUp = () => {
     if (store.url) {

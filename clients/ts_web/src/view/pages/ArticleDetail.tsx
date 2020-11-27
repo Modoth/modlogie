@@ -1,21 +1,21 @@
 import { useLocation, Redirect } from 'react-router-dom'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
 
 export function ArticleDetail (props: {}) {
   const param = useLocation<any>()
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const path = param.pathname?.slice('/article'.length)
   const [url, setUrl] = useState<any>(undefined)
 
   useEffect(() => {
     (async () => {
-      const viewService = locator.locate(IViewService)
+      const viewService = locate(IViewService)
       viewService.setLoading(true)
       const [article, articleContentType, type] =
-        (await locator.locate(IArticleAppservice).fetchArticleByPath(path, true)) ||
+        (await locate(IArticleAppservice).fetchArticleByPath(path, true)) ||
         []
       viewService.setLoading(false)
       const onclose = () => {
@@ -25,8 +25,7 @@ export function ArticleDetail (props: {}) {
         onclose()
         return
       }
-      locator
-        .locate(IViewService)
+      locate(IViewService)
         .previewArticle(article, articleContentType, onclose)
     })()
   }, [])

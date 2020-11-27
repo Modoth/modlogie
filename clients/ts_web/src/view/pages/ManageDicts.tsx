@@ -1,7 +1,7 @@
 import './ManageDicts.less'
 import { Button, Input } from 'antd'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import DictView from './DictView'
 import IDictService, { CancleToken, DictInfo } from '../../domain/ServiceInterfaces/IDictService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
@@ -12,8 +12,8 @@ export default function ManageDicts () {
   const [importing, setImporting] = useState(false)
   const [importProgress, setImportProgress] = useState(0)
   const [info, setInfo] = useState<DictInfo | undefined>()
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
   const [query, setQuery] = useState('')
   const [store] = useState<{ cancleToken?: CancleToken, importing?: boolean, destoried?: boolean }>({})
   const clearLastCancleToken = () => {
@@ -22,8 +22,8 @@ export default function ManageDicts () {
       store.cancleToken = undefined
     }
   }
-  const dictServer = useServicesLocator().locate(IDictService)
-  const viewService = locator.locate(IViewService)
+  const dictServer = useServicesLocate()(IDictService)
+  const viewService = locate(IViewService)
   const clearDict = async () => {
     if (!info || !info.itemCount || store.cancleToken || importing) {
       return

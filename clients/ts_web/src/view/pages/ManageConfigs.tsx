@@ -2,7 +2,7 @@ import './ManageConfigs.less'
 import { ClearOutlined, EditOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
 import { Table, Button } from 'antd'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import IConfigsService, { Config, ConfigType, ConfigNames } from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -14,14 +14,14 @@ export function ManageConfigs () {
     return <Redirect to="/" />
   }
 
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
 
   const [configs, setConfigs] = useState<Config[] | undefined>()
 
   const fetchConfigs = async () => {
-    const configs = await (await locator.locate(IConfigsService).all(true)).filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => langs.get(a.key).localeCompare(langs.get(b.key)))
+    const configs = await (await locate(IConfigsService).all(true)).filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => langs.get(a.key).localeCompare(langs.get(b.key)))
     setConfigs(configs)
   }
 
@@ -38,7 +38,7 @@ export function ManageConfigs () {
       ],
       async (value: string) => {
         try {
-          const newConfig = await locator.locate(IConfigsService).set(config.key, value)
+          const newConfig = await locate(IConfigsService).set(config.key, value)
           updateConfigs(config, newConfig)
           return true
         } catch (e) {
@@ -64,7 +64,7 @@ export function ManageConfigs () {
       [],
       async () => {
         try {
-          const newConfig = await locator.locate(IConfigsService).reset(config.key)
+          const newConfig = await locate(IConfigsService).reset(config.key)
           updateConfigs(config, newConfig)
           return true
         } catch (e) {
@@ -80,7 +80,7 @@ export function ManageConfigs () {
       [],
       async () => {
         try {
-          await locator.locate(IConfigsService).resetAll()
+          await locate(IConfigsService).resetAll()
           window.location.reload()
           return true
         } catch (e) {
@@ -93,7 +93,7 @@ export function ManageConfigs () {
   useEffect(() => {
     fetchConfigs()
     return function cleanup () {
-      locator.locate(IConfigsService).clearCache()
+      locate(IConfigsService).clearCache()
     }
   }, [])
 

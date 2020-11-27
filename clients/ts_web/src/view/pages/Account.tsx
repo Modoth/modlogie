@@ -1,7 +1,7 @@
 import './Account.less'
 import { Button, Avatar } from 'antd'
 import { Link } from 'react-router-dom'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
@@ -13,10 +13,10 @@ import React, { useState, useEffect } from 'react'
 
 export default function Account () {
   const user = useUser()
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const loginService = locator.locate(ILoginAppservice)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const loginService = locate(ILoginAppservice)
+  const viewService = locate(IViewService)
   const [siteName, setSiteName] = useState('')
   const [siteDesc, setSiteDesc] = useState('')
   const [logo, setLogo] = useState('')
@@ -42,7 +42,7 @@ export default function Account () {
           return
         }
         try {
-          await locator.locate(ILoginAppservice).updateName(newName, password)
+          await locate(ILoginAppservice).updateName(newName, password)
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -78,7 +78,7 @@ export default function Account () {
           return
         }
         try {
-          await locator.locate(ILoginAppservice).updatePassword(password, newPassword1)
+          await locate(ILoginAppservice).updatePassword(password, newPassword1)
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -86,7 +86,7 @@ export default function Account () {
       })
   }
   const onComponentDidMount = async () => {
-    const configService = locator.locate(IConfigsService)
+    const configService = locate(IConfigsService)
     const name = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
     const desc = await configService.getValueOrDefault(ConfigKeys.WEB_SITE_DESCRIPTION)
     const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo

@@ -7,7 +7,7 @@ import { ResExternal } from './ResFileViewers/ResExternal'
 import { ResFile } from '../ResFile'
 import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
 import { ResImage } from './ResFileViewers/ResImage'
-import { useServicesLocator } from '../../../view/common/Contexts'
+import { useServicesLocate } from '../../../view/common/Contexts'
 import classNames from 'classnames'
 import IEditorsService from '../../../app/Interfaces/IEditorsService'
 import Markdown from '../../../infrac/components/Markdown'
@@ -37,7 +37,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
   const [downloadReq, setDownloadReq] = useState<XMLHttpRequest | undefined>()
   const [failed, setFailed] = useState(false)
   const [preview, setPreview] = useState(false)
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const [downloadProgress, setDownloadProgress] = useState(0)
   const [PreviewView, setPreviewView] = useState<{view:{(props: ResFileViewerProps): JSX.Element } |undefined}>()
   const setDownloadProgressAndRaise = (progress: number) => {
@@ -91,7 +91,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
     }
   }, [downloadReq])
   useEffect(() => {
-    const editorService = locator.locate(IEditorsService)
+    const editorService = locate(IEditorsService)
     const type = extname(props.name)
 
     getViewer(editorService, type || props.name).then(view => {

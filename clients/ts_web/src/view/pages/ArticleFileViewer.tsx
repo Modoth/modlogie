@@ -2,7 +2,7 @@ import './ArticleFileViewer.less'
 import { ArticleFile } from '../../domain/ServiceInterfaces/Article'
 import { Button, Tooltip } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import classNames from 'classnames'
 import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 import React, { ReactNode } from 'react'
@@ -16,7 +16,7 @@ export default function ArticleFileViewer (props: {
   file: ArticleFile;
   className?: string;
 }) {
-  const langs = useServicesLocator().locate(ILangsService)
+  const langs = useServicesLocate()(ILangsService)
   const type = (props.file?.name || '').toLocaleLowerCase()
   const url = props.file?.url
   const endsWith = (...s: string[]) => s.some((i) => type.endsWith(i))

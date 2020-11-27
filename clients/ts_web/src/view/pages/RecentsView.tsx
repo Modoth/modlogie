@@ -2,7 +2,7 @@ import './RecentsView.less'
 import { ArticleContentType, ArticleType } from '../../pluginbase/IPluginInfo'
 import { Carousel } from 'antd'
 import { Redirect } from 'react-router-dom'
-import { useServicesLocator, useUser } from '../common/Contexts'
+import { useServicesLocate, useUser } from '../common/Contexts'
 import Article, { ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import Button from 'antd/es/button'
 import classNames from 'classnames'
@@ -63,9 +63,9 @@ function RecentArticle (props: {
 }
 
 export default function RecentsView (props: { type: ArticleType }) {
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
   const [articles, setArticles] = useState<Article[]>([])
   const [recommendsArticles, setRecommendsArticles] = useState<Article[]>([])
   const [recommandTitle, setRecommendTitle] = useState('')
@@ -80,7 +80,7 @@ export default function RecentsView (props: { type: ArticleType }) {
       return
     }
     const subject = type.rootSubjectId
-      ? await locator.locate(ISubjectsService).get(type.rootSubjectId)
+      ? await locate(ISubjectsService).get(type.rootSubjectId)
       : null
     if (!subject) {
       return
@@ -88,7 +88,7 @@ export default function RecentsView (props: { type: ArticleType }) {
     const subjectId = subject?.path
     let articles: Article[] = []
     let recommendsArticles: Article[] = []
-    const articlesService = locator.locate(IArticleService)
+    const articlesService = locate(IArticleService)
     const Query = articlesService.Query()
     const Condition = articlesService.Condition()
     try {
@@ -142,8 +142,7 @@ export default function RecentsView (props: { type: ArticleType }) {
     let recommandTitle = ''
     try {
       const count =
-        (await locator
-          .locate(IConfigsService)
+        (await locate(IConfigsService)
           .getValueOrDefaultNumber(ConfigKeys.RECOMMENT_COUNT)) || 0
       if (count) {
         const query = new Query()
@@ -184,20 +183,19 @@ export default function RecentsView (props: { type: ArticleType }) {
                 : []
             )
         )
-        recommandTitle = await locator
-          .locate(IConfigsService)
+        recommandTitle = await locate(IConfigsService)
           .getValueOrDefault(ConfigKeys.RECOMMENT_TITLE)!
       }
     } catch (e) {
       // ignore
     }
-    const s = locator.locate(IArticleAppservice)
+    const s = locate(IArticleAppservice)
     const types = new Map()
     for (const a of articles) {
       types.set(
         a,
         await s.getArticleType(
-          locator.locate(IConfigsService),
+          locate(IConfigsService),
           type,
           type.subTypeTag ? a.tagsDict?.get(type.subTypeTag!)?.value : undefined
         )
@@ -207,7 +205,7 @@ export default function RecentsView (props: { type: ArticleType }) {
       types.set(
         a,
         await s.getArticleType(
-          locator.locate(IConfigsService),
+          locate(IConfigsService),
           type,
           type.subTypeTag ? a.tagsDict?.get(type.subTypeTag!)?.value : undefined
         )

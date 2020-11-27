@@ -3,7 +3,7 @@ import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType } from '
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
 import { UploadOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -45,10 +45,10 @@ export default function ArticleView (props: {
   recommendView?: boolean,
 }) {
   const user = useUser()
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
-  const articleListService = locator.locate(IArticleListService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
+  const articleListService = locate(IArticleListService)
   const [files, setFiles] = useState(props.article.files)
   const [tagsDict, setTagsDict] = useState(props.article.tagsDict)
   const [subjectId, setSubjectId] = useState(props.article.subjectId)
@@ -63,7 +63,7 @@ export default function ArticleView (props: {
   const [content, setContent] = useState(props.article.content || {})
   const [published, setPublished] = useState(props.article.published)
   const [name, setName] = useState(props.article.name)
-  const [favoriteService] = useState(locator.locate(IFavoritesService))
+  const [favoriteService] = useState(locate(IFavoritesService))
   const [favorite, setFavorite] = useState(false)
   const [likesService, setLikesService] = useState<ILikesService | undefined>(undefined)
   const [canLike, setCanLike] = useState(false)
@@ -86,8 +86,8 @@ export default function ArticleView (props: {
       async (file: File) => {
         try {
           viewService.setLoading(true)
-          const fileService = locator.locate(IArticleService)
-          const articleService = locator.locate(IArticleService)
+          const fileService = locate(IArticleService)
+          const articleService = locate(IArticleService)
           const [id, url] = await fileService.addFile(props.article.id!, file.type, new Uint8Array(await file.arrayBuffer()))
           const newFiles = [...(files || [])]
           const newFileName = generateNewFileNames(file.name, new Set(newFiles.map(f => f.name!)))
@@ -113,7 +113,7 @@ export default function ArticleView (props: {
   }
 
   const updateSubjectId = async (sid: string) => {
-    const api = locator.locate(IArticleService)
+    const api = locate(IArticleService)
     try {
       await api.move(props.article.id!, sid)
       setSubjectId(sid)
@@ -135,7 +135,7 @@ export default function ArticleView (props: {
       return
     }
     try {
-      const service = locator.locate(IArticleService)
+      const service = locate(IArticleService)
       const newContent = editorRefs.getEditedContent()
       if (
         newContent.sections !== undefined &&
@@ -151,7 +151,7 @@ export default function ArticleView (props: {
   }
 
   const updateTag = async (tag: ArticleTag, tagValue: string) => {
-    const service = locator.locate(IArticleService)
+    const service = locate(IArticleService)
     try {
       await service.updateTags(props.article.id!, { id: tag.id!, value: tagValue })
       const newTags = tagsDict || new Map()
@@ -173,8 +173,8 @@ export default function ArticleView (props: {
         tagsDict.set(newTag.name!, newTag)
       }
       if (newTag.name === props.type.subTypeTag) {
-        setType(await locator.locate(IArticleAppservice)
-          .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined))
+        setType(await locate(IArticleAppservice)
+          .getArticleType(locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined))
       }
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -194,7 +194,7 @@ export default function ArticleView (props: {
         if (!newName) {
           return
         }
-        const service = locator.locate(IArticleService)
+        const service = locate(IArticleService)
         try {
           await service.rename(newName, props.article.id!)
         } catch (e) {
@@ -236,13 +236,13 @@ export default function ArticleView (props: {
       })
     }
     (async () => {
-      const recommendTitle = (await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.RECOMMENT_TITLE))?.trim()
+      const recommendTitle = (await locate(IConfigsService).getValueOrDefault(ConfigKeys.RECOMMENT_TITLE))?.trim()
       if (recommendTitle) {
         setRecommendTitle(recommendTitle)
       }
     })();
     (async () => {
-      const likesService = locator.locate(ILikesService)
+      const likesService = locate(ILikesService)
       if (likesService) {
         const enablded = await likesService.enabled()
         if (!enablded) {
@@ -259,8 +259,8 @@ export default function ArticleView (props: {
         setDislikeCount(dislikeCount)
       }
     })()
-    locator.locate(IArticleAppservice)
-      .getArticleType(locator.locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type))
+    locate(IArticleAppservice)
+      .getArticleType(locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type))
   }, [])
   if (!type) {
     return <></>
@@ -268,7 +268,7 @@ export default function ArticleView (props: {
   const toogleRecommend = async () => {
     const next = !recommend
     try {
-      await locator.locate(IArticleService).updateAdditionalType(props.article.id!, next ? ArticleAdditionalType.Recommend : ArticleAdditionalType.Normal)
+      await locate(IArticleService).updateAdditionalType(props.article.id!, next ? ArticleAdditionalType.Recommend : ArticleAdditionalType.Normal)
       setRecommend(next)
     } catch (e) {
       viewService.errorKey(langs, e.message)
@@ -277,7 +277,7 @@ export default function ArticleView (props: {
   const hasMore = props.article.additionId || (type && type.smartHiddenSections && type.smartHiddenSections.size)
   const openQrCode = async () => {
     const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
-    viewService.prompt({ title: (!props.type.noTitle && name) || langs.get(LangKeys.QrCode), subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url }, [{
+    viewService.prompt({ title: (!props.type.noTitle && name) || langs.get(LangKeys.QrCode), subTitle: locate(ILangsService).get(LangKeys.ComfireJump) + url }, [{
       type: 'QrCode',
       value: url
     }], async () => {
@@ -297,7 +297,7 @@ export default function ArticleView (props: {
       setAdditionalLoaded(true)
       viewService.setLoading(false)
     }
-    locator.locate(IViewService).previewArticle(Object.assign({}, props.article, { name, content, files }), type)
+    locate(IViewService).previewArticle(Object.assign({}, props.article, { name, content, files }), type)
   }
   const toogleFavorite = async () => {
     try {
@@ -470,7 +470,7 @@ export default function ArticleView (props: {
         <DatePicker showToday={true} clearIcon={false} value={moment(published)} onChange={async e => {
           try {
             const date = e!.toDate()
-            await locator.locate(IArticleService).updatePublished(props.article.id!, date)
+            await locate(IArticleService).updatePublished(props.article.id!, date)
             setPublished(date)
             return true
           } catch (e) {

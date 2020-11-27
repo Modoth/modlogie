@@ -2,11 +2,10 @@ import './Library.css'
 import './Library.less'
 import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
-import { MmIcon } from '../common/Icons'
 import { PlusOutlined, PoweroffOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
-import { useServicesLocator, useUser } from '../common/Contexts'
+import { useServicesLocate, useUser } from '../common/Contexts'
 import { v4 } from 'uuid'
 import Article, { ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import ArticleListSummary from './ArticleListSummary'
@@ -37,9 +36,9 @@ export class LibraryProps {
 }
 export default function Library (props: LibraryProps) {
   const user = useUser()
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
   const location = useLocation()
   const params = (location.state || {}) as {
     subjectId?: string;
@@ -48,7 +47,7 @@ export default function Library (props: LibraryProps) {
   }
   let type:ArticleType|undefined
   if (!params.articleId) {
-    const config = locator.locate(PluginsConfig)
+    const config = locate(PluginsConfig)
     type = (user.editingPermission
       ? config.AllTypes
       : config.NormalTypes
@@ -80,12 +79,11 @@ export default function Library (props: LibraryProps) {
     const subjectsDict = new Map<string, SubjectViewModel>()
     const getDisplayName = (id: string) =>
       id === props.type.rootSubjectId ? type?.displayName : undefined
-    const _ = (await locator.locate(ISubjectsService).all()).map(
+    const _ = (await locate(ISubjectsService).all()).map(
       (s) => new SubjectViewModel(s, subjectsDict, undefined, getDisplayName)
     )
     const newRecommendCount =
-      (await locator
-        .locate(IConfigsService)
+      (await locate(IConfigsService)
         .getValueOrDefaultNumber(ConfigKeys.RECOMMENT_COUNT)) || 0
     setSubjectsDict(subjectsDict)
     const subjectsIdDict = new Map(
@@ -130,13 +128,12 @@ export default function Library (props: LibraryProps) {
   const [articleTags, setArticleTags] = useState<ArticleTag[]>([])
   const [tags, setTags] = useState(new Map<string, Tag>())
   const fetchTags = async () => {
-    const tagsService = locator.locate(ITagsService)
+    const tagsService = locate(ITagsService)
     const allTags = (await tagsService.all()).filter(
       (t) => t.type === TagType.ENUM
     )
     const tagsDict = new Map(allTags.map((n) => [n.name!, n]))
-    const tagNames = await locator
-      .locate(IConfigsService)
+    const tagNames = await locate(IConfigsService)
       .getValuesOrDefault(getArticleTags(props.type.name))
     if (props.type.subTypeTag) {
       tagNames.push(props.type.subTypeTag)
@@ -172,7 +169,7 @@ export default function Library (props: LibraryProps) {
   const [totalCount, setTotalCount] = useState(0)
   const countPerPage = 10
 
-  const [favoriteService] = useState(locator.locate(IFavoritesService))
+  const [favoriteService] = useState(locate(IFavoritesService))
   const [favorite, setFavorite] = useState(false)
   const [favoriteCount, setFavoriteCount] = useState(0)
 
@@ -188,7 +185,7 @@ export default function Library (props: LibraryProps) {
     take: number,
     ignoreArticleId = false
   ): Promise<[number, Article[]]> => {
-    const articlesService = locator.locate(IArticleService)
+    const articlesService = locate(IArticleService)
     const Query = articlesService.Query()
     const Condition = articlesService.Condition()
     const query = new Query()
@@ -218,8 +215,7 @@ export default function Library (props: LibraryProps) {
               )
           ])
       )
-      const res = await locator
-        .locate(IArticleService)
+      const res = await locate(IArticleService)
         .query(query, undefined, 0, 0)
       return [
         count,
@@ -296,7 +292,7 @@ export default function Library (props: LibraryProps) {
     return await articlesService.query(query, filter, skip, take)
   }
 
-  locator.locate(IArticleListService).getArticles = async (
+  locate(IArticleListService).getArticles = async (
     skip: number,
     take: number
   ): Promise<[number, [Article, ArticleContentType][]]> => {
@@ -305,10 +301,9 @@ export default function Library (props: LibraryProps) {
     for (const a of articles) {
       articlesWithType.push([
         a,
-        await locator
-          .locate(IArticleAppservice)
+        await locate(IArticleAppservice)
           .getArticleType(
-            locator.locate(IConfigsService),
+            locate(IConfigsService),
             props.type,
             props.type.subTypeTag
               ? a.tagsDict?.get(props.type.subTypeTag!)?.value
@@ -323,7 +318,7 @@ export default function Library (props: LibraryProps) {
     if (articleId && !articleRecommendView) {
       return
     }
-    const articlesService = locator.locate(IArticleService)
+    const articlesService = locate(IArticleService)
     const Query = articlesService.Query()
     const Condition = articlesService.Condition()
     const query = articleId
@@ -405,7 +400,7 @@ export default function Library (props: LibraryProps) {
     tag: ArticleTag,
     tagValue: string
   ) => {
-    const api = locator.locate(IArticleService)
+    const api = locate(IArticleService)
     try {
       await api.updateTags(article.id!, { id: tag.id!, value: tagValue })
       if (!article.tagsDict) {
@@ -438,7 +433,7 @@ export default function Library (props: LibraryProps) {
       const parentId = selectedSubjectIds.length
         ? selectedSubjectIds[selectedSubjectIds.length - 1]
         : rootSubject?.id
-      const service = locator.locate(IArticleService)
+      const service = locate(IArticleService)
       const newArticle = convertArticle(
         (await service.add(name, parentId || ''))!
       )
@@ -474,7 +469,7 @@ export default function Library (props: LibraryProps) {
   const deleteArticle = (id: string) => {
     viewService.prompt(langs.get(LangKeys.Delete), [], async () => {
       try {
-        await locator.locate(IArticleService).delete(id)
+        await locate(IArticleService).delete(id)
         const idx = articles.findIndex((a) => a.id === id)
         if (~idx) {
           articles.splice(idx, 1)
@@ -489,7 +484,7 @@ export default function Library (props: LibraryProps) {
   }
 
   const exportMm = () => {
-    locator.locate(ISubjectsExporter).export(effectiveSubjects)
+    locate(ISubjectsExporter).export(effectiveSubjects)
   }
 
   articleHandlers.onDelete = deleteArticle
@@ -499,8 +494,7 @@ export default function Library (props: LibraryProps) {
     fetchSubjects().then(() => fetchTags());
     (async () => {
       const logo =
-        (await locator
-          .locate(IConfigsService)
+        (await locate(IConfigsService)
           .getResource(ConfigKeys.WEB_SITE_LOGO)) || defaultLogo
       setLogo(logo)
     })()

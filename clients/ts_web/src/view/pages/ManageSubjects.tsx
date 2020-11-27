@@ -2,7 +2,7 @@ import './ManageSubjects.less'
 import { Button, Table } from 'antd'
 import { DeleteFilled, SisternodeOutlined, SubnodeOutlined, FileAddOutlined, FileOutlined, OrderedListOutlined, DragOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IMmConverter from '../../domain/ServiceInterfaces/IMmConverter'
 import ISubjectsExporter from '../../domain/ServiceInterfaces/ISubjectsExporter'
@@ -39,13 +39,13 @@ export function ManageSubjects () {
   if (!user.editingPermission) {
     return <Redirect to="/" />
   }
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
   const [subjects, setSubjects] = useState<Subject[]>([])
 
   const fetchSubjects = async () => {
-    const service: ISubjectsService = locator.locate(ISubjectsService)
+    const service: ISubjectsService = locate(ISubjectsService)
     try {
       setSubjects(await service.all())
     } catch (e) {
@@ -72,7 +72,7 @@ export function ManageSubjects () {
       langs.get(LangKeys.Delete) + ': ' + subject.name,
       [],
       async () => {
-        const service: ISubjectsService = locator.locate(ISubjectsService)
+        const service: ISubjectsService = locate(ISubjectsService)
         try {
           await service.delete(subject.id)
         } catch (e) {
@@ -99,7 +99,7 @@ export function ManageSubjects () {
       langs.get(LangKeys.Create),
       [{ type: 'Text', value: '', hint: langs.get(LangKeys.Name) }],
       async (name: string) => {
-        const service: ISubjectsService = locator.locate(ISubjectsService)
+        const service: ISubjectsService = locate(ISubjectsService)
         let subject: Subject
         try {
           subject = await service.add(name, parent?.id)
@@ -122,7 +122,7 @@ export function ManageSubjects () {
   }
 
   const exportSubject = (subject?: Subject) => {
-    locator.locate(ISubjectsExporter).export(subject ? [subject] : subjects)
+    locate(ISubjectsExporter).export(subject ? [subject] : subjects)
   }
 
   const importTo = (parent?: Subject) => {
@@ -133,11 +133,11 @@ export function ManageSubjects () {
         if (!content) {
           return false
         }
-        const subjects = locator.locate(IMmConverter).convertFromMmToSubjects(content, parent != null)
+        const subjects = locate(IMmConverter).convertFromMmToSubjects(content, parent != null)
         if (!subjects.length) {
           return false
         }
-        const service: ISubjectsService = locator.locate(ISubjectsService)
+        const service: ISubjectsService = locate(ISubjectsService)
         try {
           await service.batchAdd(subjects, parent?.id)
         } catch (e) {
@@ -161,7 +161,7 @@ export function ManageSubjects () {
         if (parentId === subject?.parent?.id) {
           return
         }
-        const service: ISubjectsService = locator.locate(ISubjectsService)
+        const service: ISubjectsService = locate(ISubjectsService)
         try {
           subject = await service.move(subject!.id, parentId)
         } catch (e) {
@@ -188,7 +188,7 @@ export function ManageSubjects () {
         if (!newName) {
           return
         }
-        const service: ISubjectsService = locator.locate(ISubjectsService)
+        const service: ISubjectsService = locate(ISubjectsService)
         try {
           await service.rename(newName, subject.id)
         } catch (e) {
@@ -223,7 +223,7 @@ export function ManageSubjects () {
         if (isNaN(newOrder)) {
           newOrder = Infinity
         }
-        const service: ISubjectsService = locator.locate(ISubjectsService)
+        const service: ISubjectsService = locate(ISubjectsService)
         try {
           await service.setOrder(subject.id, newOrder)
         } catch (e) {
@@ -261,7 +261,7 @@ export function ManageSubjects () {
           return
         }
         viewService.setLoading(true)
-        const service: ISubjectsService = locator.locate(ISubjectsService)
+        const service: ISubjectsService = locate(ISubjectsService)
         let resourceUrl
         try {
           if (typeof data === 'string') {
@@ -289,7 +289,7 @@ export function ManageSubjects () {
   }
 
   const resetIcon = async (subject: Subject) => {
-    const service: ISubjectsService = locator.locate(ISubjectsService)
+    const service: ISubjectsService = locate(ISubjectsService)
     try {
       await service.resetResource(subject.id)
     } catch (e) {

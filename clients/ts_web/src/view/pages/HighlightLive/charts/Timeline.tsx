@@ -3,7 +3,7 @@ import { BranchesOutlined } from '@ant-design/icons'
 import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/react'
 import { HighlightLiveViewerProps } from '..'
 import { previewArticleByPath } from '../../ServiceView'
-import { useServicesLocator } from '../../../common/Contexts'
+import { useServicesLocate } from '../../../common/Contexts'
 import Markdown from '../../../../infrac/components/Markdown'
 import React from 'react'
 
@@ -58,7 +58,7 @@ const getColor = (t: string) => {
 
 export function Timeline (props: HighlightLiveViewerProps) {
   const nodes = parseNodes(props.data)
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   return <div className="branch">
     <Gitgraph options={{ orientation: Orientation.VerticalReverse, template }}>
       {(gitgraph: any) => {
@@ -75,9 +75,9 @@ export function Timeline (props: HighlightLiveViewerProps) {
                   <div style={{ borderColor: color, backgroundColor: color + '40' }} className="branch-summary">
                     <div className="branch-summary-title">
                       <span className="button" onClick={
-                        previewArticleByPath(locator, n.link, n.id)
+                        previewArticleByPath(locate, n.link, n.id)
                       }>{n.id}</span>
-                      {n.changeLog ? <span className="button" onClick={previewArticleByPath(locator, n.changeLog, n.id)} ><BranchesOutlined /></span> : undefined}
+                      {n.changeLog ? <span className="button" onClick={previewArticleByPath(locate, n.changeLog, n.id)} ><BranchesOutlined /></span> : undefined}
                       <span className="flex"></span>
                       {n.publish ? <span className="published">{n.publish.toLocaleDateString()}</span> : undefined}
                     </div>

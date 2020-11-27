@@ -9,7 +9,7 @@ import { ManageUsers } from './ManageUsers'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { Switch, Route } from 'react-router-dom'
 import { ToolViewer } from './ToolViewer'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import Account from './Account'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import Home from './Home'
@@ -22,11 +22,11 @@ import Markdown from '../../infrac/components/Markdown'
 import React, { useState, useEffect } from 'react'
 
 function NavContent () {
-  const locator = useServicesLocator()
-  const plugins = locator.locate(PluginsConfig)
+  const locate = useServicesLocate()
+  const plugins = locate(PluginsConfig)
   const [footer, setFooter] = useState('')
   const fetchFooter = async () => {
-    const footer = await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_FOOTER)
+    const footer = await locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_FOOTER)
     setFooter(footer)
   }
   useEffect(() => {

@@ -2,7 +2,7 @@ import './ArticleList.less'
 import { ArrowLeftOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
 import { ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { Button } from 'antd'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -61,9 +61,9 @@ const saveShowIndex = (paging: boolean) => {
 }
 
 export default function ArticleList () {
-  const locator = useServicesLocator()
-  const viewService = locator.locate(IViewService)
-  const articleListService = locator.locate(IArticleListService)
+  const locate = useServicesLocate()
+  const viewService = locate(IViewService)
+  const articleListService = locate(IArticleListService)
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
   const fetchArticles = async () => {
     viewService.setLoading(true)
@@ -78,7 +78,7 @@ export default function ArticleList () {
         viewService.setLoading(false)
         return
       }
-      const maxCount = parseInt(await locator.locate(IConfigsService).getValueOrDefault(ConfigKeys.MAX_PRINT_COUNT))
+      const maxCount = parseInt(await locate(IConfigsService).getValueOrDefault(ConfigKeys.MAX_PRINT_COUNT))
       if (isNaN(maxCount)) {
         [count, all] = await articleListService.getArticles()
       } else {
@@ -101,7 +101,7 @@ export default function ArticleList () {
       }))
       viewService.setLoading(false)
     } catch (e) {
-            viewService!.errorKey(locator.locate(ILangsService), e.message)
+            viewService!.errorKey(locate(ILangsService), e.message)
             viewService.setLoading(false)
     }
   }
@@ -114,7 +114,7 @@ export default function ArticleList () {
   }, [])
   const ref = React.createRef<HTMLDivElement>()
   const close = () => {
-    locator.locate(IViewService).previewArticleList(false)
+    locate(IViewService).previewArticleList(false)
   }
   return (
     <div className="article-list-wraper">
@@ -137,7 +137,7 @@ export default function ArticleList () {
           saveBorderStyle(next)
         }} />
         {
-          <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => locator.locate(IViewService).captureElement(ref.current!)} />
+          <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => locate(IViewService).captureElement(ref.current!)} />
         }
         <Button type="link" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
       </div>

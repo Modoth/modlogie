@@ -1,7 +1,7 @@
 import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
-import { LocatableOffsetProvider, useServicesLocator } from '../common/Contexts'
+import { LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
 import { MenuOutlined, MoreOutlined, OrderedListOutlined, FileWordOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
@@ -56,17 +56,17 @@ const saveCaptureDict = (captureDict: boolean) => {
 const drawSizes = [1, 5]//, 15]
 const drawColors = ['#2d2d2d', '#ff0000']//, '#ffff0040']
 export default function ArticleSingle (props: { article: Article, type: ArticleContentType }) {
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const [sections, setSections] = useState<string[]>([])
   const [currentSection, setCurrentSection] = useState('')
   const [drawSize, setDrawSize] = useState(drawSizes[0])
   const [drawColor, setDrawColors] = useState(drawColors[0])
   const [earse, setEarse] = useState(false)
-  const viewService = locator.locate(IViewService)
+  const viewService = locate(IViewService)
   const close = () => {
     viewService.previewArticle()
   }
-  const langs = locator.locate(ILangsService)
+  const langs = locate(ILangsService)
   const [freeDraw, setFreeDraw] = useState(false)
   const [sidePopup, setSidePopup] = useState(false)
   const [captureDict, setCaptureDict] = useState(loadCaptureDict())

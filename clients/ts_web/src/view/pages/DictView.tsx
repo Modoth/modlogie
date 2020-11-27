@@ -1,7 +1,7 @@
 import './DictView.less'
 import { Button } from 'antd'
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
-import { useLocatableOffset, useServicesLocator } from '../common/Contexts'
+import { useLocatableOffset, useServicesLocate } from '../common/Contexts'
 import classNames from 'classnames'
 import IDictService, { CancleToken } from '../../domain/ServiceInterfaces/IDictService'
 import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
@@ -17,7 +17,7 @@ export default function DictView (props:{word:string, eg?:string, position?:Floa
   const [origin, setOrigin] = useState('')
   const [url, setUrl] = useState<string | undefined>()
   const [position, setPosition] = useState<number|undefined>()
-  const locator = useServicesLocator()
+  const locate = useServicesLocate()
   const [favorite, setFavorite] = useState(false)
   const [store] = useState<{ cancleToken?: CancleToken, destoried?: boolean }>({})
   const clearLastCancleToken = () => {
@@ -26,8 +26,8 @@ export default function DictView (props:{word:string, eg?:string, position?:Floa
       store.cancleToken = undefined
     }
   }
-  const langs = locator.locate(ILangsService)
-  const wordService = locator.locate(IWordsStorage)
+  const langs = locate(ILangsService)
+  const wordService = locate(IWordsStorage)
   const toogleFavorite = async () => {
     try {
       const nextFav = !favorite
@@ -41,8 +41,8 @@ export default function DictView (props:{word:string, eg?:string, position?:Floa
       viewService!.errorKey(langs, e.message)
     }
   }
-  const dictServer = locator.locate(IDictService)
-  const viewService = locator.locate(IViewService)
+  const dictServer = locate(IDictService)
+  const viewService = locate(IViewService)
   const tryQuery = async () => {
     const w = props.word
     if (origin === props.word) {

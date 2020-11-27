@@ -2,15 +2,15 @@ import './ArticleListSummary.less'
 import { ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { Badge, Button } from 'antd'
 import { PrinterOutlined, ClearOutlined } from '@ant-design/icons'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import IArticleListService from '../../app/Interfaces/IArticleListService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
 
 export default function ArticleListSummary () {
-  const locator = useServicesLocator()
-  const articleListService = locator.locate(IArticleListService)
+  const locate = useServicesLocate()
+  const articleListService = locate(IArticleListService)
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
   const onArticleListChange = async () => {
     const all = articleListService.all()
@@ -27,7 +27,7 @@ export default function ArticleListSummary () {
   }, [])
 
   const open = () => {
-    locator.locate(IViewService).previewArticleList(true)
+    locate(IViewService).previewArticleList(true)
   }
 
   const clear = () => {

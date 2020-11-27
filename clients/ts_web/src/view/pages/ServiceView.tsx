@@ -2,29 +2,29 @@ import './ServiceView.less'
 import { ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { ArticlePreview } from './ArticlePreview'
 import { CloseOutlined, SaveOutlined } from '@ant-design/icons'
+import { LocateFunction } from '../../infrac/ServiceLocator/IServicesLocator'
 import { Spin, message, Modal, Input, Space, Radio, TreeSelect, Button } from 'antd'
-import { useServicesLocator } from '../common/Contexts'
+import { useServicesLocate } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import ArticleList from './ArticleList'
 import ArticleSingle from './ArticleSingle'
 import html2canvas from 'html2canvas'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ImageEditor from '../../infrac/components/ImageEditor'
-import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
 import Markdown from '../../infrac/components/Markdown'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
 
-export const previewArticleByPath = (locator: IServicesLocator, path: string | undefined, title: string | undefined) => {
+export const previewArticleByPath = (locate: LocateFunction, path: string | undefined, title: string | undefined) => {
   if (!path) {
     return undefined
   }
   const url = `#article${path}`
   return () => {
-    locator.locate(IViewService).prompt(
-      { title: title || '', subTitle: locator.locate(ILangsService).get(LangKeys.ComfireJump) + url }, [
+    locate(IViewService).prompt(
+      { title: title || '', subTitle: locate(ILangsService).get(LangKeys.ComfireJump) + url }, [
         {
           type: 'Article',
           value: path
@@ -56,8 +56,8 @@ export class ViewService implements IViewService {
 export default function ServiceView (props: {
   setContentVisiable: { (visiable: boolean): void }
 }) {
-  const locator = useServicesLocator()
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const viewService = locate(IViewService)
   const refFile = useRef<HTMLInputElement | null>(null)
   const [loading, setLoading] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
@@ -278,7 +278,7 @@ export default function ServiceView (props: {
       const imgUrl = canvas.toDataURL('image/png')
       viewService.previewImage(imgUrl)
     } catch (e) {
-      // viewService!.errorKey(locator.locate(ILangsService), LangKeys.UnknownError)
+      // viewService!.errorKey(locate(ILangsService), LangKeys.UnknownError)
       viewService.setLoading(false)
     }
   }

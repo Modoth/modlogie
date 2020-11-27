@@ -2,7 +2,7 @@ import './ManageUsers.less'
 import { Pagination, Table, Button, Switch, DatePicker } from 'antd'
 import { PlusOutlined, DeleteFilled } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IUsersService, { User } from '../../domain/ServiceInterfaces/IUsersService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -15,9 +15,9 @@ export function ManageUsers () {
     return <Redirect to="/" />
   }
 
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
 
   const [users, setUsers] = useState<User[]>([])
   const [filter, setFilter] = useState('')
@@ -30,7 +30,7 @@ export function ManageUsers () {
     }
     try {
       viewService.setLoading(true)
-      const [total, users] = await locator.locate(IUsersService).all(filter, countPerPage * (page! - 1), countPerPage)
+      const [total, users] = await locate(IUsersService).all(filter, countPerPage * (page! - 1), countPerPage)
       setUsers(users)
       setTotalCount(total)
       setCurrentPage(page)
@@ -57,7 +57,7 @@ export function ManageUsers () {
           return
         }
         try {
-          const user = await locator.locate(IUsersService).add(newName, newEmail, password1)
+          const user = await locate(IUsersService).add(newName, newEmail, password1)
           setUsers([...users!, user!])
           return true
         } catch (e) {
@@ -82,7 +82,7 @@ export function ManageUsers () {
           return
         }
         try {
-          await locator.locate(IUsersService).updateComment(user.id, newComment)
+          await locate(IUsersService).updateComment(user.id, newComment)
           user!.comment = newComment
           setUsers([...users!])
           return true
@@ -96,7 +96,7 @@ export function ManageUsers () {
   const toogleAuthorised = async (user: User) => {
     try {
       const authorised = !user.authorised
-      await locator.locate(IUsersService).updateType(user.id, authorised)
+      await locate(IUsersService).updateType(user.id, authorised)
       user!.authorised = authorised
       setUsers([...users!])
       return true
@@ -107,7 +107,7 @@ export function ManageUsers () {
   const toogleEnabled = async (user: User) => {
     try {
       const enabled = !user.enabled
-      await locator.locate(IUsersService).updateStatue(user.id, enabled)
+      await locate(IUsersService).updateStatue(user.id, enabled)
       user!.enabled = enabled
       setUsers([...users!])
       return true
@@ -122,7 +122,7 @@ export function ManageUsers () {
       [],
       async () => {
         try {
-          await locator.locate(IUsersService).delete(user.id)
+          await locate(IUsersService).delete(user.id)
           const idx = users!.indexOf(user)
           users!.splice(idx, 1)
           setUsers([...users!])
@@ -154,7 +154,7 @@ export function ManageUsers () {
     return (user.enabled && user.authorised) ? <DatePicker showToday={false} clearIcon={false} value={moment(user.authorisedExpired)} onChange={async e => {
       try {
         const date = e!.toDate()
-        await locator.locate(IUsersService).updateAuthorisionExpired(user.id, date)
+        await locate(IUsersService).updateAuthorisionExpired(user.id, date)
         user!.authorisedExpired = date
         setUsers([...users!])
         return true

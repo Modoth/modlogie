@@ -2,7 +2,7 @@ import './ManageTags.less'
 import { PlusOutlined, DeleteFilled } from '@ant-design/icons'
 import { Redirect } from 'react-router-dom'
 import { Table, Button } from 'antd'
-import { useUser, useServicesLocator } from '../common/Contexts'
+import { useUser, useServicesLocate } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ITagsService, { Tag, TagType, TagNames } from '../../domain/ServiceInterfaces/ITagsService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -15,14 +15,14 @@ export function ManageTags () {
     return <Redirect to="/" />
   }
 
-  const locator = useServicesLocator()
-  const langs = locator.locate(ILangsService)
-  const viewService = locator.locate(IViewService)
+  const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const viewService = locate(IViewService)
 
   const [tags, setTags] = useState<Tag[] | undefined>()
   const fetchTags = async () => {
     try {
-      const tags = (await locator.locate(ITagsService).all()).filter(t => !t.name.startsWith(TagNames.RESERVED_PREFIX)).sort((a, b) => a.name.localeCompare(b.name))
+      const tags = (await locate(ITagsService).all()).filter(t => !t.name.startsWith(TagNames.RESERVED_PREFIX)).sort((a, b) => a.name.localeCompare(b.name))
       setTags(tags)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
@@ -64,7 +64,7 @@ export function ManageTags () {
           }
         }
         try {
-          const newTag = await locator.locate(ITagsService).add(newTagName, type, values)
+          const newTag = await locate(ITagsService).add(newTagName, type, values)
           setTags([...tags!, newTag!])
           return true
         } catch (e) {
@@ -89,10 +89,10 @@ export function ManageTags () {
           return
         }
         try {
-          await locator.locate(ITagsService).updateName(tag.name, newTagName)
+          await locate(ITagsService).updateName(tag.name, newTagName)
           tag!.name = newTagName
           setTags([...tags!])
-          locator.locate(ITagsService).clearCache()
+          locate(ITagsService).clearCache()
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -120,10 +120,10 @@ export function ManageTags () {
           if (!values.length) {
             return
           }
-          await locator.locate(ITagsService).updateValues(tag.name, values)
+          await locate(ITagsService).updateValues(tag.name, values)
           tag!.values = values
           setTags([...tags!])
-          locator.locate(ITagsService).clearCache()
+          locate(ITagsService).clearCache()
           return true
         } catch (e) {
           viewService!.errorKey(langs, e.message)
@@ -138,7 +138,7 @@ export function ManageTags () {
       [],
       async () => {
         try {
-          await locator.locate(ITagsService).delete(tag.name)
+          await locate(ITagsService).delete(tag.name)
           const idx = tags!.indexOf(tag)
           tags!.splice(idx, 1)
           setTags([...tags!])
@@ -153,7 +153,7 @@ export function ManageTags () {
   useEffect(() => {
     fetchTags()
     return function cleanup () {
-      locator.locate(ITagsService).clearCache()
+      locate(ITagsService).clearCache()
     }
   }, [])
 
