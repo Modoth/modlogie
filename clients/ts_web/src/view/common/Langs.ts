@@ -18,6 +18,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LANGS_SERVER = '语言服务器';
   MAX_FAVORITES_PER_TYPE = '每种文章最大收藏数';
   MAX_PRINT_COUNT = '最大打印文章数';
+  MAX_RECENT_FILE_SIZE = '临时文件大小限制';
   PLUGINS = '插件';
   RECOMMENT_COUNT = '推荐数量';
   RECOMMENT_TITLE = '推荐标题';
@@ -92,6 +93,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LatestMonth = '本周';
   LatestWeek = '本月';
   Like = '赞';
+  LocalFile = '本地文件';
   Login = '登陆';
   Logout = '注销';
   Manage = '管理';

@@ -52,6 +52,7 @@ export class LangKeysInterface {
   LatestMonth = 'LatestMonth';
   LatestWeek = 'LatestWeek';
   Like = 'Like';
+  LocalFile = 'LocalFile';
   Login = 'Login';
   Logout = 'Logout';
   Manage = 'Manage';

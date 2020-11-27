@@ -46,6 +46,7 @@ import IMmConverter from './domain/ServiceInterfaces/IMmConverter'
 import INavigationService from './app/Interfaces/INavigationService'
 import IPasswordStorage from './domain/ServiceInterfaces/IPasswordStorage'
 import IPluginInfo, { PluginsConfig } from './pluginbase/IPluginInfo'
+import IRecentFileService from './domain/ServiceInterfaces/IRecentFileService'
 import IRemoteServiceInvoker from './infrac/ServiceLocator/IRemoteServiceInvoker'
 import IServicesLocator from './infrac/ServiceLocator/IServicesLocator'
 import ISubjectsExporter from './domain/ServiceInterfaces/ISubjectsExporter'
@@ -71,6 +72,7 @@ import ModLang from './plugins/modlang'
 import NavigationService from './app/AppServices/NavigationService'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import RecentFileService from './domain/Services/RecentFileService'
 import RemoteServiceInvoker from './app/AppServices/RemoteServiceInvoker'
 import ResFile from './plugins/resfile'
 import Seperators from './domain/ServiceInterfaces/Seperators'
@@ -270,8 +272,14 @@ const buildServicesLocator = () => {
     {
       group: IWordsStorage,
       name: LangKeys.FavoriteWords
+    },
+    {
+      group: IRecentFileService,
+      name: LangKeys.LocalFile
     }
   ]))
+
+  serviceLocator.register(IRecentFileService, RecentFileService)
 
   // eslint-disable-next-line no-undef
   const apiBase = (window.ENV_OVERRIDE || ENV).API_BASE

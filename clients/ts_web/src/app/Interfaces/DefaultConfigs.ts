@@ -21,6 +21,7 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   LANGS_SERVER = new Config(ConfigKeys.LANGS_SERVER, ConfigType.STRING, '');// https://www.modoth.cn:8000/$LANG/$CODE,perl,bash
   MAX_FAVORITES_PER_TYPE = new Config(ConfigKeys.MAX_FAVORITES_PER_TYPE, ConfigType.NUMBER, '1000');
   MAX_PRINT_COUNT = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, '100');
+  MAX_RECENT_FILE_SIZE = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, `${20 * 1024 * 1024}`);
   PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, '');
   RECOMMENT_COUNT = new Config(ConfigKeys.RECOMMENT_COUNT, ConfigType.NUMBER, '');
   RECOMMENT_TITLE = new Config(ConfigKeys.RECOMMENT_TITLE, ConfigType.STRING, 'Recommends');

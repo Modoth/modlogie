@@ -7,9 +7,13 @@ export default class LocalKeyValueStorage<TValue> implements ILocalKeyValueStora
     return await this.store.query(key)
   }
 
-  async set (key: string, value: TValue): Promise<void> {
+  async set (key: string, value?: TValue): Promise<void> {
     await this.store.transaction(store => {
-      store.put({ key: key, value: value })
+      if (value === undefined) {
+        store.delete(key)
+      } else {
+        store.put({ key: key, value: value })
+      }
     })
   }
 }

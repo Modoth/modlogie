@@ -3,7 +3,7 @@ export class IKeyValueStorage<TValue> {
     throw new Error('Method not implemented.')
   }
 
-  set (key: string, value: TValue): Promise<void> {
+  set (key: string, value?: TValue): Promise<void> {
     throw new Error('Method not implemented.')
   }
 }

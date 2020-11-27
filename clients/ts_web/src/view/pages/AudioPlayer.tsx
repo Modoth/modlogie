@@ -3,8 +3,11 @@ import { Button } from 'antd'
 import { FileAddOutlined, CloseOutlined, PauseOutlined, CaretRightOutlined } from '@ant-design/icons'
 import { useServicesLocator } from '../common/Contexts'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IRecentFileService from '../../domain/ServiceInterfaces/IRecentFileService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useEffect, useState } from 'react'
+
+const RecentFileKey = 'AudioPlayer'
 
 export default function AudioPlayer () {
   const [url, setUrl] = useState('')
@@ -13,6 +16,7 @@ export default function AudioPlayer () {
   const locator = useServicesLocator()
   const [playing, setPlayging] = useState(false)
   const viewService = locator.locate(IViewService)
+  const fileService = locator.locate(IRecentFileService)
   const langs = locator.locate(ILangsService)
   const ref = React.createRef<HTMLAudioElement>()
   const cleanUp = () => {
@@ -20,20 +24,51 @@ export default function AudioPlayer () {
       URL.revokeObjectURL(store.url)
     }
   }
-  const loadFile = (file?:File) => {
+  const setAudioSource = (url:string|undefined) => {
+    if (!ref.current) {
+      return
+    }
+    const audio = ref.current
+    audio.src = url!
+  }
+  const loadFile = async (file?:File) => {
     cleanUp()
     let url = ''
     let title = ''
+    await fileService.set(RecentFileKey)
     if (file) {
       url = URL.createObjectURL(file)
       title = file.name
+      if (file.size > await fileService.limit()) {
+      } else {
+        const buff = await file.arrayBuffer()
+        fileService.set(RecentFileKey, {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          buff
+        })
+      }
     }
     store.url = url
     setAudioSource(url)
     setUrl(url)
     setInfo({ title })
   }
-  useEffect(() => cleanUp, [])
+  useEffect(() => {
+    const loadLastFile = async () => {
+      const file = await fileService.get(RecentFileKey)
+      if (file) {
+        const url = URL.createObjectURL(new Blob([file.buff], { type: file.type }))
+        store.url = url
+        setAudioSource(url)
+        setUrl(url)
+        setInfo({ title: file.name })
+      }
+    }
+    loadLastFile()
+    return cleanUp
+  }, [])
   const selectFile = () => {
     viewService.prompt(langs.get(LangKeys.Open), [{
       type: 'File',
@@ -57,14 +92,6 @@ export default function AudioPlayer () {
     setPlayging(playing)
   }
 
-  const setAudioSource = (url:string|undefined) => {
-    if (!ref.current) {
-      return
-    }
-    const audio = ref.current
-    audio.src = url!
-  }
-
   return <div className="audio-player">
     <div className="menu">
       <Button size="large" icon={<FileAddOutlined />} type="link" onClick={selectFile}>{langs.get(LangKeys.BackgroundMusic)}</Button>
@@ -77,6 +104,6 @@ export default function AudioPlayer () {
       <Button size="large" type="link" onClick={selectFile} className="title" >{info.title || ''}</Button>
       {url ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined}
     </div>
-    <audio ref={ref} onEnded={() => setPlayging(false)} onPause={() => setPlayging(false)} onPlay={() => setPlayging(true)}></audio>
+    <audio ref={ref} src={store.url || undefined} onEnded={() => setPlayging(false)} onPause={() => setPlayging(false)} onPlay={() => setPlayging(true)}></audio>
   </div>
 }
