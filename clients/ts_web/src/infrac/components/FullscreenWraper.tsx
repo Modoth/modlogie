@@ -19,19 +19,26 @@ export default function FullscreenWraper<TProp> (props: TProp & { callbacks?:Ful
   const [fullscreen, setFullscreen] = useState(false)
   const viewService = useServicesLocate()(IViewService)
   const [View] = useState(memo(props.View) as any)
-  if (props.callbacks) {
-    props.callbacks.toogle = () => {
-      const nextFullscreen = !fullscreen
-      viewService.setShowTitle?.(nextFullscreen ? false : undefined)
-      setFullscreen(nextFullscreen)
-      viewService.setShowFloatingMenu?.(!nextFullscreen)
-    }
+  const toogle = () => {
+    const nextFullscreen = !fullscreen
+    viewService.setShowTitle?.(nextFullscreen ? false : undefined)
+    setFullscreen(nextFullscreen)
+    viewService.setShowFloatingMenu?.(!nextFullscreen)
   }
-  return <div className={classNames(props.className, 'fullscreen-wraper', fullscreen ? 'fullscreen' : '')}><View {...Object.assign({}, props, { classNames: undefined, View: undefined, enabled: undefined })}></View>
+  if (props.callbacks) {
+    props.callbacks.toogle = toogle
+  }
+  const p :any = Object.assign({}, props)
+  delete p.classNames
+  delete p.View
+  delete p.enabled
+
+  return <div className={classNames(props.className, 'fullscreen-wraper', fullscreen ? 'fullscreen' : '')}>
+    <View {...p}></View>
     {props.enabled ? <div className="float-menu">
       <Button size="large" type="link" onClick={(ev) => {
         ev.stopPropagation()
-        setFullscreen(!fullscreen)
+        toogle()
       }}
       icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}>
       </Button>

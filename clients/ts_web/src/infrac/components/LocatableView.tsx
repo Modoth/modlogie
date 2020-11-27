@@ -30,5 +30,8 @@ export default function LocatableView<TProp> (props: TProp & { callbacks?: Locat
       <props.View {...props}></props.View>
     </>
   }
-  return <props.View {...Object.assign({}, props, { callbacks: undefined, View: undefined })}></props.View>
+  const p :any = Object.assign({}, props)
+  delete p.callbacks
+  delete p.View
+  return <props.View {...p}></props.View>
 }
