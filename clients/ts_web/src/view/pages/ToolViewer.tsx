@@ -51,6 +51,7 @@ export function ToolViewer () {
       })
       setFile(new BufferFile(file.name, buff))
     }
+    setName(file.name)
   }
   useEffect(() => {
   viewService.setFloatingMenus?.(ToolViewer.name, <>
@@ -65,6 +66,7 @@ export function ToolViewer () {
       const file = await fileService.get(RecentFileKey)
       if (file) {
         setFile(new BufferFile(file.name, file.buff))
+        setName(file.name)
       }
     }
     loadLastFile()

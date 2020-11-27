@@ -64,7 +64,6 @@ export default class DictService implements IDictService {
           bulk.push(item)
           continue
         }
-        console.log(bulk)
         await this.store.transaction(store => {
           for (const i of bulk) {
             store.put({ key: i.key, value: i.value })
