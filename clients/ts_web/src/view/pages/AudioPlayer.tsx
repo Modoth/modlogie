@@ -2,6 +2,7 @@ import './AudioPlayer.less'
 import { Button } from 'antd'
 import { FileAddOutlined, CloseOutlined, PauseOutlined, CaretRightOutlined } from '@ant-design/icons'
 import { useServicesLocate } from '../common/Contexts'
+import IAudioService from '../../app/Interfaces/IAudioService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IRecentFileService from '../../domain/ServiceInterfaces/IRecentFileService'
 import IViewService from '../../app/Interfaces/IViewService'
@@ -17,22 +18,18 @@ export default function AudioPlayer () {
   const [playing, setPlayging] = useState(false)
   const viewService = locate(IViewService)
   const fileService = locate(IRecentFileService)
+  const audioService = locate(IAudioService)
   const langs = locate(ILangsService)
-  const ref = React.createRef<HTMLAudioElement>()
-  const cleanUp = () => {
+  const releaseAudioSource = () => {
     if (store.url) {
       URL.revokeObjectURL(store.url)
     }
   }
   const setAudioSource = (url:string|undefined) => {
-    if (!ref.current) {
-      return
-    }
-    const audio = ref.current
-    audio.src = url!
+    audioService.load(url)
   }
   const loadFile = async (file?:File) => {
-    cleanUp()
+    releaseAudioSource()
     let url = ''
     let title = ''
     await fileService.set(RecentFileKey)
@@ -56,6 +53,12 @@ export default function AudioPlayer () {
     setInfo({ title })
   }
   useEffect(() => {
+    const onPlay = () => setAudioPlay(true)
+    const onPause = () => setAudioPlay(false)
+    const onStop = () => setAudioPlay(false)
+    audioService.registerEventListener('play', onPlay)
+    audioService.registerEventListener('pause', onPause)
+    audioService.registerEventListener('stop', onStop)
     const loadLastFile = async () => {
       const file = await fileService.get(RecentFileKey)
       if (file) {
@@ -67,7 +70,12 @@ export default function AudioPlayer () {
       }
     }
     loadLastFile()
-    return cleanUp
+    return () => {
+      audioService.removeEventListener('play', onPlay)
+      audioService.removeEventListener('pause', onPause)
+      audioService.removeEventListener('stop', onStop)
+      releaseAudioSource()
+    }
   }, [])
   const selectFile = () => {
     viewService.prompt(langs.get(LangKeys.Open), [{
@@ -80,14 +88,10 @@ export default function AudioPlayer () {
     })
   }
   const setAudioPlay = (playing:boolean) => {
-    if (!ref.current) {
-      return
-    }
-    const audio = ref.current
     if (playing) {
-      audio.play()
+      audioService.play()
     } else {
-      audio.pause()
+      audioService.pause()
     }
     setPlayging(playing)
   }
@@ -104,6 +108,5 @@ export default function AudioPlayer () {
       <Button size="large" type="link" onClick={selectFile} className="title" >{info.title || ''}</Button>
       {url ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined}
     </div>
-    <audio ref={ref} src={store.url || undefined} onEnded={() => setPlayging(false)} onPause={() => setPlayging(false)} onPlay={() => setPlayging(true)}></audio>
   </div>
 }

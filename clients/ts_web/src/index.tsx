@@ -30,6 +30,7 @@ import IAnkiItemsExporter from './domain/ServiceInterfaces/IAnkiItemsExporter'
 import IArticleAppservice from './app/Interfaces/IArticleAppservice'
 import IArticleListService from './app/Interfaces/IArticleListService'
 import IArticleService from './domain/ServiceInterfaces/IArticleService'
+import IAudioService from './app/Interfaces/IAudioService'
 import IAutoAccountService from './domain/ServiceInterfaces/IAutoAccountService'
 import IConfigsService, { Config, ConfigType } from './domain/ServiceInterfaces/IConfigsSercice'
 import ICsvItemsExporter from './domain/ServiceInterfaces/ICsvItemsExporter'
@@ -318,6 +319,7 @@ const buildServicesLocator = () => {
     () => new KeywordsServiceClient(clientHost, credentials, options)
   )
 
+  serviceLocator.registerInstance(IAudioService, {} as any)
   serviceLocator.registerInstance(IViewService, new ViewService(undefined, undefined, undefined, undefined, undefined, undefined, undefined))
 
   const w = window as any

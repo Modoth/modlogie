@@ -1,8 +1,9 @@
-import './App.less'
 import './App.css'
+import './App.less'
 import { HashRouter } from 'react-router-dom'
 import { uriTransformer } from 'react-markdown'
 import { UserContext, useServicesLocate } from './common/Contexts'
+import AudioServiceView from './pages/AudioServiceView'
 import ConfigKeys from '../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from './assets/logo.png'
 import IConfigsService from '../domain/ServiceInterfaces/IConfigsSercice'
@@ -10,11 +11,11 @@ import ILoginAppservice, { ILoginUser } from '../app/Interfaces/ILoginAppservice
 import INavigationService from '../app/Interfaces/INavigationService'
 import IViewService from '../app/Interfaces/IViewService'
 import LoginService from '../app/AppServices/LoginService'
+import Modlogie from './pages/Modlogie'
 import Nav from './pages/Nav'
 import NavContent from './pages/NavContent'
 import React, { useState, useEffect } from 'react'
 import ServiceView from './pages/ServiceView'
-import Modlogie from './pages/Modlogie'
 
 let savedScrollTop = 0
 let savedScrollElement: HTMLElement | null = null
@@ -66,6 +67,7 @@ export default function App () {
   return (
     <>
       <UserContext.Provider value={user}>
+        <AudioServiceView></AudioServiceView>
         <ServiceView
           setContentVisiable={(v) => {
             if (!ref.current) {
