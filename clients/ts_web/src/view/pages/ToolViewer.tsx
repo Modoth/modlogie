@@ -39,7 +39,6 @@ export function ToolViewer () {
     if (!file) {
       return
     }
-    setName(file.name)
     if (file.size > await fileService.limit()) {
       setFile(new WebFile(file))
     } else {
@@ -66,7 +65,6 @@ export function ToolViewer () {
       const file = await fileService.get(RecentFileKey)
       if (file) {
         setFile(new BufferFile(file.name, file.buff))
-        setName(file.name)
       }
     }
     loadLastFile()

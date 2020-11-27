@@ -11,22 +11,20 @@ import React, { useEffect, useState } from 'react'
 const RecentFileKey = 'AudioPlayer'
 
 export default function AudioPlayer () {
-  const [url, setUrl] = useState('')
-  const [info, setInfo] = useState({ title: '' })
-  const [store] = useState({ url: '' })
   const locate = useServicesLocate()
-  const [playing, setPlayging] = useState(false)
+
   const viewService = locate(IViewService)
   const fileService = locate(IRecentFileService)
   const audioService = locate(IAudioService)
   const langs = locate(ILangsService)
+  const [info, setInfo] = useState({ title: audioService.getTitle() })
+  const [store] = useState({ url: '' })
+  const [playing, setPlayging] = useState(audioService.getPlay())
+  const [hasData, setHasData] = useState(!!info.title || playing)
   const releaseAudioSource = () => {
     if (store.url) {
       URL.revokeObjectURL(store.url)
     }
-  }
-  const setAudioSource = (url:string|undefined) => {
-    audioService.load(url)
   }
   const loadFile = async (file?:File) => {
     releaseAudioSource()
@@ -48,32 +46,40 @@ export default function AudioPlayer () {
       }
     }
     store.url = url
-    setAudioSource(url)
-    setUrl(url)
-    setInfo({ title })
+    audioService.load(url, file?.name)
+    setInfo({ title: file?.name || '' })
+    setHasData(!!url)
   }
   useEffect(() => {
     const onPlay = () => setAudioPlay(true)
     const onPause = () => setAudioPlay(false)
     const onStop = () => setAudioPlay(false)
+    const onLoaded = () => {
+      const title = audioService.getTitle()
+      setInfo({ title })
+    }
     audioService.registerEventListener('play', onPlay)
     audioService.registerEventListener('pause', onPause)
     audioService.registerEventListener('stop', onStop)
+    audioService.registerEventListener('loaded', onLoaded)
     const loadLastFile = async () => {
       const file = await fileService.get(RecentFileKey)
       if (file) {
         const url = URL.createObjectURL(new Blob([file.buff], { type: file.type }))
         store.url = url
-        setAudioSource(url)
-        setUrl(url)
+        audioService.load(url, file.name)
+        setHasData(!!url)
         setInfo({ title: file.name })
       }
     }
-    loadLastFile()
+    if (!hasData) {
+      loadLastFile()
+    }
     return () => {
       audioService.removeEventListener('play', onPlay)
       audioService.removeEventListener('pause', onPause)
       audioService.removeEventListener('stop', onStop)
+      audioService.removeEventListener('loaded', onLoaded)
       releaseAudioSource()
     }
   }, [])
@@ -100,13 +106,13 @@ export default function AudioPlayer () {
     <div className="menu">
       <Button size="large" icon={<FileAddOutlined />} type="link" onClick={selectFile}>{langs.get(LangKeys.BackgroundMusic)}</Button>
       {
-        url ? (playing
+        hasData ? (playing
           ? <Button className="controls" size="large" icon={<PauseOutlined />} type="primary" shape="round" onClick={() => setAudioPlay(false)}></Button>
           : <Button className="controls" size="large" icon={<CaretRightOutlined />} type="primary" shape="round" onClick={() => setAudioPlay(true)}></Button>
         ) : undefined
       }
       <Button size="large" type="link" onClick={selectFile} className="title" >{info.title || ''}</Button>
-      {url ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined}
+      {hasData ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined}
     </div>
   </div>
 }

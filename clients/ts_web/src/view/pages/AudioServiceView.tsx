@@ -9,25 +9,31 @@ export default function AudioServiceView () {
     if (!audio) {
       return
     }
-    const events :AudioEvent[] = ['play', 'pause', 'stop']
+    const events :AudioEvent[] = ['play', 'pause', 'stop', 'loaded']
     const eventListeners = new Map(events.map(e => [e, new Set<AudioEventHandler>()]))
     const fireEvent = (event:AudioEvent) => () => {
         eventListeners.get(event)!.forEach(h => h())
     }
+    let currentTitle :string|undefined
     audioService.registerEventListener = (event, callback) => {
         eventListeners.get(event)!.add(callback)
     }
     audioService.removeEventListener = (event, callback) => {
         eventListeners.get(event)!.delete(callback)
     }
-    audioService.load = (url:string|undefined) => {
+    audioService.load = (url:string|undefined, title:string|undefined) => {
       if (url) {
         audio.src = url
       } else {
         audio.removeAttribute('src')
         audio.pause()
       }
+      currentTitle = title
     }
+    audioService.getTitle = () => {
+      return audio.title || currentTitle || ''
+    }
+    audioService.getPlay = () => !audio.paused
     audioService.play = () => {
       audio.play()
     }
@@ -37,5 +43,6 @@ export default function AudioServiceView () {
     audio.onplay = fireEvent('play')
     audio.onpause = fireEvent('pause')
     audio.onended = fireEvent('stop')
+    audio.onloadedmetadata = fireEvent('loaded')
   }} ></audio>
 }
