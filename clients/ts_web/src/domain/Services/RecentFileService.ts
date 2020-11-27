@@ -26,11 +26,11 @@ export default class RecentFileService extends IServicesLocator implements IRece
       return `recent_files_${group}`
     }
 
-    async get (group: string): Promise<RecentFile|undefined> {
-      return await this.storage.get(this.getKey(group))
+    get (group: string): Promise<RecentFile|undefined> {
+      return this.storage.get(this.getKey(group))
     }
 
-    async set (group: string, file: RecentFile|undefined): Promise<void> {
-      await this.storage.set(this.getKey(group), file)
+    set (group: string, file: RecentFile|undefined): Promise<void> {
+      return this.storage.set(this.getKey(group), file)
     }
 }

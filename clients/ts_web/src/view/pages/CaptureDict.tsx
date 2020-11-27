@@ -104,7 +104,6 @@ export default function CaptureDict (props:{offset:number}) {
       }
       const eg = getEg(text, start, start + w.length)
       w = w.trim()
-      console.log(eg, w)
       setWord(w)
       setEg(eg)
     }

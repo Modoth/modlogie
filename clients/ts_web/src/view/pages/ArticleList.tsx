@@ -11,54 +11,16 @@ import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
+import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
 
 const maxColumn = 3
 const maxBorderStyle = 4
 
-const getColumnCountKey = () => 'ARTICLES_COLUMN_COUNT'
-const loadColumnCount = () => {
-  const count = localStorage.getItem(getColumnCountKey())
-  if (!count) {
-    return 0
-  }
-  return parseInt(count) || 0
-}
-const saveColumnCount = (count: number) => {
-  if (count) {
-    localStorage.setItem(getColumnCountKey(), count.toString())
-  } else {
-    localStorage.removeItem(getColumnCountKey())
-  }
-}
+const ColumnCountKey = 'ARTICLES_COLUMN_COUNT'
 
-const getBorderStyleKey = () => 'ARTICLES_BORDER_STYLE'
-const loadBorderStyle = () => {
-  const style = localStorage.getItem(getBorderStyleKey())
-  if (!style) {
-    return 0
-  }
-  return parseInt(style) || 0
-}
-const saveBorderStyle = (style: number) => {
-  if (style) {
-    localStorage.setItem(getBorderStyleKey(), style.toString())
-  } else {
-    localStorage.removeItem(getBorderStyleKey())
-  }
-}
+const BorderStyleKey = 'ARTICLES_BORDER_STYLE'
 
-const getShowIndexKey = () => 'ARTICLES_SHOW_INDEX'
-const loadShowIndex = () => {
-  const paging = localStorage.getItem(getShowIndexKey())
-  return paging === 'true'
-}
-const saveShowIndex = (paging: boolean) => {
-  if (paging) {
-    localStorage.setItem(getShowIndexKey(), 'true')
-  } else {
-    localStorage.removeItem(getShowIndexKey())
-  }
-}
+const ShowIndexKey = 'ARTICLES_SHOW_INDEX'
 
 export default function ArticleList () {
   const locate = useServicesLocate()
@@ -106,10 +68,20 @@ export default function ArticleList () {
     }
   }
   const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
-  const [columnCount, setColumnCount] = useState(loadColumnCount() || (smallScreen ? 1 : 2))
-  const [borderStyle, setBorderStyle] = useState(loadBorderStyle() || maxBorderStyle)
-  const [showIdx, setShowIdx] = useState(loadShowIndex() || false)
+  const [columnCount, setColumnCount] = useState(1)
+  const [borderStyle, setBorderStyle] = useState(0)
+  const [showIdx, setShowIdx] = useState(false)
+  const configsService = locate(IUserConfigsService)
+  const loadConfigs = async () => {
+    const columnCount = await configsService.getOrDefault(ColumnCountKey, (smallScreen ? 1 : 2))
+    const borderStyle = await configsService.getOrDefault(BorderStyleKey, 0)
+    const showIdx = await configsService.getOrDefault(ShowIndexKey, false)
+    setColumnCount(columnCount)
+    setBorderStyle(borderStyle)
+    setShowIdx(showIdx)
+  }
   useEffect(() => {
+    loadConfigs()
     fetchArticles()
   }, [])
   const ref = React.createRef<HTMLDivElement>()
@@ -124,17 +96,17 @@ export default function ArticleList () {
         <Button type="link" size="large" icon={<OrderedListOutlined />} onClick={() => {
           const next = !showIdx
           setShowIdx(next)
-          saveShowIndex(next)
+          configsService.set(ShowIndexKey, next)
         }} />
         <Button type="link" size="large" icon={<PicRightOutlined />} onClick={() => {
           const next = ((columnCount) % maxColumn) + 1
           setColumnCount(next)
-          saveColumnCount(next)
+          configsService.set(ColumnCountKey, next)
         }} />
         <Button type="link" size="large" icon={<BorderBottomOutlined />} onClick={() => {
           const next = ((borderStyle) % maxBorderStyle) + 1
           setBorderStyle(next)
-          saveBorderStyle(next)
+          configsService.set(BorderStyleKey, next)
         }} />
         {
           <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => locate(IViewService).captureElement(ref.current!)} />

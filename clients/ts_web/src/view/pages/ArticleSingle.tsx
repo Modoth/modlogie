@@ -2,57 +2,22 @@ import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
-import { MenuOutlined, MoreOutlined, OrderedListOutlined, FileWordOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MoreOutlined, OrderedListOutlined, FileWordOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
 import FreeDrawMask from '../../infrac/components/FreeDrawMask'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import LocatableView, { Div, LocatableViewCallbacks } from '../../infrac/components/LocatableView'
 import React, { useEffect, useState } from 'react'
 
 const themeCount = 3
 const getThemeClass = (idx: number) => idx > 0 ? `reading-theme reading-theme-${idx}` : ''
-const getThemeKey = () => 'READING_THEME'
-const loadTheme = () => {
-  const theme = localStorage.getItem(getThemeKey())
-  if (!theme) {
-    return 0
-  }
-  return parseInt(theme) || 0
-}
-const saveTheme = (theme: number) => {
-  if (theme) {
-    localStorage.setItem(getThemeKey(), theme.toString())
-  } else {
-    localStorage.removeItem(getThemeKey())
-  }
-}
-const getPaingKey = () => 'READING_PAIGING'
-const loadPaging = () => {
-  const paging = localStorage.getItem(getPaingKey())
-  return paging === 'true'
-}
-const savePaging = (paging: boolean) => {
-  if (paging) {
-    localStorage.setItem(getPaingKey(), 'true')
-  } else {
-    localStorage.removeItem(getPaingKey())
-  }
-}
-const getCaptureDictKey = () => 'CAPTUR_DICT'
-const loadCaptureDict = () => {
-  const captureDict = localStorage.getItem(getCaptureDictKey())
-  return captureDict === 'true'
-}
-const saveCaptureDict = (captureDict: boolean) => {
-  if (captureDict) {
-    localStorage.setItem(getCaptureDictKey(), 'true')
-  } else {
-    localStorage.removeItem(getCaptureDictKey())
-  }
-}
+const ThemeKey = 'READING_THEME'
+const PaingKey = 'READING_PAIGING'
+const CaptureDictKey = 'CAPTUR_DICT'
 const drawSizes = [1, 5]//, 15]
 const drawColors = ['#2d2d2d', '#ff0000']//, '#ffff0040']
 export default function ArticleSingle (props: { article: Article, type: ArticleContentType }) {
@@ -69,10 +34,10 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   const langs = locate(ILangsService)
   const [freeDraw, setFreeDraw] = useState(false)
   const [sidePopup, setSidePopup] = useState(false)
-  const [captureDict, setCaptureDict] = useState(loadCaptureDict())
+  const [captureDict, setCaptureDict] = useState(false)
   const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
-  const [currentTheme, setCurrentTheme] = useState(smallScreen ? loadTheme() : 0)
-  const [paging, setPaging] = useState(false)// useState(smallScreen ? loadPaging() : false)
+  const [currentTheme, setCurrentTheme] = useState(0)
+  const [paging, setPaging] = useState(false)
   const ref = React.createRef<HTMLDivElement>()
   const [callbacks] = useState({} as ArticleContentViewerCallbacks)
   const [locateRef] = useState({} as LocatableViewCallbacks)
@@ -107,6 +72,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   }
   callbacks.onSections = setSections
   callbacks.onSection = setCurrentSection
+  const configsService = locate(IUserConfigsService)
   useEffect(() => {
     if (!sidePopup) {
     viewService.setFloatingMenus?.(ArticleSingle.name, <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
@@ -119,8 +85,16 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     viewService.setShowFloatingMenu?.(false)
     }
   })
-
   useEffect(() => {
+    const loadConfigs = async () => {
+      const captureDict = await configsService.getOrDefault(CaptureDictKey, false)
+      setCaptureDict(captureDict)
+      if (smallScreen) {
+        const currentTheme = await configsService.getOrDefault(ThemeKey, 0)
+        setCurrentTheme(currentTheme)
+      }
+    }
+    loadConfigs()
     return () => {
       viewService.setFloatingMenus?.(ArticleSingle.name)
       viewService.setShowFloatingMenu?.(true)
@@ -147,7 +121,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                         <Menu.Divider ></Menu.Divider>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
                           setCaptureDict(!captureDict)
-                          saveCaptureDict(!captureDict)
+                          configsService.set(CaptureDictKey, !captureDict)
                         }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <FileAddOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <FileWordOutlined />} onClick={() => jumpTo('#/manage/words')}>{langs.get(LangKeys.FavoriteWords)}</Button></Menu.Item>,
@@ -163,7 +137,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                           onClick={() => {
                             const nextTheme = (currentTheme + 1) % themeCount
                             setCurrentTheme(nextTheme)
-                            saveTheme(nextTheme)
+                            configsService.set(ThemeKey, nextTheme)
                           }
                           }
                         >{langs.get(LangKeys.Themes)}</Button>

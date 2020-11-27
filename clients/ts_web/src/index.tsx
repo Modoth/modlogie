@@ -53,6 +53,7 @@ import ISubjectsExporter from './domain/ServiceInterfaces/ISubjectsExporter'
 import ISubjectsService from './domain/ServiceInterfaces/ISubjectsService'
 import ITagsService from './domain/ServiceInterfaces/ITagsService'
 import ITextImageService from './infrac/Image/ITextImageService'
+import IUserConfigsService from './domain/ServiceInterfaces/IUserConfigsService'
 import IUserLoginService from './domain/ServiceInterfaces/IUserLoginService'
 import IUsersService from './domain/ServiceInterfaces/IUsersService'
 import IViewService from './app/Interfaces/IViewService'
@@ -81,6 +82,7 @@ import SubjectsExporter from './domain/Services/SubjectsExporter'
 import SubjectsServiceSingleton from './impl/RemoteServices/SubjectsServiceSingleton'
 import TagsServiceSingleton from './impl/RemoteServices/TagsServiceSingleton'
 import TextImageServiceSingleton from './infrac/Image/TextImageServiceSingleton'
+import UserConfigsService from './domain/Services/UserConfigsService'
 import UserLoginService from './impl/RemoteServices/UserLoginService'
 import UsersService from './impl/RemoteServices/UsersService'
 import WordsStorageSingleton from './impl/WordsStorageSingleton'
@@ -276,10 +278,15 @@ const buildServicesLocator = () => {
     {
       group: IRecentFileService,
       name: LangKeys.LocalFile
+    },
+    {
+      group: IUserConfigsService,
+      name: LangKeys.Configs
     }
   ]))
 
   serviceLocator.register(IRecentFileService, RecentFileService)
+  serviceLocator.register(IUserConfigsService, UserConfigsService)
 
   // eslint-disable-next-line no-undef
   const apiBase = (window.ENV_OVERRIDE || ENV).API_BASE

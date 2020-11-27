@@ -2,33 +2,20 @@ import './Modlogie.less'
 import { Button } from 'antd'
 import { DragOutlined } from '@ant-design/icons'
 import { useServicesLocate } from '../common/Contexts'
+import classNames from 'classnames'
+import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import ModlogieView from './ModlogieView'
 import React, { useEffect, useState } from 'react'
 import registerDragMove, { DragPosition } from '../../infrac/Web/registerDragMove'
-import classNames from 'classnames'
 
 const LastModlogiePosKey = 'LastModlogiePosKey'
 
-const transition = '1s cubic-bezier(0.175, 0.885, 0.32, 1.275) left,1s cubic-bezier(0.175, 0.885, 0.32, 1.275) right'
-
 type ModlogiePos = {right:boolean, bottom:number}
 
-const getLastModlogiePos = ():ModlogiePos => {
-  const defaultPos = { right: false, bottom: 50 }
-  try {
-    const str = localStorage.getItem(LastModlogiePosKey) || ''
-    const pos = JSON.parse(str)
-    let bottom = parseFloat(pos.bottom)
-    if (isNaN(bottom)) {
-      bottom = defaultPos.bottom
-    }
-    return { right: pos.right || defaultPos.right, bottom }
-  } catch (e) {
-    console.log(e)
-  }
-  return defaultPos
-}
+const initPos = { right: false, bottom: -50 }
+
+const defaultPos = { right: false, bottom: 50 }
 
 const getContainerStyleFromPos = (pos:ModlogiePos):React.CSSProperties => {
   const style:Partial<CSSStyleDeclaration> = { }
@@ -46,7 +33,7 @@ const applyContainerStyleFromPos = (style:Partial<CSSStyleDeclaration>, pos:Modl
   const { right, bottom } = pos
   style.left = right ? 'unset' : '0'
   style.right = right ? '0' : 'unset'
-  style.bottom = `${Math.min(90, Math.max(bottom, 0))}%`
+  style.bottom = `${bottom}%`
   style.alignItems = bottom < 50 ? 'flex-end' : 'flex-start'
   style.flexDirection = right ? 'row-reverse' : 'row'
 }
@@ -56,10 +43,6 @@ const applyFloatingStyleFromPos = (style:Partial<CSSStyleDeclaration>, pos:Modlo
   style.flexDirection = 'column-reverse'// bottom < 50 ? 'column-reverse' : 'column'
 }
 
-const setLastModlogiePos = (pos : ModlogiePos) => {
-  localStorage.setItem(LastModlogiePosKey, JSON.stringify(pos))
-}
-
 type Store = {
   destory?():void
   pos:ModlogiePos,
@@ -67,8 +50,9 @@ type Store = {
 }
 
 export default function Modlogie () {
-  const [store] = useState<Store>({ pos: getLastModlogiePos(), menus: [] })
+  const [store] = useState<Store>({ menus: [], pos: initPos })
   const [hidden, setHidden] = useState(false)
+  const [inited, setInited] = useState(false)
   const [floatingMenus, setFloatingMenus] = useState<React.ReactNode|undefined>()
   const [opacity, setOpacity] = useState<boolean|undefined>()
   const clearUp = () => {
@@ -77,7 +61,8 @@ export default function Modlogie () {
       store.destory = undefined
     }
   }
-  const viewService = useServicesLocate()(IViewService)
+  const locate = useServicesLocate()
+  const viewService = locate(IViewService)
   viewService.setShowFloatingMenu = (show?:boolean) => { setHidden(!show); return !hidden }
   viewService.setFloatingMenus = (key:string, menus?:React.ReactNode, opacity?:boolean) => {
     store.menus = store.menus.filter(([k]) => k !== key)
@@ -87,14 +72,24 @@ export default function Modlogie () {
     setFloatingMenus(store.menus[0]?.[1])
     setOpacity(store.menus[0]?.[2])
   }
+  const configService = locate(IUserConfigsService)
+  useEffect(() => {
+    const loadConfigs = async () => {
+      const pos = await configService.getOrDefault(LastModlogiePosKey, defaultPos)
+      pos.bottom = Math.min(90, Math.max(pos.bottom, 0))
+      store.pos = pos
+      setInited(true)
+    }
+    loadConfigs()
+    return clearUp
+  }, [])
+
   const containerStyle = getContainerStyleFromPos(store.pos)
   const floatingStyle = getFloatingStyleFromPos(store.pos)
   const [open, setOpen] = useState(false)
-  useEffect(() => {
-    return clearUp
-  }, [])
+
   return <div className={classNames('modlogie-wraper', open ? 'open' : '')} onClick={() => setOpen(false)}>
-    <div onClick={(ev) => ev.stopPropagation()} className={classNames('modlogie', hidden ? 'hidden' : '')} style={containerStyle}>
+    <div onClick={(ev) => ev.stopPropagation()} className={classNames('modlogie', !inited || hidden ? 'hidden' : '')} style={containerStyle}>
       <div className={classNames('floating-menus', opacity ? 'opacity' : '')} style={floatingStyle}>
         <div onClick={() => setOpen(!open)} className="modlogie-dot" ref={(dot) => {
           if (!dot) {
@@ -106,6 +101,9 @@ export default function Modlogie () {
           let current:DragPosition = [0, 0]
           let left = ''
           let bottom = ''
+          const transition = `1s cubic-bezier(0.175, 0.885, 0.32, 1.275) left,
+          1s cubic-bezier(0.175, 0.885, 0.32, 1.275) right,
+          1s cubic-bezier(0.175, 0.885, 0.32, 1.275) bottom`
           const start = (pos:DragPosition) => {
             init = pos
             const style = getComputedStyle(div)
@@ -130,10 +128,11 @@ export default function Modlogie () {
         (!store.pos.right && (parseInt(style.left) > window.innerWidth / 2))) {
               right = true
             }
+
             const pos = { right, bottom }
             const delay = 20
             const updatePos = () => {
-              setLastModlogiePos(pos)
+              configService.set(LastModlogiePosKey, pos)
               store.pos = pos
               div.style.transition = transition
               applyContainerStyleFromPos(div.style, pos)
