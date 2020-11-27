@@ -16,6 +16,7 @@ import AnkiItemsExporter from './domain/Services/AnkiItemsExporter'
 import App from './view/App'
 import AppArticleServiceSingleton from './app/AppServices/ArticleAppservice'
 import ArticleService from './impl/RemoteServices/ArticleService'
+import AudioService from './app/AppServices/AudioService'
 import Blog from './plugins/blog'
 import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
 import CsvItemsExporter from './domain/Services/CsvItemsExporter'
@@ -319,7 +320,7 @@ const buildServicesLocator = () => {
     () => new KeywordsServiceClient(clientHost, credentials, options)
   )
 
-  serviceLocator.registerInstance(IAudioService, {} as any)
+  serviceLocator.registerInstance(IAudioService, new AudioService())
   serviceLocator.registerInstance(IViewService, new ViewService(undefined, undefined, undefined, undefined, undefined, undefined, undefined))
 
   const w = window as any

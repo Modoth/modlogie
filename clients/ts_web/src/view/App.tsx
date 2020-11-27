@@ -3,7 +3,6 @@ import './App.less'
 import { HashRouter } from 'react-router-dom'
 import { uriTransformer } from 'react-markdown'
 import { UserContext, useServicesLocate } from './common/Contexts'
-import AudioServiceView from './pages/AudioServiceView'
 import ConfigKeys from '../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from './assets/logo.png'
 import IConfigsService from '../domain/ServiceInterfaces/IConfigsSercice'
@@ -67,7 +66,6 @@ export default function App () {
   return (
     <>
       <UserContext.Provider value={user}>
-        <AudioServiceView></AudioServiceView>
         <ServiceView
           setContentVisiable={(v) => {
             if (!ref.current) {
