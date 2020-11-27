@@ -221,7 +221,7 @@ export class MdxDictParser implements DictParser {
       return allKeys
     }
 
-    async parse (file: File): Promise<[string, DictItem][]> {
+    async parse (file: File): Promise<{items:Generator<DictItem>, length:number}> {
       const reader: DataReader = this.createDataReader(await file.arrayBuffer())
       const info = this.readInfo(reader)
       if (!info) {
@@ -232,12 +232,15 @@ export class MdxDictParser implements DictParser {
       const keys = this.readKeys(reader, indexEncrypted, decoder, codingUnit)
       const recordBuffer = this.readRecordBuffer(reader)
       const recbufferView = this.createDataReader(recordBuffer.buffer)
-      const items: [string, DictItem][] = []
-      for (const i of keys) {
-        const key = i.key.trim()
-        const [str] = this.findString(recbufferView, i.offset, decoder, codingUnit)
-        items.push([key.trim(), new DictItem(key, str)])
-      }
-      return items
+      const length = keys.length
+      const items = (function * (_this) {
+        for (const i of keys) {
+          const key = i.key.trim()
+          const [str] = _this.findString(recbufferView, i.offset, decoder, codingUnit)
+          yield new DictItem(key, str)
+        }
+      })(this)
+
+      return { items, length }
     }
 }

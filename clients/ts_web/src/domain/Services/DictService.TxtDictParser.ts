@@ -2,10 +2,10 @@ import { DictParser, DictItem } from './DictService'
 import { LangKeys } from '../ServiceInterfaces/ILangsService'
 
 export class TxtDictParser implements DictParser {
-  async parse (file: File): Promise<[string, DictItem][]> {
+  async parse (file: File): Promise<DictItem[]> {
     try {
       const content = await file.text()
-      const items: [string, DictItem][] = []
+      const items: DictItem[] = []
       for (let line of content.split('\n')) {
         line = line.trim()
         const idx = line.indexOf(' ')
@@ -15,7 +15,7 @@ export class TxtDictParser implements DictParser {
           if (!key || !value) {
             continue
           }
-          const item = [key, new DictItem(key, value)] as [string, DictItem]
+          const item = new DictItem(key, value)
           items.push(item)
         }
       }

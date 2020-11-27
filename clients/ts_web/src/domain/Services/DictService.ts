@@ -13,7 +13,7 @@ export class DictItem {
 }
 
 export interface DictParser {
-    parse(file: File): Promise<[string, DictItem][]>
+    parse(file: File): Promise<{items:Generator<DictItem>, length:number} | DictItem[]>
 }
 
 export default class DictService implements IDictService {
@@ -28,13 +28,13 @@ export default class DictService implements IDictService {
       ['txt', new TxtDictParser()]
     ])
 
-    async parseDict (file: File): Promise<[string, DictItem][]> {
+    async parseDict (file: File): Promise< {items:Generator<DictItem>, length:number} | DictItem[]> {
       const type = extname(file.name)
       if (!type || !this.parsers.has(type)) {
         throw new Error(LangKeys.MSG_ERROR_INVALID_FILE)
       }
       const parser = this.parsers.get(type)!
-      return await parser?.parse(file)
+      return await parser.parse(file)
     }
 
     async clean (): Promise<void> {
@@ -44,29 +44,30 @@ export default class DictService implements IDictService {
     }
 
     async change (file: File, token?: CancleToken, callBack?: { (progress: number): void }): Promise<DictInfo> {
-      const items = await this.parseDict(file)
+      const res = await this.parseDict(file)
+      const { items, length } = 'items' in res ? res : { items: res, length: res.length }
+
       if (token?.cancled) {
         return new DictInfo(0)
       }
       if (token?.cancled) {
         return new DictInfo(0)
       }
-      const total = items.length
-      const perBulk = Math.ceil(total / 100)
-      for (let progress = 0; progress < 100; progress++) {
-        const offset = perBulk * progress
-        const remain = total - offset
-        if (remain <= 0) {
-          break
-        }
+      const perBulk = Math.ceil(length / 100)
+      let progress = 0
+      let bulk :DictItem[] = []
+      for (const item of items) {
         if (token?.cancled) {
           break
         }
+        if (bulk.length < perBulk) {
+          bulk.push(item)
+          continue
+        }
+        console.log(bulk)
         await this.store.transaction(store => {
-          for (let i = 0; i < perBulk && i < remain; i++) {
-            const idx = i + offset
-            const item = items[idx][1]
-            store.put({ key: item.key, value: item.value })
+          for (const i of bulk) {
+            store.put({ key: i.key, value: i.value })
             if (token?.cancled) {
               return true
             }
@@ -75,6 +76,8 @@ export default class DictService implements IDictService {
             }
           }
         })
+        bulk = []
+        progress++
       }
 
       return new DictInfo(await this.store.count())
