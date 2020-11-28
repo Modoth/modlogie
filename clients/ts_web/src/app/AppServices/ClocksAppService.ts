@@ -99,7 +99,8 @@ export default class ClocksAppService extends IServicesLocator implements IClock
      const [clocks, finishedClocks] = await this.loadClocks()
      this.clocks = Promise.resolve(clocks)
      if (finishedClocks && finishedClocks.length) {
-       this.promptClocksFinished(...finishedClocks)
+       const earliest = Date.now() - 24 * 60 * 60 * 1000
+       this.promptClocksFinished(...finishedClocks.filter(c => 'until' in c && c.until > earliest))
        await this.saveClocks()
      }
      clocks.forEach(c => this.registerClock(c))
