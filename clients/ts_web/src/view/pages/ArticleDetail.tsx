@@ -28,7 +28,7 @@ export function ArticleDetail (props: {}) {
       locate(IViewService)
         .previewArticle(article, articleContentType, onclose)
     })()
-  }, [])
+  }, [path])
   if (!url) {
     return <></>
   }
