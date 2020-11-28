@@ -103,16 +103,14 @@ export default function AudioPlayer () {
   }
 
   return <div className="audio-player">
-    <div className="menu">
-      <Button size="large" icon={<FileAddOutlined />} type="link" onClick={selectFile}>{langs.get(LangKeys.BackgroundMusic)}</Button>
-      {
-        hasData ? (playing
-          ? <Button className="controls" size="large" icon={<PauseOutlined />} type="primary" shape="round" onClick={() => setAudioPlay(false)}></Button>
-          : <Button className="controls" size="large" icon={<CaretRightOutlined />} type="primary" shape="round" onClick={() => setAudioPlay(true)}></Button>
-        ) : undefined
-      }
-      <Button size="large" type="link" onClick={selectFile} className="title" >{info.title || ''}</Button>
-      {hasData ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined}
-    </div>
+    <Button size="large" icon={<FileAddOutlined />} type="link" onClick={selectFile}>{langs.get(LangKeys.BackgroundMusic)}</Button>
+    {
+      hasData ? (playing
+        ? <Button className="controls" size="large" icon={<PauseOutlined />} type="primary" shape="round" onClick={() => setAudioPlay(false)}></Button>
+        : <Button className="controls" size="large" icon={<CaretRightOutlined />} type="primary" shape="round" onClick={() => setAudioPlay(true)}></Button>
+      ) : undefined
+    }
+    <Button size="large" type="link" onClick={selectFile} className="title" >{info.title || ''}</Button>
+    {hasData ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined}
   </div>
 }

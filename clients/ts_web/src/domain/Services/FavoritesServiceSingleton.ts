@@ -5,7 +5,7 @@ import IFavoritesService from '../ServiceInterfaces/IFavoritesService'
 import IKeyValueStorageManager, { IKeyValueStorage } from '../ServiceInterfaces/IKeyValueStorage'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 
-export default class FavoritesServerSingleton extends IServicesLocator implements IFavoritesService {
+export default class FavoritesServiceSingleton extends IServicesLocator implements IFavoritesService {
     private _favorites: Map<string, [string[], Set<string>]> = new Map();
     private _handlers: Map<string, { (count: number): void }> = new Map();
     private _storage :IKeyValueStorage<string[]>

@@ -18,6 +18,9 @@ import AppArticleServiceSingleton from './app/AppServices/ArticleAppservice'
 import ArticleService from './impl/RemoteServices/ArticleService'
 import AudioService from './app/AppServices/AudioService'
 import Blog from './plugins/blog'
+import Clock from './domain/Services/Clock'
+import ClocksAppService from './app/AppServices/ClocksAppService'
+import ClocksService from './domain/Services/ClocksService'
 import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
 import CsvItemsExporter from './domain/Services/CsvItemsExporter'
 import Data from './plugins/data'
@@ -25,7 +28,7 @@ import DefaultConfigs from './app/Interfaces/DefaultConfigs'
 import DictService from './domain/Services/DictService'
 import EditorsServiceSingleton from './app/AppServices/EditorsServiceSingleton'
 import ExternalBlog from './plugins/externalblog'
-import FavoritesServerSingleton from './domain/Services/FavoritesServerSingleton'
+import FavoritesServiceSingleton from './domain/Services/FavoritesServiceSingleton'
 import H5 from './plugins/h5'
 import IAnkiItemsExporter from './domain/ServiceInterfaces/IAnkiItemsExporter'
 import IArticleAppservice from './app/Interfaces/IArticleAppservice'
@@ -33,6 +36,9 @@ import IArticleListService from './app/Interfaces/IArticleListService'
 import IArticleService from './domain/ServiceInterfaces/IArticleService'
 import IAudioService from './app/Interfaces/IAudioService'
 import IAutoAccountService from './domain/ServiceInterfaces/IAutoAccountService'
+import IClock from './domain/ServiceInterfaces/IClock'
+import IClocksAppService from './app/Interfaces/IClocksAppService'
+import IClocksService from './domain/ServiceInterfaces/IClocksStorage'
 import IConfigsService, { Config, ConfigType } from './domain/ServiceInterfaces/IConfigsSercice'
 import ICsvItemsExporter from './domain/ServiceInterfaces/ICsvItemsExporter'
 import IDictService from './domain/ServiceInterfaces/IDictService'
@@ -248,7 +254,7 @@ const buildServicesLocator = () => {
   )
   serviceLocator.registerInstance(
     IFavoritesService,
-    new FavoritesServerSingleton()
+    new FavoritesServiceSingleton()
   )
   serviceLocator.registerInstance(IKeywordsService, new KeywordsService())
   serviceLocator.registerInstance(IDictService, new DictService())
@@ -284,11 +290,18 @@ const buildServicesLocator = () => {
     {
       group: IUserConfigsService,
       name: LangKeys.Configs
+    },
+    {
+      group: IClocksService,
+      name: LangKeys.Countdown
     }
   ]))
 
   serviceLocator.register(IRecentFileService, RecentFileService)
   serviceLocator.register(IUserConfigsService, UserConfigsService)
+  serviceLocator.register(IClocksService, ClocksService)
+  serviceLocator.register(IClock, Clock)
+  serviceLocator.registerInstance(IClocksAppService, new ClocksAppService())
 
   // eslint-disable-next-line no-undef
   const apiBase = (window.ENV_OVERRIDE || ENV).API_BASE

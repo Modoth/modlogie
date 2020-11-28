@@ -15,6 +15,7 @@ import Nav from './pages/Nav'
 import NavContent from './pages/NavContent'
 import React, { useState, useEffect } from 'react'
 import ServiceView from './pages/ServiceView'
+import IClocksAppService from '../app/Interfaces/IClocksAppService'
 
 let savedScrollTop = 0
 let savedScrollElement: HTMLElement | null = null
@@ -47,6 +48,8 @@ export default function App () {
       bgRef.current.innerText = `.background{
         background-image: url("${logo}");
       }`
+      const clocksService = locate(IClocksAppService)
+      await clocksService.init()
     })()
     window.document.body.onclick = (e) => {
       if ((e.target as any)?.nodeName === 'A') {

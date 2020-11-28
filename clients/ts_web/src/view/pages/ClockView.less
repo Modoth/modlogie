@@ -1,0 +1,35 @@
+.clock-view {
+  display: flex;
+  align-items: center;
+  & > * {
+    margin: 0 5px;
+  }
+  & > .controls {
+    height: 32px;
+    width: 32px;
+    padding: 0;
+  }
+  .title {
+    flex: 1;
+  }
+
+  .num-group {
+    border-radius: 5px;
+    background: #fff;
+    color: #4d4d4d;
+    padding: 10px 2px;
+    margin-right: 5px;
+    font-size: 1.5em;
+    box-shadow: var(--shadow);
+    .num {
+      margin: 10px 5px;
+    }
+    .split {
+      width: 1px;
+      height: 1.5em;
+      background: #0001;
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}

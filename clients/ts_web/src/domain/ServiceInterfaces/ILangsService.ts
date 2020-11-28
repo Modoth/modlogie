@@ -20,6 +20,7 @@ export class LangKeysInterface {
   ComfireJump = 'ComfireJump';
   Comment = 'Comment';
   Configs = 'Configs';
+  Countdown = 'Countdown';
   Create = 'Create';
   Csv = 'Csv';
   DefaultValue = 'DefaultValue';
