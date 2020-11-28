@@ -30,6 +30,7 @@ import EditorsServiceSingleton from './app/AppServices/EditorsServiceSingleton'
 import ExternalBlog from './plugins/externalblog'
 import FavoritesServiceSingleton from './domain/Services/FavoritesServiceSingleton'
 import H5 from './plugins/h5'
+import HistoryServiceSingleton, { HistoryStorage } from './domain/Services/HistoryService'
 import IAnkiItemsExporter from './domain/ServiceInterfaces/IAnkiItemsExporter'
 import IArticleAppservice from './app/Interfaces/IArticleAppservice'
 import IArticleListService from './app/Interfaces/IArticleListService'
@@ -44,6 +45,7 @@ import ICsvItemsExporter from './domain/ServiceInterfaces/ICsvItemsExporter'
 import IDictService from './domain/ServiceInterfaces/IDictService'
 import IEditorsService from './app/Interfaces/IEditorsService'
 import IFavoritesService from './domain/ServiceInterfaces/IFavoritesService'
+import IHistoryService, { IHistoryStorage } from './domain/ServiceInterfaces/IHistoryService'
 import IKeyValueStorageManager, { ILocalKeyValueStorage, IRemoteKeyValueStorage } from './domain/ServiceInterfaces/IKeyValueStorage'
 import IKeywordsService from './domain/ServiceInterfaces/IKeywordsService'
 import ILangInterpretersService from './domain/ServiceInterfaces/ILangInterpretersService'
@@ -294,12 +296,18 @@ const buildServicesLocator = () => {
     {
       group: IClocksService,
       name: LangKeys.Countdown
+    },
+    {
+      group: IHistoryStorage,
+      name: LangKeys.History
     }
   ]))
 
   serviceLocator.register(IRecentFileService, RecentFileService)
   serviceLocator.register(IUserConfigsService, UserConfigsService)
   serviceLocator.register(IClocksService, ClocksService)
+  serviceLocator.register(IHistoryStorage, HistoryStorage)
+  serviceLocator.registerInstance(IHistoryService, new HistoryServiceSingleton())
   serviceLocator.register(IClock, Clock)
   serviceLocator.registerInstance(IClocksAppService, new ClocksAppService())
 

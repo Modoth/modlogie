@@ -44,6 +44,7 @@ export class LangKeysInterface {
   Favorite = 'Favorite';
   FavoriteWords = 'FavoriteWords';
   FreeDraw = 'FreeDraw';
+  History = 'History'
   Home = 'Home';
   Import = 'Import';
   ItemsCount = 'ItemsCount';

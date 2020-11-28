@@ -85,6 +85,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Favorite = '收藏';
   FavoriteWords = '生词本';
   FreeDraw = '记号笔';
+  History = '历史';
   Home = '首页';
   Import = '导入';
   ItemsCount = '总词条数:';

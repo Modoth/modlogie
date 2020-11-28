@@ -156,7 +156,7 @@ export default function Modlogie () {
         {open ? undefined : floatingMenus}
       </div>
 
-      {open ? <ModlogieView ></ModlogieView> : undefined}
+      {open ? <ModlogieView onClose={() => setOpen(false)}></ModlogieView> : undefined}
     </div>
   </div>
 }

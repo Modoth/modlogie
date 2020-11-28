@@ -2,7 +2,7 @@ import IKeyValueServiceBase from '../ServiceInterfaces/IKeyValueServiceBase'
 import IKeyValueStorageManager, { IKeyValueStorage } from '../ServiceInterfaces/IKeyValueStorage'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 
-export default abstract class LocalKeyValueServiceBase<TValue> extends IServicesLocator implements IKeyValueServiceBase<TValue> {
+export default abstract class KeyValueServiceBase<TValue> extends IServicesLocator implements IKeyValueServiceBase<TValue> {
     private _storage :IKeyValueStorage<TValue>
     abstract get key():string;
     abstract get group():object;

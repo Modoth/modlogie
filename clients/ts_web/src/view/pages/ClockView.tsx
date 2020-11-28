@@ -99,8 +99,8 @@ export default function ClockView (props:{clock:IClock}) {
     <span className="title" onClick={selectTimeAndRestart}><NumGroup value={hour}></NumGroup><NumGroup value={min}></NumGroup><NumGroup value={sec}></NumGroup></span>
     {
       started
-        ? <Button className="controls" size="large" icon={<PauseOutlined />} type="primary" shape="round" onClick={() => props.clock.pause()}></Button>
-        : <Button className="controls" size="large" icon={<CaretRightOutlined />} type="primary" shape="round" onClick={() => {
+        ? <Button className="controls" size="large" icon={<PauseOutlined />} type="link" shape="round" onClick={() => props.clock.pause()}></Button>
+        : <Button className="controls" size="large" icon={<CaretRightOutlined />} type="link" shape="round" onClick={() => {
           if (finished) {
             props.clock.reset(total)
           } else {

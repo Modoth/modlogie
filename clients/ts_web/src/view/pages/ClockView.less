@@ -1,8 +1,12 @@
 .clock-view {
   display: flex;
   align-items: center;
+  padding-top: 5px;
   & > * {
-    margin: 0 5px;
+    margin-left: 5px;
+    &:first-child {
+      margin-left: 0;
+    }
   }
   & > .controls {
     height: 32px;

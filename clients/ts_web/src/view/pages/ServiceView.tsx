@@ -16,6 +16,7 @@ import Markdown from '../../infrac/components/Markdown'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
+import IHistoryService from '../../domain/ServiceInterfaces/IHistoryService'
 
 export const previewArticleByPath = (locate: LocateFunction, path: string | undefined, title: string | undefined) => {
   if (!path) {
@@ -257,6 +258,7 @@ export default function ServiceView (props: {
     if (article) {
       props.setContentVisiable(false)
       setPreviewArticle({ article, type, onclose })
+      locate(IHistoryService).add(article.path!, article.name!)
     } else {
       props.setContentVisiable(true)
       setPreviewArticle(undefined)

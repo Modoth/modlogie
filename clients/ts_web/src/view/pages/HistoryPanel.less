@@ -1,0 +1,21 @@
+.history-panel {
+  position: relative;
+  min-height: 2rem;
+  .clear-btn {
+    position: absolute;
+    right: 5px;
+  }
+
+  .item {
+    margin: 5px 2px;
+    &::before {
+      content: " ";
+      background: #0002;
+      width: 4px;
+      height: 1em;
+      margin-top: 6px;
+      margin: 4px 10px 0 0;
+      float: left;
+    }
+  }
+}
