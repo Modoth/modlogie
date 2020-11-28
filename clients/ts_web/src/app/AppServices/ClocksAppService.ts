@@ -42,7 +42,7 @@ export default class ClocksAppService extends IServicesLocator implements IClock
       clocks.push(clock)
     }
     const clocksService = this.locate(IClocksService)
-    await clocksService.save(clocks)
+    await clocksService.set(clocks)
     if (checkCancled()) {
       return
     }
@@ -60,7 +60,7 @@ export default class ClocksAppService extends IServicesLocator implements IClock
     const clocksService = this.locate(IClocksService)
     const clocks :IClock[] = []
     const finishedClocks:ClockInfo[] = []
-    const infos = await clocksService.load()
+    const infos = await clocksService.get()
     if (infos && infos.length) {
       for (const c of infos) {
         const clock = this.locate(IClock)

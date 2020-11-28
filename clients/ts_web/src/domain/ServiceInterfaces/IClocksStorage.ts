@@ -1,11 +1,7 @@
+import IKeyValueServiceBase from './IKeyValueServiceBase'
+
 export type ClockInfo = { msg?:any}&({ until:number;}|{remain:number;})
 
-export default class IClocksService {
-  load ():Promise<ClockInfo[]|undefined> {
-    throw new Error('Method not implemented.')
-  }
+export default class IClocksService extends IKeyValueServiceBase<ClockInfo[]> {
 
-  save (clocks?:ClockInfo[]):Promise<void> {
-    throw new Error('Method not implemented.')
-  }
 }

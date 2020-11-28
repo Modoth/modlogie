@@ -1,22 +1,7 @@
 import IClocksService, { ClockInfo } from '../ServiceInterfaces/IClocksStorage'
-import IKeyValueStorageManager, { IKeyValueStorage } from '../ServiceInterfaces/IKeyValueStorage'
-import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
+import LocalKeyValueServiceBase from './LocalKeyValueServiceBase'
 
-export default class ClocksService extends IServicesLocator implements IClocksService {
-  private _storage :IKeyValueStorage<ClockInfo[]>
+export default class ClocksService extends LocalKeyValueServiceBase<ClockInfo[]> implements IClocksService {
   key = 'clocks'
-  get storage () {
-    if (!this._storage) {
-      this._storage = this.locate(IKeyValueStorageManager).get<ClockInfo[]>(IClocksService)
-    }
-    return this._storage
-  }
-
-  async load (): Promise<ClockInfo[] | undefined> {
-    return this.storage.get(this.key)
-  }
-
-  async save (clocks?: ClockInfo[]): Promise<void> {
-    return this.storage.set(this.key, clocks)
-  }
+  group = IClocksService
 }
