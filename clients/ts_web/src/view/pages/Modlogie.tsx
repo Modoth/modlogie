@@ -89,9 +89,12 @@ export default function Modlogie () {
   const [open, setOpen] = useState(false)
 
   return <div className={classNames('modlogie-wraper', open ? 'open' : '')} onClick={() => setOpen(false)}>
-    <div onClick={(ev) => ev.stopPropagation()} className={classNames('modlogie', !inited || hidden ? 'hidden' : '')} style={containerStyle}>
+    <div className={classNames('modlogie', !inited || hidden ? 'hidden' : '')} style={containerStyle}>
       <div className={classNames('floating-menus', opacity ? 'opacity' : '')} style={floatingStyle}>
-        <div onClick={() => setOpen(!open)} className="modlogie-dot" ref={(dot) => {
+        <div onClick={(ev) => {
+          ev.stopPropagation()
+          setOpen(!open)
+        }} className="modlogie-dot" ref={(dot) => {
           if (!dot) {
             clearUp()
             return
@@ -156,7 +159,7 @@ export default function Modlogie () {
         {open ? undefined : floatingMenus}
       </div>
 
-      {open ? <ModlogieView onClose={() => setOpen(false)}></ModlogieView> : undefined}
+      {open ? <div onClick={(ev) => ev.stopPropagation()} > <ModlogieView onClose={() => setOpen(false)}></ModlogieView> </div> : undefined}
     </div>
   </div>
 }
