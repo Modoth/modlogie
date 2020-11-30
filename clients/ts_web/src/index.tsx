@@ -21,7 +21,7 @@ import Blog from './plugins/blog'
 import Clock from './domain/Services/Clock'
 import ClocksAppService from './app/AppServices/ClocksAppService'
 import ClocksService from './domain/Services/ClocksService'
-import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
+import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName, getArticlePublishers } from './domain/ServiceInterfaces/ConfigKeys'
 import CsvItemsExporter from './domain/Services/CsvItemsExporter'
 import Data from './plugins/data'
 import DefaultConfigs from './app/Interfaces/DefaultConfigs'
@@ -166,6 +166,14 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
               )
             ]
             : []
+        ).concat(
+          t.generators && t.generators.size
+            ? [
+              new Config(
+                getArticlePublishers(t.name),
+                ConfigType.STRING, '')
+            ]
+            : []
         )
       )
   )
@@ -201,11 +209,19 @@ const loadPlugins = async (serviceLocator: ServicesLocator): Promise<void> => {
       .filter((t) => !t.fixedSections)
       .flatMap((t) =>
         t.subTypes && t.subTypes.length
-          ? t.subTypes.map(
+          ? t.subTypes.flatMap(
             (subType) =>
-              new Config(
+              [new Config(
                 getArticleSections(t.name, subType),
                 ConfigType.STRING
+              )].concat(
+                t.generators && t.generators.size
+                  ? [
+                    new Config(
+                      getArticlePublishers(t.name, subType),
+                      ConfigType.STRING, '')
+                  ]
+                  : []
               )
           )
           : []

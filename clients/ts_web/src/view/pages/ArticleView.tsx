@@ -2,7 +2,7 @@ import './ArticleView.less'
 import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
-import { UploadOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
+import { UploadOutlined, ShareAltOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
@@ -17,10 +17,11 @@ import ILikesService from '../../domain/ServiceInterfaces/ILikesService'
 import IViewService from '../../app/Interfaces/IViewService'
 import MenuItem from 'antd/lib/menu/MenuItem'
 import moment from 'moment'
+import PublishArticle from './PublishArticle'
 import React, { useState, useEffect } from 'react'
 import SubjectViewModel from './SubjectViewModel'
-const { Panel } = Collapse
 
+const { Panel } = Collapse
 const { Option } = Select
 
 const generateNewFileNames = (name: string, existedName: Set<string>) => {
@@ -286,10 +287,7 @@ export default function ArticleView (props: {
     })
   }
 
-  const openDetail = async () => {
-    // if (!hasMore) {
-    //   return
-    // }
+  const tryLoadingAll = async () => {
     if (!additionalLoaded) {
       viewService.setLoading(true)
       await props.article.lazyLoadingAddition!()
@@ -297,6 +295,13 @@ export default function ArticleView (props: {
       setAdditionalLoaded(true)
       viewService.setLoading(false)
     }
+  }
+
+  const openDetail = async () => {
+    // if (!hasMore) {
+    //   return
+    // }
+    await tryLoadingAll()
     locate(IViewService).previewArticle(Object.assign({}, props.article, { name, content, files }), type)
   }
   const toogleFavorite = async () => {
@@ -350,6 +355,20 @@ export default function ArticleView (props: {
     const h = Math.floor(num / Math.pow(10, s.length - 1))
     return `${h}${['', '', '', 'k', '0k', '00k'][s.length - max + 1]}+`
   }
+  const previewPublish = async (publisher:string, generator:string) => {
+    const g = type.articleType.generators?.get(generator)
+    if (!g) {
+      console.log('Generator not implemented.')
+      return
+    }
+    await tryLoadingAll()
+    viewService.prompt(langs.get(publisher), [
+      {
+        type: 'View',
+        value: <PublishArticle articleId={props.article.id!} files={files} Generator={g} content={content}></PublishArticle>
+      }
+    ], async () => true)
+  }
   return (
     <Card className={classNames('article-view', recommendView ? '' : '')}>
       <div className="article-title">
@@ -397,7 +416,11 @@ export default function ArticleView (props: {
               ><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>,
               <MenuItem key="delete"><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
                 props.articleHandlers.onDelete(props.article.id!)
-              } ><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>
+              } ><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>,
+              ...(type.publishers && type.publishers.size ? Array.from(type.publishers, ([publisher, generator]) =>
+                <MenuItem key={publisher}><Button type="link" icon={<ShareAltOutlined />} onClick={() => previewPublish(publisher, generator)}
+                ><span className="action-name">{langs.get(publisher)}</span></Button></MenuItem>
+              ) : [])
             ] : [])]}
           </Menu>)
         }

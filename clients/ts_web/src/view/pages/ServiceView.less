@@ -23,9 +23,16 @@
 .ant-modal-body {
   max-height: 40vh;
   overflow-y: auto;
-
   .md {
     user-select: text;
+  }
+}
+
+.content-height {
+  max-height: unset;
+  .ant-modal-body {
+    max-height: unset;
+    overflow: hidden;
   }
 }
 

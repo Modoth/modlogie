@@ -7,6 +7,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ALLOW_LIKES = '允许点赞';
   ALLOW_LOGIN = '允许登陆';
   ALLOW_PRINT = '允许打印';
+  ARTICLE_PUBLISHERS = '发布模板';
   ARTICLE_SECTIONS = '文章段';
   ARTICLE_TAGS = '文章标签';
   DISPLAY_NAME = '显示名';
@@ -39,6 +40,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ENUM = '枚举';
   DATE = '日期';
   LINK = '链接';
+  //
+  wx = '微信';
   [key: string]: string;
   About = '关于';
   AddedTime = '时间';

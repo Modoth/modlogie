@@ -42,6 +42,10 @@ export function getArticleSections (typeName: string, subTypeName?: string) {
   return subTypeName ? `${typeName}_${subTypeName}:ARTICLE_SECTIONS` : `${typeName}:ARTICLE_SECTIONS`
 }
 
+export function getArticlePublishers (typeName: string, subTypeName?: string) {
+  return subTypeName ? `${typeName}_${subTypeName}:ARTICLE_PUBLISHERS` : `${typeName}:ARTICLE_PUBLISHERS`
+}
+
 const ConfigKeys = new ConfigKeysInterface<string>()
 
 export default ConfigKeys

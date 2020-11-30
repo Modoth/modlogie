@@ -1,5 +1,5 @@
 import { ArticleContentType, ArticleType, PluginsConfig } from '../../pluginbase/IPluginInfo'
-import { getArticleSections } from '../../domain/ServiceInterfaces/ConfigKeys'
+import { getArticlePublishers, getArticleSections } from '../../domain/ServiceInterfaces/ConfigKeys'
 import { rootname } from '../../infrac/Lang/pathutils'
 import { TagNames } from '../../domain/ServiceInterfaces/ITagsService'
 import Article from '../../domain/ServiceInterfaces/Article'
@@ -8,6 +8,7 @@ import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export default class AppArticleServiceSingleton extends IServicesLocator implements IArticleAppservice {
     private typesCaches = new Map<string, any>()
@@ -41,6 +42,10 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
           }
           type.allSections.add(s)
         }
+      }
+      const publishers = await configsService.getValuesOrDefault(getArticlePublishers(typeName, subTypeName))
+      if (publishers && publishers.length) {
+        type.publishers = new Map(publishers.map(p => Seperators.seperateFields(p) as [string, string]))
       }
       this.typesCaches.set(key, type)
       return type

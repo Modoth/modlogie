@@ -8,7 +8,9 @@ import { useServicesLocate } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import ArticleList from './ArticleList'
 import ArticleSingle from './ArticleSingle'
+import classNames from 'classnames'
 import html2canvas from 'html2canvas'
+import IHistoryService from '../../domain/ServiceInterfaces/IHistoryService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ImageEditor from '../../infrac/components/ImageEditor'
 import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
@@ -16,7 +18,6 @@ import Markdown from '../../infrac/components/Markdown'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
-import IHistoryService from '../../domain/ServiceInterfaces/IHistoryService'
 
 export const previewArticleByPath = (locate: LocateFunction, path: string | undefined, title: string | undefined) => {
   if (!path) {
@@ -313,12 +314,12 @@ export default function ServiceView (props: {
         footer={(modalImageField || modalViewField) ? null : undefined}
         bodyStyle={
           modalFields.length
-            ? modalImageField
+            ? (modalImageField || modalViewField)
               ? { padding: 5 }
               : {}
             : { display: 'None' }
         }
-        className={modalFields.length ? '' : 'empty-modal'}
+        className={classNames(modalFields.length ? '' : 'empty-modal', modalViewField ? 'content-height' : '')}
       >
         <Space direction="vertical" className="modal-fields">
           {modalFields.map((field, i) => {
@@ -366,11 +367,11 @@ export default function ServiceView (props: {
                 )
               case 'Label':
                 return (
-                  <label >{field.value}</label>
+                  <label key={i}>{field.value}</label>
                 )
               case 'Markdown':
                 return (
-                  <Markdown className="md" source={field.value} linkTarget="_blank"></Markdown>
+                  <Markdown key={i} className="md" source={field.value} linkTarget="_blank"></Markdown>
                 )
               case 'QrCode':
                 return (<div className="service-view-qrcode"><QrCode content={field.value}></QrCode></div>)
@@ -388,7 +389,7 @@ export default function ServiceView (props: {
                 )
               case 'Image':
                 return (
-                  <ImageEditor
+                  <ImageEditor key={i}
                     closed={(image: any) => {
                       if (image && !image.name) {
                         image.name = modalFileFieldData?.name
@@ -400,14 +401,10 @@ export default function ServiceView (props: {
                   ></ImageEditor>
                 )
               case 'TextFile':
-                return <textarea rows={10} value={field.value && (field.value as any).preview ? (field.value as any).previewContent : field.value}></textarea>
+                return <textarea key={i} rows={10} value={field.value && (field.value as any).preview ? (field.value as any).previewContent : field.value}></textarea>
               case 'View':
               {
-                if (!(field.value instanceof Function)) {
-                  return <></>
-                }
-                const View = field.value
-                return <View></View>
+                return <div key={i}>{field.value}</div>
               }
               default:
                 return <span key={i}>{field.value}</span>
