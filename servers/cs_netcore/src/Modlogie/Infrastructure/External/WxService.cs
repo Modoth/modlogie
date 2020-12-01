@@ -71,11 +71,10 @@ namespace Modlogie.Infrastructure.External
 
         public async Task<string> Publish(PublishArticle article)
         {
-            var urlTemplate = WxApiUrlUploadNews;
             var newsContent = await BuildNews(article);
             var client = new HttpClient();
             var token = await GetToken();
-            var url = urlTemplate!.Replace("$ACCESS_TOKEN", token);
+            var url = WxApiUrlUploadNews!.Replace("$ACCESS_TOKEN", token);
             var ret = await client.PostAsync<WxUploadNewsRes>(url,
                 new StringContent(newsContent, Encoding.UTF8, "application/json"));
             if (string.IsNullOrWhiteSpace(ret.MediaId)) throw new Exception();

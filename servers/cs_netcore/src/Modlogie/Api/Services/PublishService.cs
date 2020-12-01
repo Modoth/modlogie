@@ -62,7 +62,7 @@ namespace Modlogie.Api.Services
             }
 
             var file = await _filesService.All()
-                .Where(f => f.Id == articleId && f.Type == (int) File.Types.FileType.Normal)
+                .Where(f => f.Id == articleId && f.Type == (int)File.Types.FileType.Normal)
                 .FirstOrDefaultAsync();
             if (file == null)
             {
@@ -81,18 +81,34 @@ namespace Modlogie.Api.Services
                 var regexp = new Regex(@"\$\{FILENAME=(.*?)\}");
                 var matches = regexp.Matches(request.Content);
                 var slices = new List<PublishArticleSlice>();
+                var cur = 0;
                 foreach (Match match in matches)
                 {
+                    if (match.Index > cur)
+                    {
+                        slices.Add(new PublishArticleSlice
+                        {
+                            Type = PublishArticleSliceType.String,
+                            Value = request.Content.Substring(cur, match.Index - cur)
+                        });
+                    }
+                    slices.Add(new PublishArticleSlice
+                    {
+                        Type = PublishArticleSliceType.Image,
+                        Value = match.Groups[1].Value
+                    });
+                    cur = match.Index + match.Value.Length;
                 }
-
-                slices.Add(new PublishArticleSlice
+                if (cur < request.Content.Length)
                 {
-                    Type = PublishArticleSliceType.String,
-                    Value = request.Content
-                });
+                    slices.Add(new PublishArticleSlice
+                    {
+                        Type = PublishArticleSliceType.String,
+                        Value = request.Content.Substring(cur, request.Content.Length - cur)
+                    });
+                }
                 article.Slices = slices.ToArray();
-                // var id = await publishService.Publish(article);
-                var id = Guid.NewGuid().ToString();
+                var id = await publishService.Publish(article);
                 reply.Id = id;
             }
             catch
@@ -128,7 +144,7 @@ namespace Modlogie.Api.Services
 
             try
             {
-                // await publishService.Delete(request.Id);
+                await publishService.Delete(request.Id);
             }
             catch
             {
