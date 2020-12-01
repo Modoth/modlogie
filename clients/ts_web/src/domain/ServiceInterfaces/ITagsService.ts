@@ -3,6 +3,7 @@ export const TagNames = {
   HiddenSectionPrefix: '-',
   SmartHiddenSectionPrefix: '?',
   RESERVED_PREFIX: '__',
+  RESERVED_SHARE_PREFIX: '__SHARE__',
   LIKE_TAG_NAME: '__LIKE',
   DISLIKE_TAG_NAME: '__DISLIKE'
 }

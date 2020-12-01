@@ -11,6 +11,7 @@ export class LangKeysInterface {
   BeyondMaxFavorites = 'BeyondMaxFavorites';
   Cancle = 'Cancle';
   CancleAutoLogin = 'CancleAutoLogin';
+  CanclePublish = 'CanclePublish';
   CancleRecommend = 'CancleRecommend';
   CaptureWordDisable = 'CaptureWordDisable';
   CaptureWordEnable = 'CaptureWordEnable';
@@ -83,6 +84,7 @@ export class LangKeysInterface {
   Paging = 'Paging';
   Password = 'Password';
   Preview = 'Preview';
+  Publish = 'Publish';
   QrCode = 'QrCode';
   Recommend = 'Recommend';
   Refresh = 'Refresh';

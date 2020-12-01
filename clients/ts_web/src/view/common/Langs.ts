@@ -55,6 +55,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   BeyondMaxFavorites = '超出最大收藏';
   Cancle = '取消';
   CancleAutoLogin = '自动登录';
+  CanclePublish = '取消发布';
   CancleRecommend = '取消推荐';
   CaptureWordDisable = '关闭取词';
   CaptureWordEnable = '开启取词';
@@ -127,6 +128,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Paging = '分页(Beta)';
   Password = '密码';
   Preview = '预览';
+  Publish = '发布';
   QrCode = '网址';
   Recommend = '推荐';
   Refresh = '刷新页面';
@@ -145,6 +147,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Themes = '主题(Beta)';
   Time = '时间';
   Tools = '工具';
+  Top = '回到顶部';
   Type = '类型';
   UnknownError = '失败了';
   Url = 'Url';
@@ -155,7 +158,6 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Welcome = '感谢使用';
   Word = '单词';
   Yes = '是';
-  Top = '回到顶部';
 }
 
 const Langs = new LangKeysClass()

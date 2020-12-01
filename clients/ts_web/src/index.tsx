@@ -5,9 +5,11 @@ import { CInterpreter } from './domain/Services/Interpreters/CInterpreter'
 import { ConfigProvider } from 'antd'
 import { ConfigsServiceSingleton } from './impl/RemoteServices/ConfigsServiceSingleton'
 import { FilesServiceClient } from './impl/remote-apis/FilesServiceClientPb'
+import { IPublishService } from './domain/ServiceInterfaces/IPublishService'
 import { KeyValuesServiceClient } from './impl/remote-apis/KeyvaluesServiceClientPb'
 import { KeywordsServiceClient } from './impl/remote-apis/KeywordsServiceClientPb'
 import { LoginServiceClient } from './impl/remote-apis/LoginServiceClientPb'
+import { PublishServiceClient } from './impl/remote-apis/PublishServiceClientPb'
 import { ServicesLocateProvider } from './view/common/Contexts'
 import { TagsServiceClient } from './impl/remote-apis/TagsServiceClientPb'
 import { UsersServiceClient } from './impl/remote-apis/UsersServiceClientPb'
@@ -81,6 +83,7 @@ import Math from './plugins/math'
 import MmConverter from './domain/Services/MmConverter'
 import ModLang from './plugins/modlang'
 import NavigationService from './app/AppServices/NavigationService'
+import PublishService from './impl/RemoteServices/PublishService'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import RecentFileService from './domain/Services/RecentFileService'
@@ -326,6 +329,7 @@ const buildServicesLocator = () => {
   serviceLocator.registerInstance(IHistoryService, new HistoryServiceSingleton())
   serviceLocator.register(IClock, Clock)
   serviceLocator.registerInstance(IClocksAppService, new ClocksAppService())
+  serviceLocator.register(IPublishService, PublishService)
 
   // eslint-disable-next-line no-undef
   const apiBase = (window.ENV_OVERRIDE || ENV).API_BASE
@@ -355,6 +359,10 @@ const buildServicesLocator = () => {
   serviceLocator.registerFactory(
     KeywordsServiceClient,
     () => new KeywordsServiceClient(clientHost, credentials, options)
+  )
+  serviceLocator.registerFactory(
+    PublishServiceClient,
+    () => new PublishServiceClient(clientHost, credentials, options)
   )
 
   serviceLocator.registerInstance(IAudioService, new AudioService())

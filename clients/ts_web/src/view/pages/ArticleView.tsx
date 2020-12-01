@@ -51,6 +51,7 @@ export default function ArticleView (props: {
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [files, setFiles] = useState(props.article.files)
+  const [publishes, setPublishes] = useState(props.article.publishes)
   const [tagsDict, setTagsDict] = useState(props.article.tagsDict)
   const [subjectId, setSubjectId] = useState(props.article.subjectId)
   const [loaded, setLoaded] = useState(props.article.lazyLoading === undefined)
@@ -355,17 +356,34 @@ export default function ArticleView (props: {
     const h = Math.floor(num / Math.pow(10, s.length - 1))
     return `${h}${['', '', '', 'k', '0k', '00k'][s.length - max + 1]}+`
   }
-  const previewPublish = async (publisher:string, generator:string) => {
-    const g = type.articleType.generators?.get(generator)
-    if (!g) {
+  const previewPublish = async (publishType:string, templateName:string) => {
+    const template = type.articleType.generators?.get(templateName)
+    if (!template) {
       console.log('Generator not implemented.')
       return
     }
     await tryLoadingAll()
-    viewService.prompt(langs.get(publisher), [
+    const onPublishChanged = (p?:string) => {
+      var newPublishes = new Map(publishes || [])
+      if (p) {
+        newPublishes.set(publishType, p)
+      } else {
+        newPublishes.delete(publishType)
+      }
+      setPublishes(newPublishes)
+    }
+    viewService.prompt(langs.get(publishType), [
       {
         type: 'View',
-        value: <PublishArticle articleId={props.article.id!} files={files} Generator={g} content={content}></PublishArticle>
+        value: <PublishArticle
+          publishType={publishType}
+          onPublishIdChanged={onPublishChanged}
+          publishId={publishes && publishes.get(publishType)}
+          articleId={props.article.id!}
+          files={files}
+          Template={template}
+          content={content}
+          articlePath={props.article.path!}></PublishArticle>
       }
     ], async () => true)
   }

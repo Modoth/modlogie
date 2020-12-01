@@ -8,7 +8,7 @@ import FilesServiceBase from './FilesServiceBase'
 import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IRemoteServiceInvoker from '../../infrac/ServiceLocator/IRemoteServiceInvoker'
-import ITagsService from '../../domain/ServiceInterfaces/ITagsService'
+import ITagsService, { TagNames } from '../../domain/ServiceInterfaces/ITagsService'
 
 export default class ArticleService extends FilesServiceBase implements IArticleService {
   Query ():any {
@@ -33,6 +33,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
     const additionId = item.getComment()
     const tagsService = this.locate(ITagsService)
     const tags = []
+    const publishes = new Map<string, string>()
     for (const t of item.getTagsList()) {
       const tag = await tagsService.getById(t.getTagId())
       if (!tag) {
@@ -40,6 +41,12 @@ export default class ArticleService extends FilesServiceBase implements IArticle
         continue
       }
       tags.push(new ArticleTag(tag!.name, tag!.values || [], tag!.id, t.getValue()))
+      if (tag.name.startsWith(TagNames.RESERVED_SHARE_PREFIX)) {
+        var publish = tag.name.slice(TagNames.RESERVED_SHARE_PREFIX.length)
+        if (publish) {
+          publishes.set(publish, t.getValue())
+        }
+      }
     }
     const article: Article = {
       name: item.getName(),
