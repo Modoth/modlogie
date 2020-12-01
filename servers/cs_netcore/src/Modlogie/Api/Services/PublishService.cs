@@ -85,11 +85,14 @@ namespace Modlogie.Api.Services
                 foreach (Match match in matches)
                 {
                     if (match.Index > cur)
+                    {
                         slices.Add(new PublishArticleSlice
                         {
                             Type = PublishArticleSliceType.String,
                             Value = request.Content.Substring(cur, match.Index - cur)
                         });
+                    }
+
                     slices.Add(new PublishArticleSlice
                     {
                         Type = PublishArticleSliceType.Image,
@@ -99,11 +102,14 @@ namespace Modlogie.Api.Services
                 }
 
                 if (cur < request.Content.Length)
+                {
                     slices.Add(new PublishArticleSlice
                     {
                         Type = PublishArticleSliceType.String,
                         Value = request.Content.Substring(cur, request.Content.Length - cur)
                     });
+                }
+
                 article.Slices = slices.ToArray();
                 var id = await publishService.Publish(article);
                 reply.Id = id;

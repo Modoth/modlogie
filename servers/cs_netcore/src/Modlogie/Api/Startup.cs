@@ -3,7 +3,6 @@ using System.IO;
 using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +40,10 @@ namespace Modlogie.Api
             services.AddGrpc(options =>
             {
                 var maxFile = Configuration.GetValue<int>("File:MaxSize");
-                if (maxFile > 0) options.MaxReceiveMessageSize = maxFile * 1024 * 1024;
+                if (maxFile > 0)
+                {
+                    options.MaxReceiveMessageSize = maxFile * 1024 * 1024;
+                }
             });
             services.AddDistributedSession(options =>
             {
@@ -56,9 +58,13 @@ namespace Modlogie.Api
         {
             builder.RegisterModule(new AutofacModule());
             if (IsDevelopment)
+            {
                 builder.RegisterModule(new AutofacDevelopmentModule());
+            }
             else
+            {
                 builder.RegisterModule(new AutofacProductionModule());
+            }
         }
 
         private bool UpdateDbAndExit(ILogger logger)

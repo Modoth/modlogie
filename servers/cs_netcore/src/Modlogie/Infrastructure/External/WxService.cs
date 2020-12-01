@@ -77,7 +77,11 @@ namespace Modlogie.Infrastructure.External
             var url = WxApiUrlUploadNews!.Replace("$ACCESS_TOKEN", token);
             var ret = await client.PostAsync<WxUploadNewsRes>(url,
                 new StringContent(newsContent, Encoding.UTF8, "application/json"));
-            if (string.IsNullOrWhiteSpace(ret.MediaId)) throw new Exception();
+            if (string.IsNullOrWhiteSpace(ret.MediaId))
+            {
+                throw new Exception();
+            }
+
             var msgId = await Send(ret.MediaId);
             return msgId ?? ret.MediaId;
         }
@@ -93,10 +97,13 @@ namespace Modlogie.Infrastructure.External
             var token = await GetToken();
             var url = urlTemplate!.Replace("$ACCESS_TOKEN", token);
             var res = await client.PostAsync<WxRes>(url, new StringContent(msgStr, Encoding.UTF8, "application/json"));
-            if (!res.HasError()) throw new Exception();
+            if (!res.HasError())
+            {
+                throw new Exception();
+            }
         }
 
-        public async Task<string> Send(string mediaId)
+        private async Task<string> Send(string mediaId)
         {
             var previewUserId = await _mKeyValuesService.Value.GetValue(ServerKeys.WxPreviewUserId.Key);
             var msg = new WxSendParas
@@ -127,15 +134,27 @@ namespace Modlogie.Infrastructure.External
             var url = urlTemplate!.Replace("$ACCESS_TOKEN", token);
             var res = await client.PostAsync<WxSendRes>(url,
                 new StringContent(msgStr, Encoding.UTF8, "application/json"));
-            if (res.HasError()) throw new Exception();
+            if (res.HasError())
+            {
+                throw new Exception();
+            }
+
             return res.MsgId;
         }
 
-        public async Task<string> Upload(string fileName, Stream file, string type)
+        private async Task<string> Upload(string fileName, Stream file, string type)
         {
             var res = await UploadFile<WxUploadRes>(fileName, file, WxApiUrlUpload, type);
-            if (res == null) return null;
-            if (type == WxUploadTypes.CONFIG_THUMB) return res.ThumbMediaId;
+            if (res == null)
+            {
+                return null;
+            }
+
+            if (type == WxUploadTypes.CONFIG_THUMB)
+            {
+                return res.ThumbMediaId;
+            }
+
             return res.MediaId;
         }
 
@@ -145,13 +164,21 @@ namespace Modlogie.Infrastructure.External
             var appid = await _mKeyValuesService.Value.GetValue(ServerKeys.WxAppId.Key);
             var appSecret = await _mKeyValuesService.Value.GetValue(ServerKeys.WxAppSecret.Key);
             if (string.IsNullOrWhiteSpace(urlTemplate) || string.IsNullOrWhiteSpace(appid) ||
-                string.IsNullOrWhiteSpace(appSecret)) throw new Exception();
+                string.IsNullOrWhiteSpace(appSecret))
+            {
+                throw new Exception();
+            }
+
             var url = urlTemplate!.Replace($"${nameof(WxAppId)}", appid)
                 .Replace($"${nameof(WxAppSecret)}", appSecret);
             var client = new HttpClient();
             var res = await client.GetStringAsync(url);
             var data = JsonConvert.DeserializeObject<TokenData>(res);
-            if (string.IsNullOrWhiteSpace(data.AccessToken) || data.ExpiresIn <= 0) throw new Exception();
+            if (string.IsNullOrWhiteSpace(data.AccessToken) || data.ExpiresIn <= 0)
+            {
+                throw new Exception();
+            }
+
             return data;
         }
 
@@ -214,7 +241,11 @@ namespace Modlogie.Infrastructure.External
                 }
             }
 
-            if (!thumbUploaded) throw new Exception();
+            if (!thumbUploaded)
+            {
+                throw new Exception();
+            }
+
             wxArticle.Content = sb.ToString();
             return JsonConvert.SerializeObject(param);
         }
@@ -223,14 +254,26 @@ namespace Modlogie.Infrastructure.External
             where T : WxRes
         {
             await using var fs = file;
-            if (string.IsNullOrWhiteSpace(urlTemplate)) throw new Exception();
+            if (string.IsNullOrWhiteSpace(urlTemplate))
+            {
+                throw new Exception();
+            }
+
             var token = await GetToken();
             var url = urlTemplate!.Replace("$ACCESS_TOKEN", token);
-            if (!string.IsNullOrWhiteSpace(type)) url = url.Replace("$TYPE", type);
+            if (!string.IsNullOrWhiteSpace(type))
+            {
+                url = url.Replace("$TYPE", type);
+            }
+
             var client = new HttpClient();
             var multiContent = BuildContent(fileName, fs);
             var res = await client.PostAsync<T>(url, multiContent);
-            if (res.HasError()) throw new Exception();
+            if (res.HasError())
+            {
+                throw new Exception();
+            }
+
             return res;
         }
 
