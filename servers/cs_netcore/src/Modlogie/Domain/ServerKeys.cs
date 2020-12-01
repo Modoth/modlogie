@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Reflection;
+
 namespace Modlogie.Domain
 {
     public enum ServerKeyType
@@ -17,10 +20,32 @@ namespace Modlogie.Domain
 
     public class ServerKeys
     {
-        public static ServerKey WechatApiToken = new ServerKey {Key = nameof(WechatApiToken)};
+        public static ServerKey WechatAppId { get; }
 
-        public static ServerKey IncreaseTags = new ServerKey {Key = "__" + nameof(IncreaseTags)};
+        public static ServerKey WechatAppIdSecret { get; }
 
-        public static readonly ServerKey[] All = {WechatApiToken, IncreaseTags};
+        public static ServerKey WechatPreviewUserId { get; }
+
+        public static ServerKey IncreaseTags { get; }
+
+        public static ServerKey[] All { get; }
+
+        static ServerKeys()
+        {
+            var prefix = "__";
+            var keyInfos = typeof(ServerKeys).GetProperties(BindingFlags.Static);
+            var all = new List<ServerKey>();
+            foreach (var info in keyInfos)
+            {
+                if (info.DeclaringType != typeof(ServerKey))
+                {
+                    continue;
+                }
+                var key = new ServerKey { Key = prefix + info.Name };
+                info.SetValue(null, key);
+                all.Add(key);
+            }
+            All = all.ToArray();
+        }
     }
 }

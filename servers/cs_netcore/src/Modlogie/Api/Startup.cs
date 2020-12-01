@@ -99,6 +99,7 @@ namespace Modlogie.Api
                 endpoints.MapGrpcService<FilesService>();
                 endpoints.MapGrpcService<UsersService>();
                 endpoints.MapGrpcService<KeywordsService>();
+                endpoints.MapGrpcService<PublishService>();
 
                 endpoints.MapGet("/",
                     async context =>

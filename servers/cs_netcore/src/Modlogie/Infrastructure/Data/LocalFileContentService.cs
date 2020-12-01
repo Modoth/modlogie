@@ -43,6 +43,12 @@ namespace Modlogie.Infrastructure.Data
             return Task.FromResult(true);
         }
 
+        async public Task<Stream> Open(string group, string id)
+        {
+            var filePath = Path.Join(_options.ContentRoot, id);
+            return File.Open(filePath, FileMode.Open);
+        }
+
         private (string, string) GenerateAndPrepareForFileName(string group, string type)
         {
             if (string.IsNullOrWhiteSpace(type))

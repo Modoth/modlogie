@@ -1,4 +1,5 @@
-﻿using Modlogie.Domain.Models;
+﻿using System.Threading.Tasks;
+using Modlogie.Domain.Models;
 
 namespace Modlogie.Domain.Models
 {
@@ -11,5 +12,6 @@ namespace Modlogie.Domain
 {
     public interface IKeyValuesEntityService : IEntityService<KeyValue, string>
     {
+        Task<string> GetValue(string id);
     }
 }
