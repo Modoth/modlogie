@@ -98,7 +98,7 @@ namespace Modlogie.Infrastructure.External
 
         public async Task<string> Send(string mediaId)
         {
-            var perviewUserId = await _mKeyValuesService.Value.GetValue(ServerKeys.WechatPreviewUserId.Key);
+            var perviewUserId = await _mKeyValuesService.Value.GetValue(ServerKeys.WxPreviewUserId.Key);
             var msg = new WxSendParas
             {
                 MpNews = new WxSendMpNews
@@ -145,8 +145,8 @@ namespace Modlogie.Infrastructure.External
         private async Task<TokenData> GetTokenFromServer()
         {
             var urlTemplate = WxApiUrlToken;
-            var appid = await _mKeyValuesService.Value.GetValue(ServerKeys.WechatAppId.Key);
-            var appSecret = await _mKeyValuesService.Value.GetValue(ServerKeys.WechatAppIdSecret.Key);
+            var appid = await _mKeyValuesService.Value.GetValue(ServerKeys.WxAppId.Key);
+            var appSecret = await _mKeyValuesService.Value.GetValue(ServerKeys.WxAppSecret.Key);
             if (string.IsNullOrWhiteSpace(urlTemplate) || string.IsNullOrWhiteSpace(appid) ||
                 string.IsNullOrWhiteSpace(appSecret)) throw new Exception();
             var url = urlTemplate!.Replace(WxAppId, appid)

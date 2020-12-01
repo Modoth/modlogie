@@ -40,8 +40,12 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ENUM = '枚举';
   DATE = '日期';
   LINK = '链接';
-  //
+  // Server Configs
   wx = '微信';
+  _WxAppId = '微信AppId';
+  _WxAppSecret = '微信AppSecret';
+  _WxPreviewUserId = '微信预览用户Id';
+  //
   [key: string]: string;
   About = '关于';
   AddedTime = '时间';

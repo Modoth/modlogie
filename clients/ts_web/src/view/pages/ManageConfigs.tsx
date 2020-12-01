@@ -21,7 +21,8 @@ export function ManageConfigs () {
   const [configs, setConfigs] = useState<Config[] | undefined>()
 
   const fetchConfigs = async () => {
-    const configs = await (await locate(IConfigsService).all(true)).filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => langs.get(a.key).localeCompare(langs.get(b.key)))
+    var allConfig = await locate(IConfigsService).all(true)
+    const configs = await allConfig.filter(c => !c.key.startsWith(ConfigNames.RESERVED_PREFIX)).sort((a, b) => langs.get(a.key).localeCompare(langs.get(b.key)))
     setConfigs(configs)
   }
 
