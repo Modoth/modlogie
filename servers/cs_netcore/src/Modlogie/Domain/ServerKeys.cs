@@ -47,6 +47,8 @@ namespace Modlogie.Domain
 
         public static ServerKey WxPreviewUserId { get; private set; }
 
+        public static ServerKey WxValidateToken { get; private set; }
+
         public static ServerKey IncreaseTags { get; private set; } = new ServerKey { Key = "__" + nameof(IncreaseTags) };
 
         public static ServerKey[] All { get; }

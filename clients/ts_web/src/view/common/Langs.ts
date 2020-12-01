@@ -45,6 +45,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   _WxAppId = '微信AppId';
   _WxAppSecret = '微信AppSecret';
   _WxPreviewUserId = '微信预览用户Id';
+  _WxValidateToken = '微信接口配置Token';
   //
   [key: string]: string;
   About = '关于';

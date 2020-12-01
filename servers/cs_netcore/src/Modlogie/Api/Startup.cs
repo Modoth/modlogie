@@ -49,6 +49,7 @@ namespace Modlogie.Api
                 options.IdleTimeout = TimeSpan.FromSeconds(Configuration.GetValue<int>("Session:IdleTimeout"));
             });
             services.Configure<LocalFileContentServiceOptions>(Configuration.GetSection("File"));
+            services.AddMvc();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -93,13 +94,7 @@ namespace Modlogie.Api
                 endpoints.MapGrpcService<UsersService>();
                 endpoints.MapGrpcService<KeywordsService>();
                 endpoints.MapGrpcService<PublishService>();
-
-                endpoints.MapGet("/",
-                    async context =>
-                    {
-                        await context.Response.WriteAsync(
-                            "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-                    });
+                endpoints.MapControllers();
             });
         }
     }
