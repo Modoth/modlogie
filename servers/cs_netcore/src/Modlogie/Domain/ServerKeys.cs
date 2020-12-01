@@ -22,8 +22,8 @@ namespace Modlogie.Domain
     {
         static ServerKeys()
         {
-            var prefix = "__";
-            var keyInfos = typeof(ServerKeys).GetProperties(BindingFlags.Static);
+            var prefix = "_";
+            var keyInfos = typeof(ServerKeys).GetProperties(BindingFlags.Static | BindingFlags.Public);
             var all = new List<ServerKey>();
             foreach (var info in keyInfos)
             {
@@ -41,13 +41,13 @@ namespace Modlogie.Domain
             All = all.ToArray();
         }
 
-        public static ServerKey WechatAppId { get; }
+        public static ServerKey WechatAppId { get; private set; }
 
-        public static ServerKey WechatAppIdSecret { get; }
+        public static ServerKey WechatAppIdSecret { get; private set; }
 
-        public static ServerKey WechatPreviewUserId { get; }
+        public static ServerKey WechatPreviewUserId { get; private set; }
 
-        public static ServerKey IncreaseTags { get; } = new ServerKey {Key = "__" + nameof(IncreaseTags)};
+        public static ServerKey IncreaseTags { get; private set; } = new ServerKey {Key = "__" + nameof(IncreaseTags)};
 
         public static ServerKey[] All { get; }
     }
