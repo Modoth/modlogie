@@ -7,15 +7,11 @@ import ReactMarkdown from 'react-markdown'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Style from '!!raw-loader!./PlainViewer.css'
 
-const renderers = (files:Map<string, ArticleFile>) => {
+const renderers = (_:Map<string, ArticleFile>) => {
   return {
     // eslint-disable-next-line react/display-name
     image: (props:{alt:string, src:string}) => {
-      const name = files.get(props.src)?.name!?.trim()
-      if (!name) {
-        return <></>
-      }
-      const placeHolder = '${FILENAME=' + name + '}'
+      const placeHolder = '${FILENAME=' + props.src + '}'
       return <img alt={props.alt} src={placeHolder}></img>
     },
     // eslint-disable-next-line react/display-name
