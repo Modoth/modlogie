@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Modlogie.Domain;
 using Newtonsoft.Json;
@@ -27,44 +28,43 @@ namespace Modlogie.Infrastructure.External
         private static readonly string WxAppSecret = nameof(WxAppSecret);
 
         private static readonly string WxApiUrlToken =
-            $"https://api.weixin.qq.com/cgi-bin/tokengrant_type=client_credential&appid=${nameof(WxAppId)}&secret=${nameof(WxAppSecret)}";
-
+            $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${nameof(WxAppId)}&secret=${nameof(WxAppSecret)}";
         private static readonly string WxApiUrlUploadNews =
-            "https://api.weixin.qq.com/cgi-bin/media/uploadnewsaccess_token=$ACCESS_TOKEN";
+            "https://api.weixin.qq.com/cgi-bin/media/uploadnews?access_token=$ACCESS_TOKEN";
 
         private static readonly string WxApiUrlSendAll =
-            "https://api.weixin.qq.com/cgi-bin/message/mass/sendallaccess_token=$ACCESS_TOKEN";
+            "https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token=$ACCESS_TOKEN";
 
         private static readonly string WxApiUrlPreview =
-            "https://api.weixin.qq.com/cgi-bin/message/mass/previewaccess_token=$ACCESS_TOKEN";
+            "https://api.weixin.qq.com/cgi-bin/message/mass/preview?access_token=$ACCESS_TOKEN";
 
         private static readonly string WxApiUrlUpload =
-            "https://api.weixin.qq.com/cgi-bin/media/uploadaccess_token=$ACCESS_TOKEN&type=$TYPE";
+            "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=$ACCESS_TOKEN&type=$TYPE";
 
         private static readonly string WxApiUrlUploadImg =
-            "https://api.weixin.qq.com/cgi-bin/media/uploadimgaccess_token=$ACCESS_TOKEN";
+            "https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=$ACCESS_TOKEN";
 
         private static readonly string WxApiUrlDeleteMsg =
             "https://api.weixin.qq.com/cgi-bin/message/mass/deleteaccess_token=$ACCESS_TOKEN";
 
 
+        private static readonly string WxAppToken = nameof(WxAppToken);
         private static string _mToken = "";
-
-        private static DateTime _mTokenExpiredTime = DateTime.MinValue;
-
-        private static Task<TokenData> _mGettingToken;
 
         private readonly Lazy<IFileContentService> _mFileContentService;
 
         private readonly Lazy<IKeyValuesEntityService> _mKeyValuesService;
 
         private readonly string _resourcesGroup;
+        private readonly IDistributedCache _cache;
 
         public WxService(IConfiguration configuration,
+        IDistributedCache cache,
             Lazy<IKeyValuesEntityService> keyValuesService,
             Lazy<IFileContentService> fileContentService)
         {
             _resourcesGroup = configuration.GetValue<string>("File:Resources");
+            _cache = cache;
             _mKeyValuesService = keyValuesService;
             _mFileContentService = fileContentService;
         }
@@ -78,7 +78,8 @@ namespace Modlogie.Infrastructure.External
             var ret = await client.PostAsync<WxUploadNewsRes>(url,
                 new StringContent(newsContent, Encoding.UTF8, "application/json"));
             if (string.IsNullOrWhiteSpace(ret.MediaId)) throw new Exception();
-            return ret.MediaId;
+            var msgId = await Send(ret.MediaId);
+            return msgId != null ? msgId : ret.MediaId;
         }
 
         public async Task Delete(string msgId)
@@ -105,25 +106,23 @@ namespace Modlogie.Infrastructure.External
                     MediaId = mediaId
                 }
             };
-            var urlConfigName = string.Empty;
+            var urlTemplate = string.Empty;
             if (string.IsNullOrWhiteSpace(perviewUserId))
             {
                 msg.Filter = new WxSendFilter
                 {
                     IsToAll = true
                 };
-                urlConfigName = WxApiUrlSendAll;
+                urlTemplate = WxApiUrlSendAll;
             }
             else
             {
                 msg.ToUser = perviewUserId;
-                urlConfigName = WxApiUrlPreview;
+                urlTemplate = WxApiUrlPreview;
             }
 
             var msgStr = JsonConvert.SerializeObject(msg);
             var client = new HttpClient();
-            var urlTemplate = await _mKeyValuesService.Value.GetValue(urlConfigName);
-            if (string.IsNullOrWhiteSpace(urlTemplate)) throw new Exception();
             var token = await GetToken();
             var url = urlTemplate!.Replace("$ACCESS_TOKEN", token);
             var res = await client.PostAsync<WxSendRes>(url,
@@ -135,7 +134,7 @@ namespace Modlogie.Infrastructure.External
         public async Task<string> Upload(string fileName, Stream file, string type)
         {
             var urlConfig = WxApiUrlUpload;
-            var res = await UploadFile<WxUploadRes>(fileName, file, type);
+            var res = await UploadFile<WxUploadRes>(fileName, file, WxApiUrlUpload, type);
             if (res == null) return null;
             if (type == WxUploadTypes.CONFIG_THUMB) return res.ThumbMediaId;
             return res.MediaId;
@@ -148,8 +147,8 @@ namespace Modlogie.Infrastructure.External
             var appSecret = await _mKeyValuesService.Value.GetValue(ServerKeys.WxAppSecret.Key);
             if (string.IsNullOrWhiteSpace(urlTemplate) || string.IsNullOrWhiteSpace(appid) ||
                 string.IsNullOrWhiteSpace(appSecret)) throw new Exception();
-            var url = urlTemplate!.Replace(WxAppId, appid)
-                .Replace(WxAppSecret, appSecret);
+            var url = urlTemplate!.Replace($"${nameof(WxAppId)}", appid)
+                .Replace($"${nameof(WxAppSecret)}", appSecret);
             var client = new HttpClient();
             var res = await client.GetStringAsync(url);
             var data = JsonConvert.DeserializeObject<TokenData>(res);
@@ -159,13 +158,19 @@ namespace Modlogie.Infrastructure.External
 
         private async Task<string> GetToken()
         {
-            if (!string.IsNullOrWhiteSpace(_mToken) && _mTokenExpiredTime < DateTime.Now) return _mToken;
-            if (_mGettingToken == null) _mGettingToken = GetTokenFromServer();
-            var data = await _mGettingToken;
-            _mGettingToken = null;
-            _mToken = data.AccessToken;
-            _mTokenExpiredTime = DateTime.Now.AddSeconds(data.ExpiresIn!.Value);
-            return _mToken;
+            var token = await _cache.GetStringAsync(WxAppToken);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                var start = DateTime.Now;
+                var serverToken = await GetTokenFromServer();
+                token = serverToken.AccessToken;
+                var cast = DateTime.Now - start;
+                await _cache.SetStringAsync(WxAppToken, token, new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(serverToken.ExpiresIn!.Value - cast.Seconds - 1)
+                });
+            }
+            return token;
         }
 
         private async Task<string> BuildNews(PublishArticle article)
@@ -177,7 +182,7 @@ namespace Modlogie.Infrastructure.External
                 Title = article.Title,
                 ContentSourceUrl = article.Url
             };
-            param.Articles = new[] {wxArticle};
+            param.Articles = new[] { wxArticle };
             var sb = new StringBuilder();
             var thumbUploaded = false;
             foreach (var slice in article.Slices)
@@ -213,12 +218,11 @@ namespace Modlogie.Infrastructure.External
             return JsonConvert.SerializeObject(param);
         }
 
-        private async Task<T> UploadFile<T>(string fileName, Stream file, string type = null)
+        private async Task<T> UploadFile<T>(string fileName, Stream file, string urlTemplate, string type = null)
             where T : WxRes
         {
             using (var fs = file)
             {
-                var urlTemplate = WxApiUrlUpload;
                 if (string.IsNullOrWhiteSpace(urlTemplate)) throw new Exception();
                 var msgStr = string.Empty;
                 var token = await GetToken();
@@ -234,8 +238,7 @@ namespace Modlogie.Infrastructure.External
 
         public async Task<string> UploadImg(string fileName, Stream file)
         {
-            var urlConfig = WxApiUrlUploadImg;
-            var res = await UploadFile<WxUploadImgRes>(fileName, file, urlConfig);
+            var res = await UploadFile<WxUploadImgRes>(fileName, file, WxApiUrlUploadImg, WxUploadTypes.CONFIG_IMAGE);
             if (res == null) return null;
             return res.Url;
         }
