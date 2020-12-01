@@ -29,6 +29,7 @@ namespace Modlogie.Infrastructure.External
 
         private static readonly string WxApiUrlToken =
             $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${nameof(WxAppId)}&secret=${nameof(WxAppSecret)}";
+
         private static readonly string WxApiUrlUploadNews =
             "https://api.weixin.qq.com/cgi-bin/media/uploadnews?access_token=$ACCESS_TOKEN";
 
@@ -49,17 +50,16 @@ namespace Modlogie.Infrastructure.External
 
 
         private static readonly string WxAppToken = nameof(WxAppToken);
-        private static string _mToken = "";
+        private readonly IDistributedCache _cache;
 
         private readonly Lazy<IFileContentService> _mFileContentService;
 
         private readonly Lazy<IKeyValuesEntityService> _mKeyValuesService;
 
         private readonly string _resourcesGroup;
-        private readonly IDistributedCache _cache;
 
         public WxService(IConfiguration configuration,
-        IDistributedCache cache,
+            IDistributedCache cache,
             Lazy<IKeyValuesEntityService> keyValuesService,
             Lazy<IFileContentService> fileContentService)
         {
@@ -79,7 +79,7 @@ namespace Modlogie.Infrastructure.External
                 new StringContent(newsContent, Encoding.UTF8, "application/json"));
             if (string.IsNullOrWhiteSpace(ret.MediaId)) throw new Exception();
             var msgId = await Send(ret.MediaId);
-            return msgId != null ? msgId : ret.MediaId;
+            return msgId ?? ret.MediaId;
         }
 
         public async Task Delete(string msgId)
@@ -98,7 +98,7 @@ namespace Modlogie.Infrastructure.External
 
         public async Task<string> Send(string mediaId)
         {
-            var perviewUserId = await _mKeyValuesService.Value.GetValue(ServerKeys.WxPreviewUserId.Key);
+            var previewUserId = await _mKeyValuesService.Value.GetValue(ServerKeys.WxPreviewUserId.Key);
             var msg = new WxSendParas
             {
                 MpNews = new WxSendMpNews
@@ -106,8 +106,8 @@ namespace Modlogie.Infrastructure.External
                     MediaId = mediaId
                 }
             };
-            var urlTemplate = string.Empty;
-            if (string.IsNullOrWhiteSpace(perviewUserId))
+            string urlTemplate;
+            if (string.IsNullOrWhiteSpace(previewUserId))
             {
                 msg.Filter = new WxSendFilter
                 {
@@ -117,7 +117,7 @@ namespace Modlogie.Infrastructure.External
             }
             else
             {
-                msg.ToUser = perviewUserId;
+                msg.ToUser = previewUserId;
                 urlTemplate = WxApiUrlPreview;
             }
 
@@ -133,7 +133,6 @@ namespace Modlogie.Infrastructure.External
 
         public async Task<string> Upload(string fileName, Stream file, string type)
         {
-            var urlConfig = WxApiUrlUpload;
             var res = await UploadFile<WxUploadRes>(fileName, file, WxApiUrlUpload, type);
             if (res == null) return null;
             if (type == WxUploadTypes.CONFIG_THUMB) return res.ThumbMediaId;
@@ -167,9 +166,11 @@ namespace Modlogie.Infrastructure.External
                 var cast = DateTime.Now - start;
                 await _cache.SetStringAsync(WxAppToken, token, new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(serverToken.ExpiresIn!.Value - cast.Seconds - 1)
+                    AbsoluteExpirationRelativeToNow =
+                        TimeSpan.FromSeconds(serverToken.ExpiresIn!.Value - cast.Seconds - 1)
                 });
             }
+
             return token;
         }
 
@@ -182,7 +183,7 @@ namespace Modlogie.Infrastructure.External
                 Title = article.Title,
                 ContentSourceUrl = article.Url
             };
-            param.Articles = new[] { wxArticle };
+            param.Articles = new[] {wxArticle};
             var sb = new StringBuilder();
             var thumbUploaded = false;
             foreach (var slice in article.Slices)
@@ -197,7 +198,7 @@ namespace Modlogie.Infrastructure.External
                 {
                     if (!thumbUploaded)
                     {
-                        using (var file = await _mFileContentService.Value.Open(_resourcesGroup, slice.Value))
+                        await using (var file = await _mFileContentService.Value.Open(_resourcesGroup, slice.Value))
                         {
                             wxArticle.ThumbMediaId = await Upload(Path.GetFileName(slice.Value), file,
                                 WxUploadTypes.CONFIG_THUMB);
@@ -206,7 +207,7 @@ namespace Modlogie.Infrastructure.External
                         thumbUploaded = true;
                     }
 
-                    using (var file = await _mFileContentService.Value.Open(_resourcesGroup, slice.Value))
+                    await using (var file = await _mFileContentService.Value.Open(_resourcesGroup, slice.Value))
                     {
                         sb.Append(await UploadImg(Path.GetFileName(slice.Value), file));
                     }
@@ -221,26 +222,22 @@ namespace Modlogie.Infrastructure.External
         private async Task<T> UploadFile<T>(string fileName, Stream file, string urlTemplate, string type = null)
             where T : WxRes
         {
-            using (var fs = file)
-            {
-                if (string.IsNullOrWhiteSpace(urlTemplate)) throw new Exception();
-                var msgStr = string.Empty;
-                var token = await GetToken();
-                var url = urlTemplate!.Replace("$ACCESS_TOKEN", token);
-                if (!string.IsNullOrWhiteSpace(type)) url = url.Replace("$TYPE", type);
-                var client = new HttpClient();
-                var multiContent = BuildContent(fileName, fs);
-                var res = await client.PostAsync<T>(url, multiContent);
-                if (res.HasError()) throw new Exception();
-                return res;
-            }
+            await using var fs = file;
+            if (string.IsNullOrWhiteSpace(urlTemplate)) throw new Exception();
+            var token = await GetToken();
+            var url = urlTemplate!.Replace("$ACCESS_TOKEN", token);
+            if (!string.IsNullOrWhiteSpace(type)) url = url.Replace("$TYPE", type);
+            var client = new HttpClient();
+            var multiContent = BuildContent(fileName, fs);
+            var res = await client.PostAsync<T>(url, multiContent);
+            if (res.HasError()) throw new Exception();
+            return res;
         }
 
-        public async Task<string> UploadImg(string fileName, Stream file)
+        private async Task<string> UploadImg(string fileName, Stream file)
         {
             var res = await UploadFile<WxUploadImgRes>(fileName, file, WxApiUrlUploadImg, WxUploadTypes.CONFIG_IMAGE);
-            if (res == null) return null;
-            return res.Url;
+            return res?.Url;
         }
 
 
@@ -257,7 +254,7 @@ namespace Modlogie.Infrastructure.External
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             content.Add(fileContent, "\"media\"", fileName);
             content.Headers.ContentType =
-                MediaTypeHeaderValue.Parse(string.Format("multipart/form-data; boundary={0}", boundary));
+                MediaTypeHeaderValue.Parse($"multipart/form-data; boundary={boundary}");
             return content;
         }
 
