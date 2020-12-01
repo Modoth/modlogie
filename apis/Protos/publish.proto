@@ -1,6 +1,5 @@
 syntax = "proto3";
 package modlogie.publish;
-import "google/protobuf/empty.proto";
 import "messages.proto";
 option csharp_namespace = "Modlogie.Api.Publish";
 
@@ -13,6 +12,8 @@ message AddRequest {
   string type = 1;
   string article_id = 2;
   string content = 3;
+  string baseUrl = 4;
+  string url = 5;
 }
 
 message AddResponce {

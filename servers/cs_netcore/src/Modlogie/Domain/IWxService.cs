@@ -12,8 +12,8 @@ namespace Modlogie.Domain
 
     public static class WxUploadTypes
     {
-        public static readonly string Thumb = "thumb";
+        public static readonly string CONFIG_THUMB = "thumb";
 
-        public static readonly string Image = "image";
+        public static readonly string CONFIG_IMAGE = "image";
     }
 }

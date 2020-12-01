@@ -43,7 +43,9 @@ namespace Modlogie.Infrastructure.Data
             return Task.FromResult(true);
         }
 
-        async public Task<Stream> Open(string group, string id)
+#pragma warning disable 1998
+        public async Task<Stream> Open(string group, string id)
+#pragma warning restore 1998
         {
             var filePath = Path.Join(_options.ContentRoot, id);
             return File.Open(filePath, FileMode.Open);
@@ -51,10 +53,7 @@ namespace Modlogie.Infrastructure.Data
 
         private (string, string) GenerateAndPrepareForFileName(string group, string type)
         {
-            if (string.IsNullOrWhiteSpace(type))
-            {
-                type = "bin";
-            }
+            if (string.IsNullOrWhiteSpace(type)) type = "bin";
 
             var guid = Guid.NewGuid().ToString();
             var idx = guid.IndexOf("-", StringComparison.Ordinal);
@@ -62,10 +61,7 @@ namespace Modlogie.Infrastructure.Data
             var file = guid.Substring(idx + 1, guid.Length - (idx + 1)) + "." + type;
             var id = Path.Join(folder, file);
             var folderPath = Path.Join(_options.ContentRoot, folder);
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
+            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
             var filePath = Path.Join(_options.ContentRoot, id);
             return (id, filePath);
