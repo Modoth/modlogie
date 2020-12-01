@@ -4,6 +4,7 @@ using Autofac;
 using Modlogie.Api.Common;
 using Modlogie.Domain;
 using Modlogie.Infrastructure.Data;
+using Modlogie.Infrastructure.External;
 using Module = Autofac.Module;
 
 namespace Modlogie.Api
@@ -45,6 +46,15 @@ namespace Modlogie.Api
 
             builder.RegisterAssemblyTypes(asm)
                 .Where(IsEntityService)
+                .AsImplementedInterfaces();
+
+            bool IsExternalService(Type type)
+            {
+                return type.Name.EndsWith("Service") && type.Namespace == typeof(WxService).Namespace;
+            }
+
+            builder.RegisterAssemblyTypes(asm)
+                .Where(IsExternalService)
                 .AsImplementedInterfaces();
         }
     }

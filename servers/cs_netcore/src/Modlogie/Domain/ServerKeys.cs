@@ -20,16 +20,6 @@ namespace Modlogie.Domain
 
     public class ServerKeys
     {
-        public static ServerKey WechatAppId { get; }
-
-        public static ServerKey WechatAppIdSecret { get; }
-
-        public static ServerKey WechatPreviewUserId { get; }
-
-        public static ServerKey IncreaseTags { get; }
-
-        public static ServerKey[] All { get; }
-
         static ServerKeys()
         {
             var prefix = "__";
@@ -37,15 +27,28 @@ namespace Modlogie.Domain
             var all = new List<ServerKey>();
             foreach (var info in keyInfos)
             {
-                if (info.DeclaringType != typeof(ServerKey))
+                if (info.DeclaringType != typeof(ServerKey)) continue;
+                var key = info.GetValue(null) as ServerKey;
+                if (key == null)
                 {
-                    continue;
+                    key = new ServerKey {Key = prefix + info.Name};
+                    info.SetValue(null, key);
                 }
-                var key = new ServerKey { Key = prefix + info.Name };
-                info.SetValue(null, key);
+
                 all.Add(key);
             }
+
             All = all.ToArray();
         }
+
+        public static ServerKey WechatAppId { get; }
+
+        public static ServerKey WechatAppIdSecret { get; }
+
+        public static ServerKey WechatPreviewUserId { get; }
+
+        public static ServerKey IncreaseTags { get; } = new ServerKey {Key = "__" + nameof(IncreaseTags)};
+
+        public static ServerKey[] All { get; }
     }
 }
