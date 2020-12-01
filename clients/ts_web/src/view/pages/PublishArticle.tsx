@@ -16,11 +16,11 @@ export default function PublishArticle (props:{
      articlePath:string
     } & ArticleContentViewerProps) {
   const baseUrl = `${window.location.protocol}//${window.location.host}/`
-  const [content] = useState(props.Template(props).replaceAll(/\$\{FILENAME=(.*?)\}/g, (_, url) =>
+  const [content] = useState(props.Template(props))
+  const [url] = useState(srcToUrl(content.replaceAll(/\$\{FILENAME=(.*?)\}/g, (_, url) =>
   `${baseUrl}${url}`
-  ))
+  )))
   const [publishId, setPublishId] = useState(props.publishId)
-  const url = srcToUrl(content)
   const locate = useServicesLocate()
   const langs = locate(ILangsService)
   const viewService = locate(IViewService)
@@ -43,34 +43,30 @@ export default function PublishArticle (props:{
       viewService.setLoading(false)
     }
   }
-  const canclePublish = () => {
+  const canclePublish = async () => {
     if (!publishId) {
       return
     }
-    viewService.prompt(langs.get(LangKeys.CanclePublish), [],
-      async () => {
-        viewService.setLoading(true)
-        try {
-          await publishService.delete(props.publishType,
-            props.articleId,
-            publishId)
-          setPublishId(undefined)
-          props.onPublishIdChanged(undefined)
-        } catch (e) {
+    viewService.setLoading(true)
+    try {
+      await publishService.delete(props.publishType,
+        props.articleId,
+        publishId)
+      setPublishId(undefined)
+      props.onPublishIdChanged(undefined)
+    } catch (e) {
         viewService!.errorKey(langs, e.message)
-        } finally {
-          viewService.setLoading(false)
-        }
-        return true
-      })
+    } finally {
+      viewService.setLoading(false)
+    }
   }
   return <div className="publish-article">
     <div className="iframe-wraper"><iframe src={url} sandbox=""></iframe></div>
     <div className="menu">
       {
         publishId
-          ? <Button onClick={canclePublish}>{langs.get(LangKeys.CanclePublish)}</Button>
-          : <Button onClick={publish}>{langs.get(LangKeys.Publish)}</Button>
+          ? <Button onClick={canclePublish} type="link">{langs.get(LangKeys.CanclePublish)}</Button>
+          : <Button onClick={publish} type="link">{langs.get(LangKeys.Publish)}</Button>
       }
     </div>
   </div>
