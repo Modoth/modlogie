@@ -39,7 +39,6 @@ export function ModlangInterpreter (props: { code: string, lang: string, version
       const interpreter = await interpretersService.get(props.lang)
       if (interpreter && interpreter.interpretUrl) {
         const url = interpreter.interpretUrl(request)
-        console.log(url)
         setInterpreterUrl(url)
       }
       setInterpreter(interpreter)
