@@ -8,7 +8,6 @@ import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
-import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export default class AppArticleServiceSingleton extends IServicesLocator implements IArticleAppservice {
     private typesCaches = new Map<string, any>()
