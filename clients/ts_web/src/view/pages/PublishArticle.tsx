@@ -10,6 +10,7 @@ import React, { useState } from 'react'
 
 export default function PublishArticle (props:{
      Template:((props: ArticleContentViewerProps) => string),
+     PreviewTemplate?:string,
      publishType:string,
      publishId?:string,
      onPublishIdChanged(id?:string):void,
@@ -19,7 +20,7 @@ export default function PublishArticle (props:{
   const [content] = useState(props.Template(props))
   const [url] = useState(srcToUrl(content.replaceAll(/\$\{FILENAME=(.*?)\}/g, (_, url) =>
   `${baseUrl}${url}`
-  )))
+  )) + (props.PreviewTemplate || ''))
   const [publishId, setPublishId] = useState(props.publishId)
   const locate = useServicesLocate()
   const langs = locate(ILangsService)

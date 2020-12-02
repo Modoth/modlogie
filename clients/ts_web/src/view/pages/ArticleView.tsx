@@ -357,11 +357,12 @@ export default function ArticleView (props: {
     return `${h}${['', '', '', 'k', '0k', '00k'][s.length - max + 1]}+`
   }
   const openPublishDetail = async (publishName:string) => {
-    const generator = type.articleType.publishGenerators?.get(publishName)
-    if (!generator) {
+    const g = type.articleType.publishGenerators?.get(publishName)
+    if (!g) {
       console.log('Generator not implemented.')
       return
     }
+    const { generator, previewTemplate } = g
     await tryLoadingAll()
     const onPublishIdChanged = (p?:string) => {
       var newPublishIds = new Map(publishedIds || [])
@@ -382,6 +383,7 @@ export default function ArticleView (props: {
           articleId={props.article.id!}
           files={files}
           Template={generator}
+          PreviewTemplate = {previewTemplate}
           content={content}
           articlePath={props.article.path!}></PublishArticle>
       }

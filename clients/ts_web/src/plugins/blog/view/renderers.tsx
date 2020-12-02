@@ -1,10 +1,6 @@
-import { ArticleContentViewerProps } from '../../../pluginbase/IPluginInfo'
 import { ArticleFile } from '../../../domain/ServiceInterfaces/Article'
-import classNames from 'classnames'
 import Highlight from '../../../infrac/components/Hightlight'
 import React from 'react'
-import ReactDOMServer from 'react-dom/server'
-import ReactMarkdown from 'react-markdown'
 import Seperators from '../../../domain/ServiceInterfaces/Seperators'
 
 const renderers = (_:Map<string, ArticleFile>) => {
@@ -27,18 +23,5 @@ const renderers = (_:Map<string, ArticleFile>) => {
     }
   } as any
 }
-const PlainViewer = (style:string) => (props:ArticleContentViewerProps) => {
-  const sections = (props.content.sections || []).filter(s => s.content)
-  const files = new Map((props.files || []).map(f => [f.url!, f]))
-  return ReactDOMServer.renderToStaticMarkup(<div>
-    <style>{style}</style>
-    {
-      sections.map((s, i) => <div key={s.name!} className={classNames(s.name, `section-${i}`, props.type?.additionalSections?.has(s.name!) ? 'addition' : 'normal')}>
-        <h2 className="section-title">{s.name}</h2>
-        <div className="section-content"><ReactMarkdown renderers={renderers(files)} source={s.content} skipHtml={true}></ReactMarkdown></div>
-      </div>)
-    }
-  </div>)
-}
 
-export default PlainViewer
+export default renderers
