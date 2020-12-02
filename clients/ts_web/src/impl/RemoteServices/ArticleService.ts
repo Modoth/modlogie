@@ -55,7 +55,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
       subjectId: item.getParentId(),
       published: item.getPublished()!.toDate(),
       additionalType: item.getAdditionalType() as ArticleAdditionalType,
-      publishes: publishes,
+      publishedIds: publishes,
       tags,
       tagsDict: new Map(tags.map(t => [t.name, t]))
     }

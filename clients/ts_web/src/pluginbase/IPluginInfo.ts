@@ -24,7 +24,7 @@ export interface ArticleType {
   subTypeTag?: string;
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
   Editor: (props: ArticleContentEditorProps) => JSX.Element;
-  generators?:Map<string, (props: ArticleContentViewerProps) => string>;
+  publishGenerators?:Map<string, (props: ArticleContentViewerProps) => string>;
 }
 
 export interface ArticleContentEditorCallbacks<T> {
@@ -42,7 +42,6 @@ export interface ArticleContentType {
   allSections: Set<string>,
   articleType: ArticleType,
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
-  publishers?:Map<string, string>;
 }
 
 export interface ArticleContentViewerCallbacks {

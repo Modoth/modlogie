@@ -85,6 +85,8 @@ export class LangKeysInterface {
   Password = 'Password';
   Preview = 'Preview';
   Publish = 'Publish';
+  PUBLISH_NONE = 'PUBLISH_NONE';
+  PUBLISH_WX = 'PUBLISH_WX';
   QrCode = 'QrCode';
   Recommend = 'Recommend';
   Refresh = 'Refresh';
@@ -114,6 +116,11 @@ export class LangKeysInterface {
   Welcome = 'Welcome';
   Word = 'Word';
   Yes = 'Yes';
+}
+
+export enum PublishType{
+  PUBLISH_NONE = 0,
+  PUBLISH_WX = 1
 }
 
 export enum ErrorMessage {

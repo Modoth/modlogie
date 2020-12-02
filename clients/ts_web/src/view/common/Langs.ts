@@ -41,7 +41,6 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   DATE = '日期';
   LINK = '链接';
   // Server Configs
-  wx = '微信';
   _WxAppId = '微信AppId';
   _WxAppSecret = '微信AppSecret';
   _WxPreviewUserId = '微信预览用户Id';
@@ -134,6 +133,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Password = '密码';
   Preview = '预览';
   Publish = '发布';
+  PUBLISH_NONE = '';
+  PUBLISH_WX = '微信';
   QrCode = '网址';
   Recommend = '推荐';
   Refresh = '刷新页面';

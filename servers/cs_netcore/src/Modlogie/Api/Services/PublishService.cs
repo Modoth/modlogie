@@ -15,6 +15,8 @@ namespace Modlogie.Api.Services
 {
     public class PublishService : Publish.PublishService.PublishServiceBase
     {
+        private const string PUBLISH_WX = nameof(PUBLISH_WX);
+
         private readonly IFilesEntityService _filesService;
 
         private readonly Dictionary<string, IPublishService> _publishServices =
@@ -27,7 +29,7 @@ namespace Modlogie.Api.Services
             IFilesEntityService filesService
         )
         {
-            _publishServices.Add("wx", wxService);
+            _publishServices.Add(PUBLISH_WX, wxService);
             _userService = userService;
             _filesService = filesService;
         }
@@ -62,7 +64,7 @@ namespace Modlogie.Api.Services
             }
 
             var file = await _filesService.All()
-                .Where(f => f.Id == articleId && f.Type == (int) File.Types.FileType.Normal)
+                .Where(f => f.Id == articleId && f.Type == (int)File.Types.FileType.Normal)
                 .FirstOrDefaultAsync();
             if (file == null)
             {

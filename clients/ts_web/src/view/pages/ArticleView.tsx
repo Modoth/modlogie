@@ -51,7 +51,7 @@ export default function ArticleView (props: {
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [files, setFiles] = useState(props.article.files)
-  const [publishes, setPublishes] = useState(props.article.publishes)
+  const [publishedIds, setPublishedIds] = useState(props.article.publishedIds)
   const [tagsDict, setTagsDict] = useState(props.article.tagsDict)
   const [subjectId, setSubjectId] = useState(props.article.subjectId)
   const [loaded, setLoaded] = useState(props.article.lazyLoading === undefined)
@@ -356,32 +356,32 @@ export default function ArticleView (props: {
     const h = Math.floor(num / Math.pow(10, s.length - 1))
     return `${h}${['', '', '', 'k', '0k', '00k'][s.length - max + 1]}+`
   }
-  const previewPublish = async (publishType:string, templateName:string) => {
-    const template = type.articleType.generators?.get(templateName)
-    if (!template) {
+  const openPublishDetail = async (publishName:string) => {
+    const generator = type.articleType.publishGenerators?.get(publishName)
+    if (!generator) {
       console.log('Generator not implemented.')
       return
     }
     await tryLoadingAll()
-    const onPublishChanged = (p?:string) => {
-      var newPublishes = new Map(publishes || [])
+    const onPublishIdChanged = (p?:string) => {
+      var newPublishIds = new Map(publishedIds || [])
       if (p) {
-        newPublishes.set(publishType, p)
+        newPublishIds.set(publishName, p)
       } else {
-        newPublishes.delete(publishType)
+        newPublishIds.delete(publishName)
       }
-      setPublishes(newPublishes)
+      setPublishedIds(newPublishIds)
     }
-    viewService.prompt(langs.get(publishType), [
+    viewService.prompt(langs.get(publishName), [
       {
         type: 'View',
         value: <PublishArticle
-          publishType={publishType}
-          onPublishIdChanged={onPublishChanged}
-          publishId={publishes && publishes.get(publishType)}
+          publishType={publishName}
+          onPublishIdChanged={onPublishIdChanged}
+          publishId={publishedIds && publishedIds.get(publishName)}
           articleId={props.article.id!}
           files={files}
-          Template={template}
+          Template={generator}
           content={content}
           articlePath={props.article.path!}></PublishArticle>
       }
@@ -435,9 +435,9 @@ export default function ArticleView (props: {
               <MenuItem key="delete"><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
                 props.articleHandlers.onDelete(props.article.id!)
               } ><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>,
-              ...(type.publishers && type.publishers.size ? Array.from(type.publishers, ([publisher, generator]) =>
-                <MenuItem key={publisher}><Button type="link" icon={<ShareAltOutlined />} onClick={() => previewPublish(publisher, generator)}
-                ><span className="action-name">{langs.get(publisher)}</span></Button></MenuItem>
+              ...(type.articleType.publishGenerators && type.articleType.publishGenerators.size ? Array.from(type.articleType.publishGenerators, ([publishName]) =>
+                <MenuItem key={publishName}><Button type="link" danger={publishedIds?.has(publishName)} icon={<ShareAltOutlined />} onClick={() => openPublishDetail(publishName)}
+                ><span className="action-name">{langs.get(publishName)}</span></Button></MenuItem>
               ) : [])
             ] : [])]}
           </Menu>)

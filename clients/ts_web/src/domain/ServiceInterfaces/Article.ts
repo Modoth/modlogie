@@ -40,7 +40,7 @@ export default interface Article {
   files?: ArticleFile[];
   tags?: Array<ArticleTag>;
   tagsDict?: Map<string, ArticleTag>;
-  publishes?:Map<string, string>;
+  publishedIds?:Map<string, string>;
   lazyLoading?: { (): Promise<void> }
   lazyLoadingAddition?: { (): Promise<void> }
 }
