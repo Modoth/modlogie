@@ -34,7 +34,7 @@ const PlainViewer = (style:string) => (props:ArticleContentViewerProps) => {
     <style>{style}</style>
     {
       sections.map((s, i) => <div key={s.name!} className={classNames(s.name, `section-${i}`, props.type?.additionalSections?.has(s.name!) ? 'addition' : 'normal')}>
-        <h3 className="section-title">{s.name}</h3>
+        <h2 className="section-title">{s.name}</h2>
         <div className="section-content"><ReactMarkdown renderers={renderers(files)} source={s.content} skipHtml={true}></ReactMarkdown></div>
       </div>)
     }
