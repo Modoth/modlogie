@@ -13,7 +13,7 @@ const PlainGenerator = (style?:string) => (props:ArticleContentViewerProps) => {
     {
       sections.map((s, i) => <div key={s.name!} className={classNames(s.name, `section-${i}`, props.type?.additionalSections?.has(s.name!) ? 'addition' : 'normal')}>
         {i ? <h2 className="section-title">{s.name}</h2> : undefined }
-        <div className="section-content"><ReactMarkdown renderers={renderers(files)} source={s.content} skipHtml={true}></ReactMarkdown></div>
+        <div className="section-content"><ReactMarkdown renderers={renderers} source={s.content} skipHtml={true}></ReactMarkdown></div>
       </div>)
     }
   </div>)

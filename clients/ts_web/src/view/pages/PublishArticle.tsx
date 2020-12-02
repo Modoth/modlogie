@@ -4,6 +4,7 @@ import { Button } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { srcToUrl } from '../../infrac/Lang/srcToUrl'
 import { useServicesLocate } from '../common/Contexts'
+import IFrameWithoutJs from '../../infrac/components/IFrameWithoutJs'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState } from 'react'
@@ -62,7 +63,7 @@ export default function PublishArticle (props:{
     }
   }
   return <div className="publish-article">
-    <div className="iframe-wraper"><iframe src={url} sandbox=""></iframe></div>
+    <div className="preview-wraper"><IFrameWithoutJs src={url} allowFullscreen={true}></IFrameWithoutJs></div>
     <div className="menu">
       {
         publishId
