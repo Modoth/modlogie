@@ -3,6 +3,7 @@ import { Button } from 'antd'
 import { FileOutlined, CloseOutlined } from '@ant-design/icons'
 import { useServicesLocate } from '../common/Contexts'
 import BufferFile from '../../infrac/Lang/BufferFile'
+import classNames from 'classnames'
 import ExternalFileViewer from './ExternalFileViewer'
 import IFile from '../../infrac/Lang/IFile'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
@@ -75,7 +76,7 @@ export function ToolViewer () {
     }
   }, [])
   return <div className="tool-viewer-wraper">
-    <div className="tool-viewer">
+    <div className={classNames('tool-viewer', (navigator as any).standalone ? 'standalone' : '')}>
       <div className="menu">
         <Button type="link" className="menu-title"> <span >{name || ''}</span></Button>
       </div>

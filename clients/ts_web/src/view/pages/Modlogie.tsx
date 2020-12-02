@@ -34,7 +34,7 @@ const applyContainerStyleFromPos = (style:Partial<CSSStyleDeclaration>, pos:Modl
   style.left = right ? 'unset' : '0'
   style.right = right ? '0' : 'unset'
   style.bottom = `${bottom}%`
-  style.alignItems = bottom < 50 ? 'flex-end' : 'flex-start'
+  style.alignItems = 'flex-end' // bottom < 50 ? 'flex-end' : 'flex-start'
   style.flexDirection = right ? 'row-reverse' : 'row'
 }
 

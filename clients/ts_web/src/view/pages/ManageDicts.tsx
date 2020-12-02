@@ -2,6 +2,7 @@ import './ManageDicts.less'
 import { Button, Input } from 'antd'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useServicesLocate } from '../common/Contexts'
+import classNames from 'classnames'
 import DictView from './DictView'
 import IDictService, { CancleToken, DictInfo } from '../../domain/ServiceInterfaces/IDictService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
@@ -121,7 +122,7 @@ export default function ManageDicts () {
     }
   }, [])
   return <div className="manage-dicts">
-    <div className="dict-query-wraper">
+    <div className={classNames('dict-query-wraper', (navigator as any).standalone ? 'standalone' : '')}>
       <div className='menu'>
         <Input placeholder={langs.get(LangKeys.Dict)} className="query" value={query} onChange={(e) => setQuery(e.target.value)}></Input>
         <Button className="menu-title" type="link" >{langs.get(LangKeys.ItemsCount)}{importing ? `${importProgress}%` : <span className="info">{(info && info.itemCount) || '0'}</span>}</Button>

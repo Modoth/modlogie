@@ -1,6 +1,6 @@
 import './AudioPlayer.less'
 import { Button } from 'antd'
-import { FileAddOutlined, CloseOutlined, PauseOutlined, CaretRightOutlined } from '@ant-design/icons'
+import { CustomerServiceOutlined, CloseOutlined, PauseOutlined, CaretRightOutlined } from '@ant-design/icons'
 import { useServicesLocate } from '../common/Contexts'
 import IAudioService from '../../app/Interfaces/IAudioService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
@@ -103,14 +103,14 @@ export default function AudioPlayer () {
   }
 
   return <div className="audio-player">
-    <Button size="large" icon={<FileAddOutlined />} type="link" onClick={selectFile}>{langs.get(LangKeys.BackgroundMusic)}</Button>
+    <Button size="large" icon={<CustomerServiceOutlined />} type="link" onClick={selectFile}>{langs.get(LangKeys.BackgroundMusic)}</Button>
+    {/* {hasData ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined} */}
+    <Button size="large" type="link" onClick={selectFile} className="title" >{info.title || ''}</Button>
     {
       hasData ? (playing
-        ? <Button className="controls" size="large" icon={<PauseOutlined />} type="primary" shape="round" onClick={() => setAudioPlay(false)}></Button>
-        : <Button className="controls" size="large" icon={<CaretRightOutlined />} type="primary" shape="round" onClick={() => setAudioPlay(true)}></Button>
+        ? <Button className="controls" size="large" icon={<PauseOutlined />} type="link" shape="round" onClick={() => setAudioPlay(false)}></Button>
+        : <Button className="controls" size="large" icon={<CaretRightOutlined />} type="link" shape="round" onClick={() => setAudioPlay(true)}></Button>
       ) : undefined
     }
-    <Button size="large" type="link" onClick={selectFile} className="title" >{info.title || ''}</Button>
-    {hasData ? <Button className="controls" size="large" icon={<CloseOutlined />} danger type="link" onClick={() => loadFile()}></Button> : undefined}
   </div>
 }
