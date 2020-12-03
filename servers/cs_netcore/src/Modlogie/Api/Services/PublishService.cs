@@ -17,6 +17,8 @@ namespace Modlogie.Api.Services
     {
         private const string PUBLISH_WX = nameof(PUBLISH_WX);
 
+        private const string PUBLISH_CONTENT = nameof(PUBLISH_CONTENT);
+
         private readonly IFilesEntityService _filesService;
 
         private readonly Dictionary<string, IPublishService> _publishServices =
@@ -25,11 +27,13 @@ namespace Modlogie.Api.Services
         private readonly ILoginUserService _userService;
 
         public PublishService(IWxService wxService,
+        IContentService contentService,
             ILoginUserService userService,
             IFilesEntityService filesService
         )
         {
             _publishServices.Add(PUBLISH_WX, wxService);
+            _publishServices.Add(PUBLISH_CONTENT, contentService);
             _userService = userService;
             _filesService = filesService;
         }
@@ -78,7 +82,8 @@ namespace Modlogie.Api.Services
                 {
                     Title = file.Name,
                     BaseUrl = request.BaseUrl,
-                    Url = request.Url
+                    Url = request.Url,
+                    Path = file.Path
                 };
                 var regexp = new Regex(@"\$\{FILENAME=(.*?)\}");
                 var matches = regexp.Matches(request.Content);

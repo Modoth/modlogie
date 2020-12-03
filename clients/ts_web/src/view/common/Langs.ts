@@ -135,6 +135,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Publish = '发布';
   PUBLISH_NONE = '';
   PUBLISH_WX = '微信';
+  PUBLISH_CONTENT = '静态';
   QrCode = '网址';
   Recommend = '推荐';
   Refresh = '刷新页面';

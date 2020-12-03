@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Modlogie.Domain.Models;
 
 namespace Modlogie.Infrastructure.Data
@@ -14,6 +16,7 @@ namespace Modlogie.Infrastructure.Data
         {
         }
 
+        public virtual DbSet<Content> Contents { get; set; }
         public virtual DbSet<DbVersion> DbVersions { get; set; }
         public virtual DbSet<File> Files { get; set; }
         public virtual DbSet<FileTag> FileTags { get; set; }
@@ -24,10 +27,52 @@ namespace Modlogie.Infrastructure.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseMySql("server=db;database=modlogie;user=root;password=123456", x => x.ServerVersion("10.5.4-mariadb"));
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Content>(entity =>
+            {
+                entity.ToTable("Content");
+
+                entity.HasIndex(e => e.Created)
+                    .HasName("IX_File_Created");
+
+                entity.HasIndex(e => e.Group)
+                    .HasName("IX_File_Group");
+
+                entity.Property(e => e.Id)
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Data)
+                    .HasColumnType("mediumtext")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Group)
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Url)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+            });
+
             modelBuilder.Entity<DbVersion>(entity =>
             {
                 entity.ToTable("DbVersion");
@@ -110,7 +155,7 @@ namespace Modlogie.Infrastructure.Data
 
             modelBuilder.Entity<FileTag>(entity =>
             {
-                entity.HasKey(e => new {e.FileId, e.TagId})
+                entity.HasKey(e => new { e.FileId, e.TagId })
                     .HasName("PRIMARY");
 
                 entity.ToTable("FileTag");
@@ -155,7 +200,7 @@ namespace Modlogie.Infrastructure.Data
                     .HasDefaultValueSql("'0'");
 
                 entity.Property(e => e.Value)
-                    .HasColumnType("varchar(128)")
+                    .HasColumnType("varchar(512)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_general_ci");
             });
@@ -170,7 +215,7 @@ namespace Modlogie.Infrastructure.Data
                     .HasCollation("utf8_general_ci");
 
                 entity.Property(e => e.Description)
-                    .HasColumnType("text")
+                    .HasColumnType("longtext")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
 
@@ -194,7 +239,7 @@ namespace Modlogie.Infrastructure.Data
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasColumnType("varchar(16)")
+                    .HasColumnType("varchar(32)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_general_ci");
 

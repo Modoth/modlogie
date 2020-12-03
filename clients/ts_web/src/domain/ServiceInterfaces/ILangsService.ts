@@ -87,6 +87,7 @@ export class LangKeysInterface {
   Publish = 'Publish';
   PUBLISH_NONE = 'PUBLISH_NONE';
   PUBLISH_WX = 'PUBLISH_WX';
+  PUBLISH_CONTENT = 'PUBLISH_CONTENT';
   QrCode = 'QrCode';
   Recommend = 'Recommend';
   Refresh = 'Refresh';
@@ -120,7 +121,8 @@ export class LangKeysInterface {
 
 export enum PublishType{
   PUBLISH_NONE = 0,
-  PUBLISH_WX = 1
+  PUBLISH_WX = 1,
+  PUBLISH_CONTENT = 2,
 }
 
 export enum ErrorMessage {

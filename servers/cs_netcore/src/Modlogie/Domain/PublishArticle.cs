@@ -9,5 +9,7 @@ namespace Modlogie.Domain
         public string Title { get; set; }
 
         public PublishArticleSlice[] Slices { get; set; }
+
+        public string Path { get; set; }
     }
 }

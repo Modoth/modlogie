@@ -3,6 +3,7 @@ import { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import CreateSectionEditor from '../../pluginbase/base/view/SectionEditor'
 import IPluginInfo from '../../pluginbase/IPluginInfo'
 import MarkdownViewer from './view/MarkdownViewer'
+import PlainGenerator from './view/PlainGenerator'
 import PluginInfoBase from '../../pluginbase/base'
 import WxGenerator from './view/WxGenerator'
 
@@ -17,7 +18,10 @@ export default class Blog extends PluginInfoBase implements IPluginInfo {
       MarkdownViewer,
       CreateSectionEditor({ getSectionFileContent, getPasteSectionContent }), undefined,
       {
-        publishGenerators: new Map([[LangKeys.PUBLISH_WX, { generator: WxGenerator, previewTemplate: WxPreview }]])
+        publishGenerators: new Map([
+          [LangKeys.PUBLISH_WX, { generator: WxGenerator, previewTemplate: WxPreview }],
+          [LangKeys.PUBLISH_CONTENT, { generator: PlainGenerator }]
+        ])
       })
   }
 }
