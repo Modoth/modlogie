@@ -14,9 +14,10 @@ namespace Modlogie.Domain
         {
             _entitiesService = entitiesService;
         }
+
         public async Task Delete(string id)
         {
-            if (Guid.TryParse(id, out Guid gid))
+            if (Guid.TryParse(id, out var gid))
             {
                 await _entitiesService.DeleteRange(_entitiesService.All().Where(c => c.Id == gid));
             }
@@ -38,12 +39,13 @@ namespace Modlogie.Domain
                     sb.Append(article.BaseUrl + slice.Value);
                 }
             }
+
             var content = new Content
             {
                 Id = Guid.NewGuid(),
                 Created = DateTime.Now,
                 Name = article.Title,
-                Group = article.Path.Split('/').First(s => !String.IsNullOrWhiteSpace(s)),
+                Group = article.Path.Split('/').First(s => !string.IsNullOrWhiteSpace(s)),
                 Data = sb.ToString(),
                 Url = article.Url
             };
