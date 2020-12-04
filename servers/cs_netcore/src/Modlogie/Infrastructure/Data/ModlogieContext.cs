@@ -17,6 +17,8 @@ namespace Modlogie.Infrastructure.Data
         }
 
         public virtual DbSet<Content> Contents { get; set; }
+        public virtual DbSet<ContentCache> ContentCaches { get; set; }
+        public virtual DbSet<ContentTemplate> ContentTemplates { get; set; }
         public virtual DbSet<DbVersion> DbVersions { get; set; }
         public virtual DbSet<File> Files { get; set; }
         public virtual DbSet<FileTag> FileTags { get; set; }
@@ -40,11 +42,9 @@ namespace Modlogie.Infrastructure.Data
             {
                 entity.ToTable("Content");
 
-                entity.HasIndex(e => e.Updated)
-                    .HasName("IX_File_Created");
+                entity.HasIndex(e => e.Group);
 
-                entity.HasIndex(e => e.Group)
-                    .HasName("IX_File_Group");
+                entity.HasIndex(e => e.Updated);
 
                 entity.Property(e => e.Id)
                     .HasCharSet("utf8mb4")
@@ -67,6 +67,62 @@ namespace Modlogie.Infrastructure.Data
                     .HasCollation("utf8mb4_unicode_ci");
 
                 entity.Property(e => e.Url)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+            });
+
+            modelBuilder.Entity<ContentCache>(entity =>
+            {
+                entity.HasKey(e => new { e.ContentId, e.TemplateId })
+                    .HasName("PRIMARY");
+
+                entity.ToTable("ContentCache");
+
+                entity.HasIndex(e => e.TemplateId)
+                    .HasName("FK_ContentCache_ContentTemplate_TemplateId");
+
+                entity.HasIndex(e => e.Updated);
+
+                entity.Property(e => e.ContentId)
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.TemplateId)
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Content)
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.HasOne(d => d.ContentNavigation)
+                    .WithMany(p => p.ContentCaches)
+                    .HasForeignKey(d => d.ContentId);
+
+                entity.HasOne(d => d.Template)
+                    .WithMany(p => p.ContentCaches)
+                    .HasForeignKey(d => d.TemplateId);
+            });
+
+            modelBuilder.Entity<ContentTemplate>(entity =>
+            {
+                entity.ToTable("ContentTemplate");
+
+                entity.HasIndex(e => e.Updated);
+
+                entity.Property(e => e.Id)
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Data)
+                    .HasColumnType("mediumtext")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasColumnType("varchar(255)")
                     .HasCharSet("utf8mb4")

@@ -10,9 +10,7 @@
             "args": [
                 "build",
                 "src",
-                // Ask dotnet build to generate full paths for file names.
                 "/property:GenerateFullPaths=true",
-                // Do not generate summary otherwise it leads to duplicate errors in Problems panel
                 "/consoleloggerparameters:NoSummary"
             ],
             "group": "build",
@@ -36,7 +34,7 @@
             "type": "shell",
             "args": [
                 "Modlogie.dll",
-                "/Execue:UpdateDbOnly=true",
+                "/Execue:UpdateDbOnly=true"
             ]
         },
         {
@@ -61,8 +59,9 @@
                 "--context-dir",
                 "Infrastructure/Data",
                 "--output-dir",
-                "Domain/Models",
-            ]
+                "Domain/Models"
+            ],
+            "problemMatcher": []
         }
     ]
 }
