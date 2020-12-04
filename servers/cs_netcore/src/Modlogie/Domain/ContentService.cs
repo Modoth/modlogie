@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Modlogie.Domain.Models;
 
 namespace Modlogie.Domain
@@ -40,15 +41,21 @@ namespace Modlogie.Domain
                 }
             }
 
-            var content = new Content
+            var content = await _entitiesService.All().FirstOrDefaultAsync(c => c.Id == article.Id);
+            if (content == null)
             {
-                Id = Guid.NewGuid(),
-                Created = DateTime.Now,
-                Name = article.Title,
-                Group = article.Path.Split('/').First(s => !string.IsNullOrWhiteSpace(s)),
-                Data = sb.ToString(),
-                Url = article.Url
-            };
+                content = new Content
+                {
+                    Id = Guid.NewGuid()
+                };
+            }
+
+            content.Created = DateTime.Now;
+            content.Name = article.Title;
+            content.Group = article.Group;
+            content.Data = sb.ToString();
+            content.Url = article.Url;
+
             content = await _entitiesService.Add(content);
             return content.Id.ToString();
         }

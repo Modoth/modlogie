@@ -75,15 +75,17 @@ namespace Modlogie.Api.Services
                 reply.Error = Error.NoSuchEntity;
                 return reply;
             }
-
+            var req = context.GetHttpContext().Request;
+            var baseUrl = $"{req.Scheme}://{req.Host.Value}/";
             try
             {
                 var article = new PublishArticle
                 {
+                    Id = file.Id,
                     Title = file.Name,
-                    BaseUrl = request.BaseUrl,
-                    Url = request.Url,
-                    Path = file.Path
+                    BaseUrl = baseUrl,
+                    Url = baseUrl + request.Url,
+                    Group = request.Group
                 };
                 var regexp = new Regex(@"\$\{FILENAME=(.*?)\}");
                 var matches = regexp.Matches(request.Content);

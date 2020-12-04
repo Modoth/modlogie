@@ -1,3 +1,5 @@
+using System;
+
 namespace Modlogie.Domain
 {
     public class PublishArticle
@@ -10,6 +12,8 @@ namespace Modlogie.Domain
 
         public PublishArticleSlice[] Slices { get; set; }
 
-        public string Path { get; set; }
+        public string Group { get; set; }
+
+        public Guid Id { get; set; }
     }
 }

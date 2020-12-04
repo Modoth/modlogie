@@ -1,8 +1,10 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -60,19 +62,21 @@ namespace Modlogie.Api.Controllers
             }
 
             var created = contents[0].Created;
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/";
             var sb = new StringBuilder();
+            group = SecurityElement.Escape(group);
             sb.Append(@"<?xml version=""1.0"" encoding=""UTF-8""?>
 <rss version=""2.0"" xmlns:atom=""http://www.w3.org/2005/Atom"">
 <channel>
 " +
-                      $"    <lastBuildDate>{FormatDatetime(created)}</lastBuildDate>" + @"
+                      $"    <title>{group}</title>\n    <link>{baseUrl}api/rss/{group}</link>\n    <lastBuildDate>{FormatDatetime(created)}</lastBuildDate>" + @"
     <ttl>180</ttl>");
             foreach (var content in contents)
             {
                 sb.Append(@"
     <item>
 " +
-                          $"        <title>{content.Name}</title>\n" +
+                          $"        <title>{SecurityElement.Escape(content.Name)}</title>\n" +
                           $"        <link>{content.Url}</link>" + @"
         <description>");
                 sb.Append(content.Data);

@@ -14,6 +14,7 @@ export default function PublishArticle (props:{
      PreviewTemplate?:string,
      publishType:string,
      publishId?:string,
+     group:string,
      onPublishIdChanged(id?:string):void,
      articlePath:string
     } & ArticleContentViewerProps) {
@@ -34,9 +35,9 @@ export default function PublishArticle (props:{
     try {
       var id = await publishService.publish(props.publishType,
         props.articleId,
-        baseUrl,
-           `${baseUrl}#/article/${props.articlePath}`,
-           content)
+        props.group,
+        `#/article/${props.articlePath}`,
+        content)
       setPublishId(id)
       props.onPublishIdChanged(id)
     } catch (e) {

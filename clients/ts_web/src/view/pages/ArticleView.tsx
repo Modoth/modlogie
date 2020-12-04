@@ -382,6 +382,7 @@ export default function ArticleView (props: {
           publishId={publishedIds && publishedIds.get(publishName)}
           articleId={props.article.id!}
           files={files}
+          group={type.articleType.displayName || type.articleType.name}
           Template={generator}
           PreviewTemplate = {previewTemplate}
           content={content}
