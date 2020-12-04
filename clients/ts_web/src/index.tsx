@@ -4,6 +4,7 @@ import { BashInterpreter } from './domain/Services/Interpreters/BashInterpreter'
 import { CInterpreter } from './domain/Services/Interpreters/CInterpreter'
 import { ConfigProvider } from 'antd'
 import { ConfigsServiceSingleton } from './impl/RemoteServices/ConfigsServiceSingleton'
+import { ContentTemplatesServiceClient } from './impl/remote-apis/ContenttemplatesServiceClientPb'
 import { FilesServiceClient } from './impl/remote-apis/FilesServiceClientPb'
 import { IPublishService } from './domain/ServiceInterfaces/IPublishService'
 import { KeyValuesServiceClient } from './impl/remote-apis/KeyvaluesServiceClientPb'
@@ -24,6 +25,7 @@ import Clock from './domain/Services/Clock'
 import ClocksAppService from './app/AppServices/ClocksAppService'
 import ClocksService from './domain/Services/ClocksService'
 import ConfigKeys, { getArticleSections, getArticleTags, getSubtypeTag, getDisplayName } from './domain/ServiceInterfaces/ConfigKeys'
+import ContentTemplatesService from './impl/RemoteServices/ContentTemplatesService'
 import CsvItemsExporter from './domain/Services/CsvItemsExporter'
 import Data from './plugins/data'
 import DefaultConfigs from './app/Interfaces/DefaultConfigs'
@@ -43,6 +45,7 @@ import IClock from './domain/ServiceInterfaces/IClock'
 import IClocksAppService from './app/Interfaces/IClocksAppService'
 import IClocksService from './domain/ServiceInterfaces/IClocksStorage'
 import IConfigsService, { Config, ConfigType } from './domain/ServiceInterfaces/IConfigsSercice'
+import IContentTemplatesService from './domain/ServiceInterfaces/IContentTemplatesService'
 import ICsvItemsExporter from './domain/ServiceInterfaces/ICsvItemsExporter'
 import IDictService from './domain/ServiceInterfaces/IDictService'
 import IEditorsService from './app/Interfaces/IEditorsService'
@@ -314,6 +317,7 @@ const buildServicesLocator = () => {
   serviceLocator.register(IClock, Clock)
   serviceLocator.registerInstance(IClocksAppService, new ClocksAppService())
   serviceLocator.register(IPublishService, PublishService)
+  serviceLocator.register(IContentTemplatesService, ContentTemplatesService)
 
   // eslint-disable-next-line no-undef
   const apiBase = (window.ENV_OVERRIDE || ENV).API_BASE
@@ -347,6 +351,10 @@ const buildServicesLocator = () => {
   serviceLocator.registerFactory(
     PublishServiceClient,
     () => new PublishServiceClient(clientHost, credentials, options)
+  )
+  serviceLocator.registerFactory(
+    ContentTemplatesServiceClient,
+    () => new ContentTemplatesServiceClient(clientHost, credentials, options)
   )
 
   serviceLocator.registerInstance(IAudioService, new AudioService())

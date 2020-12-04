@@ -100,6 +100,7 @@ namespace Modlogie.Api
                 endpoints.MapGrpcService<UsersService>();
                 endpoints.MapGrpcService<KeywordsService>();
                 endpoints.MapGrpcService<PublishService>();
+                endpoints.MapGrpcService<ContentTemplatesService>();
                 endpoints.MapControllers();
             });
         }

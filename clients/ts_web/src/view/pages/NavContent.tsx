@@ -2,6 +2,7 @@ import './NavContent.less'
 import { ArticleDetail } from './ArticleDetail'
 import { ArticleIdRedirect } from './ArticleIdRedirect'
 import { ManageConfigs } from './ManageConfigs'
+import { ManageContentTemplates } from './ManageContentTemplates'
 import { ManageKeywords } from './ManageKeywords'
 import { ManageSubjects } from './ManageSubjects'
 import { ManageTags } from './ManageTags'
@@ -61,6 +62,9 @@ function NavContent () {
       </Route>
       <Route path="/manage/users">
         <ManageUsers />
+      </Route>
+      <Route path="/manage/contenttemplates">
+        <ManageContentTemplates />
       </Route>
       <Route path="/manage/dicts">
         <ManageDicts />

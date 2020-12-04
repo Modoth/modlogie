@@ -69,6 +69,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ComfireJump = '点击确定继续:\t';
   Comment = '备注';
   Configs = '配置';
+  ContentTemplate = '内容模板';
   Countdown = '倒计时';
   Create = '创建';
   Csv = 'csv';

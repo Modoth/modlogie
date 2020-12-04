@@ -21,6 +21,7 @@ export class LangKeysInterface {
   ComfireJump = 'ComfireJump';
   Comment = 'Comment';
   Configs = 'Configs';
+  ContentTemplate = 'ContentTemplate';
   Countdown = 'Countdown';
   Create = 'Create';
   Csv = 'Csv';
@@ -85,9 +86,9 @@ export class LangKeysInterface {
   Password = 'Password';
   Preview = 'Preview';
   Publish = 'Publish';
+  PUBLISH_CONTENT = 'PUBLISH_CONTENT';
   PUBLISH_NONE = 'PUBLISH_NONE';
   PUBLISH_WX = 'PUBLISH_WX';
-  PUBLISH_CONTENT = 'PUBLISH_CONTENT';
   QrCode = 'QrCode';
   Recommend = 'Recommend';
   Refresh = 'Refresh';

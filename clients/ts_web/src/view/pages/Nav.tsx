@@ -2,12 +2,12 @@ import './Nav.less'
 import { Link } from 'react-router-dom'
 import { Menu, Drawer } from 'antd'
 import { PluginsConfig } from '../../pluginbase/IPluginInfo'
-import { UserOutlined, ReloadOutlined, FileWordOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
+import { UserOutlined, SnippetsOutlined, ReloadOutlined, FileWordOutlined, RocketOutlined, EditOutlined, ReadOutlined, UsergroupAddOutlined, ApiOutlined, MenuOutlined, SettingOutlined, TagsOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate } from '../common/Contexts'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
-import defaultLogo from '../assets/logo.png'
 import defaultIcon from '../assets/icon.png'
+import defaultLogo from '../assets/logo.png'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IEditorsService, { EditorInfo } from '../../app/Interfaces/IEditorsService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
@@ -119,6 +119,9 @@ function Nav () {
               </Menu.Item>
               <Menu.Item icon={<UsergroupAddOutlined />}>
                 <Link to="/manage/users">{langs.get(LangKeys.User)}</Link>
+              </Menu.Item>
+              <Menu.Item icon={<SnippetsOutlined />}>
+                <Link to="/manage/contenttemplates">{langs.get(LangKeys.ContentTemplate)}</Link>
               </Menu.Item>
             </SubMenu>
           ) : null}

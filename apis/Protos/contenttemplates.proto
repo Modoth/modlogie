@@ -1,0 +1,27 @@
+syntax = "proto3";
+package modlogie.contenttemplates;
+import "google/protobuf/empty.proto";
+import "messages.proto";
+option csharp_namespace = "Modlogie.Api.ContentTemplates";
+
+service ContentTemplatesService {
+  rpc GetAll(google.protobuf.Empty) returns(ContentTemplatesReply);
+  rpc Delete(modlogie.messages.StringId) returns(modlogie.messages.Reply);
+  rpc AddOrUpdate(ContentTemplate) returns(AddOrUpdateReply);
+}
+
+message ContentTemplate {
+  string id = 1;
+  string name = 2;
+  string data = 3;
+}
+
+message ContentTemplatesReply {
+  modlogie.messages.Error error = 1;
+  repeated ContentTemplate content_templates = 2;
+}
+
+message AddOrUpdateReply {
+  modlogie.messages.Error error = 1;
+  string id = 2;
+}
