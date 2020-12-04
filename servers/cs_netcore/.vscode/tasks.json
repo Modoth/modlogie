@@ -34,7 +34,7 @@
             "type": "shell",
             "args": [
                 "Modlogie.dll",
-                "/Execue:UpdateDbOnly=true"
+                "/Execute:UpdateDbOnly=true"
             ]
         },
         {

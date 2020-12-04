@@ -11,7 +11,7 @@ import PlainStyle from '!!raw-loader!./PlainStyle.css'
 const PlainGenerator = (props:ArticleContentViewerProps) => {
   const sections = (props.content.sections || []).filter(s => s.content)
   return ReactDOMServer.renderToStaticMarkup(<div>
-    {PlainStyle ? <div>{PlainStyle}</div> : undefined}
+    {PlainStyle ? <style>{PlainStyle}</style> : undefined}
     {
       sections.map((s, i) => <div key={s.name!} className={classNames(s.name, `section-${i}`, props.type?.additionalSections?.has(s.name!) ? 'addition' : 'normal')}>
         {i ? <h3 className="section-title">{s.name}</h3> : undefined }

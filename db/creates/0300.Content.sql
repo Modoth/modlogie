@@ -1,11 +1,13 @@
 CREATE TABLE `Content` (
   `Id` char(36) NOT NULL,
   `Name` varchar(255) NOT NULL,
+  `Created` datetime(6) NOT NULL,
   `Updated` datetime(6) NOT NULL,
   `Group` varchar(255) DEFAULT NULL,
   `Url` varchar(255) NOT NULL,
   `Data` MEDIUMTEXT DEFAULT NULL,
   PRIMARY KEY (`Id`), 
+  KEY `IX_Content_Created` (`Created`),
   KEY `IX_Content_Updated` (`Updated`),
   KEY `IX_Content_Group` (`Group`)
 );
@@ -16,6 +18,7 @@ CREATE TABLE `ContentTemplate` (
   `Updated` datetime(6) NOT NULL,
   `Data` MEDIUMTEXT DEFAULT NULL,
   PRIMARY KEY (`Id`), 
+  UNIQUE KEY `IX_ContentTemplate_Name` (`Name`),
   KEY `IX_ContentTemplate_Updated` (`Updated`)
 );
 

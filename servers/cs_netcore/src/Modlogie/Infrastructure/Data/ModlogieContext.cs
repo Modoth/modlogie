@@ -42,6 +42,8 @@ namespace Modlogie.Infrastructure.Data
             {
                 entity.ToTable("Content");
 
+                entity.HasIndex(e => e.Created);
+
                 entity.HasIndex(e => e.Group);
 
                 entity.HasIndex(e => e.Updated);
@@ -110,6 +112,9 @@ namespace Modlogie.Infrastructure.Data
             modelBuilder.Entity<ContentTemplate>(entity =>
             {
                 entity.ToTable("ContentTemplate");
+
+                entity.HasIndex(e => e.Name)
+                    .IsUnique();
 
                 entity.HasIndex(e => e.Updated);
 

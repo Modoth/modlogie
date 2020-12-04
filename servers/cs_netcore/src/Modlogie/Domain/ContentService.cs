@@ -47,7 +47,8 @@ namespace Modlogie.Domain
             {
                 content = new Content
                 {
-                    Id = article.Id
+                    Id = article.Id,
+                    Created = DateTime.Now
                 };
             }
 

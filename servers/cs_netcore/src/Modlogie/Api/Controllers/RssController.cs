@@ -54,13 +54,13 @@ namespace Modlogie.Api.Controllers
         {
             var contents = await _contentsService.All()
                 .Where(c => string.Equals(c.Group, group, StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(c => c.Updated).Take(MaxRssItemCount).ToListAsync();
+                .OrderByDescending(c => c.Created).Take(MaxRssItemCount).ToListAsync();
             if (contents.Count == 0)
             {
                 return (null, default, true);
             }
 
-            var created = contents[0].Updated;
+            var lastUpdated = contents.Select(c => c.Updated).Max();
             var url = new UriBuilder(contents[0].Url);
             var baseUrl = $"{url.Scheme}://{url.Host}:{url.Port}/";
             var sb = new StringBuilder();
@@ -69,7 +69,7 @@ namespace Modlogie.Api.Controllers
 <rss version=""2.0"" xmlns:atom=""http://www.w3.org/2005/Atom"">
 <channel>
 " +
-                      $"    <title>{group}</title>\n    <link>{baseUrl}content/rss/{group}</link>\n    <lastBuildDate>{FormatDatetime(created)}</lastBuildDate>" + @"
+                      $"    <title>{group}</title>\n    <link>{baseUrl}content/rss/{group}</link>\n    <lastBuildDate>{FormatDatetime(lastUpdated)}</lastBuildDate>" + @"
     <ttl>180</ttl>");
             foreach (var content in contents)
             {
@@ -91,7 +91,7 @@ namespace Modlogie.Api.Controllers
             sb.Append(@"
 </channel>
 </rss>");
-            return (sb.ToString(), created, false);
+            return (sb.ToString(), lastUpdated, false);
         }
 
 
@@ -124,18 +124,19 @@ namespace Modlogie.Api.Controllers
                 return await CacheRss(group);
             }
 
-            var latestContentCreated = await _contentsService.All()
+            var latestContentUpdated = (await _contentsService.All()
                 .Where(c => string.Equals(c.Group, group, StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(c => c.Updated)
+                .OrderByDescending(c => c.Created)
                 .Select(c => c.Updated)
-                .FirstOrDefaultAsync();
-            if (latestContentCreated.Ticks == 0)
+                .Take(MaxRssItemCount)
+                .ToListAsync()).Max();
+            if (latestContentUpdated.Ticks == 0)
             {
                 await _fileService.Delete(version);
                 return (null, null, true);
             }
 
-            if (latestContentCreated.Ticks > created)
+            if (latestContentUpdated.Ticks > created)
             {
                 await _fileService.Delete(version);
                 return await CacheRss(group);

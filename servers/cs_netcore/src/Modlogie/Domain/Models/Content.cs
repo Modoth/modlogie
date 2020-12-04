@@ -12,6 +12,7 @@ namespace Modlogie.Domain.Models
 
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
         public string Group { get; set; }
         public string Url { get; set; }
