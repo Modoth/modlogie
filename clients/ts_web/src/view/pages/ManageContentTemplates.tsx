@@ -33,13 +33,17 @@ export function ManageContentTemplates () {
       langs.get(LangKeys.Create),
       [
         { type: 'Text', value: '', hint: langs.get(LangKeys.Name) },
-        { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplate) }
+        { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplateListPrefix) },
+        { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplateListSurfix) },
+        { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplateArticlePrefix) },
+        { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplateArticleSurfix) }
       ],
-      async (name: string, data:string) => {
-        if (!name || !data) {
+      async (name: string, listPrefix:string, listSurfix, articlePrefix, articleSurfix) => {
+        if (!name || (!listPrefix && !listSurfix && !articlePrefix && !articleSurfix)) {
           return
         }
         try {
+          const data = { listPrefix, listSurfix, articlePrefix, articleSurfix }
           const id = await locate(IContentTemplatesService).add(name, data)
           setTemplates([...templates!, { id, data, name }])
           return true
@@ -52,20 +56,22 @@ export function ManageContentTemplates () {
 
   const updateTemplate = (template: ContentTemplate) => {
     viewService.prompt(
-      langs.get(LangKeys.Modify),
+      `${langs.get(LangKeys.Modify)}: ${template.name}`,
       [
-        {
-          type: 'Text',
-          multiline: true,
-          value: template.data,
-          hint: langs.get(LangKeys.ContentTemplate)
-        }
+        { type: 'Text', value: template.data.listPrefix, multiline: true, hint: langs.get(LangKeys.ContentTemplateListPrefix) },
+        { type: 'Text', value: template.data.listSurfix, multiline: true, hint: langs.get(LangKeys.ContentTemplateListSurfix) },
+        { type: 'Text', value: template.data.articlePrefix, multiline: true, hint: langs.get(LangKeys.ContentTemplateArticlePrefix) },
+        { type: 'Text', value: template.data.articleSurfix, multiline: true, hint: langs.get(LangKeys.ContentTemplateArticleSurfix) }
       ],
-      async (data: string) => {
-        if (!data) {
+      async (name: string, listPrefix:string, listSurfix, articlePrefix, articleSurfix) => {
+        if (!name || (template.data.listPrefix !== listPrefix &&
+          template.data.listSurfix !== listSurfix &&
+          template.data.articlePrefix !== articlePrefix &&
+          template.data.articleSurfix !== articleSurfix)) {
           return
         }
         try {
+          const data = { listPrefix, listSurfix, articlePrefix, articleSurfix }
           await locate(IContentTemplatesService).update(template.id, data)
           template!.data = data
           setTemplates([...templates!])
@@ -104,7 +110,7 @@ export function ManageContentTemplates () {
   }
 
   const renderData = (_: string, template: ContentTemplate) => {
-    return <span className="data">{template.data}</span>
+    return <span className="data">{JSON.stringify(template.data)}</span>
   }
 
   const renderDelete = (_: string, template: ContentTemplate) => {

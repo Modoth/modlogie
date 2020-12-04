@@ -1,7 +1,14 @@
+export interface ContentTemplateData {
+  listPrefix?:string,
+  listSurfix?:string,
+  articlePrefix?:string,
+  articleSurfix?:string
+}
+
 export interface ContentTemplate{
     id:string;
     name:string;
-    data:string;
+    data:ContentTemplateData;
 }
 
 export default class IContentTemplatesService {
@@ -13,11 +20,11 @@ export default class IContentTemplatesService {
     throw new Error('Method not implemented')
   }
 
-  add (name:string, data:string):Promise<string> {
+  add (name:string, data:ContentTemplateData):Promise<string> {
     throw new Error('Method not implemented')
   }
 
-  update (id:string, data:string):Promise<void> {
+  update (id:string, data:ContentTemplateData):Promise<void> {
     throw new Error('Method not implemented')
   }
 }

@@ -22,6 +22,10 @@ export class LangKeysInterface {
   Comment = 'Comment';
   Configs = 'Configs';
   ContentTemplate = 'ContentTemplate';
+  ContentTemplateArticlePrefix = 'ContentTemplateArticlePrefix';
+  ContentTemplateArticleSurfix='ContentTemplateArticleSurfix';
+  ContentTemplateListPrefix = 'ContentTemplateListPrefix';
+  ContentTemplateListSurfix = 'ContentTemplateListSurfix';
   Countdown = 'Countdown';
   Create = 'Create';
   Csv = 'Csv';

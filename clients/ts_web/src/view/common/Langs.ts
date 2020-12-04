@@ -70,6 +70,10 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Comment = '备注';
   Configs = '配置';
   ContentTemplate = '内容模板';
+  ContentTemplateListPrefix = '列表前';
+  ContentTemplateListSurfix = '列表后';
+  ContentTemplateArticlePrefix = '文章前';
+  ContentTemplateArticleSurfix='文章后';
   Countdown = '倒计时';
   Create = '创建';
   Csv = 'csv';

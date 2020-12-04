@@ -19,7 +19,7 @@ namespace Modlogie.Infrastructure.Data
         protected abstract DbSet<TEntity> Entities { get; }
         public IEntityServiceContext Context => DbContext;
 
-        public async Task<TEntity> Add(TEntity entity)
+        public virtual async Task<TEntity> Add(TEntity entity)
         {
             await Entities.AddAsync(entity);
             if (Context.CurrentTransaction == null)
@@ -30,7 +30,7 @@ namespace Modlogie.Infrastructure.Data
             return entity;
         }
 
-        public async Task AddRange(IEnumerable<TEntity> entities)
+        public virtual async Task AddRange(IEnumerable<TEntity> entities)
         {
             await Entities.AddRangeAsync(entities);
             if (Context.CurrentTransaction == null)
@@ -39,7 +39,7 @@ namespace Modlogie.Infrastructure.Data
             }
         }
 
-        public async Task<TEntity> Update(TEntity entity)
+        public virtual async Task<TEntity> Update(TEntity entity)
         {
             Entities.Update(entity);
             if (Context.CurrentTransaction == null)
@@ -55,7 +55,7 @@ namespace Modlogie.Infrastructure.Data
             return Entities;
         }
 
-        public async Task<int> Delete(TEntity entity)
+        public virtual async Task<int> Delete(TEntity entity)
         {
             Entities.Remove(entity);
             if (Context.CurrentTransaction == null)
@@ -66,7 +66,7 @@ namespace Modlogie.Infrastructure.Data
             return 0;
         }
 
-        public async Task<int> DeleteRange(IEnumerable<TEntity> entities)
+        public virtual async Task<int> DeleteRange(IEnumerable<TEntity> entities)
         {
             Entities.RemoveRange(entities);
             if (Context.CurrentTransaction == null)
@@ -77,7 +77,7 @@ namespace Modlogie.Infrastructure.Data
             return 0;
         }
 
-        public async Task<int> DeleteAll()
+        public virtual async Task<int> DeleteAll()
         {
             Entities.RemoveRange(Entities);
             if (Context.CurrentTransaction == null)
@@ -88,7 +88,7 @@ namespace Modlogie.Infrastructure.Data
             return 0;
         }
 
-        public async Task<int> UpdateRange(IEnumerable<TEntity> entities)
+        public virtual async Task<int> UpdateRange(IEnumerable<TEntity> entities)
         {
             Entities.UpdateRange(entities);
             if (Context.CurrentTransaction == null)
