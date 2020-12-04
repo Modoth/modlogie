@@ -113,7 +113,6 @@ namespace Modlogie.Api.Controllers
 
         private async Task<(string, string, bool)> GetRssFromCache(string group)
         {
-            return await CacheRss(group);
             var version = await _cache.GetStringAsync(RssPathKey(group));
             if (string.IsNullOrWhiteSpace(version))
             {
