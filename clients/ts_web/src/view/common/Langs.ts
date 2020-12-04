@@ -133,7 +133,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Password = '密码';
   Preview = '预览';
   Publish = '发布';
-  PUBLISH_NONE = '';
+  PUBLISH_NONE = '所有';
   PUBLISH_WX = '微信';
   PUBLISH_CONTENT = '静态';
   QrCode = '网址';

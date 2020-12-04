@@ -1,6 +1,7 @@
 import './ArticleView.less'
-import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType } from '../../pluginbase/IPluginInfo'
+import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType, ArticleContentViewerProps } from '../../pluginbase/IPluginInfo'
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
+import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
 import { UploadOutlined, ShareAltOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate } from '../common/Contexts'
@@ -34,6 +35,20 @@ const generateNewFileNames = (name: string, existedName: Set<string>) => {
     }
   }
   return name
+}
+
+const getAutoUpdaters = (publishGenerators?: Map<string, {
+  generator: (props: ArticleContentViewerProps) => string;
+  previewTemplate?: string | undefined;
+  autoUpdate?: boolean | undefined;
+}>) => {
+  var updaters :{name:string, generator: (props: ArticleContentViewerProps) => string } [] = []
+  if (publishGenerators) {
+    publishGenerators.forEach(({ generator, autoUpdate }, name) => {
+      if (autoUpdate) { updaters.push({ name, generator }) }
+    })
+  }
+  return updaters
 }
 
 export default function ArticleView (props: {
@@ -75,7 +90,28 @@ export default function ArticleView (props: {
   const [recommendView, setRecommendView] = useState(props.recommendView || false)
   const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend)
   const [recommendTitle, setRecommendTitle] = useState('')
+  const [autoUpdaters] = useState(getAutoUpdaters(props.type.publishGenerators))
+  const autoUpdate = async () => {
+    if (autoUpdaters && autoUpdaters.length) {
+      const publishService = locate(IPublishService)
+      var newPublishIds = new Map(publishedIds || [])
 
+      for (const { name, generator } of autoUpdaters) {
+        if (publishedIds?.has(name)) {
+          const id = await publishService.publish(name, props.article.id!, props.type.displayName || props.type.name,
+          `#/article/${props.article.path!}`,
+          generator({ files, content, articleId: props.article.id! })
+          )
+          if (id) {
+            newPublishIds.set(name, id)
+          } else {
+            newPublishIds.delete(name)
+          }
+        }
+        setPublishedIds(newPublishIds)
+      }
+    }
+  }
   const addFile = (file?: File) => {
     viewService.prompt(
       langs.get(LangKeys.Import),
@@ -103,6 +139,7 @@ export default function ArticleView (props: {
           )
           setFiles(newFiles)
           editorRefs && editorRefs.addFile(newFile)
+          await autoUpdate()
           viewService.setLoading(false)
           return true
         } catch (e) {
@@ -145,6 +182,7 @@ export default function ArticleView (props: {
       ) {
         await service.updateArticleContent(props.article, newContent, type?.additionalSections, files)
         setContent(newContent)
+        await autoUpdate()
       }
       setEditing(false)
     } catch (e) {

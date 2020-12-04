@@ -2,11 +2,13 @@ import './Library.css'
 import './Library.less'
 import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
+import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { PlusOutlined, PoweroffOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocate, useUser } from '../common/Contexts'
 import { v4 } from 'uuid'
+import { MmIcon } from '../common/Icons'
 import Article, { ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import ArticleListSummary from './ArticleListSummary'
 import ArticleView from './ArticleView'
@@ -127,16 +129,30 @@ export default function Library (props: LibraryProps) {
 
   const [articleTags, setArticleTags] = useState<ArticleTag[]>([])
   const [tags, setTags] = useState(new Map<string, Tag>())
+  const [publishTags, setPublishTags] = useState<ArticleTag[]>([])
+  const [selectedPublishTag, setSelectedPublishTag] = useState<ArticleTag|undefined>(undefined)
   const fetchTags = async () => {
     const tagsService = locate(ITagsService)
-    const allTags = (await tagsService.all()).filter(
-      (t) => t.type === TagType.ENUM
-    )
+    const allTags = (await tagsService.all())
     const tagsDict = new Map(allTags.map((n) => [n.name!, n]))
     const tagNames = await locate(IConfigsService)
       .getValuesOrDefault(getArticleTags(props.type.name))
     if (props.type.subTypeTag) {
       tagNames.push(props.type.subTypeTag)
+    }
+    if (type?.publishGenerators?.size) {
+      const publishService = locate(IPublishService)
+      const publishTags:ArticleTag[] = []
+      publishTags.push(new ArticleTag(LangKeys.PUBLISH_NONE, [], ''))
+      type.publishGenerators.forEach((_, publishName) => {
+        var tag = tagsDict.get(publishService.getTagName(publishName))
+        if (!tag) {
+          return
+        }
+        publishTags.push(new ArticleTag(tag.name, [], tag.id, undefined, langs.get(publishName)))
+      })
+      setPublishTags(publishTags)
+      setSelectedPublishTag(publishTags[0])
     }
     if (!tagNames.length) {
       return
@@ -146,7 +162,7 @@ export default function Library (props: LibraryProps) {
     setArticleTags(
       tagNames
         .map((name) => tagsDict.get(name))
-        .filter((t) => t)
+        .filter((t) => t && t.type === TagType.ENUM)
         .map((tag) => {
           return new ArticleTag(tag!.name, tag!.values || [], tag!.id!)
         })
@@ -271,6 +287,11 @@ export default function Library (props: LibraryProps) {
                   )
               ]
               : []),
+            ...(selectedPublishTag && selectedPublishTag.id ? [
+              new Condition()
+                .setType(Condition.ConditionType.HAS)
+                .setProp(selectedPublishTag.name)
+            ] : []),
             ...articleTags
               .filter((t) => t.value)
               .map((t) =>
@@ -520,11 +541,12 @@ export default function Library (props: LibraryProps) {
   useEffect(() => {
     if (viewService.setFloatingMenus) {
       viewService.setFloatingMenus(Library.name, <>
-        {type?.publishGenerators?.has(LangKeys.PUBLISH_CONTENT) ? (
+        {user.editingPermission && type?.publishGenerators?.has(LangKeys.PUBLISH_CONTENT) ? (
           <Button
             type="primary"
             size="large"
             shape="circle"
+            className="rss-btn"
             onClick={() => {
               window.open(`/api/rss/${type?.displayName || type?.name}`, '_blank')
             }}
@@ -585,11 +607,6 @@ export default function Library (props: LibraryProps) {
             link: '/',
             icon: <PoweroffOutlined className="menu-icon" />
           }
-          // , {
-          //   title: langs.get(LangKeys.Export),
-          //   onClick: exportMm,
-          //   icon: <MmIcon></MmIcon>
-          // }
         ]}></TitleBar>
 
       {articles.length || recommendsArticles.length ? null : (
@@ -648,7 +665,7 @@ export default function Library (props: LibraryProps) {
         closable={false}
         className={classNames('filter-panel')}
         height="100%"
-        visible={showFilter}
+        visible={showFilter && !favorite}
         placement="bottom"
         onClose={() => setShowFilter(false)}
       >
@@ -685,6 +702,18 @@ export default function Library (props: LibraryProps) {
               }}
             ></Button>
           </div>
+          <Radio.Group
+            className="tag-list"
+            defaultValue={publishTags[0]}
+            buttonStyle="solid"
+            onChange={(e) => setSelectedPublishTag(e.target.value)}
+          >
+              {...publishTags.map((tag:ArticleTag) => (
+                <Radio.Button className="tag-item" key={tag.id} value={tag}>
+                  {tag.displayName || langs.get(tag.name)}
+                </Radio.Button>
+              ))}
+          </Radio.Group>
           {articleTags.map((tag, i) => (
             <Radio.Group
               className="tag-list"
@@ -705,6 +734,13 @@ export default function Library (props: LibraryProps) {
           ))}
           <div className="subjects">
             {/* <div className="background background-fixed"></div> */}
+            <Button
+              type="link"
+              size="large"
+              icon={<MmIcon></MmIcon>}
+              className="export-btn"
+              onClick={exportMm}
+            ></Button>
             <Tree
               showLine={true}
               treeData={subjects}

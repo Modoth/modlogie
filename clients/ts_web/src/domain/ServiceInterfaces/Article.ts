@@ -3,7 +3,8 @@ export class ArticleTag {
     public name: string,
     public values: string[],
     public id: string,
-    public value?: string
+    public value?: string,
+    public displayName?: string
   ) { }
 }
 

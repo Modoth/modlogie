@@ -9,6 +9,8 @@ import WxGenerator from './view/WxGenerator'
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import WxPreview from '!!raw-loader!./view/WxPreview.html'
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import PlainPreview from '!!raw-loader!./view/PlainPreview.html'
 
 export default class Blog extends PluginInfoBase implements IPluginInfo {
   static get typeName () { return 'Blog' }
@@ -20,7 +22,7 @@ export default class Blog extends PluginInfoBase implements IPluginInfo {
       {
         publishGenerators: new Map([
           [LangKeys.PUBLISH_WX, { generator: WxGenerator, previewTemplate: WxPreview }],
-          [LangKeys.PUBLISH_CONTENT, { generator: PlainGenerator }]
+          [LangKeys.PUBLISH_CONTENT, { generator: PlainGenerator, autoUpdate: true, previewTemplate: PlainPreview }]
         ])
       })
   }

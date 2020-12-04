@@ -42,11 +42,12 @@ namespace Modlogie.Domain
             }
 
             var content = await _entitiesService.All().FirstOrDefaultAsync(c => c.Id == article.Id);
-            if (content == null)
+            var existed = content != null;
+            if (!existed)
             {
                 content = new Content
                 {
-                    Id = Guid.NewGuid()
+                    Id = article.Id
                 };
             }
 
@@ -55,8 +56,14 @@ namespace Modlogie.Domain
             content.Group = article.Group;
             content.Data = sb.ToString();
             content.Url = article.Url;
-
-            content = await _entitiesService.Add(content);
+            if (existed)
+            {
+                content = await _entitiesService.Update(content);
+            }
+            else
+            {
+                content = await _entitiesService.Add(content);
+            }
             return content.Id.ToString();
         }
     }
