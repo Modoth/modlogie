@@ -51,7 +51,7 @@ namespace Modlogie.Domain
                 };
             }
 
-            content.Created = DateTime.Now;
+            content.Updated = DateTime.Now;
             content.Name = article.Title;
             content.Group = article.Group;
             content.Data = sb.ToString();

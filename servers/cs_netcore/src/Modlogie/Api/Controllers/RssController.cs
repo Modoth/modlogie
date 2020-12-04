@@ -54,13 +54,13 @@ namespace Modlogie.Api.Controllers
         {
             var contents = await _contentsService.All()
                 .Where(c => string.Equals(c.Group, group, StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(c => c.Created).Take(MaxRssItemCount).ToListAsync();
+                .OrderByDescending(c => c.Updated).Take(MaxRssItemCount).ToListAsync();
             if (contents.Count == 0)
             {
                 return (null, default, true);
             }
 
-            var created = contents[0].Created;
+            var created = contents[0].Updated;
             var url = new UriBuilder(contents[0].Url);
             var baseUrl = $"{url.Scheme}://{url.Host}:{url.Port}/";
             var sb = new StringBuilder();
@@ -83,7 +83,7 @@ namespace Modlogie.Api.Controllers
                 sb.Append(@"
         </description>
 " +
-                          $"        <pubDate>{FormatDatetime(content.Created)}</pubDate>\n" +
+                          $"        <pubDate>{FormatDatetime(content.Updated)}</pubDate>\n" +
                           $"        <guid>{content.Id}</guid>" + @"
     </item>");
             }
@@ -126,8 +126,8 @@ namespace Modlogie.Api.Controllers
 
             var latestContentCreated = await _contentsService.All()
                 .Where(c => string.Equals(c.Group, group, StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(c => c.Created)
-                .Select(c => c.Created)
+                .OrderByDescending(c => c.Updated)
+                .Select(c => c.Updated)
                 .FirstOrDefaultAsync();
             if (latestContentCreated.Ticks == 0)
             {

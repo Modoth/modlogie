@@ -40,7 +40,7 @@ namespace Modlogie.Infrastructure.Data
             {
                 entity.ToTable("Content");
 
-                entity.HasIndex(e => e.Created)
+                entity.HasIndex(e => e.Updated)
                     .HasName("IX_File_Created");
 
                 entity.HasIndex(e => e.Group)
