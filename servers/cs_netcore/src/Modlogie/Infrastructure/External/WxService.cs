@@ -5,7 +5,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
 using Modlogie.Domain;
 using Newtonsoft.Json;
 
@@ -56,14 +55,10 @@ namespace Modlogie.Infrastructure.External
 
         private readonly Lazy<IKeyValuesEntityService> _mKeyValuesService;
 
-        private readonly string _resourcesGroup;
-
-        public WxService(IConfiguration configuration,
-            IDistributedCache cache,
+        public WxService(IDistributedCache cache,
             Lazy<IKeyValuesEntityService> keyValuesService,
             Lazy<IFileContentService> fileContentService)
         {
-            _resourcesGroup = configuration.GetValue<string>("File:Resources");
             _cache = cache;
             _mKeyValuesService = keyValuesService;
             _mFileContentService = fileContentService;
@@ -210,7 +205,7 @@ namespace Modlogie.Infrastructure.External
                 Title = article.Title,
                 ContentSourceUrl = article.Url
             };
-            param.Articles = new[] {wxArticle};
+            param.Articles = new[] { wxArticle };
             var sb = new StringBuilder();
             var thumbUploaded = false;
             foreach (var slice in article.Slices)
@@ -225,7 +220,7 @@ namespace Modlogie.Infrastructure.External
                 {
                     if (!thumbUploaded)
                     {
-                        await using (var file = await _mFileContentService.Value.Open(_resourcesGroup, slice.Value))
+                        await using (var file = await _mFileContentService.Value.Open(slice.Value))
                         {
                             wxArticle.ThumbMediaId = await Upload(Path.GetFileName(slice.Value), file,
                                 WxUploadTypes.CONFIG_THUMB);
@@ -234,7 +229,7 @@ namespace Modlogie.Infrastructure.External
                         thumbUploaded = true;
                     }
 
-                    await using (var file = await _mFileContentService.Value.Open(_resourcesGroup, slice.Value))
+                    await using (var file = await _mFileContentService.Value.Open(slice.Value))
                     {
                         sb.Append(await UploadImg(Path.GetFileName(slice.Value), file));
                     }

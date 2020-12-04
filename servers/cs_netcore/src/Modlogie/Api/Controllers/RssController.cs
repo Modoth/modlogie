@@ -113,13 +113,14 @@ namespace Modlogie.Api.Controllers
         private async Task<(string, string, bool)> GetRssFromCache(string group)
         {
             var version = await _cache.GetStringAsync(RssPathKey(group));
-            if (string.IsNullOrWhiteSpace(version))
+            if (string.IsNullOrWhiteSpace(version) || !await _fileService.Existed(version))
             {
                 return await CacheRss(group);
             }
 
             if (!long.TryParse(await _cache.GetStringAsync(RssTimeKey(group)), out var created))
             {
+                await _fileService.Delete(version);
                 return await CacheRss(group);
             }
 
@@ -130,11 +131,13 @@ namespace Modlogie.Api.Controllers
                 .FirstOrDefaultAsync();
             if (latestContentCreated.Ticks == 0)
             {
+                await _fileService.Delete(version);
                 return (null, null, true);
             }
 
             if (latestContentCreated.Ticks > created)
             {
+                await _fileService.Delete(version);
                 return await CacheRss(group);
             }
 

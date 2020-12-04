@@ -63,7 +63,7 @@ namespace Modlogie.Api.Services
                 Published = i.Published.HasValue ? i.Published.Value.ToUniversalTime().ToTimestamp() : new Timestamp(),
                 AdditionalType = i.AdditionalType ?? 0,
                 FileTagsForSelect = i.FileTags != null
-                    ? i.FileTags.Select(t => new FileTag {TagId = t.TagId.ToString(), Value = t.Value})
+                    ? i.FileTags.Select(t => new FileTag { TagId = t.TagId.ToString(), Value = t.Value })
                     : null
             };
 
@@ -138,8 +138,8 @@ namespace Modlogie.Api.Services
             {
                 var indexedParentPath = query.Parent!;
                 parentPaths = await _service.All()
-                    .Where(n => n.Type == (int) FileType.Folder && n.Path == indexedParentPath).Select(
-                        n => new FileParentId {Path = n.Path + PathSep}
+                    .Where(n => n.Type == (int)FileType.Folder && n.Path == indexedParentPath).Select(
+                        n => new FileParentId { Path = n.Path + PathSep }
                     ).ToArrayAsync();
                 if (!parentPaths.Any())
                 {
@@ -252,7 +252,7 @@ namespace Modlogie.Api.Services
         {
             var reply = new FilesReply();
             reply.Files.AddRange(await _service.All()
-                .Where(f => f.Type == (int) FileType.Folder)
+                .Where(f => f.Type == (int)FileType.Folder)
                 .Select(Selector)
                 .ToArrayAsync());
             return reply;
@@ -261,14 +261,14 @@ namespace Modlogie.Api.Services
         public override async Task<FilesReply> GetFolders(Empty request, ServerCallContext context)
         {
             var version = await _cache.GetStringAsync(FoldersVersionCacheKey);
-            if (string.IsNullOrWhiteSpace(version))
+            if (string.IsNullOrWhiteSpace(version) || !await _contentService.Existed(version))
             {
                 var reply = await UpdateFolderVersionsCache();
                 return reply;
             }
             else
             {
-                var reply = new FilesReply {Version = version};
+                var reply = new FilesReply { Version = version };
                 return reply;
             }
         }
@@ -276,7 +276,7 @@ namespace Modlogie.Api.Services
         public override async Task<FilesReply> GetFiles(GetFilesRequest request, ServerCallContext context)
         {
             var reply = new FilesReply();
-            var items = _service.All().Where(f => f.Type == (int) FileType.Normal);
+            var items = _service.All().Where(f => f.Type == (int)FileType.Normal);
             if (!string.IsNullOrWhiteSpace(request.ParentId))
             {
                 if (!Guid.TryParse(request.ParentId, out var folderId))
@@ -285,7 +285,7 @@ namespace Modlogie.Api.Services
                     return reply;
                 }
 
-                var folder = await _service.All().Where(k => k.Id == folderId && k.Type == (int) FileType.Folder)
+                var folder = await _service.All().Where(k => k.Id == folderId && k.Type == (int)FileType.Folder)
                     .FirstOrDefaultAsync();
                 if (folder == null)
                 {
@@ -343,7 +343,7 @@ namespace Modlogie.Api.Services
             }
 
             var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
-            var items = _service.All().Where(f => f.Type == (int) FileType.Resource);
+            var items = _service.All().Where(f => f.Type == (int)FileType.Resource);
             if (!readPrivate)
             {
                 items = items.Where(i => i.Private == 0ul);
@@ -360,7 +360,7 @@ namespace Modlogie.Api.Services
 
         private string DbcToSbc(string input)
         {
-            return new string(input.Select(c => c == 32 ? (char) 12288 : c < 127 ? (char) (c + 65248) : c).ToArray());
+            return new string(input.Select(c => c == 32 ? (char)12288 : c < 127 ? (char)(c + 65248) : c).ToArray());
         }
 
         private bool AddFileFromNewFolderItem(HashSet<string> existedFiles, List<File> files, NewFolderItem item,
@@ -384,7 +384,10 @@ namespace Modlogie.Api.Services
 
             var file = new File
             {
-                Type = (int) FileType.Folder, Name = item.Name, Created = created, Modified = created,
+                Type = (int)FileType.Folder,
+                Name = item.Name,
+                Created = created,
+                Modified = created,
                 Published = created
             };
             files.Add(file);
@@ -439,7 +442,7 @@ namespace Modlogie.Api.Services
                 }
 
                 parent = await _service.All()
-                    .FirstOrDefaultAsync(f => f.Id == parentId && f.Type == (int) FileType.Folder);
+                    .FirstOrDefaultAsync(f => f.Id == parentId && f.Type == (int)FileType.Folder);
                 if (parent == null)
                 {
                     reply.Error = Error.NoSuchEntity;
@@ -503,7 +506,10 @@ namespace Modlogie.Api.Services
             var tagsDict = tags.ToDictionary(t => t.TagId);
             var updates = request.Tags.Select(t => new
             {
-                TagId = Guid.Parse(t.TagId), t.Value, t.Content, ContentType = GetContentType(t.ContentType),
+                TagId = Guid.Parse(t.TagId),
+                t.Value,
+                t.Content,
+                ContentType = GetContentType(t.ContentType),
                 File = item
             });
 
@@ -532,7 +538,7 @@ namespace Modlogie.Api.Services
                     tags.Add(tag);
                 }
 
-                if (tag.Tag.Type == (int) Tag.Types.Type.Resource)
+                if (tag.Tag.Type == (int)Tag.Types.Type.Resource)
                 {
                     if (string.IsNullOrWhiteSpace(update.ContentType))
                     {
@@ -572,7 +578,7 @@ namespace Modlogie.Api.Services
                 }
             }
 
-            if (item.Type == (int) FileType.Folder)
+            if (item.Type == (int)FileType.Folder)
             {
                 await ClearFolderVersionsCache();
             }
@@ -649,7 +655,7 @@ namespace Modlogie.Api.Services
                 var deletes = request.Tags.Select(t => Guid.Parse(t.TagId)).ToHashSet();
                 item.FileTags = item.FileTags.Where(t => !deletes.Contains(t.TagId)).ToList();
                 await _service.Update(item);
-                if (item.Type == (int) FileType.Folder)
+                if (item.Type == (int)FileType.Folder)
                 {
                     await ClearFolderVersionsCache();
                 }
@@ -686,7 +692,7 @@ namespace Modlogie.Api.Services
             }
 
             var file = new File
-                {Type = (int) request.FileType, Name = request.Name, Created = DateTime.Now, Modified = DateTime.Now};
+            { Type = (int)request.FileType, Name = request.Name, Created = DateTime.Now, Modified = DateTime.Now };
             if (!string.IsNullOrWhiteSpace(request.ParentId))
             {
                 if (!Guid.TryParse(request.ParentId, out var parentId))
@@ -696,7 +702,7 @@ namespace Modlogie.Api.Services
                 }
 
                 var parent = await _service.All()
-                    .FirstOrDefaultAsync(f => f.Id == parentId && f.Type == (int) FileType.Folder);
+                    .FirstOrDefaultAsync(f => f.Id == parentId && f.Type == (int)FileType.Folder);
                 if (parent == null)
                 {
                     reply.Error = Error.NoSuchEntity;
@@ -714,14 +720,14 @@ namespace Modlogie.Api.Services
             using (var trans = _service.Context.BeginTransaction())
             {
                 file = await _service.Add(file);
-                if (file.Type == (int) FileType.Normal && file.Parent != null &&
-                    file.Parent.Type == (int) FileType.Folder)
+                if (file.Type == (int)FileType.Normal && file.Parent != null &&
+                    file.Parent.Type == (int)FileType.Folder)
                 {
                     file.Parent.NormalFilesCount = (file.Parent.NormalFilesCount ?? 0) + 1;
                     await _service.Update(file.Parent);
                     await ClearFolderVersionsCache();
                 }
-                else if (file.Type == (int) FileType.Folder)
+                else if (file.Type == (int)FileType.Folder)
                 {
                     await ClearFolderVersionsCache();
                 }
@@ -790,7 +796,7 @@ namespace Modlogie.Api.Services
             }
 
             reply.File = Converter(item);
-            if (item.Type == (int) FileType.Folder)
+            if (item.Type == (int)FileType.Folder)
             {
                 await ClearFolderVersionsCache();
             }
@@ -827,7 +833,7 @@ namespace Modlogie.Api.Services
                 return reply;
             }
 
-            var parent = await _service.All().Where(i => i.Id == parentId && i.Type == (int) FileType.Folder)
+            var parent = await _service.All().Where(i => i.Id == parentId && i.Type == (int)FileType.Folder)
                 .FirstOrDefaultAsync();
             if (parent == null)
             {
@@ -837,14 +843,14 @@ namespace Modlogie.Api.Services
 
             using (var trans = _service.Context.BeginTransaction())
             {
-                if (file.Type == (int) FileType.Normal && file.Parent != null &&
-                    file.Parent.Type == (int) FileType.Folder)
+                if (file.Type == (int)FileType.Normal && file.Parent != null &&
+                    file.Parent.Type == (int)FileType.Folder)
                 {
                     file.Parent.NormalFilesCount = Math.Max(0, (file.Parent.NormalFilesCount ?? 0) - 1);
                     await _service.Update(file.Parent);
                     await ClearFolderVersionsCache();
                 }
-                else if (file.Type == (int) FileType.Folder)
+                else if (file.Type == (int)FileType.Folder)
                 {
                     await ClearFolderVersionsCache();
                 }
@@ -866,8 +872,8 @@ namespace Modlogie.Api.Services
                     await _service.UpdateRange(children);
                 }
 
-                if (file.Type == (int) FileType.Normal && file.Parent != null &&
-                    file.Parent.Type == (int) FileType.Folder)
+                if (file.Type == (int)FileType.Normal && file.Parent != null &&
+                    file.Parent.Type == (int)FileType.Folder)
                 {
                     file.Parent.NormalFilesCount = Math.Max(0, (file.Parent.NormalFilesCount ?? 0) + 1);
                     await _service.Update(file.Parent);
@@ -902,7 +908,7 @@ namespace Modlogie.Api.Services
                 return reply;
             }
 
-            var item = await _service.All().Where(i => i.Id == id && i.Type != (int) FileType.Folder)
+            var item = await _service.All().Where(i => i.Id == id && i.Type != (int)FileType.Folder)
                 .FirstOrDefaultAsync();
             if (item == null)
             {
@@ -953,7 +959,7 @@ namespace Modlogie.Api.Services
 
             item.Comment = request.Comment;
             item = await _service.Update(item);
-            if (item.Type == (int) FileType.Folder)
+            if (item.Type == (int)FileType.Folder)
             {
                 await ClearFolderVersionsCache();
             }
@@ -993,7 +999,7 @@ namespace Modlogie.Api.Services
 
             item.AdditionalType = request.AdditionalType;
             item = await _service.Update(item);
-            if (item.Type == (int) FileType.Folder)
+            if (item.Type == (int)FileType.Folder)
             {
                 await ClearFolderVersionsCache();
             }
@@ -1049,7 +1055,7 @@ namespace Modlogie.Api.Services
 
             var file = new File
             {
-                Type = (int) FileType.Resource,
+                Type = (int)FileType.Resource,
                 Name = Guid.NewGuid().ToString(),
                 Parent = parent,
                 Created = DateTime.Now,
@@ -1114,14 +1120,14 @@ namespace Modlogie.Api.Services
 
                     await _service.Delete(file);
                     await _service.DeleteRange(children);
-                    if (file.Type == (int) FileType.Normal && file.Parent != null &&
-                        file.Parent.Type == (int) FileType.Folder)
+                    if (file.Type == (int)FileType.Normal && file.Parent != null &&
+                        file.Parent.Type == (int)FileType.Folder)
                     {
                         await ClearFolderVersionsCache();
                         file.Parent.NormalFilesCount = Math.Max(0, (file.Parent.NormalFilesCount ?? 0) - 1);
                         await _service.Update(file.Parent);
                     }
-                    else if (file.Type == (int) FileType.Folder)
+                    else if (file.Type == (int)FileType.Folder)
                     {
                         await ClearFolderVersionsCache();
                     }

@@ -44,11 +44,19 @@ namespace Modlogie.Infrastructure.Data
         }
 
 #pragma warning disable 1998
-        public async Task<Stream> Open(string group, string id)
+        public async Task<Stream> Open(string id)
 #pragma warning restore 1998
         {
             var filePath = Path.Join(_options.ContentRoot, id);
             return File.Open(filePath, FileMode.Open);
+        }
+
+#pragma warning disable 1998
+        public async Task<bool> Existed(string id)
+#pragma warning restore 1998
+        {
+            var filePath = Path.Join(_options.ContentRoot, id);
+            return File.Exists(filePath);
         }
 
         private (string, string) GenerateAndPrepareForFileName(string group, string type)

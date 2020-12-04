@@ -10,8 +10,10 @@ namespace Modlogie.Domain
 
         Task<string> Add(string group, Func<Stream, Task> writeContent, string type = "txt");
 
-        Task<Stream> Open(string group, string id);
+        Task<Stream> Open(string id);
 
         Task<bool> Delete(string id);
+
+        Task<bool> Existed(string id);
     }
 }
