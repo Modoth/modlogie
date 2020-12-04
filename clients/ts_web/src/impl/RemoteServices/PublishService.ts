@@ -9,7 +9,7 @@ import ITagsService, { TagNames, TagType } from '../../domain/ServiceInterfaces/
 export default class PublishService extends IServicesLocator implements IPublishService {
   getTagName = (type:string) => `${TagNames.RESERVED_SHARE_PREFIX}${type}`
 
-  async publish (type: string, articleId: string, group: string, url: string, content: string): Promise<string> {
+  async publish (type: string, articleId: string, group: string, baseUrl:string, url: string, content: string): Promise<string> {
     var tagName = this.getTagName(type)
     var tagsService = this.locate(ITagsService)
     var tag = await tagsService.get(tagName)
@@ -17,7 +17,7 @@ export default class PublishService extends IServicesLocator implements IPublish
       tag = await tagsService.add(tagName, TagType.STRING)
     }
     var res = await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(PublishServiceClient).add(
-      new AddRequest().setArticleId(articleId).setType(type).setGroup(group).setUrl(url).setContent(content), null))
+      new AddRequest().setArticleId(articleId).setType(type).setGroup(group).setBaseUrl(baseUrl).setUrl(url).setContent(content), null))
     var id = res.getId()
     await this.locate(IArticleService).updateTags(articleId, { id: tag.id, value: id })
     return id

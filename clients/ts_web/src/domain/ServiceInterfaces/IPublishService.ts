@@ -3,7 +3,7 @@ export class IPublishService {
     throw new Error('Method not implemented.')
   }
 
-  publish (type:string, articleId:string, group:string, url:string, content:string) :Promise<string> {
+  publish (type:string, articleId:string, group:string, baseUrl:string, url:string, content:string) :Promise<string> {
     throw new Error('Method not implemented.')
   }
 

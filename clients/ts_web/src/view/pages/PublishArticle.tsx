@@ -36,7 +36,8 @@ export default function PublishArticle (props:{
       var id = await publishService.publish(props.publishType,
         props.articleId,
         props.group,
-        `#/article/${props.articlePath}`,
+        `${window.location.protocol}//${window.location.host}`,
+        `/#/article${props.articlePath}`,
         content)
       setPublishId(id)
       props.onPublishIdChanged(id)

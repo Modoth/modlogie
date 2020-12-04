@@ -13,7 +13,8 @@ message AddRequest {
   string article_id = 2;
   string content = 3;
   string group = 4;
-  string url = 5;
+  string base_url = 5;
+  string url = 6;
 }
 
 message AddResponce {

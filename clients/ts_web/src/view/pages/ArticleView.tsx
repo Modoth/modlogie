@@ -99,8 +99,9 @@ export default function ArticleView (props: {
       for (const { name, generator } of autoUpdaters) {
         if (publishedIds?.has(name)) {
           const id = await publishService.publish(name, props.article.id!, props.type.displayName || props.type.name,
-          `#/article/${props.article.path!}`,
-          generator({ files, content, articleId: props.article.id! })
+            `${window.location.protocol}//${window.location.host}`,
+            `/#/article/${props.article.path!}`,
+            generator({ files, content, articleId: props.article.id! })
           )
           if (id) {
             newPublishIds.set(name, id)

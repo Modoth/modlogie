@@ -62,7 +62,8 @@ namespace Modlogie.Api.Controllers
             }
 
             var created = contents[0].Created;
-            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/";
+            var url = new UriBuilder(contents[0].Url);
+            var baseUrl = $"{url.Scheme}://{url.Host}:{url.Port}/";
             var sb = new StringBuilder();
             group = SecurityElement.Escape(group);
             sb.Append(@"<?xml version=""1.0"" encoding=""UTF-8""?>
@@ -112,6 +113,7 @@ namespace Modlogie.Api.Controllers
 
         private async Task<(string, string, bool)> GetRssFromCache(string group)
         {
+            return await CacheRss(group);
             var version = await _cache.GetStringAsync(RssPathKey(group));
             if (string.IsNullOrWhiteSpace(version))
             {

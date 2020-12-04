@@ -75,8 +75,7 @@ namespace Modlogie.Api.Services
                 reply.Error = Error.NoSuchEntity;
                 return reply;
             }
-            var req = context.GetHttpContext().Request;
-            var baseUrl = $"{req.Scheme}://{req.Host.Value}/";
+            var baseUrl = request.BaseUrl;
             try
             {
                 var article = new PublishArticle

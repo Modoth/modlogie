@@ -37,7 +37,7 @@ namespace Modlogie.Domain
 
                 if (slice.Type == PublishArticleSliceType.Image)
                 {
-                    sb.Append(article.BaseUrl + slice.Value);
+                    sb.Append($"{article.BaseUrl}/{slice.Value}");
                 }
             }
 
