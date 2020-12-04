@@ -360,6 +360,11 @@ const buildServicesLocator = () => {
 }
 
 const bootstrap = async () => {
+  const invalidSurfix = window.location.origin + '/%23/'
+  if (window.location.href.startsWith(invalidSurfix)) {
+    window.location.href = window.location.href.replace(invalidSurfix, '/#/')
+  }
+  console.log(window.location)
   const serviceLocator = await buildServicesLocator()
   await loadPlugins(serviceLocator as ServicesLocator)
   const loginService = serviceLocator.locate(ILoginAppservice)

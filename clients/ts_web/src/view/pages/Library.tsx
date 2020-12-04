@@ -541,7 +541,7 @@ export default function Library (props: LibraryProps) {
   useEffect(() => {
     if (viewService.setFloatingMenus) {
       viewService.setFloatingMenus(Library.name, <>
-        {user.editingPermission && type?.publishGenerators?.has(LangKeys.PUBLISH_CONTENT) ? (
+        {type?.publishGenerators?.has(LangKeys.PUBLISH_CONTENT) ? (
           <Button
             type="primary"
             size="large"
@@ -702,7 +702,7 @@ export default function Library (props: LibraryProps) {
               }}
             ></Button>
           </div>
-          <Radio.Group
+          {user.editingPermission && publishTags && publishTags.length ? <Radio.Group
             className="tag-list"
             defaultValue={publishTags[0]}
             buttonStyle="solid"
@@ -713,7 +713,7 @@ export default function Library (props: LibraryProps) {
                   {tag.displayName || langs.get(tag.name)}
                 </Radio.Button>
               ))}
-          </Radio.Group>
+          </Radio.Group> : undefined}
           {articleTags.map((tag, i) => (
             <Radio.Group
               className="tag-list"
