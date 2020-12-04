@@ -548,7 +548,7 @@ export default function Library (props: LibraryProps) {
             shape="circle"
             className="rss-btn"
             onClick={() => {
-              window.open(`/api/rss/${type?.displayName || type?.name}`, '_blank')
+              window.open(`/content/rss/${type?.displayName || type?.name}`, '_blank')
             }}
           >RSS</Button>
         ) : null}

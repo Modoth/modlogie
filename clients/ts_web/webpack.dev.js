@@ -12,6 +12,9 @@ module.exports = merge(common, {
       '/api': {
         target: 'http://localhost:8080',
         pathRewrite: { '^/api': '' }
+      },
+      '/content': {
+        target: 'http://localhost:8080'
       }
     },
     contentBase: path.resolve('../..', 'dist'),

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -13,7 +12,7 @@ using Modlogie.Domain;
 
 namespace Modlogie.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("content/[controller]")]
     public class RssController : Controller
     {
         private const int MaxRssItemCount = 100;
@@ -70,7 +69,7 @@ namespace Modlogie.Api.Controllers
 <rss version=""2.0"" xmlns:atom=""http://www.w3.org/2005/Atom"">
 <channel>
 " +
-                      $"    <title>{group}</title>\n    <link>{baseUrl}api/rss/{group}</link>\n    <lastBuildDate>{FormatDatetime(created)}</lastBuildDate>" + @"
+                      $"    <title>{group}</title>\n    <link>{baseUrl}content/rss/{group}</link>\n    <lastBuildDate>{FormatDatetime(created)}</lastBuildDate>" + @"
     <ttl>180</ttl>");
             foreach (var content in contents)
             {
