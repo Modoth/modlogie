@@ -142,7 +142,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   PUBLISH_WX = '微信';
   PUBLISH_CONTENT = '静态';
   QrCode = '网址';
-  ReadingMode = '悦读';
+  ReadingMode = '简单阅读';
   Recommend = '推荐';
   Refresh = '刷新页面';
   RemoveFromArticleList = '移除';

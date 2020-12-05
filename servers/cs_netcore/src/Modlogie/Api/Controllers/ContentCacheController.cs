@@ -135,6 +135,10 @@ namespace Modlogie.Api.Controllers
   a {
     margin: 0 10px;
     }
+  ul{
+    margin: 20px auto;
+    max-width: calc(min(90%, 760px));
+  }
   </style>
 </head>
 <body>
