@@ -44,6 +44,19 @@ namespace Modlogie.Api.Controllers
     [Route("content/static")]
     public class ContentCacheController : Controller
     {
+        private static string HtmlPrefix(string title) => @"<html>
+<head>
+  <meta charset=""utf-8"" />
+  <title>" + title + @"</title>
+  <meta
+    name=""viewport""
+    content=""width=device-width, maximum-scale=1.0,user-scalable=no, initial-scale=1""
+  />
+</head>
+<body>";
+        private static string HtmlSurfix = @"</body>
+</html>
+";
         private const int PageSize = 10;
         private static readonly ConcurrentDictionary<string, Template> TemplateCaches = new ConcurrentDictionary<string, Template>();
 
@@ -123,32 +136,24 @@ namespace Modlogie.Api.Controllers
                     if (cacheKey != HomeCacheKey)
                     {
                         var sb = new StringBuilder();
-                        sb.Append(@"<html>
-<head>
-  <meta charset=""utf-8"" />
-  <title>Index</title>
-  <meta
-    name=""viewport""
-    content=""width=device-width, maximum-scale=1.0,user-scalable=no, initial-scale=1""
-  />
-  <style>
-  a {
-    margin: 0 10px;
+                        sb.Append(HtmlPrefix("Index"));
+                        sb.Append(@"
+    <style>
+    a {
+        margin: 0 10px;
     }
-  ul{
-    margin: 20px auto;
-    max-width: calc(min(90%, 760px));
-  }
-  </style>
-</head>
-<body>
+    ul{
+        margin: 20px auto;
+        max-width: calc(min(90%, 760px));
+    }
+    </style>
     <ul>");
                         foreach (var group in groups)
                         {
                             sb.Append($"<li>{group}{String.Join("", templates.Select(t => $"<a href=\"/content/static/{t}/{group}\">{t}</a>"))}</li>");
                         }
-                        sb.Append(@"    </ul></body>
-</html>");
+                        sb.Append(@"    </ul>");
+                        sb.Append(HtmlSurfix);
                         HomeCache = sb.ToString();
                         HomeCacheKey = cacheKey;
                     }
@@ -175,6 +180,7 @@ namespace Modlogie.Api.Controllers
                 .Select(c => new { c.ContentCaches, c.Id, c.Name })
                 .ToListAsync();
             var sb = new StringBuilder();
+            sb.Append(HtmlPrefix(group));
             sb.Append(template.ListPrefix);
             sb.Append("<ol>");
             foreach (var item in items)
@@ -190,7 +196,11 @@ namespace Modlogie.Api.Controllers
             }
 
             sb.Append("</ol>");
+            var prePage = page > 0 ? $"<a class=\"pre-page\" href=\"/content/static/{template}/{group}/{page - 1}\">&lt;</a>" : "<span class=\"pre-page disable\">&lt;</span>";
+            var nextPage = items.Count > PageSize ? $"<a class=\"next-page\" href=\"/content/static/{template}/{group}/{page + 2}\">>&gt;</a>" : "<span class=\"next-page disable\">&gt;</span>";
+            sb.Append($"<div class=\"page\">{prePage ?? ""}<span class=\"cur-page\">{page + 1}</span>{nextPage ?? ""}</div>");
             sb.Append(template.ListSurfix);
+            sb.Append(HtmlSurfix);
             return Content(sb.ToString(), "text/html");
         }
 
@@ -216,7 +226,7 @@ namespace Modlogie.Api.Controllers
                 return Redirect($"/{cache.Content}");
             }
 
-            var cacheContent = $"{template.ArticlePrefix}\n{item.Data}\n{template.ArticleSurfix}";
+            var cacheContent = $"{HtmlPrefix(item.Name)}\n{template.ArticlePrefix}\n{item.Data}\n{template.ArticleSurfix}\n{HtmlSurfix}\n";
 
             var cacheId = await _filesService.Add(_resourcesGroup, cacheContent, "html");
 
