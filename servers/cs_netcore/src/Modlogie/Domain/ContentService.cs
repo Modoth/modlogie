@@ -10,17 +10,29 @@ namespace Modlogie.Domain
     public class ContentService : IContentService
     {
         private readonly IContentsEntityService _entitiesService;
+        private readonly IFileContentService _fileService;
 
-        public ContentService(IContentsEntityService entitiesService)
+        public ContentService(IContentsEntityService entitiesService, IFileContentService fileService)
         {
             _entitiesService = entitiesService;
+            _fileService = fileService;
         }
 
         public async Task Delete(string id)
         {
             if (Guid.TryParse(id, out var gid))
             {
-                await _entitiesService.DeleteRange(_entitiesService.All().Where(c => c.Id == gid));
+                var content = await _entitiesService.All().Include(c => c.ContentCaches).Where(c => c.Id == gid).FirstOrDefaultAsync();
+                if (content == null)
+                {
+                    throw new Exception();
+                }
+                var files = content.ContentCaches == null ? null : content.ContentCaches.Select(c => c.Content).ToList();
+                await _entitiesService.Delete(content);
+                if (files != null && files.Count > 0)
+                {
+                    files.ForEach(f => _fileService.Delete(f));
+                }
             }
         }
 
@@ -41,7 +53,7 @@ namespace Modlogie.Domain
                 }
             }
 
-            var content = await _entitiesService.All().FirstOrDefaultAsync(c => c.Id == article.Id);
+            var content = await _entitiesService.All().Include(c => c.ContentCaches).FirstOrDefaultAsync(c => c.Id == article.Id);
             var existed = content != null;
             if (!existed)
             {
@@ -60,6 +72,11 @@ namespace Modlogie.Domain
             if (existed)
             {
                 content = await _entitiesService.Update(content);
+                var files = content.ContentCaches == null ? null : content.ContentCaches.Select(c => c.Content).ToList();
+                if (files != null && files.Count > 0)
+                {
+                    files.ForEach(f => _fileService.Delete(f));
+                }
             }
             else
             {
