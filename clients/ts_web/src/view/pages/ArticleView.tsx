@@ -101,7 +101,7 @@ export default function ArticleView (props: {
           const id = await publishService.publish(name, props.article.id!, props.type.displayName || props.type.name,
             `${window.location.protocol}//${window.location.host}`,
             `/#/article/${props.article.path!}`,
-            generator({ files, content, articleId: props.article.id! })
+            generator({ files, content, articleId: props.article.id!, type })
           )
           if (id) {
             newPublishIds.set(name, id)
@@ -425,6 +425,7 @@ export default function ArticleView (props: {
           Template={generator}
           PreviewTemplate = {previewTemplate}
           content={content}
+          type={type}
           articlePath={props.article.path!}></PublishArticle>
       }
     ], async () => true)
