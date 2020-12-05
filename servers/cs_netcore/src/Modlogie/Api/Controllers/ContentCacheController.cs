@@ -32,6 +32,7 @@ namespace Modlogie.Api.Controllers
             {
                 return null;
             }
+
             var template = JsonConvert.DeserializeObject<Template>(t.Data);
             template.Updated = t.Updated;
             template.Id = t.Id;
@@ -42,19 +43,19 @@ namespace Modlogie.Api.Controllers
     [Route("content/static")]
     public class ContentCacheController : Controller
     {
-        private static Dictionary<string, Template> _templateCaches = new Dictionary<string, Template>();
         private const int PageSize = 10;
-        private readonly IContentTemplatesEntityService _templatesService;
+        private static readonly Dictionary<string, Template> TemplateCaches = new Dictionary<string, Template>();
         private readonly IContentsEntityService _contentsService;
         private readonly IFileContentService _filesService;
 
         private readonly string _resourcesGroup;
+        private readonly IContentTemplatesEntityService _templatesService;
 
 
         public ContentCacheController(IConfiguration configuration,
-        IContentTemplatesEntityService templatesService,
-        IContentsEntityService contentsService,
-        IFileContentService filesService)
+            IContentTemplatesEntityService templatesService,
+            IContentsEntityService contentsService,
+            IFileContentService filesService)
         {
             _templatesService = templatesService;
             _contentsService = contentsService;
@@ -64,26 +65,30 @@ namespace Modlogie.Api.Controllers
 
         private async Task<Template> GetTemplate(string templateName)
         {
-            if (!_templateCaches.TryGetValue(templateName, out Template template))
+            if (!TemplateCaches.TryGetValue(templateName, out var template))
             {
                 template = await _templatesService.All().Where(t => t.Name == templateName).FirstOrDefaultAsync();
                 if (template != null)
                 {
-                    _templateCaches[templateName] = template;
+                    TemplateCaches[templateName] = template;
                 }
+
                 return template;
             }
-            var newT = await _templatesService.All().Where(t => t.Name == templateName && t.Updated > template.Updated).FirstOrDefaultAsync();
+
+            var value = template;
+            var newT = await _templatesService.All().Where(t => t.Name == templateName && t.Updated > value.Updated)
+                .FirstOrDefaultAsync();
             if (newT != null)
             {
                 template = newT;
-                _templateCaches[templateName] = template;
+                TemplateCaches[templateName] = template;
             }
 
             var existed = await _templatesService.All().Where(t => t.Name == templateName).AnyAsync();
             if (!existed)
             {
-                _templateCaches.Remove(templateName);
+                TemplateCaches.Remove(templateName);
                 return null;
             }
 
@@ -98,27 +103,27 @@ namespace Modlogie.Api.Controllers
             {
                 return NotFound();
             }
+
             var items = await _contentsService.All()
-            .OrderByDescending(c => c.Created)
-            .Skip(page * PageSize).Take(PageSize)
-            .Select(c => new { ContentCaches = c.ContentCaches, Id = c.Id, Name = c.Name })
-            .ToListAsync();
+                .OrderByDescending(c => c.Created)
+                .Skip(page * PageSize).Take(PageSize)
+                .Select(c => new {c.ContentCaches, c.Id, c.Name})
+                .ToListAsync();
             var sb = new StringBuilder();
             sb.Append(template.ListPrefix);
             sb.Append("<ol>");
             foreach (var item in items)
             {
                 var url = $"/content/static/{templateName}/file/{item.Id}";
-                if (item.ContentCaches != null)
+                var cache = item.ContentCaches?.FirstOrDefault(c => c.TemplateId == template.Id);
+                if (cache != null)
                 {
-                    var cache = item.ContentCaches.FirstOrDefault(c => c.TemplateId == template.Id);
-                    if (cache != null)
-                    {
-                        url = $"/{cache.Content}";
-                    }
+                    url = $"/{cache.Content}";
                 }
+
                 sb.Append($"<li><a href=\"{url}\">{item.Name}</a></li>");
             }
+
             sb.Append("</ol>");
             sb.Append(template.ListSurfix);
             return Content(sb.ToString(), "text/html");
@@ -128,17 +133,18 @@ namespace Modlogie.Api.Controllers
         public async Task<object> Get(string templateName, string articleId)
         {
             var template = await GetTemplate(templateName);
-            if (template == null || !Guid.TryParse(articleId, out Guid id))
+            if (template == null || !Guid.TryParse(articleId, out var id))
             {
                 return NotFound();
             }
+
             var item = await _contentsService.All().Include(c => c.ContentCaches)
-            .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (item == null)
             {
                 return NotFound();
-
             }
+
             var cache = item.ContentCaches.FirstOrDefault(c => c.TemplateId == template.Id);
             if (cache != null)
             {
@@ -157,16 +163,13 @@ namespace Modlogie.Api.Controllers
                 Updated = DateTime.Now
             };
 
-            if (item.ContentCaches == null)
-            {
-                item.ContentCaches = new List<ContentCache>();
-            }
+            item.ContentCaches ??= new List<ContentCache>();
 
             item.ContentCaches.Add(cache);
 
             await _contentsService.Update(item);
 
-            return Content(cacheContent, "text/html", UTF8Encoding.Default);
+            return Content(cacheContent, "text/html", Encoding.Default);
         }
     }
 }

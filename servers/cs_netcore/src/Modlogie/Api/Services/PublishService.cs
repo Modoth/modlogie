@@ -15,8 +15,10 @@ namespace Modlogie.Api.Services
 {
     public class PublishService : Publish.PublishService.PublishServiceBase
     {
+        // ReSharper disable once InconsistentNaming
         private const string PUBLISH_WX = nameof(PUBLISH_WX);
 
+        // ReSharper disable once InconsistentNaming
         private const string PUBLISH_CONTENT = nameof(PUBLISH_CONTENT);
 
         private readonly IFilesEntityService _filesService;
@@ -27,7 +29,7 @@ namespace Modlogie.Api.Services
         private readonly ILoginUserService _userService;
 
         public PublishService(IWxService wxService,
-        IContentService contentService,
+            IContentService contentService,
             ILoginUserService userService,
             IFilesEntityService filesService
         )
@@ -68,13 +70,14 @@ namespace Modlogie.Api.Services
             }
 
             var file = await _filesService.All()
-                .Where(f => f.Id == articleId && f.Type == (int)File.Types.FileType.Normal)
+                .Where(f => f.Id == articleId && f.Type == (int) File.Types.FileType.Normal)
                 .FirstOrDefaultAsync();
             if (file == null)
             {
                 reply.Error = Error.NoSuchEntity;
                 return reply;
             }
+
             var baseUrl = request.BaseUrl;
             try
             {

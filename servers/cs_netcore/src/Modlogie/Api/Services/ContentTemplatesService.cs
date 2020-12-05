@@ -12,11 +12,12 @@ namespace Modlogie.Api.Services
 {
     public class ContentTemplatesService : ContentTemplates.ContentTemplatesService.ContentTemplatesServiceBase
     {
+        private readonly IFileContentService _fileService;
         private readonly IContentTemplatesEntityService _service;
         private readonly ILoginUserService _userService;
-        private readonly IFileContentService _fileService;
 
-        public ContentTemplatesService(IContentTemplatesEntityService service, ILoginUserService userService, IFileContentService fileService)
+        public ContentTemplatesService(IContentTemplatesEntityService service, ILoginUserService userService,
+            IFileContentService fileService)
         {
             _service = service;
             _userService = userService;
@@ -42,7 +43,7 @@ namespace Modlogie.Api.Services
             var items = _service.All();
 
             reply.ContentTemplates.AddRange(await items
-                .Select(i => new ContentTemplate { Id = i.Id.ToString(), Name = i.Name, Data = i.Data })
+                .Select(i => new ContentTemplate {Id = i.Id.ToString(), Name = i.Name, Data = i.Data})
                 .ToArrayAsync());
             return reply;
         }
@@ -65,21 +66,24 @@ namespace Modlogie.Api.Services
 
             if (!string.IsNullOrWhiteSpace(request.Id))
             {
-                if (!Guid.TryParse(request.Id, out Guid id))
+                if (!Guid.TryParse(request.Id, out var id))
                 {
                     reply.Error = Error.InvalidArguments;
                     return reply;
                 }
-                var item = await _service.All().Include(c => c.ContentCaches).Where(c => c.Id == id).FirstOrDefaultAsync();
+
+                var item = await _service.All().Include(c => c.ContentCaches).Where(c => c.Id == id)
+                    .FirstOrDefaultAsync();
                 item.Data = request.Data;
                 item.Updated = DateTime.Now;
                 reply.Id = request.Id;
                 await _service.Update(item);
-                var files = item.ContentCaches == null ? null : item.ContentCaches.Select(c => c.Content).ToList();
+                var files = item.ContentCaches?.Select(c => c.Content).ToList();
                 if (files != null && files.Count > 0)
                 {
                     files.ForEach(f => _fileService.Delete(f));
                 }
+
                 return reply;
             }
 
@@ -110,7 +114,7 @@ namespace Modlogie.Api.Services
                 return reply;
             }
 
-            if (!Guid.TryParse(request.Id, out Guid id))
+            if (!Guid.TryParse(request.Id, out var id))
             {
                 reply.Error = Error.InvalidArguments;
                 return reply;
@@ -119,7 +123,7 @@ namespace Modlogie.Api.Services
             var item = await _service.All().Include(c => c.ContentCaches).Where(k => k.Id == id).FirstOrDefaultAsync();
             if (item != null)
             {
-                var files = item.ContentCaches == null ? null : item.ContentCaches.Select(c => c.Content).ToList();
+                var files = item.ContentCaches?.Select(c => c.Content).ToList();
                 await _service.Delete(item);
                 if (files != null && files.Count > 0)
                 {
