@@ -63,11 +63,11 @@ export function ManageContentTemplates () {
         { type: 'Text', value: template.data.articlePrefix, multiline: true, hint: langs.get(LangKeys.ContentTemplateArticlePrefix) },
         { type: 'Text', value: template.data.articleSurfix, multiline: true, hint: langs.get(LangKeys.ContentTemplateArticleSurfix) }
       ],
-      async (name: string, listPrefix:string, listSurfix, articlePrefix, articleSurfix) => {
-        if (!name || (template.data.listPrefix !== listPrefix &&
-          template.data.listSurfix !== listSurfix &&
-          template.data.articlePrefix !== articlePrefix &&
-          template.data.articleSurfix !== articleSurfix)) {
+      async (listPrefix:string, listSurfix:string, articlePrefix:string, articleSurfix:string) => {
+        if (template.data.listPrefix === listPrefix &&
+          template.data.listSurfix === listSurfix &&
+          template.data.articlePrefix === articlePrefix &&
+          template.data.articleSurfix === articleSurfix) {
           return
         }
         try {
