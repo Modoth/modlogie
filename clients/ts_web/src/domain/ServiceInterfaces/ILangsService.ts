@@ -94,6 +94,7 @@ export class LangKeysInterface {
   PUBLISH_NONE = 'PUBLISH_NONE';
   PUBLISH_WX = 'PUBLISH_WX';
   QrCode = 'QrCode';
+  ReadingMode = 'ReadingMode';
   Recommend = 'Recommend';
   Refresh = 'Refresh';
   RemoveFromArticleList = 'RemoveFromArticleList';

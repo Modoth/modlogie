@@ -154,6 +154,7 @@ function Nav () {
                 </Menu.Item> : <></>
             }
           </SubMenu>
+          <Menu.Item icon={<ReadOutlined />}><a href="/content/static">{langs.get(LangKeys.ReadingMode)}</a></Menu.Item>
           <Menu.Divider></Menu.Divider>
           {user.name ? (
             <Menu.Item

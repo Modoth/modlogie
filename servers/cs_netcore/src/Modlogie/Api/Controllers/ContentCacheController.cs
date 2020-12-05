@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,7 +45,13 @@ namespace Modlogie.Api.Controllers
     public class ContentCacheController : Controller
     {
         private const int PageSize = 10;
-        private static readonly Dictionary<string, Template> TemplateCaches = new Dictionary<string, Template>();
+        private static readonly ConcurrentDictionary<string, Template> TemplateCaches = new ConcurrentDictionary<string, Template>();
+
+        private static string HomeCacheKey;
+        private static string HomeCache;
+
+        private static object HomeCacheLock = new object();
+
         private readonly IContentsEntityService _contentsService;
         private readonly IFileContentService _filesService;
 
@@ -88,15 +95,68 @@ namespace Modlogie.Api.Controllers
             var existed = await _templatesService.All().Where(t => t.Name == templateName).AnyAsync();
             if (!existed)
             {
-                TemplateCaches.Remove(templateName);
+                TemplateCaches.Remove(templateName, out Template _);
                 return null;
             }
 
             return template;
         }
 
-        [HttpGet("{templateName}/{page?}")]
-        public async Task<object> Get(string templateName, int page = 0)
+        [HttpGet()]
+        public async Task<object> Get()
+        {
+            var templates = await _templatesService.All().Select(t => t.Name).OrderBy(n => n).ToListAsync();
+            if (templates.Count == 0)
+            {
+                return NotFound();
+            }
+            var groups = await _contentsService.All().Select(t => t.Group).Distinct().OrderBy(g => g).ToListAsync();
+            if (groups.Count == 0)
+            {
+                return NotFound();
+            }
+            var cacheKey = String.Join(",", templates) + String.Join(",", groups);
+            if (cacheKey != HomeCacheKey)
+            {
+                lock (HomeCacheLock)
+                {
+                    if (cacheKey != HomeCacheKey)
+                    {
+                        var sb = new StringBuilder();
+                        sb.Append(@"<html>
+<head>
+  <meta charset=""utf-8"" />
+  <title>Index</title>
+  <meta
+    name=""viewport""
+    content=""width=device-width, maximum-scale=1.0,user-scalable=no, initial-scale=1""
+  />
+  <style>
+  a {
+    margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+    <ul>");
+                        foreach (var group in groups)
+                        {
+                            sb.Append($"<li>{group}{String.Join("", templates.Select(t => $"<a href=\"/content/static/{t}/{group}\">{t}</a>"))}</li>");
+                        }
+                        sb.Append(@"    </ul></body>
+</html>");
+                        HomeCache = sb.ToString();
+                        HomeCacheKey = cacheKey;
+                    }
+                }
+
+            }
+
+            return Content(HomeCache, "text/html", UTF8Encoding.Default);
+        }
+
+        [HttpGet("{templateName}/{group}/{page?}")]
+        public async Task<object> Get(string templateName, string group, int page = 0)
         {
             var template = await GetTemplate(templateName);
             if (template == null)
@@ -105,9 +165,10 @@ namespace Modlogie.Api.Controllers
             }
 
             var items = await _contentsService.All()
+            .Where(c => String.Equals(group, c.Group, StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(c => c.Created)
                 .Skip(page * PageSize).Take(PageSize)
-                .Select(c => new {c.ContentCaches, c.Id, c.Name})
+                .Select(c => new { c.ContentCaches, c.Id, c.Name })
                 .ToListAsync();
             var sb = new StringBuilder();
             sb.Append(template.ListPrefix);
