@@ -1,8 +1,9 @@
 export interface ContentTemplateData {
+  pageSize?:number,
   listPrefix?:string,
   listSurfix?:string,
   articlePrefix?:string,
-  articleSurfix?:string
+  articleSurfix?:string,
 }
 
 export interface ContentTemplate{

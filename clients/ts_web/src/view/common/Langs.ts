@@ -134,6 +134,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Ok = '确定';
   Open = '打开';
   Order = '顺序';
+  PageSize = '单页数量';
   Paging = '分页(Beta)';
   Password = '密码';
   Preview = '预览';

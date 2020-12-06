@@ -33,17 +33,19 @@ export function ManageContentTemplates () {
       langs.get(LangKeys.Create),
       [
         { type: 'Text', value: '', hint: langs.get(LangKeys.Name) },
+        { type: 'Text', value: '', hint: langs.get(LangKeys.PageSize) },
         { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplateListPrefix) },
         { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplateListSurfix) },
         { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplateArticlePrefix) },
         { type: 'Text', value: '', multiline: true, hint: langs.get(LangKeys.ContentTemplateArticleSurfix) }
       ],
-      async (name: string, listPrefix:string, listSurfix, articlePrefix, articleSurfix) => {
-        if (!name || (!listPrefix && !listSurfix && !articlePrefix && !articleSurfix)) {
+      async (name: string, pageSizeStr:string, listPrefix:string, listSurfix, articlePrefix, articleSurfix) => {
+        var pageSize = parseInt(pageSizeStr)
+        if (!name || pageSize <= 0 || (!listPrefix && !listSurfix && !articlePrefix && !articleSurfix)) {
           return
         }
         try {
-          const data = { listPrefix, listSurfix, articlePrefix, articleSurfix }
+          const data = { listPrefix, listSurfix, articlePrefix, articleSurfix, pageSize }
           const id = await locate(IContentTemplatesService).add(name, data)
           setTemplates([...templates!, { id, data, name }])
           return true
@@ -58,16 +60,18 @@ export function ManageContentTemplates () {
     viewService.prompt(
       `${langs.get(LangKeys.Modify)}: ${template.name}`,
       [
+        { type: 'Text', value: template.data.pageSize, hint: langs.get(LangKeys.PageSize) },
         { type: 'Text', value: template.data.listPrefix, multiline: true, hint: langs.get(LangKeys.ContentTemplateListPrefix) },
         { type: 'Text', value: template.data.listSurfix, multiline: true, hint: langs.get(LangKeys.ContentTemplateListSurfix) },
         { type: 'Text', value: template.data.articlePrefix, multiline: true, hint: langs.get(LangKeys.ContentTemplateArticlePrefix) },
         { type: 'Text', value: template.data.articleSurfix, multiline: true, hint: langs.get(LangKeys.ContentTemplateArticleSurfix) }
       ],
-      async (listPrefix:string, listSurfix:string, articlePrefix:string, articleSurfix:string) => {
-        if (template.data.listPrefix === listPrefix &&
+      async (pageSizeStr:string, listPrefix:string, listSurfix:string, articlePrefix:string, articleSurfix:string) => {
+        var pageSize = parseInt(pageSizeStr)
+        if (pageSize <= 0 || (pageSize === template.data.pageSize && template.data.listPrefix === listPrefix &&
           template.data.listSurfix === listSurfix &&
           template.data.articlePrefix === articlePrefix &&
-          template.data.articleSurfix === articleSurfix) {
+          template.data.articleSurfix === articleSurfix)) {
           return
         }
         try {

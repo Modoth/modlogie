@@ -25,6 +25,8 @@ namespace Modlogie.Api.Controllers
 
         public string ArticleSurfix { get; set; }
 
+        public int PageSize { get; set; }
+
         public DateTime Updated { get; set; }
 
         public static implicit operator Template(ContentTemplate t)
@@ -41,7 +43,7 @@ namespace Modlogie.Api.Controllers
         }
     }
 
-    [Route("content/static")]
+    [Route("static")]
     public class ContentCacheController : Controller
     {
         private static string HtmlPrefix(string title) => @"<html>
@@ -57,7 +59,10 @@ namespace Modlogie.Api.Controllers
         private static string HtmlSurfix = @"</body>
 </html>
 ";
-        private const int PageSize = 10;
+        private const int DefaultPageSize = 10;
+
+        private const int MaxPageSize = 10;
+
         private static readonly ConcurrentDictionary<string, Template> TemplateCaches = new ConcurrentDictionary<string, Template>();
 
         private static string HomeCacheKey;
@@ -119,10 +124,7 @@ namespace Modlogie.Api.Controllers
         public async Task<object> Get()
         {
             var templates = await _templatesService.All().Select(t => t.Name).OrderBy(n => n).ToListAsync();
-            if (templates.Count == 0)
-            {
-                return NotFound();
-            }
+            templates = templates.Prepend("rss").ToList();
             var groups = await _contentsService.All().Select(t => t.Group).Distinct().OrderBy(g => g).ToListAsync();
             if (groups.Count == 0)
             {
@@ -140,7 +142,7 @@ namespace Modlogie.Api.Controllers
                         sb.Append(@"
     <style>
     a {
-        margin: 0 10px;
+        margin-left: 10px;
     }
     ul{
         margin: 20px auto;
@@ -150,7 +152,7 @@ namespace Modlogie.Api.Controllers
     <ul>");
                         foreach (var group in groups)
                         {
-                            sb.Append($"<li>{group}{String.Join("", templates.Select(t => $"<a href=\"/content/static/{t}/{group}\">{t}</a>"))}</li>");
+                            sb.Append($"<li>{group}{String.Join("", templates.Select(t => $"<a href=\"/static/{t}/{group}\">{t}</a>"))}</li>");
                         }
                         sb.Append(@"    </ul>");
                         sb.Append(HtmlSurfix);
@@ -172,11 +174,19 @@ namespace Modlogie.Api.Controllers
             {
                 return NotFound();
             }
-
+            var pageSize = template.PageSize;
+            if (pageSize <= 0)
+            {
+                pageSize = DefaultPageSize;
+            }
+            else if (pageSize > MaxPageSize)
+            {
+                pageSize = MaxPageSize;
+            }
             var items = await _contentsService.All()
             .Where(c => String.Equals(group, c.Group, StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(c => c.Created)
-                .Skip(page * PageSize).Take(PageSize)
+                .Skip(page * pageSize).Take(pageSize)
                 .Select(c => new { c.ContentCaches, c.Id, c.Name })
                 .ToListAsync();
             var sb = new StringBuilder();
@@ -185,7 +195,7 @@ namespace Modlogie.Api.Controllers
             sb.Append("<ol>");
             foreach (var item in items)
             {
-                var url = $"/content/static/{templateName}/file/{item.Id}";
+                var url = $"/static/{templateName}/file/{item.Id}";
                 var cache = item.ContentCaches?.FirstOrDefault(c => c.TemplateId == template.Id);
                 if (cache != null)
                 {
@@ -196,8 +206,8 @@ namespace Modlogie.Api.Controllers
             }
 
             sb.Append("</ol>");
-            var prePage = page > 0 ? $"<a class=\"pre-page\" href=\"/content/static/{template}/{group}/{page - 1}\">&lt;</a>" : "<span class=\"pre-page disable\">&lt;</span>";
-            var nextPage = items.Count > PageSize ? $"<a class=\"next-page\" href=\"/content/static/{template}/{group}/{page + 2}\">>&gt;</a>" : "<span class=\"next-page disable\">&gt;</span>";
+            var prePage = page > 0 ? $"<a class=\"pre-page\" href=\"/static/{template}/{group}/{page - 1}\">&lt;</a>" : "<span class=\"pre-page disable\">&lt;</span>";
+            var nextPage = items.Count > DefaultPageSize ? $"<a class=\"next-page\" href=\"/static/{template}/{group}/{page + 2}\">>&gt;</a>" : "<span class=\"next-page disable\">&gt;</span>";
             sb.Append($"<div class=\"page\">{prePage ?? ""}<span class=\"cur-page\">{page + 1}</span>{nextPage ?? ""}</div>");
             sb.Append(template.ListSurfix);
             sb.Append(HtmlSurfix);

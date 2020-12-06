@@ -86,6 +86,7 @@ export class LangKeysInterface {
   Ok = 'Ok';
   Open = 'Open';
   Order = 'Order';
+  PageSize = 'PageSize';
   Paging = 'Paging';
   Password = 'Password';
   Preview = 'Preview';

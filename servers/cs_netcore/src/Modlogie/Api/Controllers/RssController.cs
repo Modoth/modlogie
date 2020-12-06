@@ -12,7 +12,7 @@ using Modlogie.Domain;
 
 namespace Modlogie.Api.Controllers
 {
-    [Route("content/[controller]")]
+    [Route("static/[controller]")]
     public class RssController : Controller
     {
         private const int MaxRssItemCount = 100;
