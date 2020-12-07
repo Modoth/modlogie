@@ -88,6 +88,14 @@ export default function ArticleList () {
   const close = () => {
     locate(IViewService).previewArticleList(false)
   }
+  useEffect(() => {
+    viewService.setFloatingMenus?.(ArticleList.name, <></>)
+  })
+  useEffect(() => {
+    return () => {
+        viewService.setFloatingMenus?.(ArticleList.name)
+    }
+  }, [])
   return (
     <div className="article-list-wraper">
       <div className="article-list-menus" onClick={e => e.stopPropagation()}>

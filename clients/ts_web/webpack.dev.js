@@ -13,7 +13,7 @@ module.exports = merge(common, {
         target: 'http://localhost:8080',
         pathRewrite: { '^/api': '' }
       },
-      '/static': {
+      '/s': {
         target: 'http://localhost:8080'
       }
     },

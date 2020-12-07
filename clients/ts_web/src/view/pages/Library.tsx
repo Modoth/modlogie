@@ -541,17 +541,6 @@ export default function Library (props: LibraryProps) {
   useEffect(() => {
     if (viewService.setFloatingMenus) {
       viewService.setFloatingMenus(Library.name, <>
-        {type?.publishGenerators?.has(LangKeys.PUBLISH_CONTENT) ? (
-          <Button
-            type="primary"
-            size="large"
-            shape="circle"
-            className="rss-btn"
-            onClick={() => {
-              window.open(`/static/rss/${type?.displayName || type?.name}`, '_blank')
-            }}
-          >RSS</Button>
-        ) : null}
         {user.printPermission ? (
           <ArticleListSummary></ArticleListSummary>
         ) : null}
