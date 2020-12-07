@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
@@ -43,7 +44,7 @@ namespace Modlogie.Api.Services
             var items = _service.All();
 
             reply.ContentTemplates.AddRange(await items
-                .Select(i => new ContentTemplate {Id = i.Id.ToString(), Name = i.Name, Data = i.Data})
+                .Select(i => new ContentTemplate { Id = i.Id.ToString(), Name = i.Name, Data = i.Data })
                 .ToArrayAsync());
             return reply;
         }
@@ -77,8 +78,9 @@ namespace Modlogie.Api.Services
                 item.Data = request.Data;
                 item.Updated = DateTime.Now;
                 reply.Id = request.Id;
-                await _service.Update(item);
                 var files = item.ContentCaches?.Select(c => c.Content).ToList();
+                item.ContentCaches = new List<Domain.Models.ContentCache>();
+                await _service.Update(item);
                 if (files != null && files.Count > 0)
                 {
                     files.ForEach(f => _fileService.Delete(f));
