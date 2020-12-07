@@ -75,7 +75,7 @@ export function ManageContentTemplates () {
           return
         }
         try {
-          const data = { listPrefix, listSurfix, articlePrefix, articleSurfix }
+          const data = { listPrefix, listSurfix, articlePrefix, articleSurfix, pageSize }
           await locate(IContentTemplatesService).update(template.id, data)
           template!.data = data
           setTemplates([...templates!])
