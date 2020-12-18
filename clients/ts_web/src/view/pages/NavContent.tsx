@@ -3,7 +3,6 @@ import { ArticleDetail } from './ArticleDetail'
 import { ArticleIdRedirect } from './ArticleIdRedirect'
 import { ManageConfigs } from './ManageConfigs'
 import { ManageContentTemplates } from './ManageContentTemplates'
-import { ManageKeywords } from './ManageKeywords'
 import { ManageSubjects } from './ManageSubjects'
 import { ManageTags } from './ManageTags'
 import { ManageUsers } from './ManageUsers'
@@ -56,9 +55,6 @@ function NavContent () {
       </Route>
       <Route path="/manage/configs">
         <ManageConfigs />
-      </Route>
-      <Route path="/manage/keywords">
-        <ManageKeywords />
       </Route>
       <Route path="/manage/users">
         <ManageUsers />

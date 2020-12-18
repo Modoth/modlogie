@@ -8,7 +8,8 @@ import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
 
 export function ArticlePreview (props: {
-  path: string;
+  root?:string;
+  pathOrName: string;
   className?: string;
   dataSections?: ArticleSection[];
 }) {
@@ -23,7 +24,7 @@ export function ArticlePreview (props: {
         viewService.setLoading(false)
       }
       const [article, type] = await locate(IArticleAppservice)
-        .fetchArticleByPath(props.path)
+        .fetchArticle(props.pathOrName, false, props.root)
       if (!article || !type) {
         return ret()
       }

@@ -46,9 +46,11 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
       return type
     }
 
-    async fetchArticleByPath (path: string, loadingAddition = false): Promise<[Article | undefined, ArticleContentType | undefined, ArticleType | undefined]> {
-      const root = rootname(path)
-      const rootId = (await this.locate(ISubjectsService).getByPath('/' + root))?.id
+    async fetchArticle (pathOrName: string, loadingAddition = false, root?:string): Promise<[Article | undefined, ArticleContentType | undefined, ArticleType | undefined]> {
+      const path = root ? undefined : pathOrName
+      const name = root ? pathOrName : undefined
+      root = '/' + (root || rootname(path))
+      const rootId = (await this.locate(ISubjectsService).getByPath(root))?.id
       if (!rootId) {
         return [undefined, undefined, undefined]
       }
@@ -67,9 +69,19 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
           new Condition().setType(Condition.ConditionType.EQUAL)
             .setProp('Type')
             .setValue('0'),
-          new Condition().setType(Condition.ConditionType.EQUAL)
-            .setProp('Path')
-            .setValue(path)
+          ...(path === undefined ? [
+            new Condition().setType(Condition.ConditionType.STARTS_WITH)
+              .setProp('Path')
+              .setValue(root),
+            new Condition().setType(Condition.ConditionType.EQUAL)
+              .setProp('Name')
+              .setValue(name)
+          ]
+            : [
+              new Condition().setType(Condition.ConditionType.EQUAL)
+                .setProp('Path')
+                .setValue(path)
+            ])
         ]))
       const res = await articlesService.query(query, undefined, 0, 1)
       const article = res?.[1]?.[0]
@@ -101,7 +113,7 @@ export default class AppArticleServiceSingleton extends IServicesLocator impleme
         const value = cache.get(path)
         return value === this.nonArticle ? undefined : value as unknown as TValue
       }
-      const [article] = await this.fetchArticleByPath(path, true)
+      const [article] = await this.fetchArticle(path, true)
       if (!article) {
         cache.set(path, this.nonArticle)
         return undefined

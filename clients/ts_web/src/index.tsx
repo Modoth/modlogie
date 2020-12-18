@@ -8,7 +8,6 @@ import { ContentTemplatesServiceClient } from './impl/remote-apis/Contenttemplat
 import { FilesServiceClient } from './impl/remote-apis/FilesServiceClientPb'
 import { IPublishService } from './domain/ServiceInterfaces/IPublishService'
 import { KeyValuesServiceClient } from './impl/remote-apis/KeyvaluesServiceClientPb'
-import { KeywordsServiceClient } from './impl/remote-apis/KeywordsServiceClientPb'
 import { LoginServiceClient } from './impl/remote-apis/LoginServiceClientPb'
 import { PublishServiceClient } from './impl/remote-apis/PublishServiceClientPb'
 import { ServicesLocateProvider } from './view/common/Contexts'
@@ -52,7 +51,6 @@ import IEditorsService from './app/Interfaces/IEditorsService'
 import IFavoritesService from './domain/ServiceInterfaces/IFavoritesService'
 import IHistoryService, { IHistoryStorage } from './domain/ServiceInterfaces/IHistoryService'
 import IKeyValueStorageManager, { ILocalKeyValueStorage, IRemoteKeyValueStorage } from './domain/ServiceInterfaces/IKeyValueStorage'
-import IKeywordsService from './domain/ServiceInterfaces/IKeywordsService'
 import ILangInterpretersService from './domain/ServiceInterfaces/ILangInterpretersService'
 import ILangsService, { LangKeys } from './domain/ServiceInterfaces/ILangsService'
 import ILikesService from './domain/ServiceInterfaces/ILikesService'
@@ -74,7 +72,6 @@ import IUsersService from './domain/ServiceInterfaces/IUsersService'
 import IViewService from './app/Interfaces/IViewService'
 import IWordsStorage from './domain/ServiceInterfaces/IWordsStorage'
 import KeyValueStorageManager from './domain/Services/KeyValueStorageManager'
-import KeywordsService from './impl/RemoteServices/KeywordsService'
 import LangInterpretersService from './domain/Services/Interpreters/LangInterpretersService'
 import Langs from './view/common/Langs'
 import LangsService from './domain/Services/LangsService'
@@ -264,7 +261,6 @@ const buildServicesLocator = () => {
     IFavoritesService,
     new FavoritesServiceSingleton()
   )
-  serviceLocator.registerInstance(IKeywordsService, new KeywordsService())
   serviceLocator.registerInstance(IDictService, new DictService())
   serviceLocator.register(ILikesService, LikesService)
   serviceLocator.register(INavigationService, NavigationService)
@@ -343,10 +339,6 @@ const buildServicesLocator = () => {
   serviceLocator.registerFactory(
     UsersServiceClient,
     () => new UsersServiceClient(clientHost, credentials, options)
-  )
-  serviceLocator.registerFactory(
-    KeywordsServiceClient,
-    () => new KeywordsServiceClient(clientHost, credentials, options)
   )
   serviceLocator.registerFactory(
     PublishServiceClient,

@@ -1,7 +1,6 @@
 import './App.less'
 import './App.css'
 import { HashRouter } from 'react-router-dom'
-import { uriTransformer } from 'react-markdown'
 import { UserContext, useServicesLocate } from './common/Contexts'
 import ConfigKeys from '../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from './assets/logo.png'
@@ -62,7 +61,7 @@ export default function App () {
         }
         e.stopPropagation()
         e.preventDefault()
-        navigateTo(((a as any).text || a.innerText || '').trim(), a.href && uriTransformer(a.href))
+        navigateTo(((a as any).text || a.innerText || '').trim(), a.href)
       }
     }
   }, [])

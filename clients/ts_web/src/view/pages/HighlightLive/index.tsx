@@ -19,15 +19,12 @@ export class HighlightLiveViewerProps {
   data:object
 }
 const viewers = new Map<string, {(props: HighlightLiveViewerProps): JSX.Element }>([['branch', Branch], ['timeline', Timeline]])
-
-const proto = `article${Seperators.LangFields}`
-
-const splitFormat = (lang:string, defaultFormat?:string):[string, string|undefined] => {
+const getHighlightFormat = (lang:string, defaultFormat?:string):[ string|undefined, string] => {
   const idx = lang.indexOf(Seperators.Fields)
   if (~idx) {
-    return [lang.slice(idx + 1)?.trim(), lang.slice(0, idx)?.trim()]
+    return [lang.slice(0, idx)?.trim(), lang.slice(idx + 1)?.trim()]
   }
-  return [lang, defaultFormat]
+  return [defaultFormat, lang]
 }
 
 export default function HighlightLive (props: { language: string, value: string, format?:string }) {
@@ -35,11 +32,20 @@ export default function HighlightLive (props: { language: string, value: string,
   const locate = useServicesLocate()
   let format = props.format
   let lang = props.language || ''
-    ;[lang, format] = splitFormat(lang, format)
-  if (lang && lang.startsWith(proto)) {
-    const path = lang.slice(proto.length).trim()
-    if (!path) {
+    ;[format, lang] = getHighlightFormat(lang, format)
+  const protoSeperator = `${Seperators.LangFields}`
+  const protoIdx = lang.indexOf(protoSeperator)
+  if (lang && ~protoIdx) {
+    let pathOrName = lang.slice(protoIdx + protoSeperator.length).trim()
+    if (!pathOrName) {
       return <></>
+    }
+    let proto:string|undefined = lang.slice(0, protoIdx).trim()
+    if (!proto || proto === 'article') {
+      proto = undefined
+    }
+    if (!proto && pathOrName[0] !== '/') {
+      pathOrName = '/' + pathOrName
     }
     const dataSections = props.value ? [{
       name: 'data',
@@ -47,8 +53,8 @@ export default function HighlightLive (props: { language: string, value: string,
       type: format
     }] : []
     return <div className="highlight-live ref-article">
-      <ArticlePreview dataSections={dataSections} path={path}></ArticlePreview>
-      {user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locate, path, filename(path))} /> : undefined}
+      <ArticlePreview dataSections={dataSections} root={proto} pathOrName={pathOrName}></ArticlePreview>
+      {user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locate, pathOrName, filename(pathOrName), proto)} /> : undefined}
     </div>
   }
   const viewerInfo = locate(IEditorsService).getViewerByFileName(lang)

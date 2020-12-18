@@ -1,70 +1,73 @@
-import IKeywordsService from '../../domain/ServiceInterfaces/IKeywordsService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import INavigationService from '../Interfaces/INavigationService'
 import IServicesLocator from '../../infrac/ServiceLocator/IServicesLocator'
 import IViewService from '../Interfaces/IViewService'
-import sleep from '../../infrac/Lang/sleep'
 
 export default class NavigationService extends IServicesLocator implements INavigationService {
   async promptGoto (title?: string, url?: string): Promise<void> {
     if (!url || !title) {
       return
     }
-    let async: boolean | undefined
-    let desc = ''
     if (title) {
       const ltitle = title.toLocaleLowerCase()
       if (ltitle.startsWith('http://') || ltitle.startsWith('https://')) {
         url = title
       }
     }
-    if (!url || url === window.origin || url === `${window.origin}/`) {
-      const keywordsService = this.locate(IKeywordsService)
-      await Promise.all([
-        sleep(200).then(() => {
-          if (async === undefined) {
-            async = true
-          }
-        }),
-        keywordsService.get(title).then((s) => {
-          url = s.efficialUrl
-          desc = s.description || ''
-          if (async === undefined) {
-            async = false
-          }
-        })
-      ])
-    }
     const u = new URL(url || '')
-    const newTab = u.hostname !== window.location.hostname
-    const articleView = !newTab && u.hash.startsWith('#/article/')
-    const articlePath = articleView ? decodeURIComponent(u.hash.slice('#/article'.length)) : undefined
-    const open = () => {
-      if (!url) {
+    const proto = u.protocol
+    const lProto = proto.toLowerCase()
+    if ((lProto === 'http:' || lProto === 'https:')) {
+      if (u.hostname !== window.location.hostname) {
+        this.locate(IViewService).prompt(
+          { title, subTitle: this.locate(ILangsService).get(LangKeys.ComfireJump) + url }, []
+          , async () => {
+            window.open(url, '_blank')
+            return true
+          })
         return
       }
-      if (!newTab) {
-        window.location.href = url!
-      } else {
-        window.open(url, '_blank')
-      }
+      window.location.href = url
+      return
     }
-    if ((async && newTab) || desc || articlePath) {
+    if (lProto === 'comment:') {
       this.locate(IViewService).prompt(
-        url ? { title, subTitle: this.locate(ILangsService).get(LangKeys.ComfireJump) + url } : title, [
-          ...(desc ? [{
+        title, [
+          {
             type: 'Markdown',
-            value: desc
-          }] : (articlePath ? [{
+            value: decodeURIComponent(u.pathname)
+          }
+        ])
+      return
+    }
+    if (lProto) {
+      var root:string|undefined = lProto.replace(/:$/, '')
+      if (root === 'article') {
+        root = undefined
+      }
+      let articlePathOrName = u.pathname
+      if (!root) {
+        if (articlePathOrName[0] !== '/') {
+          articlePathOrName = '/' + articlePathOrName
+        }
+        url = `#/article${articlePathOrName}`
+        this.locate(IViewService).prompt(
+          { title, subTitle: this.locate(ILangsService).get(LangKeys.ComfireJump) + url }, [{
             type: 'Article',
-            value: articlePath
-          }] : []))
-        ], async () => {
-          open()
-          return true
-        })
-    } else {
-      open()
+            value: articlePathOrName
+          }
+          ], async () => {
+            window.location.href = url!
+            return true
+          })
+      } else {
+        this.locate(IViewService).prompt(
+          title, [{
+            type: 'Article',
+            value: { root, name: articlePathOrName }
+          }
+          ])
+      }
     }
   }
 }

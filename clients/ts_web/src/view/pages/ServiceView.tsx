@@ -19,17 +19,17 @@ import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
 
-export const previewArticleByPath = (locate: LocateFunction, path: string | undefined, title: string | undefined) => {
-  if (!path) {
+export const previewArticleByPath = (locate: LocateFunction, pathOrName: string | undefined, title: string | undefined, root?:string|undefined) => {
+  if (!pathOrName) {
     return undefined
   }
-  const url = `#article${path}`
+  const url = `#article${pathOrName}`
   return () => {
     locate(IViewService).prompt(
       { title: title || '', subTitle: locate(ILangsService).get(LangKeys.ComfireJump) + url }, [
         {
           type: 'Article',
-          value: path
+          value: pathOrName
         }], async () => {
         window.location.href = url
         return true
@@ -73,7 +73,7 @@ export default function ServiceView (props: {
   >(undefined)
   const [modalFields, setModalFileds] = useState<IPromptField<any, any>[]>([])
   const [onModalOk, setOnModalOk] = useState<{
-    onOk(...p: any): Promise<boolean | undefined>;
+    onOk?(...p: any): Promise<boolean | undefined>;
   }>()
 
   const [previewImgUrl, setPreviewImgUrl] = useState('')
@@ -91,7 +91,7 @@ export default function ServiceView (props: {
   }
 
   const applyModal = async () => {
-    if (await onModalOk!.onOk(...modalFields.map((f) => f.value))) {
+    if (!onModalOk!.onOk || await onModalOk!.onOk(...modalFields.map((f) => f.value))) {
       cancleModal(true)
     }
   }
@@ -121,7 +121,7 @@ export default function ServiceView (props: {
   const fPrompt = async (
     title: string | { title: string, subTitle: string },
     fields: IPromptField<any, any>[],
-    onOk: (...paras: any) => Promise<boolean | undefined>,
+    onOk?: (...paras: any) => Promise<boolean | undefined>,
     tryPreviewFile = true
   ): Promise<boolean> => {
     return new Promise(resolve => {
@@ -177,7 +177,7 @@ export default function ServiceView (props: {
         reader.readAsText(file)
       }
       const handleVideo = (file: File) => {
-        onOk(file)
+        onOk?.(file)
         resolveModalPromise(true)
       }
 
@@ -222,7 +222,7 @@ export default function ServiceView (props: {
             return
           }
         }
-        onOk(file)
+        onOk?.(file)
         resolveModalPromise(true)
         if (e) {
           e.target.value = ''
@@ -311,7 +311,7 @@ export default function ServiceView (props: {
         visible={modalVisible}
         onOk={applyModal}
         onCancel={() => cancleModal(false)}
-        footer={(modalImageField || modalViewField) ? null : undefined}
+        footer={(modalImageField || modalViewField || !onModalOk?.onOk) ? null : undefined}
         bodyStyle={
           modalFields.length
             ? (modalImageField || modalViewField)
@@ -376,7 +376,7 @@ export default function ServiceView (props: {
               case 'QrCode':
                 return (<div className="service-view-qrcode"><QrCode content={field.value}></QrCode></div>)
               case 'Article':
-                return (<ArticlePreview className="md" path={field.value}></ArticlePreview>)
+                return (<ArticlePreview className="md" root={field.value.root} pathOrName={field.value.root ? field.value.name : field.value}></ArticlePreview>)
               case 'Password':
                 return (
                   <Input.Password

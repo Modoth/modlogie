@@ -23,7 +23,6 @@ namespace Modlogie.Infrastructure.Data
         public virtual DbSet<File> Files { get; set; }
         public virtual DbSet<FileTag> FileTags { get; set; }
         public virtual DbSet<KeyValue> KeyValues { get; set; }
-        public virtual DbSet<Keyword> Keywords { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
@@ -262,27 +261,6 @@ namespace Modlogie.Infrastructure.Data
 
                 entity.Property(e => e.Value)
                     .HasColumnType("varchar(512)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
-            });
-
-            modelBuilder.Entity<Keyword>(entity =>
-            {
-                entity.ToTable("Keyword");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("varchar(128)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_general_ci");
-
-                entity.Property(e => e.Description)
-                    .HasColumnType("longtext")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_unicode_ci");
-
-                entity.Property(e => e.Url)
-                    .IsRequired()
-                    .HasColumnType("varchar(128)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_general_ci");
             });

@@ -51,7 +51,7 @@ export default class IViewService {
     throw new Error('Method not implemented.')
   }
 
-  prompt (title: string | { title: string, subTitle: string }, fields: IPromptField<any, any>[], onOk: (...paras: any) => Promise<boolean | undefined>, tryPreviewFile = true): Promise<boolean> {
+  prompt (title: string | { title: string, subTitle: string }, fields: IPromptField<any, any>[], onOk?: (...paras: any) => Promise<boolean | undefined>, tryPreviewFile = true): Promise<boolean> {
     throw new Error('Method not implemented.')
   }
 

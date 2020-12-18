@@ -7,7 +7,7 @@ export default class IArticleAppservice {
     throw new Error('Method not implemented.')
   }
 
-  fetchArticleByPath (path: string, loadingAddition = false): Promise<[Article | undefined, ArticleContentType | undefined, ArticleType | undefined]> {
+  fetchArticle (pathOrName: string, loadingAddition = false, root?:string): Promise<[Article | undefined, ArticleContentType | undefined, ArticleType | undefined]> {
     throw new Error('Method not implemented.')
   }
 

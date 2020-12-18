@@ -15,7 +15,7 @@ export function ArticleDetail (props: {}) {
       const viewService = locate(IViewService)
       viewService.setLoading(true)
       const [article, articleContentType, type] =
-        (await locate(IArticleAppservice).fetchArticleByPath(path, true)) ||
+        (await locate(IArticleAppservice).fetchArticle(path, true)) ||
         []
       viewService.setLoading(false)
       const onclose = () => {
