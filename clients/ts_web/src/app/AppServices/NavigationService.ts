@@ -35,7 +35,7 @@ export default class NavigationService extends IServicesLocator implements INavi
         title, [
           {
             type: 'Markdown',
-            value: decodeURIComponent(u.pathname)
+            value: u.pathname
           }
         ])
       return

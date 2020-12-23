@@ -15,6 +15,14 @@ const transformLinkUri = (uri:string) => {
   return uri
 }
 
+const defaultRenderers = {
+  // eslint-disable-next-line react/display-name
+  link: (props:any) => {
+    return <a href={decodeURIComponent(props.href)} target={props.target}>{props.children}</a>
+  }
+}
+
 export default function Markdown (props:ReactMarkdown.ReactMarkdownProps) {
-  return <ReactMarkdown transformLinkUri={transformLinkUri} {...props} skipHtml={true}></ReactMarkdown>
+  const renderers = Object.assign({}, defaultRenderers, props.renderers)
+  return <ReactMarkdown transformLinkUri={transformLinkUri} {...props} renderers={renderers} skipHtml={true}></ReactMarkdown>
 }
