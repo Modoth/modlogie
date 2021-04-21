@@ -42,7 +42,7 @@ RUN true \
 && curl -L 'https://github.com/grpc/grpc-web/releases/download/1.2.0/protoc-gen-grpc-web-1.2.0-linux-x86_64' -o bin/protoc-gen-grpc-web \
 && chmod -R 755 bin \
 && chmod -R +r include \
-&& find include/ -type d -exec chmod +x {} \
+&& find include/ -type d | xargs -I% chmod +x % \
 && sed -i -e 's/^PATH="/PATH="\/opt\/protoc\/bin:/' /etc/environment \
 && true
 

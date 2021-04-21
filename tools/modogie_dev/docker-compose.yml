@@ -25,7 +25,7 @@ services:
     volumes:
       - ../../..:/home/dev
     ports:
-      - "9022:22"
+      - "10022:22"
     environment:
       - DOCKER_HOST=tcp://base:2375
   db:
