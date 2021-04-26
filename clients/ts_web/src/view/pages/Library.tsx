@@ -3,7 +3,7 @@ import './Library.less'
 import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
-import { PlusOutlined, PoweroffOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, AppstoreOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocate, useUser } from '../common/Contexts'
@@ -594,7 +594,7 @@ export default function Library (props: LibraryProps) {
           {
             title: langs.get(LangKeys.Home),
             link: '/',
-            icon: <PoweroffOutlined className="menu-icon" />
+            icon: <AppstoreOutlined className="menu-icon" />
           }
         ]}></TitleBar>
 
