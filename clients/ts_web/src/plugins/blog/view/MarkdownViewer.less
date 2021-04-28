@@ -28,9 +28,20 @@
     margin-right: 10px;
     font-weight: bold;
     font-size: 1.05em;
-    margin: 5px 0 15px 0;
+    margin: 5px -20px 15px -20px;
     display: block;
     user-select: none;
+    background: linear-gradient(0, #e8912e,#e8912ecc);
+    color: white;
+    box-shadow: var(--shadow);
+    padding: 5px 15px 5px 20px;
+    @media print{
+      background: unset;
+      padding: unset;
+      color: unset;
+      box-shadow: unset;
+      margin: 5px 0 15px 0;
+    }
   }
 
   &.first-section {
@@ -55,6 +66,10 @@
       margin: 0 10px 0 0;
       float: left;
       font-weight: unset;
+      background: unset;
+      padding: unset;
+      color: unset;
+      box-shadow: unset;
     }
     .md-name::before {
       content: " ";

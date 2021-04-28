@@ -46,12 +46,16 @@
       margin: 4px 0 0 0;
       & button {
         box-shadow: unset;
+        &.ant-btn-primary{
+          background:linear-gradient(0, #e8912ecc,#e8912e)
+        }
       }
     }
-    @media print {
-      .modlogie {
-        display: none;
-      }
-    }
+  }
+}
+
+@media print {
+  .modlogie-wraper {
+    display: none !important;
   }
 }
