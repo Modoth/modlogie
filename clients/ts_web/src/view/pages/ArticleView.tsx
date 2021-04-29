@@ -3,7 +3,7 @@ import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType, Article
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
-import { UploadOutlined, ShareAltOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
+import { UploadOutlined, ShareAltOutlined,SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
@@ -162,6 +162,26 @@ export default function ArticleView (props: {
     }
   }
 
+  const save = async (close = false)=>{
+    try {
+      const service = locate(IArticleService)
+      const newContent = editorRefs.getEditedContent()
+      if (
+        newContent.sections !== undefined &&
+        newContent.sections !== content?.sections
+      ) {
+        await service.updateArticleContent(props.article, newContent, type?.additionalSections, files)
+        setContent(newContent)
+        await autoUpdate()
+      }
+      if(close){
+        setEditing(false)
+      }
+    } catch (e) {
+      viewService!.errorKey(langs, e.message)
+    }
+  }
+
   const toggleEditing = async () => {
     if (!editing) {
       if (!additionalLoaded) {
@@ -174,21 +194,7 @@ export default function ArticleView (props: {
       setEditing(true)
       return
     }
-    try {
-      const service = locate(IArticleService)
-      const newContent = editorRefs.getEditedContent()
-      if (
-        newContent.sections !== undefined &&
-        newContent.sections !== content?.sections
-      ) {
-        await service.updateArticleContent(props.article, newContent, type?.additionalSections, files)
-        setContent(newContent)
-        await autoUpdate()
-      }
-      setEditing(false)
-    } catch (e) {
-      viewService!.errorKey(langs, e.message)
-    }
+    save(true)
   }
 
   const updateTag = async (tag: ArticleTag, tagValue: string) => {
@@ -503,6 +509,12 @@ export default function ArticleView (props: {
                     <span className="preview-title">{langs.get(LangKeys.Edit) + ': ' + (name || '')}</span>
                     <Button
                       type="link"
+                      onClick={(e)=> {e.stopPropagation();save()}}
+                      key="save"
+                      icon={<SaveOutlined />}
+                    ></Button>,
+                    <Button
+                      type="link"
                       onClick={toggleEditing}
                       key="endEdit"
                       icon={<CheckOutlined />}
@@ -510,7 +522,7 @@ export default function ArticleView (props: {
                     <Button
                       type="link"
                       icon={<UploadOutlined />}
-                      onClick={() => addFile()}
+                      onClick={(e) => { e.stopPropagation(); addFile() }}
                     ></Button>
                   </div>} key="1">
                   <props.type.Viewer articleId={props.article.id!} showAdditionals={true} content={content} files={files} type={type} />
