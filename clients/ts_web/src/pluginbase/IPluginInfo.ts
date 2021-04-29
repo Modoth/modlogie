@@ -4,7 +4,7 @@ import IConfigsService, { Config } from '../domain/ServiceInterfaces/IConfigsSer
 
 type Tag = any;
 export interface ArticleType {
-  additionalConfigs?:Map<string, string>;
+  additionalConfigs?: Map<string, string>;
   admOnly?: boolean;
   defaultSections?: string[];
   displayName?: string;
@@ -24,7 +24,7 @@ export interface ArticleType {
   subTypeTag?: string;
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
   Editor: (props: ArticleContentEditorProps) => JSX.Element;
-  publishGenerators?:Map<string, {generator:(props: ArticleContentViewerProps) => string, previewTemplate?:string, autoUpdate?:boolean}>;
+  publishGenerators?: Map<string, { generator: (props: ArticleContentViewerProps) => string, previewTemplate?: string, autoUpdate?: boolean }>;
 }
 
 export interface ArticleContentEditorCallbacks<T> {
@@ -44,10 +44,17 @@ export interface ArticleContentType {
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
 }
 
+export class NavigationSection {
+  constructor(public name: string, public level = 0) {
+
+  }
+  children: Array<NavigationSection>
+  locate?(direct?: boolean): void
+  onLocated?(): void
+}
+
 export interface ArticleContentViewerCallbacks {
-  gotoSection(section: string): void;
-  onSection(section: string): void;
-  onSections(sections: string[]): void
+  onSections(sections: NavigationSection[]): void
 };
 
 export class ArticleContentViewerProps {
@@ -63,7 +70,7 @@ export class ArticleContentViewerProps {
   showAdditionals?: boolean;
   viewerCallbacks?: ArticleContentViewerCallbacks;
   print?: boolean;
-  articleId:string
+  articleId: string
 }
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {
@@ -72,49 +79,49 @@ export class ArticleContentEditorProps extends ArticleContentViewerProps {
 }
 
 export default class IPluginInfo {
-  constructor (typeNames: string[]) {
+  constructor(typeNames: string[]) {
     throw new Error('Method not implemented.')
   }
 
-  init (configs: IConfigsService): Promise<any> {
+  init(configs: IConfigsService): Promise<any> {
     throw new Error('Method not implemented.')
   }
 
-  get name ():string {
+  get name(): string {
     throw new Error('Method not implemented.')
   }
 
-  get types (): ArticleType[] {
+  get types(): ArticleType[] {
     throw new Error('Method not implemented.')
   }
 
-  get defaultConfigs (): Config[] {
+  get defaultConfigs(): Config[] {
     throw new Error('Method not implemented.')
   }
 
-  get langs (): { [key: string]: string } {
+  get langs(): { [key: string]: string } {
     throw new Error('Method not implemented.')
   }
 }
 
 export class PluginsConfig {
-  constructor (private _plugins: IPluginInfo[]) {
+  constructor(private _plugins: IPluginInfo[]) {
     this._allTypes = this._plugins.flatMap(p => p.types).filter(t => t.rootSubjectId)
     this._normalTypes = this._allTypes.filter(t => !t.admOnly && t.initArticleCount)
   };
 
-  get Plugins () {
+  get Plugins() {
     return Array.from(this._plugins)
   }
 
   private _allTypes: ArticleType[];
   private _normalTypes: ArticleType[];
 
-  get AllTypes () {
+  get AllTypes() {
     return this._allTypes
   }
 
-  get NormalTypes () {
+  get NormalTypes() {
     return this._normalTypes
   }
 }

@@ -4,15 +4,40 @@ import HighlightLive from '../../../view/pages/HighlightLive'
 import Markdown from '../../../infrac/components/Markdown'
 import React from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
+import { NavigationSection } from '../../../pluginbase/IPluginInfo'
+import LocatableView from '../../../infrac/components/LocatableView'
 
-const getRenders = () => {
+const getText = (children: [React.ReactElement] | string): string => {
+  if (children == null) {
+    return ""
+  }
+  if (typeof (children) === "string") {
+    return children
+  }
+  if (!children.length) {
+    return ""
+  }
+  return (children as [React.ReactElement]).map(c => c.props?.children ? getText(c.props?.children) : "").join("")
+}
+
+const getRenders = (root: NavigationSection | undefined) => {
+  if (!root) {
+    return { code: HighlightLive }
+  }
+  root.children = []
   return ({
-    code: HighlightLive
+    code: HighlightLive,
+    // eslint-disable-next-line react/display-name
+    heading: ({ level, children }: { level: number, children: [React.ReactElement] }) => {
+      const s = new NavigationSection(getText(children), level)
+      root.children.push(s)
+      return <LocatableView callbacks={s} View={() => React.createElement(`h${level}`, null, ...children)}></LocatableView>
+    }
   })
 }
 
-export default function MarkdownViewer (props: SectionViewerProps) {
-  const renderers = getRenders() as any
+export default function MarkdownViewer(props: SectionViewerProps) {
+  const renderers = getRenders(props.navigationRoot) as any
   return <div onClick={(e) => {
     if ((e.target as any)?.nodeName === 'A') {
       return

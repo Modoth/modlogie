@@ -129,17 +129,33 @@
   }
 
   .side {
+    overflow-y: auto;
     .catelog {
       display: none;
+      overflow-y: auto;
       & > div {
-        margin: 10px 5px;
-        font-size: 1.05em;
-        padding: 5px;
+        padding: 10px 5px;
         &.top {
           color: #e8912e;
         }
         &.item {
           border-top: 1px solid #0001;
+          & .item-indent{
+            white-space:pre;
+          }
+        }
+
+        &.item-0{
+          font-size: 1.05em;
+          & .item-indent{
+            display: none;
+          }
+        }
+
+        &.current-item{
+          // background: linear-gradient(0, #e8912e, #e8912ecc);
+          color: #e8912ecc;
+          font-weight: bolder;
         }
       }
     }

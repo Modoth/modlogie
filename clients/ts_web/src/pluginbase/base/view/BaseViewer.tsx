@@ -1,5 +1,5 @@
 import './BaseViewer.less'
-import { ArticleContentViewerProps } from '../../IPluginInfo'
+import { ArticleContentViewerProps, NavigationSection } from '../../IPluginInfo'
 import { ArticleSection } from '../../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import LocatableView, { LocatableViewCallbacks } from '../../../infrac/components/LocatableView'
@@ -20,7 +20,7 @@ const getSections = (allSections: Set<string>, additionalSections: Set<string>, 
   return s
 }
 
-export default function BaseViewer (TSectionViewer: { (props: SectionViewerProps): JSX.Element }, pluginName: string,
+export default function BaseViewer(TSectionViewer: { (props: SectionViewerProps): JSX.Element }, pluginName: string,
   TAdditionalSectionsViewer?: { (props: AdditionalSectionViewerProps): JSX.Element }) {
   const TAdditionalSectionsViewerMemo = TAdditionalSectionsViewer ? memo(TAdditionalSectionsViewer) : null
   // eslint-disable-next-line react/display-name
@@ -28,22 +28,15 @@ export default function BaseViewer (TSectionViewer: { (props: SectionViewerProps
     const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
     const [sections] = useState((getSections(props.type?.allSections!, props.type?.additionalSections!, props.content?.sections || [])))
     const [showAdditional] = useState(props.showAdditionals === true)
-    const [callbacks] = useState(new Map<string, LocatableViewCallbacks>(sections.map(s => [s.name!, {
-      onLocated: () => {
-        if (props.viewerCallbacks?.onSection) {
-          props.viewerCallbacks!.onSection!(s.name!)
-        }
-      }
-    }])))
+    const [navigationSections] = useState(sections.map(s => (() => {
+      var sec: NavigationSection & LocatableViewCallbacks & { section: ArticleSectionVm } = new NavigationSection(s.name!) as any
+      sec.section = s
+      return sec
+    })()))
     useEffect(() => {
       if (props.viewerCallbacks) {
         if (props.viewerCallbacks.onSections) {
-          props.viewerCallbacks.onSections(sections!.map(s => s.name!).filter(s => callbacks.get(s)?.locate))
-        }
-        props.viewerCallbacks.gotoSection = s => {
-          if (callbacks.has(s)) {
-            callbacks.get(s)!.locate!()
-          }
+          props.viewerCallbacks.onSections(navigationSections.map(s => s).filter(s => s.locate))
         }
       }
     }, [sections])
@@ -62,8 +55,8 @@ export default function BaseViewer (TSectionViewer: { (props: SectionViewerProps
             ? <TAdditionalSectionsViewerMemo articleId={props.articleId} type={props.type!.articleType!} summaryMode={!showAdditional} sections={sections} filesDict={filesDict} ></TAdditionalSectionsViewerMemo>
             : null
         }
-        {sections.filter(s => !props.type?.hiddenSections.has(s.name!)).filter(s => showAdditional || !props.type?.smartHiddenSections.has(s.name!)).filter(s => s.content && s.content.match(/\S/)).filter(s => showAdditional || !props.type?.additionalSections.has(s.name!)).map((section) => (
-          <LocatableView View={TSectionViewer} className={classNames(section.firstSection ? 'first-section' : (section.additionalSection ? 'additional-section' : 'normal-section'))} callbacks={callbacks.get(section.name!)} key={section.name} section={section} filesDict={filesDict} pureViewMode={true} />
+        {navigationSections.filter(s => !props.type?.hiddenSections.has(s.section.name!)).filter(s => showAdditional || !props.type?.smartHiddenSections.has(s.section.name!)).filter(s => s.section.content && s.section.content.match(/\S/)).filter(s => showAdditional || !props.type?.additionalSections.has(s.name!)).map((s) => (
+          <LocatableView View={TSectionViewer} className={classNames(s.section.firstSection ? 'first-section' : (s.section.additionalSection ? 'additional-section' : 'normal-section'))} callbacks={s} key={s.section.name} section={s.section} filesDict={filesDict} pureViewMode={true} navigationRoot={s} />
         ))}
       </div>
     )

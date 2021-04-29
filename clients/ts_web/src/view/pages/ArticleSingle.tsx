@@ -1,5 +1,5 @@
 import './ArticleSingle.less'
-import { ArticleContentType, ArticleContentViewerCallbacks } from '../../pluginbase/IPluginInfo'
+import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
 import { MoreOutlined, OrderedListOutlined, FileWordOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
@@ -22,8 +22,8 @@ const drawSizes = [1, 5]//, 15]
 const drawColors = ['#2d2d2d', '#ff0000']//, '#ffff0040']
 export default function ArticleSingle (props: { article: Article, type: ArticleContentType }) {
   const locate = useServicesLocate()
-  const [sections, setSections] = useState<string[]>([])
-  const [currentSection, setCurrentSection] = useState('')
+  const [sections, setSections] = useState<NavigationSection[]>([])
+  const [currentSection, setCurrentSection] = useState<NavigationSection | undefined>(undefined)
   const [drawSize, setDrawSize] = useState(drawSizes[0])
   const [drawColor, setDrawColors] = useState(drawColors[0])
   const [earse, setEarse] = useState(false)
@@ -71,18 +71,17 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     })
   }
   callbacks.onSections = setSections
-  callbacks.onSection = setCurrentSection
   const configsService = locate(IUserConfigsService)
   useEffect(() => {
     if (!sidePopup) {
-    viewService.setFloatingMenus?.(ArticleSingle.name, <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
-      size="large"
-      shape="circle" onClick={() => setSidePopup(true)}>
-    </Button>)
-     viewService.setShowFloatingMenu?.(true)
+      viewService.setFloatingMenus?.(ArticleSingle.name, <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
+        size="large"
+        shape="circle" onClick={() => setSidePopup(true)}>
+      </Button>)
+      viewService.setShowFloatingMenu?.(true)
     } else {
-    viewService.setFloatingMenus?.(ArticleSingle.name)
-    viewService.setShowFloatingMenu?.(false)
+      viewService.setFloatingMenus?.(ArticleSingle.name)
+      viewService.setShowFloatingMenu?.(false)
     }
   })
   useEffect(() => {
@@ -100,6 +99,23 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
       viewService.setShowFloatingMenu?.(true)
     }
   }, [])
+  const maxNavigationLevel = 2
+  const NavigationSectionView = (section: NavigationSection): React.ReactElement | undefined => {
+    if (section.level > maxNavigationLevel) {
+      return undefined
+    }
+    section.onLocated = () => setCurrentSection(section)
+    return <>
+      <div key={section + 'menu'} className={`item item-${section.level} ${section === currentSection ? "current-item": ""}`} onClick={() => {
+        setSidePopup(false)
+        section.locate?.()
+        setCurrentSection(section)
+      }}>
+        <span><span className="item-indent">{"    ".repeat(section.level) + "-  "}</span>{section.name}</span>
+      </div>
+      { section.children && section.children.length ? section.children.map(NavigationSectionView) : undefined}
+    </>
+  }
   return (
     <LocatableOffsetProvider value={0}>
       <LocatableView View={Div} callbacks={locateRef} className={classNames('single-article', getThemeClass(currentTheme), paging ? 'paging' : '')}>
@@ -142,27 +158,27 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                           }
                         >{langs.get(LangKeys.Themes)}</Button>
                       </Menu.Item>
-                      // <Menu.Item key="paging">
-                      //   <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
-                      //     onClick={() => {
-                      //       const nextPaging = !paging
-                      //       setPaging(nextPaging)
-                      //       savePaging(nextPaging)
-                      //     }
-                      //     }
-                      //   >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
-                      // </Menu.Item>
+                        // <Menu.Item key="paging">
+                        //   <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
+                        //     onClick={() => {
+                        //       const nextPaging = !paging
+                        //       setPaging(nextPaging)
+                        //       savePaging(nextPaging)
+                        //     }
+                        //     }
+                        //   >{langs.get(paging ? LangKeys.Scroll : LangKeys.Paging)}</Button>
+                        // </Menu.Item>
                       ] : null}
                     </Menu>}>
                     <Button className="single-article-content-menu-btn" type="link" size="large" icon={<MoreOutlined />} onClick={(e) => e.preventDefault()} ></Button>
                   </Dropdown>
                 }</>) : (<>
-                {drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
-                {drawColors.map(c => <Button key={c} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={c === drawColor ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
-                <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ClearOutlined />} onClick={() => setEarse(!earse)}></Button>
-                <div className={classNames('title')}></div>
-                <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
-              </>)
+                  {drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
+                  {drawColors.map(c => <Button key={c} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={c === drawColor ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
+                  <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ClearOutlined />} onClick={() => setEarse(!earse)}></Button>
+                  <div className={classNames('title')}></div>
+                  <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                </>)
             }
           </div>
         </div>
@@ -170,18 +186,12 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
           sidePopup && setSidePopup(false)
         }}>
           <div className="catelog pop-up" onClick={ev => ev.stopPropagation()}>
-            <div className="top" onClick={() => {
+            {/* <div className="top" onClick={() => {
               setSidePopup(false)
               scrollToTop()
-            }}><span>{langs.get(LangKeys.Top)}</span></div>
+            }}><span>{langs.get(LangKeys.Top)}</span></div> */}
             {
-              sections.map(section =>
-                <div key={section + 'menu'} className="item" onClick={() => {
-                  setSidePopup(false)
-                  callbacks.gotoSection && callbacks.gotoSection(section)
-                }}>
-                  <span >{section}</span>
-                </div>)
+              sections.map(NavigationSectionView)
             }
           </div>
         </div>
