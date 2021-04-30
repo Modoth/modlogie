@@ -2,7 +2,7 @@ import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
-import { MoreOutlined, OrderedListOutlined, FileWordOutlined,EditOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MoreOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -13,14 +13,14 @@ import IViewService from '../../app/Interfaces/IViewService'
 import LocatableView, { Div, LocatableViewCallbacks } from '../../infrac/components/LocatableView'
 import React, { useEffect, useState } from 'react'
 
-const themeCount = 3
-const getThemeClass = (idx: number) => idx > 0 ? `reading-theme reading-theme-${idx}` : ''
+const themeCount = 2
+const getThemeClass = (idx: number) => idx >= 0 ? `reading-theme reading-theme-${idx}` : ''
 const ThemeKey = 'READING_THEME'
 const PaingKey = 'READING_PAIGING'
 const CaptureDictKey = 'CAPTUR_DICT'
 const drawSizes = [1, 5]//, 15]
 const drawColors = ['#2d2d2d', '#ff0000']//, '#ffff0040']
-export default function ArticleSingle (props: { article: Article, type: ArticleContentType }) {
+export default function ArticleSingle(props: { article: Article, type: ArticleContentType }) {
   const locate = useServicesLocate()
   const [sections, setSections] = useState<NavigationSection[]>([])
   const [currentSection, setCurrentSection] = useState<NavigationSection | undefined>(undefined)
@@ -33,7 +33,6 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   }
   const langs = locate(ILangsService)
   const [freeDraw, setFreeDraw] = useState(false)
-  const [expandMode, setExpandMode] = useState(false)
   const [penOnly, setPenOnly] = useState(false)
   const [existedPen, setExistedPen] = useState(false)
   const [sidePopup, setSidePopup] = useState(false)
@@ -63,12 +62,12 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     const currentPage = Math.floor(par.scrollLeft / width)
     par.scroll({ left: (currentPage + i) * width, behavior: 'smooth' })
   }
-  const scrollToTop = (direct?:boolean) => {
+  const scrollToTop = (direct?: boolean) => {
     if (locateRef && locateRef.locate) {
       locateRef.locate(direct)
     }
   }
-  const jumpTo = (url:string) => {
+  const jumpTo = (url: string) => {
     viewService.previewArticle(undefined, undefined, () => {
       window.location.href = url
     })
@@ -91,10 +90,8 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     const loadConfigs = async () => {
       const captureDict = await configsService.getOrDefault(CaptureDictKey, false)
       setCaptureDict(captureDict)
-      if (smallScreen) {
-        const currentTheme = await configsService.getOrDefault(ThemeKey, 0)
-        setCurrentTheme(currentTheme)
-      }
+      const currentTheme = await configsService.getOrDefault(ThemeKey, 0)
+      setCurrentTheme(currentTheme)
     }
     loadConfigs()
     return () => {
@@ -109,7 +106,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     }
     section.onLocated = () => setCurrentSection(section)
     return <>
-      <div key={section + 'menu'} className={`item item-${section.level} ${section === currentSection ? "current-item": ""}`} onClick={() => {
+      <div key={section + 'menu'} className={`item item-${section.level} ${section === currentSection ? "current-item" : ""}`} onClick={() => {
         setSidePopup(false)
         section.locate?.()
         setCurrentSection(section)
@@ -142,8 +139,8 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                           setCaptureDict(!captureDict)
                           configsService.set(CaptureDictKey, !captureDict)
                         }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
-                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <FileAddOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
-                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={ <FileWordOutlined />} onClick={() => jumpTo('#/manage/words')}>{langs.get(LangKeys.FavoriteWords)}</Button></Menu.Item>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<FileAddOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<FileWordOutlined />} onClick={() => jumpTo('#/manage/words')}>{langs.get(LangKeys.FavoriteWords)}</Button></Menu.Item>,
                         <Menu.Divider key="divider2"></Menu.Divider>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<PictureOutlined />} onClick={() => {
                           scrollToTop(true)
@@ -151,7 +148,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                         }} >{langs.get(LangKeys.ScreenShot)}</Button></Menu.Item>
                       )
                       }
-                      {smallScreen ? [<Menu.Item key="theme">
+                      <Menu.Item key="theme">
                         <Button className="single-article-content-menu-btn" type="link" size="large" icon={<BgColorsOutlined />}
                           onClick={() => {
                             const nextTheme = (currentTheme + 1) % themeCount
@@ -161,6 +158,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                           }
                         >{langs.get(LangKeys.Themes)}</Button>
                       </Menu.Item>
+                      {smallScreen ? [
                         // <Menu.Item key="paging">
                         //   <Button className="single-article-content-menu-btn" type="link" size="large" icon={paging ? <ColumnHeightOutlined /> : <ColumnWidthOutlined />}
                         //     onClick={() => {
@@ -180,8 +178,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                   {drawColors.map(c => <Button key={c} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={c === drawColor ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
                   <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ClearOutlined />} onClick={() => setEarse(!earse)}></Button>
                   <div className={classNames('title')}></div>
-                  { existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? "primary" : "link"} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined }
-                  <Button className="single-article-content-menu-btn" type={expandMode ? "primary" : "link"} size="large" icon={<ColumnHeightOutlined />} onClick={() => setExpandMode(!expandMode)}></Button>
+                  {existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? "primary" : "link"} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined}
                   <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
                 </>)
             }
@@ -200,11 +197,11 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
             }
           </div>
         </div>
-        <div ref={ref} className={classNames('article', freeDraw && expandMode ? "expanded-article":"")}>
+        <div ref={ref} className={classNames('article')}>
           <div className="article-content">
             <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
           </div>
-          <FreeDrawMask penOnly={penOnly} onPenFound={()=>{setExistedPen(true);setPenOnly(true)}} earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
+          <FreeDrawMask penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true) }} earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
           {
             captureDict
               ? <CaptureDict offset={-50}></CaptureDict>
