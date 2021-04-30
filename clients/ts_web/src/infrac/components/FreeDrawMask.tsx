@@ -75,7 +75,6 @@ export default function FreeDrawMask(props: { enabled: boolean, penOnly?: boolea
       ctx.strokeStyle = p.color
       ctx.lineWidth = p.size * scale
       ctx.beginPath()
-      ctx.moveTo(...paths[0])
       ctx.moveTo(...paths[0]);
       let i = 1
       for (i = 1; i < paths.length - 2; i++) {
