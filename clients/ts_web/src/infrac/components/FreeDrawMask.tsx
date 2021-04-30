@@ -2,8 +2,9 @@ import './FreeDrawMask.less'
 import classNames from 'classnames'
 import React, { useEffect, useState } from 'react'
 
-let p = {} as any
-export default function FreeDrawMask(props: { enabled: boolean, penOnly?: boolean, onPenFound?: () => void, size: number, color: string, earse: boolean, hidden: boolean }) {
+type PropsType =  { enabled: boolean, penOnly?: boolean, onPenFound?: () => boolean, size: number, pen: [string, number], earse: boolean, hidden: boolean }
+let p : PropsType = {} as any
+export default function FreeDrawMask(props: PropsType) {
   const ref = React.createRef<HTMLCanvasElement>()
   const tmpRef = React.createRef<HTMLCanvasElement>()
   p = props
@@ -14,17 +15,20 @@ export default function FreeDrawMask(props: { enabled: boolean, penOnly?: boolea
     const canvas = ref.current!
     const style = getComputedStyle(canvas)
     const tmpCanvas = tmpRef.current!
-    tmpCanvas.height = parseFloat(style.height)
-    tmpCanvas.width = parseFloat(style.width)
+    const height = parseFloat(style.height)
+    const width = parseFloat(style.width)
     const maxSize = 2 ** 15
-    let maxScale = Math.min(maxSize / tmpCanvas.width, maxSize / tmpCanvas.height)
+    let maxScale = Math.min(maxSize / width, maxSize / height)
     maxScale = Math.max(Math.floor(maxScale * 10) / 10, 1)
-    maxScale = tmpCanvas.height < 2.5 * window.innerHeight ? maxScale : 1
+    maxScale = height < 2.5 * window.innerHeight ? maxScale : 1
     const scale = Math.min(window.devicePixelRatio || 1, maxScale)
-    canvas.height = tmpCanvas.height * scale
-    canvas.width = tmpCanvas.width * scale
+    const tempScale = scale
+    tmpCanvas.height = height * tempScale
+    tmpCanvas.width = width * tempScale
+    canvas.height = height * scale
+    canvas.width = width * scale
     const getPos = (ev: MouseEvent | TouchEvent): [[number, number], [number, number]] => {
-      const rec = canvas.getClientRects()
+      const rec = tmpCanvas.getClientRects()
       let x: number
       let y: number
       if (ev instanceof MouseEvent) {
@@ -48,7 +52,12 @@ export default function FreeDrawMask(props: { enabled: boolean, penOnly?: boolea
     const isNotPen = (ev: MouseEvent | TouchEvent) => (ev as TouchEvent).touches?.[0]?.["touchType"] !== "stylus"
     const startDraw = (ev: MouseEvent | TouchEvent) => {
       if (!p.enabled) {
-        return
+        if (isNotPen(ev)) {
+          return
+        }
+        if (!props.onPenFound?.()) {
+          return
+        }
       }
       if (p.penOnly && isNotPen(ev)) { return }
       if (!existedPen) {
@@ -69,11 +78,12 @@ export default function FreeDrawMask(props: { enabled: boolean, penOnly?: boolea
       if (paths.length < 3) {
         return
       }
+
       const ctx = canvas.getContext('2d')!
       ctx.save()
       ctx.lineCap = 'round'
-      ctx.strokeStyle = p.color
-      ctx.lineWidth = p.size * scale
+      ctx.strokeStyle = p.pen[0]
+      ctx.lineWidth = p.size * scale * (p.pen[1] || 1)
       ctx.beginPath()
       ctx.moveTo(...paths[0]);
       let i = 1
@@ -103,22 +113,28 @@ export default function FreeDrawMask(props: { enabled: boolean, penOnly?: boolea
       // if (Date.now() - lastMoveTime <= delay) {
       //   return
       // }
-      const [tx, ty] = s
+      let [tx, ty] = s
       if (Math.hypot(tx - x, ty - y) < minDist) {
         return
       }
       if (p.earse) {
+        [tx, ty] = t
         const ctx = canvas.getContext('2d')!
         ctx.save()
         ctx.lineCap = 'round'
-        ctx.clearRect(Math.min(x, tx) - p.size, Math.min(y, ty) - p.size, Math.abs(x - tx) + p.size, Math.abs(y - ty) + p.size)
+        let r = p.size * scale *  (p.pen[1] || 1) / 2
+        ctx.clearRect(Math.min(x, tx) - r, Math.min(y, ty) - r, Math.abs(x - tx) + 2*r, Math.abs(y - ty) + 2*r)
         ctx.restore()
       } else {
+        const [tx, ty] = s
+        if (Math.hypot(tx - x, ty - y) < minDist) {
+          return
+        }
         const ctx = tmpCanvas.getContext('2d')!
         ctx.save()
         ctx.lineCap = 'round'
-        ctx.strokeStyle = p.color
-        ctx.lineWidth = p.size
+        ctx.strokeStyle = p.pen[0]
+        ctx.lineWidth = p.size * tempScale * (p.pen[1] || 1)
         ctx.beginPath()
         ctx.moveTo(x, y)
         ctx.lineTo(tx, ty)

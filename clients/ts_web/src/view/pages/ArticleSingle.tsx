@@ -18,14 +18,19 @@ const getThemeClass = (idx: number) => idx >= 0 ? `reading-theme reading-theme-$
 const ThemeKey = 'READING_THEME'
 const PaingKey = 'READING_PAIGING'
 const CaptureDictKey = 'CAPTUR_DICT'
-const drawSizes = [1, 5]//, 15]
-const drawColors = ['#2d2d2d', '#ff0000']//, '#ffff0040']
+const drawSizes = [1, 1.5, 5]
+const drawPens: [string, number, string | null][] = [
+  ['#ffff0040', 12, '#ffff00'],
+  ['#4169E1', 1, null],
+  ['#ff0000', 1, null],
+  ['#2d2d2d', 1, null],
+]
 export default function ArticleSingle(props: { article: Article, type: ArticleContentType }) {
   const locate = useServicesLocate()
   const [sections, setSections] = useState<NavigationSection[]>([])
   const [currentSection, setCurrentSection] = useState<NavigationSection | undefined>(undefined)
-  const [drawSize, setDrawSize] = useState(drawSizes[0])
-  const [drawColor, setDrawColors] = useState(drawColors[0])
+  const [drawSize, setDrawSize] = useState(drawSizes[1])
+  const [drawPen, setDrawPen] = useState(drawPens[0])
   const [earse, setEarse] = useState(false)
   const viewService = locate(IViewService)
   const close = () => {
@@ -174,8 +179,8 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                     <Button className="single-article-content-menu-btn" type="link" size="large" icon={<MoreOutlined />} onClick={(e) => e.preventDefault()} ></Button>
                   </Dropdown>
                 }</>) : (<>
-                  {drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawColor }}></span>} onClick={() => setDrawSize(s)}></Button>)}
-                  {drawColors.map(c => <Button key={c} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={c === drawColor ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
+                  {drawPens.map(c => <Button key={c[0]} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={c === drawPen ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c[2] || c[0] }} />} onClick={() => setDrawPen(c)}></Button>)}
+                  {drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawPen[2] || drawPen[0] }}></span>} onClick={() => setDrawSize(s)}></Button>)}
                   <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ClearOutlined />} onClick={() => setEarse(!earse)}></Button>
                   <div className={classNames('title')}></div>
                   {existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? "primary" : "link"} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined}
@@ -201,7 +206,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
           <div className="article-content">
             <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
           </div>
-          <FreeDrawMask penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true) }} earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
+          <FreeDrawMask penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true); return true }} earse={earse} size={drawSize} pen={drawPen as any} enabled={freeDraw} hidden={paging}></FreeDrawMask>
           {
             captureDict
               ? <CaptureDict offset={-50}></CaptureDict>
