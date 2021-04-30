@@ -2,7 +2,7 @@ import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
-import { MoreOutlined, OrderedListOutlined, FileWordOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MoreOutlined, OrderedListOutlined, FileWordOutlined,EditOutlined, FileAddOutlined, ClearOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -33,6 +33,9 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   }
   const langs = locate(ILangsService)
   const [freeDraw, setFreeDraw] = useState(false)
+  const [expandMode, setExpandMode] = useState(false)
+  const [penOnly, setPenOnly] = useState(false)
+  const [existedPen, setExistedPen] = useState(false)
   const [sidePopup, setSidePopup] = useState(false)
   const [captureDict, setCaptureDict] = useState(false)
   const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
@@ -177,6 +180,8 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                   {drawColors.map(c => <Button key={c} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={c === drawColor ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c }} />} onClick={() => setDrawColors(c)}></Button>)}
                   <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ClearOutlined />} onClick={() => setEarse(!earse)}></Button>
                   <div className={classNames('title')}></div>
+                  { existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? "primary" : "link"} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined }
+                  <Button className="single-article-content-menu-btn" type={expandMode ? "primary" : "link"} size="large" icon={<ColumnHeightOutlined />} onClick={() => setExpandMode(!expandMode)}></Button>
                   <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
                 </>)
             }
@@ -195,11 +200,11 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
             }
           </div>
         </div>
-        <div ref={ref} className={classNames('article')}>
+        <div ref={ref} className={classNames('article', freeDraw && expandMode ? "expanded-article":"")}>
           <div className="article-content">
             <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
           </div>
-          <FreeDrawMask earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
+          <FreeDrawMask penOnly={penOnly} onPenFound={()=>{setExistedPen(true);setPenOnly(true)}} earse={earse} size={drawSize} color={drawColor} enabled={freeDraw} hidden={paging}></FreeDrawMask>
           {
             captureDict
               ? <CaptureDict offset={-50}></CaptureDict>

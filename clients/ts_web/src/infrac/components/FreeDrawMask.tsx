@@ -1,14 +1,15 @@
 import './FreeDrawMask.less'
 import classNames from 'classnames'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 let p = {} as any
-export default function FreeDrawMask (props: { enabled: boolean, size: number, color: string, earse: boolean, hidden: boolean }) {
+export default function FreeDrawMask (props: { enabled: boolean, penOnly?:boolean, onPenFound?:()=>void, size: number, color: string, earse: boolean, hidden: boolean }) {
   const ref = React.createRef<HTMLCanvasElement>()
   p = props
   const scale = Math.min(window.devicePixelRatio || 1, 1)
   const delay = 10
   const minDist = 1
+  const [existedPen, setExistedPen] = useState(false)
   useEffect(() => {
     const canvas = ref.current!
     const style = getComputedStyle(canvas)
@@ -33,16 +34,26 @@ export default function FreeDrawMask (props: { enabled: boolean, size: number, c
     let y = 0
     let lastPos:[number, number]|undefined
     let lastMoveTime = 0
+    const isNotPen = (ev: MouseEvent | TouchEvent) => (ev as TouchEvent).touches?.[0]?.["touchType"]!=="stylus"
     const startDraw = (ev: MouseEvent | TouchEvent) => {
+      if(p.penOnly && isNotPen(ev)) { return }
+      if(!existedPen){
+        if(!isNotPen(ev)){
+          setExistedPen(true)
+          p.onPenFound?.()
+        }
+      }
       drawing = true;
       [x, y] = getPos(ev)
       lastPos = undefined
       lastMoveTime = 0
     }
-    const stopDraw = () => {
+    const stopDraw = (ev: MouseEvent | TouchEvent) => {
+      if(props.penOnly && isNotPen(ev)) { return }
       drawing = false
     }
     const draw = (ev: MouseEvent | TouchEvent) => {
+      if(props.penOnly && isNotPen(ev)) { return }
       if (!drawing) {
         return
       }
