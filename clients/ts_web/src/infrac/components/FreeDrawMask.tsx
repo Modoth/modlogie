@@ -36,6 +36,9 @@ export default function FreeDrawMask (props: { enabled: boolean, penOnly?:boolea
     let lastMoveTime = 0
     const isNotPen = (ev: MouseEvent | TouchEvent) => (ev as TouchEvent).touches?.[0]?.["touchType"]!=="stylus"
     const startDraw = (ev: MouseEvent | TouchEvent) => {
+      if(!p.enabled){
+        return
+      }
       if(p.penOnly && isNotPen(ev)) { return }
       if(!existedPen){
         if(!isNotPen(ev)){
@@ -91,14 +94,14 @@ export default function FreeDrawMask (props: { enabled: boolean, penOnly?:boolea
       ctx.restore()
       lastMoveTime = Date.now()
     }
-    canvas.onmousedown = startDraw
-    canvas.ontouchstart = startDraw
-    canvas.onmousemove = draw
-    canvas.ontouchmove = draw
-    canvas.onmouseup = stopDraw
-    canvas.ontouchend = stopDraw
-    canvas.onmouseleave = stopDraw
-    canvas.ontouchend = stopDraw
+    canvas.parentElement!.onmousedown = startDraw
+    canvas.parentElement!.ontouchstart = startDraw
+    canvas.parentElement!.onmousemove = draw
+    canvas.parentElement!.ontouchmove = draw
+    canvas.parentElement!.onmouseup = stopDraw
+    canvas.parentElement!.ontouchend = stopDraw
+    canvas.parentElement!.onmouseleave = stopDraw
+    canvas.parentElement!.ontouchend = stopDraw
   }, [])
   return <canvas ref={ref} className={classNames('free-draw', props.enabled ? 'free-draw-enabled' : '', props.hidden ? 'hidden' : '')}></canvas>
 }
