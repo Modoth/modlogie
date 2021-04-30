@@ -172,12 +172,16 @@ function Nav () {
         </Menu>
       </Drawer>
 
-      <TitleBar title={logoTitleImg ? undefined : title} icon={ logoTitleImg || logo} link="/" menus={[
+      <TitleBar title={logoTitleImg ? "" : title} link="/"  menus={[
         {
           title: langs.get(LangKeys.Menu),
           onClick: () => setShowDrawer(true),
           icon: <MenuOutlined className="menu-icon"></MenuOutlined>
-        }
+        },
+        {
+          link: "/",
+          icon: <img className="icon-img" src={ logoTitleImg || logo}></img>
+        } as any
       ]}></TitleBar>
     </div>
   )

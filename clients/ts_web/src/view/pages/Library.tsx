@@ -576,26 +576,29 @@ export default function Library (props: LibraryProps) {
       </>)
     }
   })
-
+  const titleClick = () => {
+    if (articleId) {
+      fetchArticles(1, true)
+    } else {
+      setShowFilter(true)
+    }
+  }
   return (
     <div className={classNames('library', type?.name || '', type?.pluginName || '')}>
       <TitleBar
-        icon={(rootSubject && effectiveSubjects.length < 2 ? (effectiveSubjects[0] || rootSubject).resourceUrl : '') || logo}
         title={rootSubject && effectiveSubjects.length < 2
           ? (effectiveSubjects[0]?.id === rootSubject?.id ? type?.displayName || '' : (effectiveSubjects[0] || rootSubject).name)
           : (Seperators.joinItems(effectiveSubjects.map((sbj) => sbj.name)) || type?.displayName || '') }
-        onClick={() => {
-          if (articleId) {
-            fetchArticles(1, true)
-          } else {
-            setShowFilter(true)
-          }
-        }} menus={[
+        onClick={titleClick} menus={[
           {
             title: langs.get(LangKeys.Home),
             link: '/',
             icon: <AppstoreOutlined className="menu-icon" />
-          }
+          },
+          {
+            onClick:titleClick,
+            icon: <img className="icon-img" src={(rootSubject && effectiveSubjects.length < 2 ? (effectiveSubjects[0] || rootSubject).resourceUrl : '') || logo}></img>
+          } as any,
         ]}></TitleBar>
 
       {articles.length || recommendsArticles.length ? null : (
