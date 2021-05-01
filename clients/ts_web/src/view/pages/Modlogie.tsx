@@ -13,9 +13,9 @@ const LastModlogiePosKey = 'LastModlogiePosKey'
 
 type ModlogiePos = {right:boolean, bottom:number}
 
-const initPos = { right: false, bottom: -50 }
+const initPos = { right: true, bottom: 20 }
 
-const defaultPos = { right: false, bottom: 50 }
+const defaultPos = { right: true, bottom: 20 }
 
 const getContainerStyleFromPos = (pos:ModlogiePos):React.CSSProperties => {
   const style:Partial<CSSStyleDeclaration> = { }
