@@ -15,4 +15,5 @@
       "File:Resources": "files"
       "File:Caches": "caches"
       "File:MaxSize": "50"
+      "Session.Cookie.CrossSite": "${app_cross_site_cookie}"
       "Execute:InstanceName": SERVER_TYPE

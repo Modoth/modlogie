@@ -33,6 +33,8 @@ namespace Modlogie.Api
     {
         public string CookieName { get; set; }
 
+        public bool CrossSite { get; set; }
+
         public TimeSpan IdleTimeout { get; set; }
     }
 
@@ -51,6 +53,10 @@ namespace Modlogie.Api
         {
             _options = options.Value;
             _cookieOption = new CookieOptions {HttpOnly = true};
+            if(_options.CrossSite){
+                _cookieOption.SameSite = SameSiteMode.None;
+                _cookieOption.Secure = true;
+            }
             _cacheOption = new DistributedCacheEntryOptions {SlidingExpiration = _options.IdleTimeout};
             _next = next;
         }

@@ -48,6 +48,7 @@ namespace Modlogie.Api
             services.AddDistributedSession(options =>
             {
                 options.CookieName = Configuration.GetValue<string>("Session:Cookie:Name");
+                options.CrossSite = Configuration.GetValue<bool>("Session:Cookie:CrossSite");
                 options.IdleTimeout = TimeSpan.FromSeconds(Configuration.GetValue<int>("Session:IdleTimeout"));
             });
             services.Configure<LocalFileContentServiceOptions>(Configuration.GetSection("File"));

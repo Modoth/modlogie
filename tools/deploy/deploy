@@ -43,9 +43,11 @@ fi
 if [[ -n "$app_cors_prefix" && -z "$app_api_base" ]]; then
     export client_image_name="nginx"
     cat default.conf_cors | sed -e "s;app_cors_prefix;$app_cors_prefix;g" >  "$deploy_dir"/default.conf
+    export app_cross_site_cookie="true"
 else
     export client_image_name="${docker_user}/modlogie_client:${app_version}"
     cp default.conf "$deploy_dir"
+    export app_cross_site_cookie="false"
 fi
 cp Dockerfile.* "$deploy_dir"
 if [[ -n "$app_api_base" ]];then
