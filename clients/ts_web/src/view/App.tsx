@@ -39,14 +39,13 @@ export default function App () {
   }
   useEffect(() => {
     (async () => {
-      const configService = locate(IConfigsService)
-      const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
-      if (!bgRef.current) {
-        return
-      }
-      bgRef.current.innerText = `.background{
-        background-image: url("${logo}");
-      }`
+      // if (bgRef.current) {
+      //   const configService = locate(IConfigsService)
+      //   const logo = await configService.getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
+      //   bgRef.current.innerText = `.background{
+      //     background-image: url("${logo}");
+      //   }`
+      // }
       const clocksService = locate(IClocksAppService)
       await clocksService.init()
     })()
