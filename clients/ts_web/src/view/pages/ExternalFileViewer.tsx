@@ -4,6 +4,7 @@ import ExternalViewer from './ExternalViewer'
 import IEditorsService, { EditorInfo } from '../../app/Interfaces/IEditorsService'
 import IFile from '../../infrac/Lang/IFile'
 import React, { useEffect, useState } from 'react'
+import NotSupportView from './NotSupportView'
 
 export interface ExternalFileViewerProps{
     file:IFile
@@ -26,7 +27,7 @@ export default function ExternalFileViewer (props:ExternalFileViewerProps) {
     }
   }, [])
   if (!info) {
-    return <></>
+    return <NotSupportView></NotSupportView>
   }
   return <div className="external-viewer"><ExternalViewer {...props} info={info}/></div>
 }

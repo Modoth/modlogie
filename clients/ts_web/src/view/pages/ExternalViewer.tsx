@@ -6,6 +6,7 @@ import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IFile from '../../infrac/Lang/IFile'
 import IFrameWithJs, { IFrameContext } from '../../infrac/components/IFrameWithJs'
 import React, { memo, useEffect, useState } from 'react'
+import NotSupportView from './NotSupportView'
 
 const IFrameWithJsMemo = memo(IFrameWithJs)
 
@@ -31,7 +32,7 @@ export default function ExternalViewer (props:ExternalViewerProps) {
     reload()
   }, [])
   if (!doc) {
-    return <></>
+    return <NotSupportView></NotSupportView>
   }
   return <IFrameWithJsMemo key={context?.token} allowFullscreen={true} context={context} srcDoc={doc}/>
 }

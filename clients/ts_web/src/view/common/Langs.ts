@@ -131,6 +131,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   NewPassword = '新密码';
   No = '否';
   NotFount = '未找到';
+  NotSopport = '暂不支持此文件格式';
   Ok = '确定';
   Open = '打开';
   Order = '顺序';
@@ -143,7 +144,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   PUBLISH_WX = '微信';
   PUBLISH_CONTENT = '静态';
   QrCode = '网址';
-  ReadingMode = '简单阅读';
+  ReadingMode = '简洁阅读';
   Recommend = '推荐';
   Refresh = '刷新页面';
   RemoveFromArticleList = '移除';
@@ -168,7 +169,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   User = '用户';
   UserName = '用户名';
   Value = '值';
-  Viewers = '阅读器';
+  Viewers = '阅读器(Beta)';
   Welcome = '感谢使用';
   Word = '单词';
   Yes = '是';

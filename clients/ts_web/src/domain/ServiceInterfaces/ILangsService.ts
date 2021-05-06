@@ -83,6 +83,7 @@ export class LangKeysInterface {
   NewPassword = 'NewPassword';
   No = 'No';
   NotFount = 'NotFount';
+  NotSopport = 'NotSopport';
   Ok = 'Ok';
   Open = 'Open';
   Order = 'Order';
