@@ -21,19 +21,26 @@ const getText = (children: [React.ReactElement] | string): string => {
 }
 
 const getRenders = (root: NavigationSection | undefined) => {
+  const renders : any = {
+    code: HighlightLive,
+  }
+  const contentBase = (window.ENV_OVERRIDE || ENV).CONTENT_BASE || ""
+  if (contentBase) {
+    renders.image = (props: { alt: string, src: string }) => {
+      const url = contentBase + props.src
+      return <img alt={props.alt} src={url} />
+    }
+  }
   if (!root) {
-    return { code: HighlightLive }
+    return renders
   }
   root.children = []
-  return ({
-    code: HighlightLive,
-    // eslint-disable-next-line react/display-name
-    heading: ({ level, children }: { level: number, children: [React.ReactElement] }) => {
-      const s = new NavigationSection(getText(children), level)
-      root.children.push(s)
-      return <LocatableView callbacks={s} View={() => React.createElement(`h${level}`, null, ...children)}></LocatableView>
-    }
-  })
+  renders.heading = ({ level, children }: { level: number, children: [React.ReactElement] }) => {
+    const s = new NavigationSection(getText(children), level)
+    root.children.push(s)
+    return <LocatableView callbacks={s} View={() => React.createElement(`h${level}`, null, ...children)}></LocatableView>
+  }
+  return renders
 }
 
 export default function MarkdownViewer(props: SectionViewerProps) {

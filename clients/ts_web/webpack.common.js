@@ -82,7 +82,10 @@ module.exports = {
       template: 'src/index.html'
     }),
     new webpack.DefinePlugin({
-      ENV: { API_BASE: process.env.app_api_base && `"${process.env.app_api_base}"` },
+      ENV: { 
+        API_BASE: process.env.app_api_base && `"${process.env.app_api_base}"`,
+        CONTENT_BASE: process.env.app_content_base && `"${process.env.app_content_base}"`
+       },
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
       }

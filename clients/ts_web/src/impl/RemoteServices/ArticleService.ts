@@ -21,7 +21,9 @@ export default class ArticleService extends FilesServiceBase implements IArticle
 
   private async tryParseContent (url: string): Promise<any> {
     try {
-      return await (await fetch(url)).json()
+      const contentBase = (window.ENV_OVERRIDE || ENV).CONTENT_BASE || ""
+      url = contentBase  + url
+      return await (await fetch(url, contentBase ? { mode: 'cors' } : undefined)).json()
     } catch (e) {
       console.log(e)
     }

@@ -175,7 +175,9 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     if (!(folders && folders.length) && version) {
       try {
         const cachedRes = new FilesReply()
-        const reader = new BinaryReader(await (await fetch(version)).arrayBuffer())
+        const contentBase = (window.ENV_OVERRIDE || ENV).CONTENT_BASE || ""
+        const url = contentBase + version
+        const reader = new BinaryReader(await (await fetch(url, contentBase ? { mode: 'cors' } : undefined)).arrayBuffer())
         FilesReply.deserializeBinaryFromReader(cachedRes, reader)
         folders = cachedRes.getFilesList()
       } catch {
@@ -237,6 +239,8 @@ export default class SubjectsServiceSingleton extends FilesServiceBase implement
     const iconTagId = await this.getIconTag()
     if (iconTagId) {
       sbj.resourceUrl = tags.find(t => t.getTagId() === iconTagId)?.getValue()
+      const contentBase = (window.ENV_OVERRIDE || ENV).CONTENT_BASE || ""
+      sbj.resourceUrl  = contentBase+sbj.resourceUrl 
     }
     return sbj
   }

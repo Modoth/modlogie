@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+# cdn: DEPLOY_SERVER=xxx app_api_base=xxx/api app_cors_prefix=cdnxxx user_pwd=xxx
+# apionly: DEPLOY_SERVER=xxx app_cors_prefix=3rdxxx user_pwd=xxx
 set -o errexit
 
 scripts_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -13,6 +14,11 @@ export app_version=${app_version:-latest}
 export db_pwd=${db_pwd:-123456}
 export docker_user=${docker_user:-modoth}
 export server_types=${server_types:-"cs_netcore"}
+if [[ -n "$app_cors_prefix" && -z "$app_api_base" ]]; then
+    export client_image_name="nginx"
+else
+    export client_image_name="${docker_user}/modlogie_client:${app_version}"
+fi
 
 if [[ -n "$DEPLOY_SERVER" ]]; then
     ssh -nNT -L $PWD/docker.sock:/var/run/docker.sock $DEPLOY_SERVER &
