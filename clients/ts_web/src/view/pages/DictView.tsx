@@ -97,7 +97,7 @@ export default function DictView (props:{word:string, eg?:string, position?:Floa
       {
         props.hidenMenu ? undefined
           : <div className="title">
-            <Button type="link" className='word'>{word || ''}</Button>
+            <Button type="link" danger={word?.trim() !== props.word?.trim()} className='word'>{word || ''}</Button>
             <Button onClick={toogleFavorite} type="link" icon={favorite ? < MinusCircleOutlined /> : <PlusCircleOutlined />}></Button>
           </div>
       }

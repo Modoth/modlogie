@@ -90,7 +90,11 @@ export default class DictService implements IDictService {
       if (token && token.cancled) {
         return ''
       }
-      const value = await this.store.query(word)
+      let value = await this.store.query(word)
+      const jumpPrefix = "@@@LINK="
+      if(value?.startsWith(jumpPrefix)){
+        value = await this.store.query(value.slice(jumpPrefix.length).trim())
+      }
       return value && 'data:text/html;charset=utf-8,' + encodeURIComponent(`${value}<style>${style}</style>`)
     }
 }
