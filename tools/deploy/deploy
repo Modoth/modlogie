@@ -14,11 +14,6 @@ export app_version=${app_version:-latest}
 export db_pwd=${db_pwd:-123456}
 export docker_user=${docker_user:-modoth}
 export server_types=${server_types:-"cs_netcore"}
-if [[ -n "$app_cors_prefix" && -z "$app_api_base" ]]; then
-    export client_image_name="nginx"
-else
-    export client_image_name="${docker_user}/modlogie_client:${app_version}"
-fi
 
 if [[ -n "$DEPLOY_SERVER" ]]; then
     ssh -nNT -L $PWD/docker.sock:/var/run/docker.sock $DEPLOY_SERVER &
@@ -44,7 +39,14 @@ mkdir -p "$deploy_dir"
 if [[ -d "./.local.certs/${app_name}" && -f "./.local.certs/${app_name}/cert.pem" ]]; then
     cp ./.local.certs/${app_name}/* "$deploy_dir"
 fi
-cp default.conf "$deploy_dir"
+
+if [[ -n "$app_cors_prefix" && -z "$app_api_base" ]]; then
+    export client_image_name="nginx"
+    cat default.conf_cors | sed -e "s;app_cors_prefix;$app_cors_prefix;g" >  "$deploy_dir"/default.conf
+else
+    export client_image_name="${docker_user}/modlogie_client:${app_version}"
+    cp default.conf "$deploy_dir"
+fi
 cp Dockerfile.* "$deploy_dir"
 if [[ -n "$app_api_base" ]];then
     cat ENVOVERRIDE.Dockerfile.web | sed -e "s;app_api_base;$app_api_base;g" >> "$deploy_dir/Dockerfile.web"
