@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import "./Markdown.less"
 
 const transformLinkUri = (uri:string) => {
   if (uri) {
@@ -18,7 +19,13 @@ const transformLinkUri = (uri:string) => {
 const defaultRenderers = {
   // eslint-disable-next-line react/display-name
   link: (props:any) => {
-    return <a href={decodeURIComponent(props.href)} target={props.target}>{props.children}</a>
+    switch(props.href){
+      case 't:':
+      case 's:':
+        return <span className={props.href.slice(0,props.href.length-1)}>{props.children}</span>
+      default:
+        return <a href={decodeURIComponent(props.href)} target={props.target}>{props.children}</a>
+    }
   }
 }
 
