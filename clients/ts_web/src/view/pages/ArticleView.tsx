@@ -127,7 +127,7 @@ export default function ArticleView (props: {
           viewService.setLoading(true)
           const fileService = locate(IArticleService)
           const articleService = locate(IArticleService)
-          const [id, url] = await fileService.addFile(props.article.id!, file.type, new Uint8Array(await file.arrayBuffer()))
+          const [id, url] = await fileService.addFile(props.article.id!, file.type?.split('+')?.[0], new Uint8Array(await file.arrayBuffer()))
           const newFiles = [...(files || [])]
           const newFileName = generateNewFileNames(file.name, new Set(newFiles.map(f => f.name!)))
           const newFile = { name: newFileName, id, url }
