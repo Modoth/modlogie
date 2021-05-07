@@ -10,7 +10,12 @@ const renderers = {
   },
   // eslint-disable-next-line react/display-name
   link: (props:{href:string, children:JSX.Element[]}) => {
-    return <>{props.children}</>
+    switch(props.href){
+      case 's:':
+        return <></>
+      default:
+        return <>{props.children}</>
+    }
   },
   // eslint-disable-next-line react/display-name
   code: (props: { language: string, value: string}) => {

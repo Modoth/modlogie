@@ -1,8 +1,8 @@
 import { ArticleContentViewerProps } from '../../../pluginbase/IPluginInfo'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
-import ReactMarkdown from 'react-markdown'
 import renderers from './renderers'
+import Markdown from '../../../infrac/components/Markdown'
 
 const mdRender = Object.assign({}, renderers, {
   // eslint-disable-next-line react/display-name
@@ -17,7 +17,7 @@ const WxGenerator = (props:ArticleContentViewerProps) => {
     {
       sections.map((s, i) => <section key={s.name!} >
         {i ? <h2 className="title">{s.name}</h2> : undefined}
-        <section ><ReactMarkdown renderers={mdRender} source={s.content} skipHtml={true}></ReactMarkdown></section>
+        <section ><Markdown renderers={mdRender} source={s.content}></Markdown></section>
       </section>)
     }
   </article>)
