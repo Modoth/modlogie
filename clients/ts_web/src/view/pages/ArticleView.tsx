@@ -21,6 +21,7 @@ import moment from 'moment'
 import PublishArticle from './PublishArticle'
 import React, { useState, useEffect } from 'react'
 import SubjectViewModel from './SubjectViewModel'
+import { generateRandomStyle } from './common'
 
 const { Panel } = Collapse
 const { Option } = Select
@@ -441,7 +442,7 @@ export default function ArticleView (props: {
     ], async () => true)
   }
   return (<div ref={ref}>
-    <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '')}>
+    <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', recommendView ? generateRandomStyle() : '')}>
       <div className="article-title" ref={titleRef}>
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
         }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
@@ -474,17 +475,17 @@ export default function ArticleView (props: {
               ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
             <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
             ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
-            <MenuItem key="snapshot"><Button type="link" icon={<PictureOutlined />} onClick={(ev:React.MouseEvent<HTMLElement>)=>{
-              let menu = (titleRef.current!.lastChild as HTMLElement|undefined)
-              if(menu){
-                menu.style.opacity = "0"
-              }
-              locate(IViewService).captureElement(ref.current!.parentElement || ref.current!)
-              if(menu){
-                menu.style.opacity = "1"
-              }
-            }}
-            ><span className="action-name">{langs.get(LangKeys.ScreenShot)}</span></Button></MenuItem>,
+            // <MenuItem key="snapshot"><Button type="link" icon={<PictureOutlined />} onClick={(ev:React.MouseEvent<HTMLElement>)=>{
+            //   let menu = (titleRef.current!.lastChild as HTMLElement|undefined)
+            //   if(menu){
+            //     menu.style.opacity = "0"
+            //   }
+            //   locate(IViewService).captureElement(ref.current!.parentElement || ref.current!)
+            //   if(menu){
+            //     menu.style.opacity = "1"
+            //   }
+            // }}
+            // ><span className="action-name">{langs.get(LangKeys.ScreenShot)}</span></Button></MenuItem>,
             <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />} onClick={openQrCode}
             ><span className="action-name">{langs.get(LangKeys.QrCode)}</span></Button></MenuItem>,
             ...(user.editingPermission ? [
