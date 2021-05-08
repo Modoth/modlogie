@@ -518,6 +518,11 @@ export default function ArticleView (props: {
                     ></Button>,
                     <Button
                       type="link"
+                      icon={<UploadOutlined />}
+                      onClick={(e) => { e.stopPropagation(); addFile() }}
+                    ></Button>,
+                    <Button
+                      type="link"
                       onClick={(e)=> {e.stopPropagation();save()}}
                       key="save"
                       icon={<SaveOutlined />}
@@ -527,11 +532,6 @@ export default function ArticleView (props: {
                       onClick={toggleEditing}
                       key="endEdit"
                       icon={<CheckOutlined />}
-                    ></Button>,
-                    <Button
-                      type="link"
-                      icon={<UploadOutlined />}
-                      onClick={(e) => { e.stopPropagation(); addFile() }}
                     ></Button>
                   </div>} key="1">
                   <props.type.Viewer articleId={props.article.id!} showAdditionals={true} content={content} files={files} type={type} />
