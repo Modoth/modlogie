@@ -63,7 +63,7 @@ export default function CreateSectionEditor (modifiers: Modifiers = {}) {
     }
 
     props.callbacks.getEditedContent = () => {
-      return [content, modifiers.getFilesInSectionContent!(props.section.name!)!(content)]
+      return [content, modifiers.getFilesInSectionContent?.(props.section.name!)?.(content) || []]
     }
     return (props.editing
       ? <div className={classNames('section-editor', props.section.name?.match(/(^.*?)(\(|（|$)/)![1])}>
