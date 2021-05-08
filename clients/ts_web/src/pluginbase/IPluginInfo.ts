@@ -29,7 +29,7 @@ export interface ArticleType {
 
 export interface ArticleContentEditorCallbacks<T> {
   addFile(file: ArticleFile): void
-  remoteFile(file: ArticleFile): void
+  removeFile(file: ArticleFile): void
   getEditedContent(): T
 }
 
@@ -74,7 +74,7 @@ export class ArticleContentViewerProps {
 }
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {
-  callbacks: ArticleContentEditorCallbacks<ArticleContent>
+  callbacks: ArticleContentEditorCallbacks<[ArticleContent, Set<string>]>
   onpaste: (file: File) => void
 }
 

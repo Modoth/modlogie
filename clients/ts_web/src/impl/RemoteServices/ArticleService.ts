@@ -165,7 +165,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
   }
 
   async updateArticleContent (article: Article, content: ArticleContent, hiddenSections?: Set<string>, files?: ArticleFile[]) {
-    const resourceIds = files ? files.map((f) => f.id!) : undefined
+    const resourceIds = files ? files.map((f) => f.id!) : []
     const allSections = new Map((content?.sections || []).map(s => [s.name!, s!]))
     const hiddenContent: ArticleContent = { sections: [] }
     if (hiddenSections && hiddenSections.size) {
@@ -193,6 +193,9 @@ export default class ArticleService extends FilesServiceBase implements IArticle
         await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(''), null))
         article.additionId = undefined
       }
+    }
+    if(article.additionId){
+      resourceIds.push(article.additionId!)
     }
     await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.id!).setContent(JSON.stringify({ content: normalContent, files })).setResourceIdsList(resourceIds || []), null))
   }

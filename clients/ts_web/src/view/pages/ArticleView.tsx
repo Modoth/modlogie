@@ -72,7 +72,7 @@ export default function ArticleView (props: {
   const [loaded, setLoaded] = useState(props.article.lazyLoading === undefined)
   const [additionalLoaded, setAdditionalLoaded] = useState(props.article.lazyLoadingAddition === undefined)
   const [editing, setEditing] = useState(props.articleHandlers.editingArticle === props.article)
-  const [editorRefs, setEditorRefs] = useState<ArticleContentEditorCallbacks<ArticleContent>>(
+  const [editorRefs, setEditorRefs] = useState<ArticleContentEditorCallbacks<[ArticleContent, Set<string>]>>(
     {} as any
   )
   const [type, setType] = useState<ArticleContentType | undefined>(undefined)
@@ -165,13 +165,15 @@ export default function ArticleView (props: {
   const save = async (close = false)=>{
     try {
       const service = locate(IArticleService)
-      const newContent = editorRefs.getEditedContent()
+      const [newContent,newFileNames] = editorRefs.getEditedContent()
       if (
         newContent.sections !== undefined &&
         newContent.sections !== content?.sections
       ) {
-        await service.updateArticleContent(props.article, newContent, type?.additionalSections, files)
+        const newFiles = files?.filter(f => newFileNames.has(f.name!))
+        await service.updateArticleContent(props.article, newContent, type?.additionalSections, newFiles)
         setContent(newContent)
+        setFiles(newFiles)
         await autoUpdate()
       }
       if(close){

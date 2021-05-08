@@ -101,17 +101,20 @@ export default function MathSectionEditor (props: SectionEditorProps) {
     const [start, end] = [textArea.selectionStart, textArea.selectionEnd]
     setContent(oldContent.slice(0, start) + text + oldContent.slice(end))
   }
+  const getNewFiles = ()=>{
+    return Array.from(content.matchAll(/\$\$:(.*?)\$\$/g)).map(a => a[1])
+  }
   props.callbacks.addFile = (file: ArticleFile) => {
     const text = `$$:${file.name}$$`
     filesDict.set(file.name!, file)
     insertContent(text)
   }
-  props.callbacks.remoteFile = (file: ArticleFile) => {
+  props.callbacks.removeFile = (file: ArticleFile) => {
     setContent(content?.replace(`$$:${file.name}$$`, ''))
     filesDict.delete(file.name!)
   }
   props.callbacks.getEditedContent = () => {
-    return content
+    return [content, getNewFiles()]
   }
   const getFormula = (): Formula | undefined => {
     if (!refs.textArea) {

@@ -6,7 +6,7 @@ import SectionViewerProps from './SectionViewerProps'
 
 export default interface SectionEditorProps {
     section: ArticleSection,
-    callbacks: ArticleContentEditorCallbacks<string>,
+    callbacks: ArticleContentEditorCallbacks<[string, string[]]>,
     filesDict: Map<string, ArticleFile>,
     editing?: boolean
     onpaste: (file: File) => void

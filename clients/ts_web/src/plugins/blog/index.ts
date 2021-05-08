@@ -1,4 +1,4 @@
-import { getSectionFileContent, getPasteSectionContent } from './view/Sections'
+import { getSectionFileContent, getFilesInSectionContent, getPasteSectionContent } from './view/Sections'
 import { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import CreateSectionEditor from '../../pluginbase/base/view/SectionEditor'
 import IPluginInfo from '../../pluginbase/IPluginInfo'
@@ -18,7 +18,7 @@ export default class Blog extends PluginInfoBase implements IPluginInfo {
     super(Blog.typeName,
       typeNames,
       MarkdownViewer,
-      CreateSectionEditor({ getSectionFileContent, getPasteSectionContent }), undefined,
+      CreateSectionEditor({ getSectionFileContent, getFilesInSectionContent, getPasteSectionContent }), undefined,
       {
         publishGenerators: new Map([
           [LangKeys.PUBLISH_WX, { generator: WxGenerator, previewTemplate: WxPreview }],

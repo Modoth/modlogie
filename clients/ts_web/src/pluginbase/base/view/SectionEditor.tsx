@@ -10,6 +10,7 @@ import TextArea from 'antd/lib/input/TextArea'
 type Modifiers =
     ({
         getSectionFileContent?(name: string): { (file: ArticleFile): string },
+        getFilesInSectionContent?(name: string): { (content: string): string[] },
         getPasteSectionContent?(name: string, types: string): ((data: DataTransfer) => Promise<string>) | undefined
     } &
     {
@@ -42,7 +43,7 @@ export default function CreateSectionEditor (modifiers: Modifiers = {}) {
         filesDict.set(file.name!, file)
         insertContent(text)
       }
-      props.callbacks.remoteFile = (file: ArticleFile) => {
+      props.callbacks.removeFile = (file: ArticleFile) => {
         setContent(content?.replace(getFileContent(file), ''))
         filesDict.delete(file.name!)
       }
@@ -53,7 +54,7 @@ export default function CreateSectionEditor (modifiers: Modifiers = {}) {
           setContent(modifiers.addSectionFileContent(props.section.name!)!(content, file))
         }
       }
-      props.callbacks.remoteFile = (file: ArticleFile) => {
+      props.callbacks.removeFile = (file: ArticleFile) => {
         filesDict.delete(file.name!)
         if (modifiers.removeSectionFileContent) {
           setContent(modifiers.removeSectionFileContent(props.section.name!)!(content, file))
@@ -62,7 +63,7 @@ export default function CreateSectionEditor (modifiers: Modifiers = {}) {
     }
 
     props.callbacks.getEditedContent = () => {
-      return content
+      return [content, modifiers.getFilesInSectionContent!(props.section.name!)!(content)]
     }
     return (props.editing
       ? <div className={classNames('section-editor', props.section.name?.match(/(^.*?)(\(|（|$)/)![1])}>
