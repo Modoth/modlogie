@@ -3,7 +3,7 @@ import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType, Article
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
-import { UploadOutlined, ShareAltOutlined,SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
+import { UploadOutlined,CloseOutlined, ShareAltOutlined,SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
@@ -439,7 +439,7 @@ export default function ArticleView (props: {
     ], async () => true)
   }
   return (
-    <Card className={classNames('article-view', recommendView ? '' : '')}>
+    <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '')}>
       <div className="article-title">
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
         }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
@@ -509,6 +509,13 @@ export default function ArticleView (props: {
                 <Panel header={
                   <div className="preview-title-panel">
                     <span className="preview-title">{langs.get(LangKeys.Edit) + ': ' + (name || '')}</span>
+                    <Button
+                      type="link"
+                      onClick={(e)=> {e.stopPropagation();setEditing(false)}}
+                      key="exit"
+                      danger
+                      icon={<CloseOutlined />}
+                    ></Button>,
                     <Button
                       type="link"
                       onClick={(e)=> {e.stopPropagation();save()}}
