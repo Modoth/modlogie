@@ -117,7 +117,10 @@ export default function ArticleList () {
           configsService.set(BorderStyleKey, next)
         }} />
         {
-          <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => locate(IViewService).captureElement(ref.current!)} />
+          <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => {
+            (document.scrollingElement as HTMLElement).scrollTo({ top: 0, behavior: undefined })
+            locate(IViewService).captureElement(ref.current!)
+          }} />
         }
         <Button type="link" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
       </div>
