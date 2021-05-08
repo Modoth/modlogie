@@ -39,8 +39,13 @@ namespace Modlogie.Infrastructure.Data
         public Task<bool> Delete(string id)
         {
             var filePath = Path.Join(_options.ContentRoot, id);
-            File.Delete(filePath);
             var folder = Path.GetDirectoryName(filePath);
+            if(!Directory.Exists(folder)){
+                 return Task.FromResult(true);
+            }
+            if(File.Exists(filePath)){
+                File.Delete(filePath);
+            }
             if(Directory.GetFiles(folder).Length == 0){
                 Directory.Delete(folder);
             }
