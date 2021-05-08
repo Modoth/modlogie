@@ -27,7 +27,7 @@ export default function HistoryPanel(props: { onClose(): void }) {
         <div className="item" key={i.url} onClick={() => {
           window.location.href = `#/article${i.url}`
           props.onClose()
-        }}><a>{i.title}</a></div>
+        }}><span className="a">{i.title}</span></div>
       )}
     </div>
     : <div></div>

@@ -47,7 +47,8 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   const [fullscreen, setFullscreen] = useState(false)
   const [scale, setScale] = useState(100)
   const imgRef = React.createRef<HTMLImageElement>()
-  const toggleFullscreen = (ev: any) => { ev.stopPropagation(); setFullscreen(!fullscreen) }
+  const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches 
+  const toggleFullscreen = smallScreen ? (ev: any) => { ev.stopPropagation(); setFullscreen(!fullscreen) } : undefined
   useEffect(() => {
     const img = imgRef.current!
     let scaling = false
@@ -59,7 +60,7 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
       ev.touches[0].pageY - ev.touches[1].pageY)
     
     const start = (ev: TouchEvent) => {
-      if (ev.touches.length === 2) {
+      if (ev.touches.length === 2 && smallScreen) {
         scaling = true;
         ev.stopPropagation()
         startDist = dist(ev)
@@ -96,9 +97,13 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   }, [])
   return <>
     <div className="embed-img" ><img alt={props.alt} src={props.src} onClick={toggleFullscreen} /></div>
-    <div onClick={toggleFullscreen} className={classNames("full-img", fullscreen ? "" : "hidden")}><Button className="close-btn" onClick={toggleFullscreen} type="link" size="large" icon={<CloseOutlined />} ></Button>
-    <img onClick={ev => ev.stopPropagation()} ref={imgRef} 
-    style={{width:`${scale}%`,maxWidth:`${scale}%`, maxHeight:`${scale}%`}} alt={props.alt} src={props.src} /></div>
+    <div className={classNames("full-img", fullscreen ? "" : "hidden")}>
+      <img onClick={ev => ev.stopPropagation()} ref={imgRef}
+        style={{ width: `${scale}%`, maxWidth: `${scale}%`, maxHeight: `${scale}%` }} alt={props.alt} src={props.src} />
+      <div className="img-menus">
+        <Button className="close-btn" onClick={toggleFullscreen} type="primary" size="large" shape="circle" danger icon={<CloseOutlined />} ></Button>
+      </div>
+    </div>
   </>
 }
 

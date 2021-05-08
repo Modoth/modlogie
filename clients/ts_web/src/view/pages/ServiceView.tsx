@@ -422,14 +422,14 @@ export default function ServiceView (props: {
                 <img ref={previewImgRef} src={previewImgUrl}></img>
               </div>
               <div className="menus" onClick={e => e.stopPropagation()}>
-                <Button type="primary" size="large" shape="circle" icon={<SaveOutlined />} onClick={() => {
+                {/* <Button type="primary" size="large" shape="circle" icon={<SaveOutlined />} onClick={() => {
                   const a = document.createElement('a')
                   a.target = '_blank'
                   a.href = previewImgUrl
                   a.download = 'download.png'
                   a.click()
                   setPreviewImgUrl('')
-                }} />
+                }} /> */}
                 <Button type="primary" danger size="large" shape="circle" icon={<CloseOutlined />} onClick={(e: any) => {
                   document.body.focus()
                   setPreviewImgUrl('')
@@ -444,7 +444,7 @@ export default function ServiceView (props: {
         previewArticleList ? <ArticleList></ArticleList> : null
       }
       {
-        previewArticle ? <ArticleSingle {...previewArticle}></ArticleSingle> : null
+        previewArticle ? <ArticleSingle key={previewArticle.article.id} {...previewArticle}></ArticleSingle> : null
       }
       <Spin spinning={loading} delay={250} indicator={<div className="loading-panel">
         <div className="loading-small"></div>
