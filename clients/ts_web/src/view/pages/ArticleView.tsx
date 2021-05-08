@@ -3,7 +3,7 @@ import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType, Article
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
-import { UploadOutlined,CloseOutlined, ShareAltOutlined,SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
+import { UploadOutlined,CloseOutlined,PictureOutlined, ShareAltOutlined,SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
@@ -63,6 +63,8 @@ export default function ArticleView (props: {
   const user = useUser()
   const locate = useServicesLocate()
   const langs = locate(ILangsService)
+  const ref = React.createRef<HTMLDivElement>()
+  const titleRef = React.createRef<HTMLDivElement>()
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [files, setFiles] = useState(props.article.files)
@@ -438,9 +440,9 @@ export default function ArticleView (props: {
       }
     ], async () => true)
   }
-  return (
+  return (<div ref={ref}>
     <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '')}>
-      <div className="article-title">
+      <div className="article-title" ref={titleRef}>
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
         }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
         {
@@ -472,6 +474,17 @@ export default function ArticleView (props: {
               ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
             <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
             ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
+            <MenuItem key="snapshot"><Button type="link" icon={<PictureOutlined />} onClick={(ev:React.MouseEvent<HTMLElement>)=>{
+              let menu = (titleRef.current!.lastChild as HTMLElement|undefined)
+              if(menu){
+                menu.style.opacity = "0"
+              }
+              locate(IViewService).captureElement(ref.current!.parentElement || ref.current!)
+              if(menu){
+                menu.style.opacity = "1"
+              }
+            }}
+            ><span className="action-name">{langs.get(LangKeys.ScreenShot)}</span></Button></MenuItem>,
             <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />} onClick={openQrCode}
             ><span className="action-name">{langs.get(LangKeys.QrCode)}</span></Button></MenuItem>,
             ...(user.editingPermission ? [
@@ -614,5 +627,5 @@ export default function ArticleView (props: {
         ) : null
       }
     </Card >
-  )
+  </div>)
 }
