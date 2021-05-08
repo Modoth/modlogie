@@ -1,4 +1,6 @@
 version: '3.1'
+volumes:
+  caches:
 services: 
   web:
     build:
@@ -10,7 +12,7 @@ services:
     restart: always
     volumes:
       - /data/${app_name}/files:/usr/share/nginx/html/files
-      - /data/${app_name}/caches:/usr/share/nginx/html/caches
+      - caches:/usr/share/nginx/html/caches
     ports:
       - "${app_port}:443"
   server:

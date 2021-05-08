@@ -25,7 +25,7 @@ namespace Modlogie.Domain
                 var content = await _entitiesService.All().Include(c => c.ContentCaches).Where(c => c.Id == gid).FirstOrDefaultAsync();
                 if (content == null)
                 {
-                    throw new Exception();
+                    return;
                 }
                 var files = content.ContentCaches == null ? null : content.ContentCaches.Select(c => c.Content).ToList();
                 await _entitiesService.Delete(content);

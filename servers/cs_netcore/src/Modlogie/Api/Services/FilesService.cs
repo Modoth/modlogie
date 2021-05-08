@@ -918,10 +918,29 @@ namespace Modlogie.Api.Services
 
             var originContent = item.Content;
             item.Content = await _contentService.Add(_resourcesGroup, request.Content);
+            var resourceIds = new HashSet<Guid>();
+            foreach(var idStr in request.ResourceIds){
+                if (Guid.TryParse(idStr,out var resourceId)){
+                    resourceIds.Add(resourceId);
+                }
+            }
+            var resources = await _service.All().Where(i => i.ParentId == id && i.Type == (int)FileType.Resource).ToArrayAsync();
+            var resourceContentToDelete = resources.Where(r => !resourceIds.Contains(r.Id)).ToArray();
             await _service.Update(item);
             if (!string.IsNullOrWhiteSpace(originContent))
             {
                 await _contentService.Delete(originContent);
+            }
+            foreach (var tobedeleted in resourceContentToDelete)
+            {
+                try
+                {
+                    await _contentService.Delete(tobedeleted.Content);
+                }
+                catch (Exception)
+                {
+                    //ignore
+                }
             }
 
             return reply;
@@ -1108,18 +1127,30 @@ namespace Modlogie.Api.Services
                     var childrenPathSuffix = file.Path + PathSep;
                     var children = _service.All()
                         .Where(n => n.Path!.StartsWith(childrenPathSuffix));
+                    var resourceContentToDelete = new List<string>();
                     if (children.Any())
                     {
                         foreach (var sub in children)
                         {
-                            sub.Path = JoinPath(file.Path, sub.Path!.Substring(childrenPathSuffix.Length));
+                            if(sub.Type == (int)FileType.Resource){
+                                resourceContentToDelete.Add(sub.Content);
+                            }
                         }
-
-                        await _service.UpdateRange(children);
                     }
 
                     await _service.Delete(file);
                     await _service.DeleteRange(children);
+                    foreach (var tobedeleted in resourceContentToDelete)
+                    {
+                        try
+                        {
+                            await _contentService.Delete(tobedeleted);
+                        }
+                        catch (Exception)
+                        {
+                            //ignore
+                        }
+                    }
                     if (file.Type == (int)FileType.Normal && file.Parent != null &&
                         file.Parent.Type == (int)FileType.Folder)
                     {

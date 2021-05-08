@@ -40,6 +40,10 @@ namespace Modlogie.Infrastructure.Data
         {
             var filePath = Path.Join(_options.ContentRoot, id);
             File.Delete(filePath);
+            var folder = Path.GetDirectoryName(filePath);
+            if(Directory.GetFiles(folder).Length == 0){
+                Directory.Delete(folder);
+            }
             return Task.FromResult(true);
         }
 

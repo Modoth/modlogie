@@ -5,7 +5,7 @@
     restart: always
     volumes:
       - /data/${app_name}/files:/app/files
-      - /data/${app_name}/caches:/app/caches
+      - caches:/app/caches
     environment:
       "ConnectionProps:Database": "${app_name}"
       "ConnectionProps:Password": "${db_pwd}"
