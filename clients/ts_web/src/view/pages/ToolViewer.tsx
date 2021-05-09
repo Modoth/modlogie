@@ -78,12 +78,10 @@ export function ToolViewer() {
   return file ?
     <div className="tool-viewer-wraper">
       <div className={classNames('tool-viewer', (navigator as any).standalone ? 'standalone' : '')}>
-        <div className="menu">
+        {/* <div className="menu">
           <Button type="link" className="menu-title"> <span >{name || ''}</span></Button>
-        </div>
-
+        </div> */}
         <ExternalFileViewer file={file}></ExternalFileViewer>
-
       </div>
     </div>
     : <div></div>
