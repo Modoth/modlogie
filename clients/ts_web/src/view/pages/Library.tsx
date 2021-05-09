@@ -463,6 +463,11 @@ export default function Library (props: LibraryProps) {
           await updateArticleTag(newArticle, tag, tag.value)
         }
       }
+      const privateFile = await locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE)
+      if(privateFile === true){
+        await service.updatePrivate(newArticle.id!, true)
+        newArticle.private = true
+      }
       articleHandlers.editingArticle = newArticle
       setArticles([...articles, newArticle])
       bottomRef.current &&
@@ -548,7 +553,8 @@ export default function Library (props: LibraryProps) {
           <Badge count={favoriteCount}>
             <Button
               icon={<HeartFilled />}
-              type={favorite ? 'primary' : 'default'}
+              type = 'primary'
+              danger={favorite}
               size="large"
               shape="circle"
               onClick={() => {
@@ -558,7 +564,12 @@ export default function Library (props: LibraryProps) {
           </Badge>
         ) : null}
         <Button
-          type={!filter && !(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId) ? 'default' : 'primary'}
+          type = 'primary'
+          danger={!!filter 
+            || !!(selectedPublishTag && selectedPublishTag.id) 
+            || !!(articleTags && articleTags.filter((t) => t.value).length)
+            || !!(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId)
+          }
           size="large"
           shape="circle"
           onClick={() => setShowFilter(true)}

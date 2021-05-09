@@ -20,11 +20,12 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   MAX_FAVORITES_PER_TYPE = '每种文章最大收藏数';
   MAX_PRINT_COUNT = '最大打印文章数';
   MAX_RECENT_FILE_SIZE = '临时文件大小限制';
+  NEW_FILE_DEFAULT_PRIVATE = '默认隐藏新增文件';
+  NEW_FILE_DEFAULT_PRIVATE_SHADOW_SECTION = '默认隐藏新增文件详情';
   PLUGINS = '插件';
   RECOMMENT_COUNT = '推荐数量';
   RECOMMENT_TITLE = '推荐标题';
   ROOT_SUBJECT = '根目录';
-  SHADOW_SECTION_PRIVATE = '保存隐藏段为私有';
   SUB_TYPE_TAG = '文章子类标签';
   VIEWER_PATH = '阅读器路径';
   VIEWER_TYPES = '阅读器类型';
@@ -45,6 +46,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   _WxAppSecret = '微信AppSecret';
   _WxPreviewUserId = '微信预览用户Id';
   _WxValidateToken = '微信接口配置Token';
+  _DefaultPrivate = '缺省隐藏文件';
   //
   [key: string]: string;
   About = '关于';
@@ -70,13 +72,14 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Comment = '备注';
   Configs = '配置';
   ContentTemplate = '内容模板';
-  ContentTemplateListPrefix = '列表前';
-  ContentTemplateListSurfix = '列表后';
   ContentTemplateArticlePrefix = '文章前';
   ContentTemplateArticleSurfix='文章后';
+  ContentTemplateListPrefix = '列表前';
+  ContentTemplateListSurfix = '列表后';
   Countdown = '倒计时';
   Create = '创建';
   Csv = 'csv';
+  Default = '默认';
   DefaultValue = '默认值';
   Delete = '删除';
   DeleteAll = '全部删除';
@@ -139,10 +142,12 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Paging = '分页(Beta)';
   Password = '密码';
   Preview = '预览';
+  Private = '隐藏';
+  Public = '公开';
   Publish = '发布';
+  PUBLISH_CONTENT = '静态';
   PUBLISH_NONE = '所有';
   PUBLISH_WX = '微信';
-  PUBLISH_CONTENT = '静态';
   QrCode = '网址';
   ReadingMode = '简洁阅读';
   Recommend = '推荐';

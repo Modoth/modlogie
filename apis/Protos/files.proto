@@ -20,6 +20,7 @@ service FilesService {
   rpc UpdateAdditionalType(UpdateAdditionalTypeRequest)
       returns (modlogie.messages.Reply);
   rpc UpdateComment(UpdateCommentRequest) returns (modlogie.messages.Reply);
+  rpc UpdatePrivate(UpdatePrivateRequest) returns (modlogie.messages.Reply);
   rpc Query(QueryRequest) returns (FilesReply);
   rpc AddOrUpdateTags(AddOrUpdateTagsRequest) returns (AddOrUpdateTagsReply);
   rpc DeleteTags(DeleteTagsRequest) returns (modlogie.messages.Reply);
@@ -109,12 +110,17 @@ message File {
     FOLDER = 1;
     RESOURCE = 2;
   }
+  enum PrivateType{
+    UNSET = 0;
+    PRIVATE = 1;
+    PUBLIC = 2;
+  }
   FileType file_type = 4;
   string parent_id = 5;
   int32 normal_files_count = 6;
   string content = 7;
   string comment = 8;
-  bool private = 9;
+  PrivateType private = 9;
   int32 additional_type = 10;
   google.protobuf.Timestamp published = 11;
   repeated FileTag tags = 12;
@@ -137,7 +143,7 @@ message AddResourceRequest {
   string type = 1;
   bytes content = 2;
   string text_content = 3;
-  bool private = 4;
+  File.PrivateType private = 4;
   string parent_id = 5;
 }
 
@@ -182,6 +188,11 @@ message UpdateAdditionalTypeRequest {
 message UpdateCommentRequest {
   string id = 1;
   string comment = 2;
+}
+
+message UpdatePrivateRequest{
+  string id = 1;
+  File.PrivateType private = 2;
 }
 
 message MoveRequest {

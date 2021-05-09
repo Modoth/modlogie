@@ -1,6 +1,6 @@
 import './ArticleView.less'
 import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType, ArticleContentViewerProps } from '../../pluginbase/IPluginInfo'
-import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse } from 'antd'
+import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse, Radio } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
 import { UploadOutlined,CloseOutlined,PictureOutlined, ShareAltOutlined,SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
@@ -94,6 +94,22 @@ export default function ArticleView (props: {
   const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend)
   const [recommendTitle, setRecommendTitle] = useState('')
   const [autoUpdaters] = useState(getAutoUpdaters(props.type.publishGenerators))
+  const [privateOptions] = useState<{label:string, value: boolean|undefined}[]>([
+    {label:langs.get(LangKeys.Default), value:undefined},
+    {label:langs.get(LangKeys.Private), value:true},
+    {label:langs.get(LangKeys.Public), value:false}
+  ])
+  const [privateType, setPrivateType] = useState<boolean|undefined>(props.article.private)
+  const privateChanged = async (e:any) => {
+    const p = e.target.value
+    const api = locate(IArticleService)
+    try {
+      await api.updatePrivate(props.article.id!, p)
+      setPrivateType(p)
+    } catch (e) {
+      viewService!.errorKey(langs, e.message)
+    }    
+  }
   const autoUpdate = async () => {
     if (autoUpdaters && autoUpdaters.length) {
       const publishService = locate(IPublishService)
@@ -473,7 +489,7 @@ export default function ArticleView (props: {
             ...(likesService ? [<MenuItem key="like"><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
               <Button onClick={touchLike} type="link" icon={<LikeOutlined />}
               ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
-            <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
+            <MenuItem danger key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button danger onClick={touchDislike} type="link" icon={<DislikeOutlined />}
             ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
             // <MenuItem key="snapshot"><Button type="link" icon={<PictureOutlined />} onClick={(ev:React.MouseEvent<HTMLElement>)=>{
             //   let menu = (titleRef.current!.lastChild as HTMLElement|undefined)
@@ -503,7 +519,8 @@ export default function ArticleView (props: {
               ...(type.articleType.publishGenerators && type.articleType.publishGenerators.size ? Array.from(type.articleType.publishGenerators, ([publishName]) =>
                 <MenuItem key={publishName}><Button type="link" danger={publishedIds?.has(publishName)} icon={<ShareAltOutlined />} onClick={() => openPublishDetail(publishName)}
                 ><span className="action-name">{langs.get(publishName)}</span></Button></MenuItem>
-              ) : [])
+              ) : []),
+              <MenuItem key="private"><Radio.Group options={privateOptions as any} onChange={privateChanged} value={privateType as boolean} /></MenuItem>
             ] : [])]}
           </Menu>)
         }

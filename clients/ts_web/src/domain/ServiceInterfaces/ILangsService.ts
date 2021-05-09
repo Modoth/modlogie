@@ -29,6 +29,7 @@ export class LangKeysInterface {
   Countdown = 'Countdown';
   Create = 'Create';
   Csv = 'Csv';
+  Default = 'Default';
   DefaultValue = 'DefaultValue';
   Delete = 'Delete';
   DeleteAll = 'DeleteAll';
@@ -91,6 +92,8 @@ export class LangKeysInterface {
   Paging = 'Paging';
   Password = 'Password';
   Preview = 'Preview';
+  Private = 'Private';
+  Public = 'Public';
   Publish = 'Publish';
   PUBLISH_CONTENT = 'PUBLISH_CONTENT';
   PUBLISH_NONE = 'PUBLISH_NONE';

@@ -42,6 +42,7 @@ export default interface Article {
   tags?: Array<ArticleTag>;
   tagsDict?: Map<string, ArticleTag>;
   publishedIds?:Map<string, string>;
+  private?:boolean,
   lazyLoading?: { (): Promise<void> }
   lazyLoadingAddition?: { (): Promise<void> }
 }

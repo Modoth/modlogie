@@ -10,7 +10,7 @@ CREATE TABLE `File` (
   `Path` varchar(255) NOT NULL,
   `Content` varchar(255) DEFAULT NULL,
   `Comment` varchar(255) DEFAULT NULL,
-  `Private` bit(1) DEFAULT 0,
+  `Private` bit(2) DEFAULT 0,
   `NormalFilesCount` int DEFAULT 0,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `IX_File_Path` (`Path`),

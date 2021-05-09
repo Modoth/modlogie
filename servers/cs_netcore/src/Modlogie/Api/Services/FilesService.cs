@@ -59,7 +59,7 @@ namespace Modlogie.Api.Services
                 ParentId = i.ParentId != null ? i.ParentId.ToString() : string.Empty,
                 Content = i.Content ?? string.Empty,
                 Comment = i.Comment ?? string.Empty,
-                Private = i.Private == 1ul,
+                Private = (PrivateType)i.Private,
                 Published = i.Published.HasValue ? i.Published.Value.ToUniversalTime().ToTimestamp() : new Timestamp(),
                 AdditionalType = i.AdditionalType ?? 0,
                 FileTagsForSelect = i.FileTags != null
@@ -129,6 +129,23 @@ namespace Modlogie.Api.Services
             return path.Substring(0, path.LastIndexOf(PathSep, StringComparison.Ordinal));
         }
 
+        private async Task<IQueryable<File>> FilterPrivate(IQueryable<File> items, ServerCallContext context){
+            //todo: permission via filetype: File->Adm, Resource->Login
+            var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
+            if (!readPrivate)
+            {
+                var defStr = await _keyValueService.GetValue(ServerKeys.DefaultPrivate.Key);
+                var defPrivate = defStr == "true";
+                if(defPrivate){
+                    items = items.Where(i => i.Private == (ulong)PrivateType.Public);
+                }
+                else{
+                    items = items.Where(i => i.Private != (ulong)PrivateType.Private);
+                }
+            }
+            return items;
+        }
+
         public override async Task<FilesReply> Query(QueryRequest request, ServerCallContext context)
         {
             var reply = new FilesReply();
@@ -159,11 +176,7 @@ namespace Modlogie.Api.Services
             }
 
             var items = _service.All().Where(queryFunc);
-            var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
-            if (!readPrivate)
-            {
-                items = items.Where(i => i.Private == 0ul);
-            }
+            items = await FilterPrivate(items, context);
 
             var filter = request.Filter;
             if (!string.IsNullOrWhiteSpace(filter))
@@ -298,9 +311,10 @@ namespace Modlogie.Api.Services
             }
 
             var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
+            
             if (!readPrivate)
             {
-                items = items.Where(i => i.Private == 0ul);
+                items = items.Where(i => i.Private == (ulong)PrivateType.Public);
             }
 
             int? total = null;
@@ -342,12 +356,8 @@ namespace Modlogie.Api.Services
                 return reply;
             }
 
-            var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
             var items = _service.All().Where(f => f.Type == (int)FileType.Resource);
-            if (!readPrivate)
-            {
-                items = items.Where(i => i.Private == 0ul);
-            }
+            items = await FilterPrivate(items, context);
 
             var file = await items.Where(k => k.Id == fileId).FirstOrDefaultAsync();
             if (file != null)
@@ -946,8 +956,8 @@ namespace Modlogie.Api.Services
             return reply;
         }
 
-
-        public override async Task<Reply> UpdateComment(UpdateCommentRequest request, ServerCallContext context)
+        private async Task<Reply> UpdateFields(string fileId, ServerCallContext context,
+            Func<File, Task<Error>> updateField)
         {
             var reply = new Reply();
             var user = await _userService.GetUser(context.GetHttpContext());
@@ -963,7 +973,7 @@ namespace Modlogie.Api.Services
                 return reply;
             }
 
-            if (!Guid.TryParse(request.Id, out var id))
+            if (!Guid.TryParse(fileId, out var id))
             {
                 reply.Error = Error.InvalidArguments;
                 return reply;
@@ -976,7 +986,12 @@ namespace Modlogie.Api.Services
                 return reply;
             }
 
-            item.Comment = request.Comment;
+            reply.Error = await updateField(item);
+            if (reply.Error != Error.None)
+            {
+                return reply;
+            }
+
             item = await _service.Update(item);
             if (item.Type == (int)FileType.Folder)
             {
@@ -986,44 +1001,29 @@ namespace Modlogie.Api.Services
             return reply;
         }
 
-        public override async Task<Reply> UpdateAdditionalType(UpdateAdditionalTypeRequest request,
-            ServerCallContext context)
+
+        public override async Task<Reply> UpdateComment(UpdateCommentRequest request, ServerCallContext context)
         {
-            var reply = new Reply();
-            var user = await _userService.GetUser(context.GetHttpContext());
-            if (user == null)
-            {
-                reply.Error = Error.NeedLogin;
-                return reply;
-            }
+            return await UpdateFields(request.Id, context, item => {
+                item.Comment = request.Comment;
+                return Task.FromResult(Error.None);
+            });
+        }
 
-            if (!user.HasWritePermission())
-            {
-                reply.Error = Error.NoPermission;
-                return reply;
-            }
+        public override async Task<Reply> UpdatePrivate(UpdatePrivateRequest request, ServerCallContext context)
+        {
+            return await UpdateFields(request.Id, context, item => {
+                item.Private = (ulong)request.Private;
+                return Task.FromResult(Error.None);
+            });
+        }
 
-            if (!Guid.TryParse(request.Id, out var id))
-            {
-                reply.Error = Error.InvalidArguments;
-                return reply;
-            }
-
-            var item = await _service.All().Where(i => i.Id == id).FirstOrDefaultAsync();
-            if (item == null)
-            {
-                reply.Error = Error.NoSuchEntity;
-                return reply;
-            }
-
-            item.AdditionalType = request.AdditionalType;
-            item = await _service.Update(item);
-            if (item.Type == (int)FileType.Folder)
-            {
-                await ClearFolderVersionsCache();
-            }
-
-            return reply;
+        public override async Task<Reply> UpdateAdditionalType(UpdateAdditionalTypeRequest request, ServerCallContext context)
+        {
+            return await UpdateFields(request.Id, context, item => {
+                item.AdditionalType = request.AdditionalType;
+                return Task.FromResult(Error.None);
+            });
         }
 
         private string GetContentType(string type)
@@ -1080,7 +1080,7 @@ namespace Modlogie.Api.Services
                 Created = DateTime.Now,
                 Modified = DateTime.Now,
                 Published = DateTime.Now,
-                Private = request.Private ? 1ul : 0
+                Private = (ulong)request.Private
             };
             file.Path = JoinPath(parent.Path, file.Name);
             if (!string.IsNullOrWhiteSpace(request.TextContent))

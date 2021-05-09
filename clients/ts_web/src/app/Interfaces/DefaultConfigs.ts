@@ -22,10 +22,11 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   MAX_FAVORITES_PER_TYPE = new Config(ConfigKeys.MAX_FAVORITES_PER_TYPE, ConfigType.NUMBER, '1000');
   MAX_PRINT_COUNT = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, '100');
   MAX_RECENT_FILE_SIZE = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, `${20 * 1024 * 1024}`);
+  NEW_FILE_DEFAULT_PRIVATE = new Config(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE, ConfigType.BOOLEAN, 'false');
+  NEW_FILE_DEFAULT_PRIVATE_SHADOW_SECTION = new Config(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE_SHADOW_SECTION, ConfigType.BOOLEAN, 'false');
   PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, '');
   RECOMMENT_COUNT = new Config(ConfigKeys.RECOMMENT_COUNT, ConfigType.NUMBER, '');
   RECOMMENT_TITLE = new Config(ConfigKeys.RECOMMENT_TITLE, ConfigType.STRING, 'Recommends');
-  SHADOW_SECTION_PRIVATE = new Config(ConfigKeys.SHADOW_SECTION_PRIVATE, ConfigType.BOOLEAN, 'false');
   VIEWER_PATH=new Config(ConfigKeys.VIEWER_PATH, ConfigType.STRING, '/apps/viewers');
   VIEWER_TYPES=new Config(ConfigKeys.VIEWER_TYPES, ConfigType.STRING, '');// txt txt;
   WEB_SITE_AVATAR = new Config(ConfigKeys.WEB_SITE_AVATAR, ConfigType.RESOURCE, '/configs/avatar');

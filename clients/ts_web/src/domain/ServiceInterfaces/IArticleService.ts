@@ -44,6 +44,10 @@ export default class IArticleService extends IFilesServiceBase {
     throw new Error('Method not implemented.')
   }
 
+  updatePrivate (id: string, privateType: boolean | undefined): Promise<void>{
+    throw new Error('Method not implemented.')
+  }
+
   updatePublished (id: string, published: Date): Promise<void> {
     throw new Error('Method not implemented.')
   }
