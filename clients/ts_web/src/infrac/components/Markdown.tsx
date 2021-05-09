@@ -19,10 +19,13 @@ const transformLinkUri = (uri:string) => {
 const defaultRenderers = {
   // eslint-disable-next-line react/display-name
   link: (props:any) => {
-    switch(props.href){
-      case 't:':
-      case 's:':
-        return <span className={props.href.slice(0,props.href.length-1)}>{props.children}</span>
+    let p = props.href?.split(':')[0]
+    switch(p){
+      case 's':
+        return <><span className="t"></span><span className={p}>{props.children}</span></>
+      // case 'code':
+      // case 'wiki':
+      //   return <a href={decodeURIComponent(props.href)} target={props.target}><ruby>{props.children}<rp>(</rp><rt>{p}</rt><rp>)</rp></ruby></a>
       default:
         return <a href={decodeURIComponent(props.href)} target={props.target}>{props.children}</a>
     }
