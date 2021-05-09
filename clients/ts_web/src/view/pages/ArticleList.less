@@ -1,9 +1,12 @@
 .article-list-wraper {
   min-height: 100vh;
   background: white;
+  max-width: 780px;
+  margin: 0 auto;
 
   .article-list-menus {
     top: calc(0px - var(--overflow-top));
+    left: 0;
     display: flex;
     position: fixed;
     width: 100%;
@@ -29,7 +32,6 @@
 
   .article-list {
     padding: 10px 0 0 0;
-    max-width: 780px;
     margin: 45px auto 0 auto;
     &.column-count-1 {
       column-count: 1;
