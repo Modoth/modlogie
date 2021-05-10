@@ -116,7 +116,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
         section.locate?.()
         setCurrentSection(section)
       }}>
-        <span><span className="item-indent">{"    ".repeat(section.level) + "-  "}</span>{section.name}</span>
+        <span><span className="item-indent">{"  ".repeat(section.level) + "- "}</span>{section.name}</span>
       </div>
       { section.children && section.children.length ? section.children.map(NavigationSectionView) : undefined}
     </>
