@@ -109,54 +109,33 @@
     }
   }
 
-  .s {
-    display: none;
+  .mdg-b {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 20px;
+    background: #fff8;
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
-    background: #fff8;
-    border-radius: 5px;
-    border: none;
+    box-shadow: var(--shadow);
+    z-index: 3;
     font-size: 0.85em;
-    position: absolute;
-    right: 0;
-    left: 0;
-    z-index: 1000;
-    max-width: 624px;
-    width: 80%;
-    margin: 0 auto;
-    text-align: left;
-    line-height: 1.5em;
-    padding: 10px 10px 5px 10px;
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 2px 0px,
-        rgba(0, 0, 0, 0.25) 0px 1px 4px 0px, rgba(0, 0, 0, 0.25) 0px 2px 8px 0px;
 }
 
-.t{
-    color: #666;
-    background: #e8e8e8;
-    display: inline-block;
-    border-radius: 100%;
-    line-height: 2em;
-    width: 2em;
-    text-align: center;
-    margin: 0 -0.5em;
-    transform: scale(0.4) translate(0, -20%);
-}
-
-.t::before{
-  content: "En";
-}
-
-.t:hover{
-  background: #666;
-  color: #e8e8e8;
-}
-
-.t:hover+.s {
+.mdg:hover {
+  &>.mdg-f{
+    background: #e8912e20;
+    @media print {
+      background: unset;
+    }
+  }
+  &>.mdg-b{
     display: block;
-}
-.s:hover {
-    display: block;
+    @media print {
+      display: none;
+    }
+  }
 }
 
   & > .article {
