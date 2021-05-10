@@ -136,12 +136,18 @@
     .md-name {
       display: none;
     }
-    img {
+    &>p:first-of-type img {
       max-width: 100px;
       float: right;
       object-fit: contain;
       margin: 0 0 5px 5px;
       box-shadow: var(--shadow);
+
+      .ref-article & {
+        max-width: unset;
+        box-shadow: unset;
+        margin: unset;
+      }
     }
   }
 

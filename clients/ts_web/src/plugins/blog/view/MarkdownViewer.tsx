@@ -96,7 +96,7 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
     img.ontouchcancel = end
   }, [])
   return <>
-    <div className="embed-img" ><img alt={props.alt} src={props.src} onClick={toggleFullscreen} /></div>
+    <span className="embed-img" ><img alt={props.alt} src={props.src} onClick={toggleFullscreen} /></span>
     <div className={classNames("full-img", fullscreen ? "" : "hidden")}>
       <img onClick={ev => ev.stopPropagation()} ref={imgRef}
         style={{ width: `${scale}%`, maxWidth: `${scale}%`, maxHeight: `${scale}%` }} alt={props.alt} src={props.src} />

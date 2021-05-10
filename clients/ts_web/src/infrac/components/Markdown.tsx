@@ -18,7 +18,6 @@ const transformLinkUri = (uri: string) => {
 
 // eslint-disable-next-line react/display-name
 const emphasis = (props: any) => {
-  console.log(props)
   let front = props.children.filter((c: any) => c.type !== emphasis)
   let back = props.children.filter((c: any) => c.type === emphasis)
   if (back.length) {
@@ -51,5 +50,6 @@ const defaultRenderers = {
 
 export default function Markdown(props: ReactMarkdown.ReactMarkdownProps) {
   const renderers = Object.assign({}, defaultRenderers, props.renderers)
+  renderers.inlineCode = renderers.code
   return <ReactMarkdown transformLinkUri={transformLinkUri} {...props} renderers={renderers} skipHtml={true}></ReactMarkdown>
 }

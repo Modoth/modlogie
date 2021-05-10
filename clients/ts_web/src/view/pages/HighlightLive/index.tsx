@@ -27,11 +27,11 @@ const getHighlightFormat = (lang:string, defaultFormat?:string):[ string|undefin
   return [defaultFormat, lang]
 }
 
-export default function HighlightLive (props: { language: string, value: string, format?:string }) {
+export default function HighlightLive (props: { inline?:boolean, language: string, value: string, format?:string }) {
   const user = useUser()
   const locate = useServicesLocate()
   let format = props.format
-  let lang = props.language || ''
+  let lang = (props.inline ? props.value : props.language) || ''
     ;[format, lang] = getHighlightFormat(lang, format)
   const protoSeperator = `${Seperators.LangFields}`
   const protoIdx = lang.indexOf(protoSeperator)
@@ -47,7 +47,7 @@ export default function HighlightLive (props: { language: string, value: string,
     if (!proto && pathOrName[0] !== '/') {
       pathOrName = '/' + pathOrName
     }
-    const dataSections = props.value ? [{
+    const dataSections = !props.inline && props.value ? [{
       name: 'data',
       content: props.value,
       type: format
@@ -56,6 +56,9 @@ export default function HighlightLive (props: { language: string, value: string,
       <ArticlePreview dataSections={dataSections} root={proto} pathOrName={pathOrName}></ArticlePreview>
       {user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locate, pathOrName, filename(pathOrName), proto)} /> : undefined}
     </div>
+  }
+  if(props.inline){
+    return <code>{props.value}</code>
   }
   const viewerInfo = locate(IEditorsService).getViewerByFileName(lang)
   if (viewerInfo) {

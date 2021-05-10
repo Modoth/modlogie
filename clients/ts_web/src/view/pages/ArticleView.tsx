@@ -489,7 +489,7 @@ export default function ArticleView (props: {
             ...(likesService ? [<MenuItem key="like"><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
               <Button onClick={touchLike} type="link" icon={<LikeOutlined />}
               ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
-            <MenuItem danger key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button danger onClick={touchDislike} type="link" icon={<DislikeOutlined />}
+            <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
             ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
             // <MenuItem key="snapshot"><Button type="link" icon={<PictureOutlined />} onClick={(ev:React.MouseEvent<HTMLElement>)=>{
             //   let menu = (titleRef.current!.lastChild as HTMLElement|undefined)
