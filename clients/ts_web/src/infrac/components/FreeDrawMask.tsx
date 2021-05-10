@@ -2,8 +2,12 @@ import './FreeDrawMask.less'
 import classNames from 'classnames'
 import React, { useEffect, useState } from 'react'
 
-type PropsType =  { enabled: boolean, penOnly?: boolean, onPenFound?: () => boolean, size: number, pen: [string, number], earse: boolean, hidden: boolean }
-let p : PropsType = {} as any
+type PropsType = { version: number, enabled: boolean, penOnly?: boolean, onPenFound?: () => boolean, size: number, pen: [string, number], earse: boolean, hidden: boolean }
+let p: PropsType = {} as any
+const clearCanvas = (c:HTMLCanvasElement)=>{
+  const ctx = c.getContext('2d')!
+    ctx.clearRect(0, 0, c.width, c.height)
+}
 export default function FreeDrawMask(props: PropsType) {
   const ref = React.createRef<HTMLCanvasElement>()
   const tmpRef = React.createRef<HTMLCanvasElement>()
@@ -11,22 +15,34 @@ export default function FreeDrawMask(props: PropsType) {
   const delay = 10
   const minDist = 1
   const [existedPen, setExistedPen] = useState(false)
+  const [store] = useState({needUpdateScale:false})
+  useEffect(()=>{
+    ref.current && clearCanvas(ref.current)
+    tmpRef.current && clearCanvas(tmpRef.current)
+    store.needUpdateScale = true
+  }, [props.version])
   useEffect(() => {
     const canvas = ref.current!
     const style = getComputedStyle(canvas)
     const tmpCanvas = tmpRef.current!
-    const height = parseFloat(style.height)
-    const width = parseFloat(style.width)
-    const maxSize = 2 ** 15
-    let maxScale = Math.min(maxSize / width, maxSize / height)
-    maxScale = Math.max(Math.floor(maxScale * 10) / 10, 1)
-    maxScale = height < 2.5 * window.innerHeight ? maxScale : 1
-    const scale = Math.min(window.devicePixelRatio || 1, maxScale)
-    const tempScale = scale
-    tmpCanvas.height = height * tempScale
-    tmpCanvas.width = width * tempScale
-    canvas.height = height * scale
-    canvas.width = width * scale
+    let scale = 1, tempScale = 1
+    const updateScale = () => {
+      clearCanvas(tmpCanvas)
+      clearCanvas(canvas)
+      const height = parseFloat(style.height)
+      const width = parseFloat(style.width)
+      const maxSize = 2 ** 15
+      let maxScale = Math.min(maxSize / width, maxSize / height)
+      maxScale = Math.max(Math.floor(maxScale * 10) / 10, 1)
+      maxScale = height < 2.5 * window.innerHeight ? maxScale : 1
+      scale = Math.min(window.devicePixelRatio || 1, maxScale)
+      tempScale = scale
+      tmpCanvas.height = height * tempScale
+      tmpCanvas.width = width * tempScale
+      canvas.height = height * scale
+      canvas.width = width * scale
+      store.needUpdateScale = false
+    }
     const getPos = (ev: MouseEvent | TouchEvent): [[number, number], [number, number]] => {
       const rec = tmpCanvas.getClientRects()
       let x: number
@@ -67,6 +83,9 @@ export default function FreeDrawMask(props: PropsType) {
         }
       }
       drawing = true;
+      if(store.needUpdateScale){
+        updateScale()
+      }
       let t: [number, number]
       [[x, y], t] = getPos(ev)
       lastPath = [t];
@@ -104,8 +123,7 @@ export default function FreeDrawMask(props: PropsType) {
         return
       }
       requestAnimationFrame(() => {
-        const ctx = tmpCanvas.getContext('2d')!
-        ctx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height)
+        clearCanvas(tmpCanvas)
         drawLastPath()
       })
     }
@@ -122,8 +140,8 @@ export default function FreeDrawMask(props: PropsType) {
         const ctx = canvas.getContext('2d')!
         ctx.save()
         ctx.lineCap = 'round'
-        let r = p.size * scale *  (p.pen[1] || 1) / 2
-        ctx.clearRect(Math.min(x, tx) - r, Math.min(y, ty) - r, Math.abs(x - tx) + 2*r, Math.abs(y - ty) + 2*r)
+        let r = p.size * scale * (p.pen[1] || 1) / 2
+        ctx.clearRect(Math.min(x, tx) - r, Math.min(y, ty) - r, Math.abs(x - tx) + 2 * r, Math.abs(y - ty) + 2 * r)
         ctx.restore()
       } else {
         const [tx, ty] = s
