@@ -13,8 +13,8 @@ const { TabPane } = Tabs
 
 export function ModlangInterpreter (props: { code: string, lang: string, version?: string }) {
   const [request] = useState(new InterpretRequest(props.code, props.lang, props.version))
-  const [output, setOutput] = useState('')
-  const [compilerOutput, setCompilerOutput] = useState('')
+  const [output, setOutput] = useState<string|undefined>(undefined)
+  const [compilerOutput, setCompilerOutput] = useState<string|undefined>(undefined)
   const [running, setRunning] = useState(false)
   const [opened, setOpened] = useState(false)
   const interpretersService = useServicesLocate()(ILangInterpretersService)
@@ -45,8 +45,8 @@ export function ModlangInterpreter (props: { code: string, lang: string, version
     })()
   }, [])
   const clear = () => {
-    setOutput('')
-    setCompilerOutput('')
+    setOutput(undefined)
+    setCompilerOutput(undefined)
     setRunning(false)
     setOpened(false)
   }
@@ -74,7 +74,7 @@ export function ModlangInterpreter (props: { code: string, lang: string, version
             </div>
             : <div className="content">
               {
-                compilerOutput || output
+                compilerOutput !== undefined || output !== undefined
                   ? <>{compilerOutput ? <div className="compiler-output">{compilerOutput}</div> : undefined}
                     {output ? <div className="output">{output}</div> : undefined}</>
                   : <LoadingOutlined style={{ fontSize: 24 }} />
