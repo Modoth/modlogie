@@ -261,6 +261,8 @@ namespace Modlogie.Api.Common
                     return file => file.Path == value;
                 case nameof(File.Type):
                     return file => file.Type == int.Parse(value);
+                case nameof(File.Private):
+                    return file => file.Private == (bool.Parse(value) ? 1u : 2u);
                 case nameof(File.AdditionalType):
                     return file => file.AdditionalType == int.Parse(value);
                 case nameof(File.Parent) + "Id":

@@ -131,6 +131,7 @@ export default function Library (props: LibraryProps) {
   const [tags, setTags] = useState(new Map<string, Tag>())
   const [publishTags, setPublishTags] = useState<ArticleTag[]>([])
   const [selectedPublishTag, setSelectedPublishTag] = useState<ArticleTag|undefined>(undefined)
+  const [selectedPrivate, setSelectedPrivate] = useState<boolean|undefined>(undefined)
   const fetchTags = async () => {
     const tagsService = locate(ITagsService)
     const allTags = (await tagsService.all())
@@ -291,6 +292,12 @@ export default function Library (props: LibraryProps) {
               new Condition()
                 .setType(Condition.ConditionType.HAS)
                 .setProp(selectedPublishTag.name)
+            ] : []),
+            ...(selectedPrivate != undefined ? [
+              new Condition()
+                .setType(Condition.ConditionType.EQUAL)
+                .setProp('Private')
+                .setValue(selectedPrivate.toString())
             ] : []),
             ...articleTags
               .filter((t) => t.value)
@@ -717,6 +724,24 @@ export default function Library (props: LibraryProps) {
                 </Radio.Button>
               ))}
           </Radio.Group> : undefined}
+          {
+            user.editingPermission ? <Radio.Group
+              className="tag-list"
+              defaultValue={undefined}
+              buttonStyle="solid"
+              onChange={(e) => setSelectedPrivate(e.target.value)}
+            >
+              {...[
+                { label: langs.get(LangKeys.All), value: undefined },
+                { label: langs.get(LangKeys.Private), value: true },
+                { label: langs.get(LangKeys.Public), value: false }
+              ].map((tag) => (
+                <Radio.Button className="tag-item" key={`${tag.value}`} value={tag.value}>
+                  {tag.label}
+                </Radio.Button>
+              ))}
+            </Radio.Group> : undefined
+          }
           {articleTags.map((tag, i) => (
             <Radio.Group
               className="tag-list"

@@ -99,6 +99,7 @@ export default function ArticleView (props: {
     {label:langs.get(LangKeys.Private), value:true},
     {label:langs.get(LangKeys.Public), value:false}
   ])
+  const [defaultPrivate, setDefaultPrivate] = useState(false)
   const [privateType, setPrivateType] = useState<boolean|undefined>(props.article.private)
   const privateChanged = async (e:any) => {
     const p = e.target.value
@@ -327,6 +328,12 @@ export default function ArticleView (props: {
         setDislikeCount(dislikeCount)
       }
     })()
+    if(user.editingPermission){
+      async ()=>{
+        const privateFile = await locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE)
+        setDefaultPrivate(privateFile)
+      }
+    }
     locate(IArticleAppservice)
       .getArticleType(locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type))
   }, [])
@@ -458,7 +465,7 @@ export default function ArticleView (props: {
     ], async () => true)
   }
   return (<div ref={ref}>
-    <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', recommendView ? generateRandomStyle() : '')}>
+    <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' :recommendView ? generateRandomStyle() : '')}>
       <div className="article-title" ref={titleRef}>
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
         }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
