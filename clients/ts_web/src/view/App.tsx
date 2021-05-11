@@ -58,6 +58,10 @@ export default function App () {
             return
           }
         }
+        //todo: 
+        if(a.parentElement?.className?.startsWith("ant-")){
+          return
+        }
         e.stopPropagation()
         e.preventDefault()
         navigateTo(((a as any).text || a.innerText || '').trim(), a.href)

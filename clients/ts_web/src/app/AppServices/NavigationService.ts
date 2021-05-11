@@ -19,12 +19,13 @@ export default class NavigationService extends IServicesLocator implements INavi
     const lProto = proto.toLowerCase()
     if ((lProto === 'http:' || lProto === 'https:')) {
       if (u.hostname !== window.location.hostname) {
-        this.locate(IViewService).prompt(
-          { title, subTitle: this.locate(ILangsService).get(LangKeys.ComfireJump) + url }, []
-          , async () => {
-            window.open(url, '_blank')
-            return true
-          })
+        // this.locate(IViewService).prompt(
+        //   { title, subTitle: this.locate(ILangsService).get(LangKeys.ComfireJump) + url }, []
+        //   , async () => {
+        //     window.open(url, '_blank')
+        //     return true
+        //   })
+        window.open(url, '_blank')
         return
       }
       window.location.href = url
