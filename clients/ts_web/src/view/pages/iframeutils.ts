@@ -9,6 +9,8 @@ import IFile from '../../infrac/Lang/IFile'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import Seperators from '../../domain/ServiceInterfaces/Seperators'
+import pako from 'pako'
+window.pako = pako
 
 const copyFileInfo = (file:File) => {
   return {
@@ -43,7 +45,19 @@ export const genetateFileApi = (file:IFile):ApiInfo => ({
     handler: async (buffSize:number) => {
       return file.read(buffSize)
     }
-  }]
+  },
+  {
+    name: 'readAsBase64',
+    handler: async(compress: boolean) =>{
+      const res = await file.read()
+      let data = new Uint8Array(res[0])
+      if(compress){
+        data = pako.deflate(data)
+      }
+      return btoa(String.fromCharCode(...data))
+    }
+  }
+]
 })
 
 export interface IFramework{
@@ -66,7 +80,8 @@ type FwBuilderArgs = {id:string, locate: LocateFunction, reload():any }
 export const EmbededFrameworks = {
   Storage: 'storage',
   FileService: '$fileservice',
-  Location: '$location'
+  Location: '$location',
+  Zip: '$zip'
 }
 
 const allEmbededFws: Map<string, {(args:FwBuilderArgs):ApiInfo[]}> = new Map([
