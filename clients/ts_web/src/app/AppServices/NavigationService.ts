@@ -46,7 +46,7 @@ export default class NavigationService extends IServicesLocator implements INavi
       if (root === 'article') {
         root = undefined
       }
-      let articlePathOrName = u.pathname
+      let articlePathOrName = u.pathname || title
       if (!root) {
         if (articlePathOrName[0] !== '/') {
           articlePathOrName = '/' + articlePathOrName

@@ -19,8 +19,7 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   INTERPRETERS_PATH=new Config(ConfigKeys.INTERPRETERS_PATH, ConfigType.STRING, '/apps/interpreters');
   FRAMEWORKS_PATH=new Config(ConfigKeys.FRAMEWORKS_PATH, ConfigType.STRING, '/fw');
   IMPORT_SUBJECTS_AUTOFIX = new Config(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX, ConfigType.BOOLEAN, 'false');
-  KEYWORDS_QRERY_TEMPLAES = new Config(ConfigKeys.KEYWORDS_QRERY_TEMPLAES, ConfigType.STRING, `default${Seperators.Fields}https://www.google.com/search?q=\${keyword}`);
-  LANGS_SERVER = new Config(ConfigKeys.LANGS_SERVER, ConfigType.STRING, '');// https://www.modoth.cn:8000/$LANG/$CODE,perl,bash
+  LANGS_SERVER = new Config(ConfigKeys.LANGS_SERVER, ConfigType.STRING, '');// perl,bash,https://www.modoth.cn:8000/$LANG/$CODE
   MAX_FAVORITES_PER_TYPE = new Config(ConfigKeys.MAX_FAVORITES_PER_TYPE, ConfigType.NUMBER, '1000');
   MAX_PRINT_COUNT = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, '100');
   MAX_RECENT_FILE_SIZE = new Config(ConfigKeys.MAX_PRINT_COUNT, ConfigType.NUMBER, `${20 * 1024 * 1024}`);
