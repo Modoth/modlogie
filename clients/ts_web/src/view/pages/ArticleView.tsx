@@ -93,7 +93,7 @@ export default function ArticleView (props: {
   const [recommendView, setRecommendView] = useState(props.recommendView || false)
   const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend)
   const [recommendTitle, setRecommendTitle] = useState('')
-  const [autoUpdaters] = useState(getAutoUpdaters(props.type.publishGenerators))
+  const [autoUpdaters] = useState(()=>getAutoUpdaters(props.type.publishGenerators))
   const [privateOptions] = useState<{label:string, value: boolean|undefined}[]>([
     {label:langs.get(LangKeys.Default), value:undefined},
     {label:langs.get(LangKeys.Private), value:true},

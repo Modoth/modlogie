@@ -16,7 +16,7 @@ const Markdown = require('react-markdown')
 const { TabPane } = Tabs
 
 export function ModlangInterpreter (props: { code: string, lang: string, version?: string }) {
-  const [request] = useState(new InterpretRequest(props.code, props.lang, props.version))
+  const [request] = useState(()=>new InterpretRequest(props.code, props.lang, props.version))
   const [output, setOutput] = useState<string|undefined>()
   const [compilerOutput, setCompilerOutput] = useState<string|undefined>()
   const [running, setRunning] = useState(false)
@@ -25,7 +25,7 @@ export function ModlangInterpreter (props: { code: string, lang: string, version
   const [interpreter, setInterpreter] = useState<ILangInterpreter | undefined>()
   const [interpreterUrl, setInterpreterUrl] = useState<string | undefined>()
   const [interpreterPlugin] = useState<EditorInfo|undefined>(()=>useServicesLocate()(IEditorsService).getInterpreterByFileName(props.lang))
-  const [file] = useState<IFile|undefined>(()=>interpreterPlugin? new BufferFile(props.lang, new TextEncoder().encode(JSON.stringify(props))) :undefined)
+  const [file] = useState<IFile|undefined>(()=>interpreterPlugin? new BufferFile(props.lang, new TextEncoder().encode(JSON.stringify({...props, theme: 'dark'}))) :undefined)
   const open = async () => {
     if (running) {
       return

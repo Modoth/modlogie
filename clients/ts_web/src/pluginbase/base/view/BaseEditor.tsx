@@ -26,7 +26,7 @@ export default function BaseEditor (TSectionEditor: { (props: SectionEditorProps
       secs.forEach(s => sectionOps.set(s, {} as any))
       setSections(secs)
     })
-    const [filesDict] = useState(props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
+    const [filesDict] = useState(()=>props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
     const [newFiles] = useState(new Map<ArticleSection, string[]>())
     const [currentSection, setCurrentSection] = useState<ArticleSection | undefined>(undefined)
     const saveCurrentSectionAndChange = (next: ArticleSection) => {

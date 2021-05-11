@@ -32,7 +32,7 @@ export default function ExternalViewer (props:ExternalViewerProps) {
     reload()
   }, [])
   if (!doc) {
-    return <NotSupportView></NotSupportView>
+    return <></>
   }
   return <IFrameWithJsMemo key={context?.token} allowFullscreen={true} context={context} srcDoc={doc}/>
 }

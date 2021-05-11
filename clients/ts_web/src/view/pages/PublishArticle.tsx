@@ -19,8 +19,8 @@ export default function PublishArticle (props:{
      articlePath:string
     } & ArticleContentViewerProps) {
   const baseUrl = `${window.location.protocol}//${window.location.host}/`
-  const [content] = useState(props.Template(props))
-  const [url] = useState(srcToUrl(content.replaceAll(/\$\{FILENAME=(.*?)\}/g, (_, url) =>
+  const [content] = useState(()=>props.Template(props))
+  const [url] = useState(()=>srcToUrl(content.replaceAll(/\$\{FILENAME=(.*?)\}/g, (_, url) =>
   `${baseUrl}${url}`
   )) + (props.PreviewTemplate || ''))
   const [publishId, setPublishId] = useState(props.publishId)

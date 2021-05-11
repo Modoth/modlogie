@@ -40,7 +40,7 @@ const renderSlice = (slice: ArticleSlice, onClick?: any) => {
 }
 
 export default function MathSectionViewer (props: SectionViewerProps) {
-  const [section] = useState(new ArticleSectionVm(props.section.name!, props.section.content || '', props.filesDict))
+  const [section] = useState(()=>new ArticleSectionVm(props.section.name!, props.section.content || '', props.filesDict))
   return <div onClick={props.onClick} className={classNames('math-section-viewer', section.name, props.pureViewMode ? 'view-mode' : 'edit-mode')} key={section.name}>
     <label className="section-name">{section.name}</label>
     {section.slices.map((slice) => renderSlice(slice, props.onClick))}
