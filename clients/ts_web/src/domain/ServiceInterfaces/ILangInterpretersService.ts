@@ -18,7 +18,7 @@ export class InterpreterInfo {
 }
 
 export class InterpretRequest {
-  constructor (public code: string, public lang?: string, public version?: string) {
+  constructor (public code: string, public lang?: string, public version?: string, public template?: string) {
   }
 }
 

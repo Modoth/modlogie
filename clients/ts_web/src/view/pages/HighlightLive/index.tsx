@@ -13,6 +13,7 @@ import Highlight from '../../../infrac/components/Hightlight'
 import IEditorsService from '../../../app/Interfaces/IEditorsService'
 import React from 'react'
 import Seperators from '../../../domain/ServiceInterfaces/Seperators'
+import { ModlangInterpreter } from '../ModlangInterpreter'
 
 export class HighlightLiveViewerProps {
   type: string
@@ -30,9 +31,9 @@ const getHighlightFormat = (lang:string, defaultFormat?:string):[ string|undefin
 export default function HighlightLive (props: { inline?:boolean, language: string, value: string, format?:string }) {
   const user = useUser()
   const locate = useServicesLocate()
-  let format = props.format
+  let dataFormatOrcodeTemplate = props.format
   let lang = (props.inline ? props.value : props.language) || ''
-    ;[format, lang] = getHighlightFormat(lang, format)
+    ;[dataFormatOrcodeTemplate, lang] = getHighlightFormat(lang, dataFormatOrcodeTemplate)
   const protoSeperator = `${Seperators.LangFields}`
   const protoIdx = lang.match(/^\s*w/) ? lang.indexOf(protoSeperator) : -1
   if (lang && ~protoIdx) {
@@ -50,7 +51,7 @@ export default function HighlightLive (props: { inline?:boolean, language: strin
     const dataSections = !props.inline && props.value ? [{
       name: 'data',
       content: props.value,
-      type: format
+      type: dataFormatOrcodeTemplate
     }] : []
     return <div className="highlight-live ref-article">
       <ArticlePreview dataSections={dataSections} root={proto} pathOrName={pathOrName}></ArticlePreview>
@@ -66,11 +67,14 @@ export default function HighlightLive (props: { inline?:boolean, language: strin
   }
   const Viewer = viewers.get(lang)
   if (Viewer) {
-    const data = toJsObj(format, props.value)
+    const data = toJsObj(dataFormatOrcodeTemplate, props.value)
     if (!data) {
       return <></>
     }
     return <Viewer type={lang} data={data}></Viewer>
   }
-  return <Highlight language={lang} value={props.value}></Highlight>
+  return <>
+    <Highlight language={lang} value={props.value}></Highlight>
+    {dataFormatOrcodeTemplate && lang ? <ModlangInterpreter template={dataFormatOrcodeTemplate} code={props.value} lang={lang}></ModlangInterpreter> : undefined}
+  </>
 }
