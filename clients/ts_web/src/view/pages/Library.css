@@ -1,6 +1,10 @@
 @media not all and (min-resolution:.001dpcm) { @media
   {
+    .library{
+      display: flex;
+      flex-direction: column;
+    }
     .library .articles {
-      column-count: unset !important;
+      /* column-count: unset !important; */
   }
   }}

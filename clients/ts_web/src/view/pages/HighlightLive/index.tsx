@@ -34,7 +34,7 @@ export default function HighlightLive (props: { inline?:boolean, language: strin
   let lang = (props.inline ? props.value : props.language) || ''
     ;[format, lang] = getHighlightFormat(lang, format)
   const protoSeperator = `${Seperators.LangFields}`
-  const protoIdx = lang.indexOf(protoSeperator)
+  const protoIdx = lang.match(/^\s*w/) ? lang.indexOf(protoSeperator) : -1
   if (lang && ~protoIdx) {
     let pathOrName = lang.slice(protoIdx + protoSeperator.length).trim()
     if (!pathOrName) {
