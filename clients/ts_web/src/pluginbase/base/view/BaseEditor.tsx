@@ -16,7 +16,7 @@ export default function BaseEditor (TSectionEditor: { (props: SectionEditorProps
   return (props: ArticleContentEditorProps) => {
     const [type, setType] = useState<ArticleContentType | undefined>(undefined)
     const [sections, setSections] = useState<ArticleSection[]>([])
-    const [sectionOps] = useState(new Map<ArticleSection, ArticleContentEditorCallbacks<[string, string[]]>>())
+    const [sectionOps] = useState(()=>new Map<ArticleSection, ArticleContentEditorCallbacks<[string, string[]]>>())
     useEffect(() => {
       if (props.type === type) {
         return

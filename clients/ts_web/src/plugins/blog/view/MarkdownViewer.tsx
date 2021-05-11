@@ -44,8 +44,10 @@ const getRenders = (root: NavigationSection | undefined) => {
 }
 
 function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
+  const maxScale = 500
+  const minScale = 100
   const [fullscreen, setFullscreen] = useState(false)
-  const [scale, setScale] = useState(100)
+  const [scale, setScale] = useState(maxScale)
   const imgRef = React.createRef<HTMLImageElement>()
   const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches 
   const toggleFullscreen = smallScreen ? (ev: any) => { ev.stopPropagation(); setFullscreen(!fullscreen) } : undefined
@@ -77,7 +79,7 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
       ev.stopPropagation()
       let curDist = dist(ev)
       let s = curDist * startScale / startDist
-      lastScale = Math.min(Math.max(100, s),500)
+      lastScale = Math.min(Math.max(minScale, s),maxScale)
       requestAnimationFrame(()=>moveInFrame(s))
     }
 

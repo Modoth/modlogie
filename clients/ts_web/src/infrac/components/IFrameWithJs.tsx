@@ -133,7 +133,7 @@ const createCallbacks = (props:IFrameWithJsProps):FullscreenWraperCallbacks|unde
 }
 
 export default function IFrameWithJs (props: IFrameWithJsProps) {
-  const [callbacks] = useState(createCallbacks(props))
+  const [callbacks] = useState(()=>createCallbacks(props))
   useEffect(() => {
     if (!props.context) {
       return

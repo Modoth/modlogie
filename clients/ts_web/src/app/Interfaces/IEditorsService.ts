@@ -18,6 +18,10 @@ export default class IEditorsService {
     throw new Error('Method not implemented.')
   }
 
+  getInterpreterByFileName (name:string):EditorInfo|undefined {
+    throw new Error('Method not implemented.')
+  }
+
   getViewerByFileName (name:string):EditorInfo|undefined {
     throw new Error('Method not implemented.')
   }

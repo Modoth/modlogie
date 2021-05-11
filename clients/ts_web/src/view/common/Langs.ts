@@ -15,6 +15,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   EDITORS_PATH = '编辑器路径';
   FRAMEWORKS_PATH = '框架路径';
   IMPORT_SUBJECTS_AUTOFIX = '导入目录时自动修复';
+  INTERPRETER_TYPES = '解释器类型';
+  INTERPRETERS_PATH = '解释器路径';
   KEYWORDS_QRERY_TEMPLAES = '关键字查询模板';
   LANGS_SERVER = '语言服务器';
   MAX_FAVORITES_PER_TYPE = '每种文章最大收藏数';

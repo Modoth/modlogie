@@ -7,6 +7,7 @@ import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 const PathConfigKeys = {
   [ConfigKeys.EDITOR_TYPES]: ConfigKeys.EDITORS_PATH,
+  [ConfigKeys.INTERPRETER_TYPES]: ConfigKeys.INTERPRETERS_PATH,
   [ConfigKeys.VIEWER_TYPES]: ConfigKeys.VIEWER_PATH
 }
 
@@ -23,6 +24,7 @@ export default class EditorsServiceSingleton extends IServicesLocator implements
 
   async init ():Promise<void> {
     await this.fetchTypes(ConfigKeys.VIEWER_TYPES)
+    await this.fetchTypes(ConfigKeys.INTERPRETER_TYPES)
     await this.fetchTypes(ConfigKeys.EDITOR_TYPES)
   }
 
@@ -67,6 +69,10 @@ export default class EditorsServiceSingleton extends IServicesLocator implements
  getEditorByFileName (name:string): EditorInfo|undefined {
    return this.getType(ConfigKeys.EDITOR_TYPES, name)
  }
+
+ getInterpreterByFileName (name:string): EditorInfo|undefined {
+  return this.getType(ConfigKeys.INTERPRETER_TYPES, name)
+}
 
  getViewerByFileName (name:string): EditorInfo|undefined {
    return this.getType(ConfigKeys.VIEWER_TYPES, name) || this.getEditorByFileName(name)

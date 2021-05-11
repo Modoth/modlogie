@@ -15,6 +15,8 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   ALLOW_PRINT = new Config(ConfigKeys.ALLOW_PRINT, ConfigType.ENUM, UserRoleKeys.UNLOGIN, '', [UserRoleKeys.UNLOGIN, UserRoleKeys.NORMAL, UserRoleKeys.AUTHORISED, UserRoleKeys.ADM]);
   EDITOR_TYPES=new Config(ConfigKeys.EDITOR_TYPES, ConfigType.STRING, '');// txt txt;
   EDITORS_PATH=new Config(ConfigKeys.EDITORS_PATH, ConfigType.STRING, '/apps/editors');
+  INTERPRETER_TYPES=new Config(ConfigKeys.INTERPRETER_TYPES, ConfigType.STRING, '');// go go;
+  INTERPRETERS_PATH=new Config(ConfigKeys.INTERPRETERS_PATH, ConfigType.STRING, '/apps/interpreters');
   FRAMEWORKS_PATH=new Config(ConfigKeys.FRAMEWORKS_PATH, ConfigType.STRING, '/fw');
   IMPORT_SUBJECTS_AUTOFIX = new Config(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX, ConfigType.BOOLEAN, 'false');
   KEYWORDS_QRERY_TEMPLAES = new Config(ConfigKeys.KEYWORDS_QRERY_TEMPLAES, ConfigType.STRING, `default${Seperators.Fields}https://www.google.com/search?q=\${keyword}`);
