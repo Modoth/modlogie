@@ -16,6 +16,11 @@
     box-shadow: var(--shadow);
     padding-top: calc(5px + var(--overflow-top));
     z-index: 1;
+    @media (min-width:780px) {
+      box-shadow: unset;
+      border-bottom: 1px solid #0001;
+      background: #fff;
+    }
 
     & > * {
       margin-left: 10px;
@@ -33,6 +38,9 @@
   .article-list {
     padding: 10px 0 0 0;
     margin: 45px auto 0 auto;
+    @media (min-width:780px) {
+      margin-top: 65px;
+    }
     &.column-count-1 {
       column-count: 1;
     }
