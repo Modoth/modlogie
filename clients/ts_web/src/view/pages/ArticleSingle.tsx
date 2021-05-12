@@ -141,7 +141,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                     <Menu>
                       {paging ? null : ([
                         editing ? undefined : <Menu.Item key="capture"><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>,
-                        user.editingPermission && freeDraw ? undefined : <Menu.Item key="capture"><Button className="single-article-content-menu-btn" danger={editing} type="link" size="large" icon={<EditOutlined />} onClick={() => setEditing(!editing)}>{langs.get(LangKeys.Edit)}</Button></Menu.Item>
+                        !user.editingPermission || freeDraw ? undefined : <Menu.Item key="capture"><Button className="single-article-content-menu-btn" danger={editing} type="link" size="large" icon={<EditOutlined />} onClick={() => setEditing(!editing)}>{langs.get(LangKeys.Edit)}</Button></Menu.Item>
                       ]).concat(
                         <Menu.Divider ></Menu.Divider>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
