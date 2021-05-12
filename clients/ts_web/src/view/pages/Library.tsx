@@ -24,7 +24,7 @@ import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsSe
 import ISubjectsExporter from '../../domain/ServiceInterfaces/ISubjectsExporter'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
 import ITagsService, { Tag, TagType } from '../../domain/ServiceInterfaces/ITagsService'
-import IViewService from '../../app/Interfaces/IViewService'
+import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect, memo } from 'react'
 import Seperators from '../../domain/ServiceInterfaces/Seperators'
 import Subject from '../../domain/ServiceInterfaces/Subject'
@@ -58,6 +58,11 @@ export default function Library (props: LibraryProps) {
       return <Redirect to="/"></Redirect>
     }
   }
+  const [privateOptions] = useState(()=>({
+    [langs.get(LangKeys.Default)]:undefined,
+    [langs.get(LangKeys.Private)]:true,
+    [langs.get(LangKeys.Public)]:false 
+  }))
   const [showFilter, setShowFilter] = useState(false)
   const [articleId, setArticleId] = useState(params.articleId)
   const [articleRecommendView] = useState(params.recommendView || false)
@@ -314,6 +319,8 @@ export default function Library (props: LibraryProps) {
         if (props.type.orderByDesc) {
           query.setOrderByDesc(true)
         }
+      }else{
+        query.setOrderBy("Name")
       }
     }
 
@@ -453,7 +460,7 @@ export default function Library (props: LibraryProps) {
     }
   }
 
-  const addArticleWithTags = async (name: string) => {
+  const addArticleWithTags = async (name: string, pri?: boolean) => {
     if (!name) {
       return
     }
@@ -470,10 +477,12 @@ export default function Library (props: LibraryProps) {
           await updateArticleTag(newArticle, tag, tag.value)
         }
       }
-      const privateFile = await locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE)
-      if(privateFile === true){
-        await service.updatePrivate(newArticle.id!, true)
-        newArticle.private = true
+      var date = new Date()
+      await service.updatePublished(newArticle.id!, date)
+      newArticle.published = date
+      if(pri !== undefined){
+        await service.updatePrivate(newArticle.id!, pri)
+        newArticle.private = pri
       }
       articleHandlers.editingArticle = newArticle
       setArticles([...articles, newArticle])
@@ -486,15 +495,22 @@ export default function Library (props: LibraryProps) {
     }
   }
 
-  const addArticle = () => {
-    if (props.type.noTitle) {
-      return addArticleWithTags(v4())
+  const addArticle = async () => {
+    const privateFile = await locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE)
+    const fields : IPromptField<any, any>[]= []
+    const priValues = Array.from(Object.keys(privateOptions))
+    fields.push({ type: 'Enum', values: priValues, value: privateFile ? priValues [1]: priValues[0], hint: '' })
+    const autoName = props.type.noTitle ? v4() : ''
+    if(!autoName){
+      fields.push({ type: 'Text', value: '', hint: langs.get(LangKeys.Name) })
     }
     viewService.prompt(
       langs.get(LangKeys.Create),
-      [{ type: 'Text', value: '', hint: langs.get(LangKeys.Name) }],
-      async (name: string) => {
-        return addArticleWithTags(name)
+      fields,
+      async (pri: string,name: string) => {
+        var p = privateOptions[pri as any]
+        name = autoName || name
+        return addArticleWithTags(autoName || name, p)
       }
     )
   }
