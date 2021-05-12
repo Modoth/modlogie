@@ -18,15 +18,16 @@ const transformLinkUri = (uri: string) => {
 
 const mask = "__hover_event_mask"
 let lastHover : HTMLSpanElement | undefined
-const resetHover = (target: any)=>{
-  target.classList.remove("hover");
-  (target as any)[mask] = undefined
+const resetHover = ()=>{
+  if(!lastHover){
+    return
+  }
+  lastHover.classList.remove("hover");
+  (lastHover as any)[mask] = undefined
   lastHover = undefined
 }
 const setHover = (target: any)=>{
-  if(lastHover){
-    resetHover(lastHover)
-  }
+  resetHover()
   target.classList.add("hover")
   lastHover = target
 }
@@ -50,7 +51,7 @@ const onStart = (ev:React.TouchEvent<HTMLSpanElement>) =>{
 }
 
 const onLeave = (ev:React.MouseEvent<HTMLSpanElement>) =>{
-  resetHover(ev.currentTarget)
+  resetHover()
 }
 
 // eslint-disable-next-line react/display-name
