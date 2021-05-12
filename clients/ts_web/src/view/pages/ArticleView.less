@@ -1,18 +1,17 @@
 .article-view {
   .editing-preview {
     position: fixed;
-    bottom: 50%;
-    transform: translate(0, 50%);
+    top: 10px;
     width: 40vw;
-    max-width: 780px;
+    max-width: 400px;
     overflow-x: hidden;
     overflow-y: auto;
     background: #fff8;
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
-    right: 0;
+    left: 0;
     z-index: 1;
-    border-radius: 10px 0 0 10px;
+    border-radius: 0 10px 10px 0;
     font-size: 0.85em;
     box-shadow: var(--shadow);
     .ant-collapse-content {
@@ -20,7 +19,9 @@
       overflow-y: auto;
       background: transparent;
       padding: 0 10px;
-      font-size: 9px;
+      @media (max-width:780px) {
+        font-size: 9px;
+      }
       .ant-collapse-content-box {
         padding: 0;
       }
@@ -29,6 +30,7 @@
     .preview-title-panel {
       display: flex;
       align-items: center;
+      margin: -4px 0;
       .preview-title {
         flex: 1;
         text-overflow: ellipsis;

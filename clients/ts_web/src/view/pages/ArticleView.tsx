@@ -549,15 +549,9 @@ export default function ArticleView (props: {
                     <span className="preview-title">{langs.get(LangKeys.Edit) + ': ' + (name || '')}</span>
                     <Button
                       type="link"
-                      onClick={(e)=> {e.stopPropagation();setEditing(false)}}
-                      key="exit"
-                      danger
-                      icon={<CloseOutlined />}
-                    ></Button>,
-                    <Button
-                      type="link"
-                      icon={<UploadOutlined />}
-                      onClick={(e) => { e.stopPropagation(); addFile() }}
+                      onClick={toggleEditing}
+                      key="endEdit"
+                      icon={<CheckOutlined />}
                     ></Button>,
                     <Button
                       type="link"
@@ -567,9 +561,15 @@ export default function ArticleView (props: {
                     ></Button>,
                     <Button
                       type="link"
-                      onClick={toggleEditing}
-                      key="endEdit"
-                      icon={<CheckOutlined />}
+                      icon={<UploadOutlined />}
+                      onClick={(e) => { e.stopPropagation(); addFile() }}
+                    ></Button>,
+                    <Button
+                      type="link"
+                      onClick={(e)=> {e.stopPropagation();setEditing(false)}}
+                      key="exit"
+                      danger
+                      icon={<CloseOutlined />}
                     ></Button>
                   </div>} key="1">
                   <props.type.Viewer articleId={props.article.id!} showAdditionals={true} content={content} files={files} type={type} />
