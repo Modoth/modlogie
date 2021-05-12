@@ -499,18 +499,19 @@ export default function Library (props: LibraryProps) {
     const privateFile = await locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE)
     const fields : IPromptField<any, any>[]= []
     const priValues = Array.from(Object.keys(privateOptions))
-    fields.push({ type: 'Enum', values: priValues, value: privateFile ? priValues [1]: priValues[0], hint: '' })
     const autoName = props.type.noTitle ? v4() : ''
     if(!autoName){
       fields.push({ type: 'Text', value: '', hint: langs.get(LangKeys.Name) })
     }
+    fields.push({ type: 'Enum', values: priValues, value: privateFile ? priValues [1]: priValues[0], hint: '' })
     viewService.prompt(
       langs.get(LangKeys.Create),
       fields,
-      async (pri: string,name: string) => {
-        var p = privateOptions[pri as any]
-        name = autoName || name
-        return addArticleWithTags(autoName || name, p)
+      async (v1: string,v2: string) => {
+        if(autoName){
+          return addArticleWithTags(autoName, privateOptions[v1])
+        }
+        return addArticleWithTags(v1, privateOptions[v2])
       }
     )
   }
