@@ -15,15 +15,19 @@
 .ant-modal-content {
   margin: 10px;
 
-  .md {
-    font-size: 0.85em;
-  }
-
   .ant-space-item>.ModLang {
-    font-size: 0.85em;
-
     &>.code{
       padding: 0;
+    }
+  }
+
+  @media (max-width:780px) {
+    .md {
+      font-size: 0.85em;
+    }
+  
+    .ant-space-item>.ModLang {
+      font-size: 0.85em;
     }
   }
 }

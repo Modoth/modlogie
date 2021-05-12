@@ -16,13 +16,50 @@ const transformLinkUri = (uri: string) => {
   return uri
 }
 
+const mask = "__hover_event_mask"
+let lastHover : HTMLSpanElement | undefined
+const resetHover = (target: any)=>{
+  target.classList.remove("hover");
+  (target as any)[mask] = undefined
+  lastHover = undefined
+}
+const setHover = (target: any)=>{
+  if(lastHover){
+    resetHover(lastHover)
+  }
+  target.classList.add("hover")
+  lastHover = target
+}
+
+const onEnter = (ev:React.MouseEvent<HTMLSpanElement>) =>{
+  const target = ev.currentTarget as HTMLSpanElement
+  if((target as any)[mask]){
+    return
+  }
+  setHover(target)
+}
+
+const onStart = (ev:React.TouchEvent<HTMLSpanElement>) =>{
+  const target = ev.currentTarget as HTMLSpanElement
+  (target as any)[mask] = true
+  ev.nativeEvent.preventDefault();
+  if((ev.target as HTMLSpanElement).nodeName === "A" || ev.nativeEvent?.touches?.[0]?.["touchType"] === "stylus"){
+    return
+  }
+  setHover(target)
+}
+
+const onLeave = (ev:React.MouseEvent<HTMLSpanElement>) =>{
+  resetHover(ev.currentTarget)
+}
+
 // eslint-disable-next-line react/display-name
 const emphasis = (props: any) => {
   let front = props.children.filter((c: any) => c.type !== emphasis)
   let back = props.children.filter((c: any) => c.type === emphasis)
   if (back.length) {
-    return <span className="mdg">
-      <span className="mdg-f">{ front }</span>
+    return <span className="mdg" onTouchStart={onStart} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+      <span className="mdg-f" >{ front }</span>
       <span className="mdg-b">{ back }</span>
     </span>
   } else {
@@ -35,16 +72,7 @@ const defaultRenderers = {
   emphasis,
   // eslint-disable-next-line react/display-name
   link: (props: any) => {
-    let p = props.href?.split(':')[0]
-    switch (p) {
-      case 's':
-        return <><span className="t"></span><span className={p}>{props.children}</span></>
-      // case 'code':
-      // case 'wiki':
-      //   return <a href={decodeURIComponent(props.href)} target={props.target}><ruby>{props.children}<rp>(</rp><rt>{p}</rt><rp>)</rp></ruby></a>
-      default:
-        return <a href={decodeURIComponent(props.href)} target={props.target}>{props.children}</a>
-    }
+    return <a href={decodeURIComponent(props.href)} target={props.target}>{props.children}</a>
   }
 }
 
