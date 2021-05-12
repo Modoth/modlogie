@@ -1,8 +1,8 @@
 import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
-import { LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
-import { MoreOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined,DeleteOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { LocatableOffsetProvider, useServicesLocate, useUser } from '../common/Contexts'
+import { MoreOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, DeleteOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -37,7 +37,9 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     viewService.previewArticle()
   }
   const langs = locate(ILangsService)
+  const user = useUser()
   const [freeDraw, setFreeDraw] = useState(false)
+  const [editing, setEditing] = useState(false)
   const [drawVersion, setDrawVersion] = useState(0)
   const [penOnly, setPenOnly] = useState(false)
   const [existedPen, setExistedPen] = useState(false)
@@ -138,7 +140,8 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                   <Dropdown placement="bottomRight" trigger={['click']} overlay={
                     <Menu>
                       {paging ? null : ([
-                        <Menu.Item key="capture"><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>
+                        editing ? undefined : <Menu.Item key="capture"><Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}>{langs.get(LangKeys.FreeDraw)}</Button></Menu.Item>,
+                        user.editingPermission && freeDraw ? undefined : <Menu.Item key="capture"><Button className="single-article-content-menu-btn" danger={editing} type="link" size="large" icon={<EditOutlined />} onClick={() => setEditing(!editing)}>{langs.get(LangKeys.Edit)}</Button></Menu.Item>
                       ]).concat(
                         <Menu.Divider ></Menu.Divider>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
@@ -183,7 +186,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                   <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ClearOutlined />} onClick={() => setEarse(!earse)}></Button>
                   {drawPens.map(c => <Button key={c[0]} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={c === drawPen ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c[2] || c[0] }} />} onClick={() => setDrawPen(c)}></Button>)}
                   {drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawPen[2] || drawPen[0] }}></span>} onClick={() => setDrawSize(s)}></Button>)}
-                  <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<DeleteOutlined />} onClick={() => setDrawVersion(drawVersion+1)}></Button>
+                  <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<DeleteOutlined />} onClick={() => setDrawVersion(drawVersion + 1)}></Button>
                   <div className={classNames('title')}></div>
                   {existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? "primary" : "link"} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined}
                   <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
@@ -205,12 +208,12 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
           </div>
         </div>
         <div ref={ref} className={classNames('article')}>
-          <div className="article-content">
-            <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+          <div className="article-content" contentEditable={editing} spellCheck="false" >
+          <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
           </div>
-          <FreeDrawMask version={drawVersion} penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true); return true }} earse={earse} size={drawSize} pen={drawPen as any} enabled={freeDraw} hidden={paging}></FreeDrawMask>
+          <FreeDrawMask enabled={!editing} version={drawVersion} penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true); return true }} earse={earse} size={drawSize} pen={drawPen as any} explicit={freeDraw} hidden={paging}></FreeDrawMask>
           {
-            captureDict
+            captureDict && !editing
               ? <CaptureDict offset={-50}></CaptureDict>
               : undefined}
         </div>

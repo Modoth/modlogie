@@ -2,7 +2,7 @@ import './FreeDrawMask.less'
 import classNames from 'classnames'
 import React, { useEffect, useState } from 'react'
 
-type PropsType = { version: number, enabled: boolean, penOnly?: boolean, onPenFound?: () => boolean, size: number, pen: [string, number], earse: boolean, hidden: boolean }
+type PropsType = { enabled: boolean ,version: number, explicit: boolean, penOnly?: boolean, onPenFound?: () => boolean, size: number, pen: [string, number], earse: boolean, hidden: boolean }
 let p: PropsType = {} as any
 const clearCanvas = (c:HTMLCanvasElement)=>{
   const ctx = c.getContext('2d')!
@@ -67,7 +67,10 @@ export default function FreeDrawMask(props: PropsType) {
     let lastPath: [number, number][] = []
     const isNotPen = (ev: MouseEvent | TouchEvent) => (ev as TouchEvent).touches?.[0]?.["touchType"] !== "stylus"
     const startDraw = (ev: MouseEvent | TouchEvent) => {
-      if (!p.enabled) {
+      if(!p.enabled){
+        return
+      }
+      if (!p.explicit) {
         if (isNotPen(ev)) {
           return
         }
@@ -191,7 +194,7 @@ export default function FreeDrawMask(props: PropsType) {
     canvas.parentElement!.ontouchend = stopDraw
   }, [])
   return <>
-    <canvas ref={ref} className={classNames('free-draw', props.enabled ? 'free-draw-enabled' : '', props.hidden ? 'hidden' : '')}></canvas>
-    <canvas ref={tmpRef} className={classNames('free-draw', props.enabled ? 'free-draw-enabled' : '', props.hidden ? 'hidden' : '')}></canvas>
+    <canvas ref={ref} className={classNames('free-draw', props.explicit ? 'free-draw-enabled' : '', props.hidden ? 'hidden' : '')}></canvas>
+    <canvas ref={tmpRef} className={classNames('free-draw', props.explicit ? 'free-draw-enabled' : '', props.hidden ? 'hidden' : '')}></canvas>
   </>
 }

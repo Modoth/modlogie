@@ -142,6 +142,29 @@
     max-width: 780px;
     user-select: text;
     position: relative;
+    
+    .article-content[contenteditable="true"] {
+      outline: none !important;
+      .mdg.hover {
+        &>.mdg-f{
+          background: unset;
+          @media print {
+            background: unset;
+          }
+        }
+      }
+      .mdg>.mdg-b{
+        position: unset;
+        padding: unset;
+        background: unset;
+        color: #0008;
+        box-shadow: unset;
+        z-index: unset;
+        font-size: unset;
+        display: unset;
+        font-family: none;
+      }
+    }
   }
 
   &.reading-theme-1 > .article p{
