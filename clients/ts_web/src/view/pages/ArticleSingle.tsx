@@ -181,7 +181,6 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                           setCaptureDict(!captureDict)
                           configsService.set(CaptureDictKey, !captureDict)
                         }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
-                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<FileAddOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" danger={embedSrc} icon={<DeleteColumnOutlined  /> } onClick={() => {
                           setEmbedSrc(!embedSrc)
                           configsService.set(EmbedSourceKey, !embedSrc)
