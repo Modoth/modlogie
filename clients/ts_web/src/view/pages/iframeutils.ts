@@ -10,7 +10,6 @@ import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsSe
 import IViewService from '../../app/Interfaces/IViewService'
 import Seperators from '../../domain/ServiceInterfaces/Seperators'
 import pako from 'pako'
-window.pako = pako
 
 const copyFileInfo = (file:File) => {
   return {
