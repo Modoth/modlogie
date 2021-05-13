@@ -78,11 +78,15 @@ export default function App () {
             }
             if (v) {
               ref.current!.classList.remove('hidden')
-              setTimeout(() => {
+              const restore = ()=>{
                 if (savedScrollElement) {
                   savedScrollElement.scrollTo({ top: savedScrollTop, behavior: undefined })
                 }
-              }, 50)
+              }
+              restore()
+              setTimeout(() => {
+                restore()
+              }, 0)
             } else {
               savedScrollElement = document.scrollingElement as HTMLElement
               if (savedScrollElement) {
