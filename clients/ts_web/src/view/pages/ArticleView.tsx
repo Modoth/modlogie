@@ -22,6 +22,8 @@ import PublishArticle from './PublishArticle'
 import React, { useState, useEffect } from 'react'
 import SubjectViewModel from './SubjectViewModel'
 import { generateRandomStyle } from './common'
+import QrCode from '../../infrac/components/QrCode'
+import style from 'react-syntax-highlighter/dist/esm/styles/hljs/agate'
 
 const { Panel } = Collapse
 const { Option } = Select
@@ -90,6 +92,7 @@ export default function ArticleView (props: {
   const [likeCount, setLikeCount] = useState(0)
   const [canDislike, setCanDislike] = useState(false)
   const [dislikeCount, setDislikeCount] = useState(0)
+  const [showFloat, setShowFloat] = useState(false)
   const [recommendView, setRecommendView] = useState(props.recommendView || false)
   const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend)
   const [recommendTitle, setRecommendTitle] = useState('')
@@ -100,6 +103,8 @@ export default function ArticleView (props: {
     {label:langs.get(LangKeys.Public), value:false}
   ])
   const [defaultPrivate, setDefaultPrivate] = useState(false)
+  const [floatLeft, setFloatLeft] = useState(0)
+  const [floatTop, setFloatTop] = useState(0)
   const [privateType, setPrivateType] = useState<boolean|undefined>(props.article.private)
   const privateChanged = async (e:any) => {
     const p = e.target.value
@@ -351,14 +356,15 @@ export default function ArticleView (props: {
   }
   const hasMore = props.article.additionId || (type && type.smartHiddenSections && type.smartHiddenSections.size)
   const openQrCode = async () => {
-    const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
-    viewService.prompt({ title: (!props.type.noTitle && name) || langs.get(LangKeys.QrCode), subTitle: locate(ILangsService).get(LangKeys.ComfireJump) + url }, [{
-      type: 'QrCode',
-      value: url
-    }], async () => {
-      window.location.href = url
-      return true
-    })
+    if (ref.current) {
+      const offset = Math.min(window.innerHeight * 0.2, 120)
+      const elementPos = ref.current.getBoundingClientRect()
+      const left = (window.innerWidth)/2  - (elementPos.right + elementPos.left)/2
+      const top = (window.innerHeight)/2  - (elementPos.bottom + elementPos.top)/2 - offset
+      setFloatLeft(left)
+      setFloatTop(top)
+      setShowFloat(true)
+    }
   }
 
   const tryLoadingAll = async () => {
@@ -464,39 +470,80 @@ export default function ArticleView (props: {
       }
     ], async () => true)
   }
-  return (<div ref={ref}>
+
+  return (<>
+  { showFloat? <div className={classNames(showFloat? 'float-article-bg':'')} onClick={()=>setShowFloat(false)}>
+  <div className="share-menus">
+        <Button className="close-btn" onClick={()=>setShowFloat(false)} type="primary" size="large" shape="circle" danger icon={<CloseOutlined />} ></Button>
+      </div>
+  </div>:undefined}
+  <div ref={ref} className={classNames(showFloat ? 'float-article' : '')} style={{ left: floatLeft, top: floatTop }}>
     <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' :recommendView ? generateRandomStyle() : '')}>
       <div className="article-title" ref={titleRef}>
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
         }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
         {
-          (editing || recommendView) ? null : (<Menu mode="horizontal" className={classNames('actions-list')}>{[
-            favoriteService ? <MenuItem key="toogle-fav"><Badge>
-              <Button onClick={toogleFavorite} type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
-                key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
-            </Badge></MenuItem> : null,
-            user.printPermission ? (inArticleList
-              ? <MenuItem key='remove-print'><Badge >
-                <Button type="link" icon={<PrinterFilled />} onClick={() => {
+            (editing || recommendView) ? null : (<Menu onClick={({key}: { key: string } | any) => {
+              switch (key) {
+                case 'toogle-fav':
+                  toogleFavorite()
+                  return
+                case 'remove-print':
                   articleListService.remove(props.article)
                   setInArticleList(articleListService.has(props.article))
-                }}
-                key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
-              </Badge></MenuItem>
-              : <MenuItem key="add-print"><Badge className="printer-icons">
-                <Button type="link" icon={<PrinterOutlined />} onClick={() => {
+                  return
+                case 'add-print':
                   articleListService.add(props.article, type, () => {
                     setInArticleList(false)
                   })
                   setInArticleList(articleListService.has(props.article))
-                }}
-                key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
+                  return
+                case 'qrcode':
+                  openQrCode()
+                  return
+                case 'like':
+                  touchLike()
+                  return
+                case 'dislike':
+                  touchDislike()
+                  return
+                case 'recommend':
+                  toogleRecommend()
+                  return
+                case 'rename':
+                  updateArticleName()
+                  return
+                case 'edit':
+                  toggleEditing()
+                  return
+                case 'fullscreen':
+                  openDetail()
+                  return
+                case 'delete':
+                  props.articleHandlers.onDelete(props.article.id!)
+                  return
+                default:
+                  return
+              }
+          }} mode="horizontal" className={classNames('actions-list')}>{[
+            favoriteService ? <MenuItem key="toogle-fav"><Badge>
+              <Button type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
+                key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
+            </Badge></MenuItem> : null,
+            user.printPermission ? (inArticleList
+              ? <MenuItem key='remove-print'><Badge >
+                <Button type="link" icon={<PrinterFilled />} key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
+              </Badge></MenuItem>
+              : <MenuItem key="add-print"><Badge className="printer-icons">
+                <Button type="link" icon={<PrinterOutlined />} key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
               </Badge></MenuItem>
             ) : null,
+            <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />}
+            ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
             ...(likesService ? [<MenuItem key="like"><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
-              <Button onClick={touchLike} type="link" icon={<LikeOutlined />}
+              <Button type="link" icon={<LikeOutlined />}
               ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
-            <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button onClick={touchDislike} type="link" icon={<DislikeOutlined />}
+            <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button type="link" icon={<DislikeOutlined />}
             ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
             // <MenuItem key="snapshot"><Button type="link" icon={<PictureOutlined />} onClick={(ev:React.MouseEvent<HTMLElement>)=>{
             //   let menu = (titleRef.current!.lastChild as HTMLElement|undefined)
@@ -509,20 +556,16 @@ export default function ArticleView (props: {
             //   }
             // }}
             // ><span className="action-name">{langs.get(LangKeys.ScreenShot)}</span></Button></MenuItem>,
-            <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />} onClick={openQrCode}
-            ><span className="action-name">{langs.get(LangKeys.QrCode)}</span></Button></MenuItem>,
             ...(user.editingPermission ? [
-              <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />} onClick={toogleRecommend}
+              <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />}
               ><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
-              (!props.type.noTitle) ? <MenuItem key="rename"> <Button type="link" icon={ <FontColorsOutlined /> } onClick={updateArticleName}
+              (!props.type.noTitle) ? <MenuItem key="rename"> <Button type="link" icon={ <FontColorsOutlined /> }
               ><span className="action-name">{langs.get(LangKeys.Rename)}</span></Button></MenuItem> : undefined,
-              <MenuItem key="edit"> <Button type="link" icon={<EditOutlined />} onClick={toggleEditing}
+              <MenuItem key="edit"> <Button type="link" icon={<EditOutlined />}
               ><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,
-              <MenuItem key="fullscreen"><Button type="link" icon={<ExpandOutlined />} onClick={openDetail}
+              <MenuItem key="fullscreen"><Button type="link" icon={<ExpandOutlined />}
               ><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>,
-              <MenuItem key="delete"><Button type="link" danger icon={<DeleteOutlined />} onClick={() =>
-                props.articleHandlers.onDelete(props.article.id!)
-              } ><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>,
+              <MenuItem key="delete"><Button type="link" danger icon={<DeleteOutlined />} ><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>,
               ...(type.articleType.publishGenerators && type.articleType.publishGenerators.size ? Array.from(type.articleType.publishGenerators, ([publishName]) =>
                 <MenuItem key={publishName}><Button type="link" danger={publishedIds?.has(publishName)} icon={<ShareAltOutlined />} onClick={() => openPublishDetail(publishName)}
                 ><span className="action-name">{langs.get(publishName)}</span></Button></MenuItem>
@@ -652,5 +695,11 @@ export default function ArticleView (props: {
         ) : null
       }
     </Card >
-  </div>)
+    {showFloat? <><div className="share-panel">
+    <QrCode content={`${window.location.protocol}//${window.location.host}/#/article${props.article.path}`}></QrCode>
+    <a>{`${window.location.protocol}//${window.location.host}/#/article${props.article.path}`}</a>
+    </div> 
+    </>: undefined}
+  </div>
+  </>)
 }
