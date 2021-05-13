@@ -114,7 +114,7 @@ export default function ManageDicts () {
         selectDictFile()
       }}></Button>
       <Button size="large" type="primary" shape="circle" danger icon={<DeleteOutlined />} onClick={clearDict}></Button>
-    </>, !!query)
+    </>, false)
   })
   useEffect(() => {
     return () => {

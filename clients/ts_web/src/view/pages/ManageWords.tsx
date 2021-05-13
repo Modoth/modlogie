@@ -136,7 +136,8 @@ export default function ManageWrods () {
     viewService.setFloatingMenus?.(ManageWrods.name, <>
       <Button
         icon={<SearchOutlined />}
-        type={filter ? 'primary' : 'default'}
+        danger={!!filter}
+        type="primary"
         size="large" shape="circle"
         onClick={() => {
           locate(IViewService).prompt(langs.get(LangKeys.Search), [
@@ -164,6 +165,7 @@ export default function ManageWrods () {
                 try {
                   viewService.setLoading(true)
                   await locate(IWordsStorage).deleteAll()
+                  viewService.setLoading(false)
                 } catch (e) {
                 viewService!.errorKey(langs, e.message)
                 viewService.setLoading(false)
@@ -318,7 +320,7 @@ export default function ManageWrods () {
   })
   return (
     <div className="manage-words">
-      <Table
+      {words && words.length ? <Table
         rowKey="value"
         showHeader={false}
         columns={[
@@ -355,7 +357,7 @@ export default function ManageWrods () {
         ]}
         dataSource={words}
         pagination={false}
-      ></Table>
+      ></Table> : undefined}
       {totalCount > countPerPage ? (
         <>
           <Pagination
