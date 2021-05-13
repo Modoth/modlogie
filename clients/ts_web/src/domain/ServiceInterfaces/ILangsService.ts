@@ -41,6 +41,8 @@ export class LangKeysInterface {
   Edit = 'Edit';
   Editors = 'Editors';
   Email = 'Email';
+  EmbedSrcEnable = "EmbedSrcEnable";
+  EmbedSrcDisable = "EmbedSrcDisable";
   EnableAutoLogin = 'EnableAutoLogin';
   Enabled = 'Enabled';
   EnumValue = 'EnumValue';

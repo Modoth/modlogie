@@ -92,6 +92,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Edit = '编辑';
   Editors = '编辑器';
   Email = '邮箱';
+  EmbedSrcEnable = "显示原文";
+  EmbedSrcDisable = "隐藏原文";
   EnableAutoLogin = '自动登陆';
   Enabled = '激活';
   EnumValue = '枚举值';

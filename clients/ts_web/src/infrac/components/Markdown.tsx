@@ -16,50 +16,12 @@ const transformLinkUri = (uri: string) => {
   return uri
 }
 
-const mask = "__hover_event_mask"
-let lastHover : HTMLSpanElement | undefined
-const resetHover = ()=>{
-  if(!lastHover){
-    return
-  }
-  lastHover.classList.remove("hover");
-  (lastHover as any)[mask] = undefined
-  lastHover = undefined
-}
-const setHover = (target: any)=>{
-  resetHover()
-  target.classList.add("hover")
-  lastHover = target
-}
-
-const onEnter = (ev:React.MouseEvent<HTMLSpanElement>) =>{
-  const target = ev.currentTarget as HTMLSpanElement
-  if((target as any)[mask]){
-    return
-  }
-  setHover(target)
-}
-
-const onStart = (ev:React.TouchEvent<HTMLSpanElement>) =>{
-  const target = ev.currentTarget as HTMLSpanElement
-  (target as any)[mask] = true
-  ev.nativeEvent.preventDefault();
-  if((ev.target as HTMLSpanElement).nodeName === "A" || ev.nativeEvent?.touches?.[0]?.["touchType"] === "stylus"){
-    return
-  }
-  setHover(target)
-}
-
-const onLeave = (ev:React.MouseEvent<HTMLSpanElement>) =>{
-  resetHover()
-}
-
 // eslint-disable-next-line react/display-name
 const emphasis = (props: any) => {
   let front = props.children.filter((c: any) => c.type !== emphasis)
   let back = props.children.filter((c: any) => c.type === emphasis)
   if (back.length) {
-    return <span className="mdg" onTouchStart={onStart} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+    return <span className="mdg">
       <span className="mdg-f" >{ front }</span>
       <span className="mdg-b">{ back }</span>
     </span>

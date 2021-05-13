@@ -2,7 +2,7 @@ import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocate, useUser } from '../common/Contexts'
-import { MoreOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, DeleteOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MoreOutlined,DeleteColumnOutlined,OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, DeleteOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -16,6 +16,7 @@ import React, { useEffect, useState } from 'react'
 const themeCount = 2
 const getThemeClass = (idx: number) => idx >= 0 ? `reading-theme reading-theme-${idx}` : ''
 const ThemeKey = 'READING_THEME'
+const EmbedSourceKey = 'SOURCE_STYLE'
 const PaingKey = 'READING_PAIGING'
 const CaptureDictKey = 'CAPTUR_DICT'
 const drawSizes = [1, 1.5, 5]
@@ -25,6 +26,21 @@ const drawPens: [string, number, string | null][] = [
   ['#ff0000', 1, null],
   ['#2d2d2d', 1, null],
 ]
+const findMdgElement = (from: HTMLElement | null, to: HTMLElement | null): HTMLElement | undefined => {
+  if (!from || !to) {
+    return undefined
+  }
+  let cur : HTMLElement | null = from
+  while (cur && cur != to) {
+    if (cur.className === "mdg") {
+      return cur
+    }
+    if (cur.tagName === "A") {
+      return undefined
+    }
+    cur = cur.parentElement
+  }
+}
 export default function ArticleSingle(props: { article: Article, type: ArticleContentType }) {
   const locate = useServicesLocate()
   const [sections, setSections] = useState<NavigationSection[]>([])
@@ -33,6 +49,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
   const [drawPen, setDrawPen] = useState(drawPens[0])
   const [earse, setEarse] = useState(false)
   const viewService = locate(IViewService)
+  const [store] = useState({} as { mdg?: HTMLElement })
   const close = () => {
     viewService.previewArticle()
   }
@@ -45,6 +62,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
   const [existedPen, setExistedPen] = useState(false)
   const [sidePopup, setSidePopup] = useState(false)
   const [captureDict, setCaptureDict] = useState(false)
+  const [embedSrc, setEmbedSrc] = useState(false)
   const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
   const [currentTheme, setCurrentTheme] = useState(0)
   const [paging, setPaging] = useState(false)
@@ -100,6 +118,8 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
       setCaptureDict(captureDict)
       const currentTheme = await configsService.getOrDefault(ThemeKey, 0)
       setCurrentTheme(currentTheme)
+      const embedSrc = await configsService.getOrDefault(EmbedSourceKey, false)
+      setEmbedSrc(embedSrc)
     }
     loadConfigs()
     return () => {
@@ -123,6 +143,19 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
       </div>
       { section.children && section.children.length ? section.children.map(NavigationSectionView) : undefined}
     </>
+  }
+  const onViewerClick = (ev: React.MouseEvent<any>) => {
+    const mdg = findMdgElement(ev.target as HTMLElement, ev.currentTarget as HTMLElement)
+    if (mdg === store.mdg) {
+      return
+    }
+    if (store.mdg) {
+      store.mdg.classList.remove('hover')
+    }
+    store.mdg = mdg
+    if (store.mdg) {
+      store.mdg.classList.add('hover')
+    }
   }
   return (
     <LocatableOffsetProvider value={0}>
@@ -148,6 +181,11 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                           setCaptureDict(!captureDict)
                           configsService.set(CaptureDictKey, !captureDict)
                         }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<FileAddOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
+                        <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" danger={embedSrc} icon={<DeleteColumnOutlined  /> } onClick={() => {
+                          setEmbedSrc(!embedSrc)
+                          configsService.set(EmbedSourceKey, !embedSrc)
+                        }}>{langs.get(embedSrc ? LangKeys.EmbedSrcDisable : LangKeys.EmbedSrcEnable)}</Button></Menu.Item>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<FileAddOutlined />} onClick={() => jumpTo('#/manage/dicts')}>{langs.get(LangKeys.ManageDict)}</Button></Menu.Item>,
                         <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={<FileWordOutlined />} onClick={() => jumpTo('#/manage/words')}>{langs.get(LangKeys.FavoriteWords)}</Button></Menu.Item>,
                         <Menu.Divider key="divider2"></Menu.Divider>,
@@ -208,8 +246,8 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
           </div>
         </div>
         <div ref={ref} className={classNames('article')}>
-          <div className="article-content" contentEditable={editing} spellCheck="false" >
-          <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+          <div className={classNames("article-content", embedSrc?'embed-src':'')} contentEditable={editing} spellCheck="false" >
+            <props.type.Viewer onClick={embedSrc ? undefined : onViewerClick} articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
           </div>
           <FreeDrawMask enabled={!editing} version={drawVersion} penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true); return true }} earse={earse} size={drawSize} pen={drawPen as any} explicit={freeDraw} hidden={paging}></FreeDrawMask>
           {
