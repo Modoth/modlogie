@@ -1,9 +1,9 @@
 import ConfigKeys from '../../ServiceInterfaces/ConfigKeys'
 import IConfigsService from '../../ServiceInterfaces/IConfigsSercice'
-import ILangInterpretersService, { ILangInterpreter, InterpreterInfo, InterpretRequest } from '../../ServiceInterfaces/ILangInterpretersService'
+import ILangInterpretersService, { ILangInterpreter, InterpreterInfo, InterpretRequest, InterpretResponse } from '../../ServiceInterfaces/ILangInterpretersService'
 import IServicesLocator from '../../../infrac/ServiceLocator/IServicesLocator'
 
-class EmbedTemplateLangInterpreter extends InterpreterInfo implements ILangInterpreter {
+class RemoteEmbedLangInterpreter extends InterpreterInfo implements ILangInterpreter {
   constructor (langs: Set<string>, public embedTemplate: string) {
     super(langs, undefined, undefined)
   }
@@ -14,9 +14,47 @@ class EmbedTemplateLangInterpreter extends InterpreterInfo implements ILangInter
 
   interpretUrl? (request: InterpretRequest): string {
     return this.embedTemplate
-      .replace('$LANG', encodeURIComponent(request.lang || ''))
-      .replace('$VERSION', encodeURIComponent(request.version || ''))
-      .replace('$CODE', encodeURIComponent(request.code || ''))
+      .replace('$lang', encodeURIComponent(request.lang || ''))
+      .replace('$version', encodeURIComponent(request.version || ''))
+      .replace('$code', encodeURIComponent(request.code || ''))
+  }
+}
+type ApiResult = { "Errors": string, "Events": { "Message": string, "Kind": "stdout" | "sterr", "Delay": number }[] }
+
+type ApiRequest = {code: string, lang?: string, version?: string }
+
+class RemoteApiLangInterpreter extends InterpreterInfo implements ILangInterpreter {
+  constructor (langs: Set<string>, public apiUrl: string) {
+    super(langs, undefined, undefined)
+  }
+
+  get info (): InterpreterInfo {
+    return this
+  }
+
+
+  async interpret(request: InterpretRequest): Promise<InterpretResponse> {
+    try {
+      let apiReq = request as ApiRequest
+      const s = await (await fetch(this.apiUrl, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'omit',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(apiReq)
+      })).json() as ApiResult;
+      if (s.Errors) {
+        return new InterpretResponse('', s.Errors)
+      }
+      return new InterpretResponse((s.Events || []).map(e => e.Message).join("\n"))
+    }
+    catch {
+      return new InterpretResponse('', '')
+    }
   }
 }
 
@@ -29,11 +67,19 @@ export default class LangInterpretersService extends IServicesLocator implements
       }
       const configs = (await this.locate(IConfigsService).getFieldsOrDefault(ConfigKeys.LANGS_SERVER)).reverse()
       for (const config of configs) {
-        const [server, ...langs] = config
+        let [server, ...langs] = config
+        const apiServerPrefix = '_'
+        let apiServer = false
+        if (server.startsWith(apiServerPrefix)){
+          server = server.slice(apiServerPrefix.length)
+          apiServer = true
+        }
         if (!langs.length || !server) {
           continue
         }
-        const interpreter = new EmbedTemplateLangInterpreter(new Set(langs), server)
+        const interpreter = apiServer ?
+          new RemoteApiLangInterpreter(new Set(langs), server)
+          : new RemoteEmbedLangInterpreter(new Set(langs), server)
         this.set(interpreter)
       }
       this.interpretersPromise =

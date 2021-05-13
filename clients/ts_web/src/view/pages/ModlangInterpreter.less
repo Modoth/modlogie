@@ -1,9 +1,36 @@
 .result {
     background: #eee;
     color: #2d2d2d;
-    border-radius: 5px;
+    border-radius: 6px;
     box-shadow: 3px 3px 5px #666;
     margin: 5px 0 15px 0;
+    &.fullscreen-interpreter{
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1000;
+      touch-action: none;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      &.standalone {
+        padding-bottom: 1.5rem;
+      }
+      .menu{
+        padding: 5px;
+        background: #fff;
+        border-radius: 6px 6px 0 0;
+      }
+      iframe{
+        height: 100%;
+      }
+      iframe, .content{
+        flex: 1;
+        margin: 0 1px;
+      }
+    }
     .menu {
       padding: 2px;
       .title {
@@ -13,12 +40,15 @@
     .embed-content,
     .content {
       min-height: 2em;
-      border-radius: 0 0 5px 5px;
+      border-radius: 0 0 6px 6px;
     }
     .content {
       padding: 5px 10px;
       background: #2d2d2d;
       color: white;
+      .compiler-output, .output {
+        white-space: pre-wrap;
+      }
       .compiler-output {
         color: salmon;
       }
@@ -35,7 +65,7 @@
         border: none;
         background: transparent;
         background: #2d2d2d;
-        border-radius: 0 0 5px 5px;
+        border-radius: 0 0 6px 6px;
       }
     }
   }

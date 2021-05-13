@@ -20,6 +20,9 @@
 		},
 		{
 			"path": "../../clients/js_node"
+		},
+		{
+			"path": "../../tools/test/langsserverdemo"
 		}
 	],
 	"settings": {
