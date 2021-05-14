@@ -1,18 +1,25 @@
 import './ArticleList.less'
-import { ArrowLeftOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, DownloadOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
 import { ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { Button } from 'antd'
-import { useMagicSeed, useServicesLocate } from '../common/Contexts'
+import { useMagicSeed, useServicesLocate, useUser } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import IArticleListService from '../../app/Interfaces/IArticleListService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
-import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
+import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
 import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
 import { generateRandomStyle } from './common'
+import sleep from '../../infrac/Lang/sleep'
+import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import ankiCss from '!!raw-loader!./ManageWords.Anki.css'
+// eslint-disable-next-line camelcase
+import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
+import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
 
 const maxColumn = 3
 const maxBorderStyle = 4
@@ -23,8 +30,10 @@ const BorderStyleKey = 'ARTICLES_BORDER_STYLE'
 
 const HideIndexKey = 'ARTICLES_HIDE_INDEX'
 
-export default function ArticleList () {
+export default function ArticleList() {
   const locate = useServicesLocate()
+  const langs = locate(ILangsService)
+  const user = useUser()
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
@@ -65,26 +74,30 @@ export default function ArticleList () {
       }))
       viewService.setLoading(false)
     } catch (e) {
-            viewService!.errorKey(locate(ILangsService), e.message)
-            viewService.setLoading(false)
+      viewService!.errorKey(locate(ILangsService), e.message)
+      viewService.setLoading(false)
     }
   }
   const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
   const [columnCount, setColumnCount] = useState(1)
+  const [store] = useState<{ url?: string }>({})
   const [borderStyle, setBorderStyle] = useState(0)
   const [hideIdx, setHideIdx] = useState(false)
   const configsService = locate(IUserConfigsService)
   const loadConfigs = async () => {
+    viewService.setLoading(true)
     const columnCount = await configsService.getOrDefault(ColumnCountKey, (smallScreen ? 1 : 2))
     const borderStyle = await configsService.getOrDefault(BorderStyleKey, 0)
     const hideIdx = await configsService.getOrDefault(HideIndexKey, false)
     setColumnCount(columnCount)
     setBorderStyle(borderStyle)
     setHideIdx(hideIdx)
+    viewService.setLoading(false)
   }
   useEffect(() => {
-    loadConfigs()
-    fetchArticles()
+    loadConfigs().then(() => {
+      fetchArticles()
+    })
   }, [])
   const ref = React.createRef<HTMLDivElement>()
   const close = () => {
@@ -95,7 +108,7 @@ export default function ArticleList () {
   })
   useEffect(() => {
     return () => {
-        viewService.setFloatingMenus?.(ArticleList.name)
+      viewService.setFloatingMenus?.(ArticleList.name)
     }
   }, [])
   return (
@@ -125,11 +138,94 @@ export default function ArticleList () {
           }} />
         }
         <Button type="link" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
+        {
+          user.editingPermission ?
+            <Button
+              icon={<DownloadOutlined />}
+              type="link" size="large"
+              onClick={() => {
+                const typeEnum = [LangKeys.Anki].map(s => langs.get(s))
+                const tryExport = async (typeFilter: string) => {
+                  let a: HTMLAnchorElement
+                  let filename: string
+                  try {
+                    viewService.setLoading(true)
+                    let exporter
+                    let exporterOpt
+                    const typeIdx = typeEnum.indexOf(typeFilter)
+                    switch (typeIdx) {
+                      case 0:
+                        exporter = locate(IAnkiItemsExporter)
+                        exporterOpt = {
+                          front: '<div class="front">{{Front}}</div>',
+                          back: '{{FrontSide}}\n\n<hr id="answer">\n\n<div class="back">{{Back}}</div>',
+                          css: ankiCss
+                        }
+                        break
+                      default:
+                        return
+                    }
+                    const fields: FieldInfo<{ article: [Article, ArticleContentType] }>[] = [
+                      {
+                        name: langs.get(LangKeys.Name),
+                        get: ({ article }: { article: [Article, ArticleContentType] }) => article[0].name!
+                      }
+                    ]
+                    const siteName = await locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
+                    const name = `${siteName}_${langs.get(LangKeys.FavoriteWords)}_${yyyyMMdd_HHmmss(new Date())}`
+                    const buffer = await (exporter.export as any)(name, items, fields, exporterOpt)
+                    filename = `${name}.${exporter.ext}`
+                    a = document.createElement('a')
+                    a.target = '_blank'
+                    a.download = filename
+                    if (store.url) {
+                      URL.revokeObjectURL(store.url)
+                    }
+                    store.url = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }))
+                    a.href = store.url!
+                    try {
+                      a.click()
+                      return
+                    } catch (e) {
+                      // ignore
+                    }
+                  } catch (e) {
+                    viewService!.errorKey(langs, e.message)
+                    return
+                  } finally {
+                    viewService.setLoading(false)
+                  }
+
+                  locate(IViewService).prompt(langs.get(LangKeys.ExportComplete), [
+                  ], async () => {
+                    a.click()
+                    return true
+                  })
+                }
+                locate(IViewService).prompt(langs.get(LangKeys.Export), [
+                  {
+                    hint: langs.get(LangKeys.Type),
+                    type: 'Enum',
+                    value: typeEnum[0],
+                    values: typeEnum
+                  }
+                ], async (typeFilter: string) => {
+                  (() => {
+                    tryExport(typeFilter)
+                  })()
+                  return true
+                })
+              }}
+            >
+            </Button>
+            : undefined
+        }
+
       </div>
       <div ref={ref} className={classNames(`column-count-${columnCount}`, !hideIdx ? 'show-idx' : '', `border-style-${borderStyle}`, 'article-list')}>{items.filter(([article]) => article.content && article.content.sections).map(
         ([article, type]) =>
           article.lazyLoading ? <div key={article.name + '_ept'}></div>
-            : <type.Viewer articleId={article.id!} title={article.name} key={article.name} showTitle={!type.noTitle} print={true} className={classNames("article", borderStyle==4 ? generateRandomStyle(article.name!, magicSeed) : '')} content={article.content!} files={article.files} type={type}></type.Viewer>
+            : <type.Viewer articleId={article.id!} title={article.name} key={article.name} showTitle={!type.noTitle} print={true} className={classNames("article", borderStyle == 4 ? generateRandomStyle(article.name!, magicSeed) : '')} content={article.content!} files={article.files} type={type}></type.Viewer>
       )}
       </div>
     </div>
