@@ -42,6 +42,7 @@ export default function ClockView (props:{clock:IClock}) {
   const [started, setStarted] = useState(props.clock.started)
   const [finished, setFinished] = useState(props.clock.finished)
   const locate = useServicesLocate()
+  const lang = locate(ILangsService)
   const selectTimeAndRestart = () => {
     const viewService = locate(IViewService)
     const langs = locate(ILangsService)
@@ -96,17 +97,17 @@ export default function ClockView (props:{clock:IClock}) {
     }
   }, [])
   return <div className="clock-view">
-    <span className="title" onClick={selectTimeAndRestart}><NumGroup value={hour}></NumGroup><NumGroup value={min}></NumGroup><NumGroup value={sec}></NumGroup></span>
     {
       started
-        ? <Button className="controls" size="large" icon={<PauseOutlined />} type="link" shape="round" onClick={() => props.clock.pause()}></Button>
+        ? <Button className="controls" size="large" icon={<PauseOutlined />} type="link" shape="round" onClick={() => props.clock.pause()}>{lang.get(LangKeys.ClockPause)}</Button>
         : <Button className="controls" size="large" icon={<CaretRightOutlined />} type="link" shape="round" onClick={() => {
           if (finished) {
             props.clock.reset(total)
           } else {
             props.clock.start()
           }
-        }}></Button>
+        }}>{lang.get(LangKeys.ClockStart)}</Button>
     }
+     <span className="title" onClick={selectTimeAndRestart}><NumGroup value={hour}></NumGroup><NumGroup value={min}></NumGroup><NumGroup value={sec}></NumGroup></span>
   </div>
 }

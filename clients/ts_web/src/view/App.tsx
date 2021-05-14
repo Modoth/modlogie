@@ -1,7 +1,7 @@
 import './App.less'
 import './App.css'
 import { HashRouter } from 'react-router-dom'
-import { UserContext, useServicesLocate } from './common/Contexts'
+import { MagicMaskProvider, MagicSeedProvider, UserContext, useServicesLocate } from './common/Contexts'
 import ConfigKeys from '../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from './assets/logo.png'
 import IConfigsService from '../domain/ServiceInterfaces/IConfigsSercice'
@@ -15,11 +15,13 @@ import NavContent from './pages/NavContent'
 import React, { useState, useEffect } from 'react'
 import ServiceView from './pages/ServiceView'
 import IClocksAppService from '../app/Interfaces/IClocksAppService'
+import IUserConfigsService from '../domain/ServiceInterfaces/IUserConfigsService'
 
 let savedScrollTop = 0
 let savedScrollElement: HTMLElement | null = null
+const MagicMaskKey = "Magic Mask Level"
 
-export default function App () {
+export default function App(props: {magicMask: number}) {
   const locate = useServicesLocate()
   const loginService: LoginService = (locate(
     ILoginAppservice
@@ -37,6 +39,9 @@ export default function App () {
       viewService.setLoading(false)
     }
   }
+  const [magicMask, setMagicMask] = useState(props.magicMask)
+  const [magicSeed, setMagicSeed] = useState(Date.now())
+  const configsService = locate(IUserConfigsService)
   useEffect(() => {
     (async () => {
       // if (bgRef.current) {
@@ -46,6 +51,11 @@ export default function App () {
       //     background-image: url("${logo}");
       //   }`
       // }
+      locate(IViewService).setMagicMask = (m) => {
+        setMagicMask(m)
+        setMagicSeed(Date.now())
+        configsService.set(MagicMaskKey, m)
+      }
       const clocksService = locate(IClocksAppService)
       await clocksService.init()
     })()
@@ -59,7 +69,7 @@ export default function App () {
           }
         }
         //todo: 
-        if(a.parentElement?.className?.startsWith("ant-")){
+        if (a.parentElement?.className?.startsWith("ant-")) {
           return
         }
         e.stopPropagation()
@@ -71,42 +81,46 @@ export default function App () {
   return (
     <>
       <UserContext.Provider value={user}>
-        <ServiceView
-          setContentVisiable={(v) => {
-            if (!ref.current) {
-              return
-            }
-            if (v) {
-              ref.current!.classList.remove('hidden')
-              const restore = ()=>{
-                if (savedScrollElement) {
-                  savedScrollElement.scrollTo({ top: savedScrollTop, behavior: undefined })
+        <MagicMaskProvider value={magicMask}>
+          <MagicSeedProvider value={magicSeed}>
+            <ServiceView
+              setContentVisiable={(v) => {
+                if (!ref.current) {
+                  return
                 }
-              }
-              restore()
-              setTimeout(() => {
-                restore()
-              }, 0)
-            } else {
-              savedScrollElement = document.scrollingElement as HTMLElement
-              if (savedScrollElement) {
-                savedScrollTop = savedScrollElement?.scrollTop
-                savedScrollElement.scrollTo(0, 0)
-              }
-              ref.current!.classList.add('hidden')
-            }
-          }}
-        ></ServiceView>
-        <div ref={ref} className="nav-content-wrapper">
-          <HashRouter >
-            <style ref={bgRef} >
-            </style>
-            <div className="background background-fixed"></div>
-            <Nav></Nav>
-            <NavContent></NavContent>
-          </HashRouter>
-        </div>
-        <Modlogie></Modlogie>
+                if (v) {
+                  ref.current!.classList.remove('hidden')
+                  const restore = () => {
+                    if (savedScrollElement) {
+                      savedScrollElement.scrollTo({ top: savedScrollTop, behavior: undefined })
+                    }
+                  }
+                  restore()
+                  setTimeout(() => {
+                    restore()
+                  }, 0)
+                } else {
+                  savedScrollElement = document.scrollingElement as HTMLElement
+                  if (savedScrollElement) {
+                    savedScrollTop = savedScrollElement?.scrollTop
+                    savedScrollElement.scrollTo(0, 0)
+                  }
+                  ref.current!.classList.add('hidden')
+                }
+              }}
+            ></ServiceView>
+            <div ref={ref} className="nav-content-wrapper">
+              <HashRouter >
+                <style ref={bgRef} >
+                </style>
+                <div className="background background-fixed"></div>
+                <Nav></Nav>
+                <NavContent></NavContent>
+              </HashRouter>
+            </div>
+            <Modlogie></Modlogie>
+          </MagicSeedProvider>
+        </MagicMaskProvider>
       </UserContext.Provider>
     </>
   )

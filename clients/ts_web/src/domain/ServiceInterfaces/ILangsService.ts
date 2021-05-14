@@ -18,6 +18,8 @@ export class LangKeysInterface {
   ChangeName = 'ChangeName';
   ChangePassword = 'ChangePassword';
   ClearDict = 'ClearDict';
+  ClockPause = 'ClockPause';
+  ClockStart = 'ClockStart';
   ComfireJump = 'ComfireJump';
   Comment = 'Comment';
   Configs = 'Configs';
@@ -66,6 +68,10 @@ export class LangKeysInterface {
   LocalFile = 'LocalFile';
   Login = 'Login';
   Logout = 'Logout';
+  MagicMaskLevel = "MagicMaskLevel"
+  MagicMaskNone = "MagicMaskNone";
+  MagicMaskNormal = "MagicMaskNormal";
+  MagicMaskHigh = "MagicMaskHigh";
   Manage = 'Manage';
   ManageDict = 'ManageDict';
   Menu = 'Menu';

@@ -3,7 +3,7 @@ import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType, Article
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse, Radio } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
-import { UploadOutlined,CloseOutlined,PictureOutlined, ShareAltOutlined,SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
+import { UploadOutlined,CloseOutlined,PictureOutlined, ShareAltOutlined,SaveOutlined,RightSquareOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
@@ -486,7 +486,7 @@ export default function ArticleView (props: {
     <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' :recommendView ? generateRandomStyle() : '')}>
       <div className="article-title" ref={titleRef}>
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
-        }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
+        }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}><RightSquareOutlined /></div> : <div onClick={ openDetail}><RightSquareOutlined />{name}</div>}
         {
             (editing || recommendView) ? null : (<Menu onClick={({key}: { key: string } | any) => {
               switch (key) {
@@ -627,7 +627,7 @@ export default function ArticleView (props: {
               </Collapse>
             </>
           ) : (
-            <props.type.Viewer onClick={openDetail} articleId={props.article.id!} content={content} files={files} type={type} />
+            <props.type.Viewer articleId={props.article.id!} content={content} files={files} type={type} />
           )}
           {
             (hasMore) ? <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div> : null

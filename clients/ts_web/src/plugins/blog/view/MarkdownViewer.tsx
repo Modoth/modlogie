@@ -8,6 +8,7 @@ import { NavigationSection } from '../../../pluginbase/IPluginInfo'
 import LocatableView from '../../../infrac/components/LocatableView'
 import { Button } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
+import { useMagicMask, useMagicSeed } from '../../../view/common/Contexts'
 
 const getText = (children: [React.ReactElement] | string): string => {
   if (children == null) {
@@ -22,8 +23,19 @@ const getText = (children: [React.ReactElement] | string): string => {
   return (children as [React.ReactElement]).map(c => c.props?.children ? getText(c.props?.children) : "").join("")
 }
 
-const getRenders = (root: NavigationSection | undefined) => {
-  const renders : any = {
+const getSimpleHash = (children:any) => {
+  const s : string = getText(children)
+  const maxStep = 100
+  const range = Math.ceil(s.length/ maxStep)
+  let hash = 0
+  for(let i = 0; i< s.length;i+=range){
+    hash += s.charCodeAt(i)
+  }
+  return hash;
+}
+
+const getRenders = (root: NavigationSection | undefined, magicMask: number, magicSeed: number) => {
+  const renders: any = {
     code: HighlightLive,
   }
   const contentBase = (window.ENV_OVERRIDE || ENV).CONTENT_BASE || ""
@@ -31,6 +43,15 @@ const getRenders = (root: NavigationSection | undefined) => {
     const url = contentBase + props.src
     return <ImageViewer alt={props.alt} src={url}></ImageViewer>
   }
+
+  renders.strong = (props: any) => {
+    const maxLevel = 2
+    if (magicMask === maxLevel || (magicMask >= 1 && (getSimpleHash(props.children) + magicSeed) % maxLevel < magicMask)) {
+      return <span className="mask-word">{props.children}</span>
+    }
+    return <>{props.children}</>
+  }
+
   if (!root) {
     return renders
   }
@@ -49,18 +70,18 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   const [fullscreen, setFullscreen] = useState(false)
   const [scale, setScale] = useState(maxScale)
   const imgRef = React.createRef<HTMLImageElement>()
-  const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches 
+  const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
   const toggleFullscreen = smallScreen ? (ev: any) => { ev.stopPropagation(); setFullscreen(!fullscreen) } : undefined
   useEffect(() => {
     const img = imgRef.current!
     let scaling = false
     let startDist = 0
-    let startScale =scale
+    let startScale = scale
     let lastScale = scale
-    const dist = (ev: TouchEvent)=> Math.hypot(
+    const dist = (ev: TouchEvent) => Math.hypot(
       ev.touches[0].pageX - ev.touches[1].pageX,
       ev.touches[0].pageY - ev.touches[1].pageY)
-    
+
     const start = (ev: TouchEvent) => {
       if (ev.touches.length === 2 && smallScreen) {
         scaling = true;
@@ -69,7 +90,7 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
         startScale = lastScale
       }
     }
-    const moveInFrame = (s:number) => {
+    const moveInFrame = (s: number) => {
       setScale(s)
     }
     const move = (ev: TouchEvent) => {
@@ -79,8 +100,8 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
       ev.stopPropagation()
       let curDist = dist(ev)
       let s = curDist * startScale / startDist
-      lastScale = Math.min(Math.max(minScale, s),maxScale)
-      requestAnimationFrame(()=>moveInFrame(s))
+      lastScale = Math.min(Math.max(minScale, s), maxScale)
+      requestAnimationFrame(() => moveInFrame(s))
     }
 
     const end = (ev: TouchEvent) => {
@@ -110,7 +131,9 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
 }
 
 export default function MarkdownViewer(props: SectionViewerProps) {
-  const renderers = getRenders(props.navigationRoot) as any
+  const magicMask = useMagicMask()
+  const magicSeed = useMagicSeed()
+  const renderers = getRenders(props.navigationRoot, magicMask, magicSeed) as any
   return <div onClick={(e) => {
     if ((e.target as any)?.nodeName === 'A') {
       return

@@ -360,6 +360,7 @@ const buildServicesLocator = () => {
 }
 
 const bootstrap = async () => {
+  const MagicMaskKey = "Magic Mask Level"
   const invalidSurfix = window.location.origin + '/%23/'
   if (window.location.href.startsWith(invalidSurfix)) {
     window.location.href = window.location.href.replace(invalidSurfix, '/#/')
@@ -372,6 +373,7 @@ const bootstrap = async () => {
   const autoAccountService = serviceLocator.locate(IAutoAccountService)
   const editorsService = serviceLocator.locate(IEditorsService)
   const account = await autoAccountService?.get()
+  let magicMask = 0
   await Promise.all([
     langsService.load(Langs, ...plugins.Plugins.map((p) => p.langs)),
     account && account.userName && account.password
@@ -379,13 +381,14 @@ const bootstrap = async () => {
         .login(account.userName!, account.password!)
         .catch((e) => console.log(e))
       : loginService.checkLogin(),
-    editorsService.init()
+    editorsService.init(),
+    serviceLocator.locate(IUserConfigsService).getOrDefault(MagicMaskKey, 0).then(s => magicMask = s)
   ])
   ReactDOM.render(
     <React.StrictMode>
       <ServicesLocateProvider value={serviceLocator.locate.bind(serviceLocator)}>
         <ConfigProvider locale={zhCN}>
-          <App />
+          <App magicMask={magicMask}/>
         </ConfigProvider>
       </ServicesLocateProvider>
     </React.StrictMode>,

@@ -58,7 +58,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   AlreadyLiked = '已经点过了';
   Anki = 'Anki';
   AuthorisedUser = 'VIP';
-  BackgroundMusic = '背景音';
+  BackgroundMusic = '背景音乐';
   BeyondMaxFavorites = '超出最大收藏';
   Cancle = '取消';
   CancleAutoLogin = '自动登录';
@@ -69,6 +69,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ChangeName = '修改名称';
   ChangePassword = '修改密码';
   ClearDict = '清空字典';
+  ClockPause = '暂停';
+  ClockStart = '开始';
   ComfireJump = '点击确定继续:\t';
   Comment = '备注';
   Configs = '配置';
@@ -117,6 +119,11 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LocalFile = '本地文件';
   Login = '登陆';
   Logout = '注销';
+  MagicMaskLevel = "填空"
+  MagicMaskNone = "无";
+  MagicMaskLow = "少";
+  MagicMaskNormal = "中";
+  MagicMaskHigh = "多";
   Manage = '管理';
   ManageDict = '管理字典';
   Menu = '目录';
