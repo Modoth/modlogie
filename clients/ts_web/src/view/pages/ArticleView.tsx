@@ -23,7 +23,7 @@ import React, { useState, useEffect } from 'react'
 import SubjectViewModel from './SubjectViewModel'
 import { generateRandomStyle } from './common'
 import QrCode from '../../infrac/components/QrCode'
-import style from 'react-syntax-highlighter/dist/esm/styles/hljs/agate'
+import defaultLogo from '../assets/logo.png'
 
 const { Panel } = Collapse
 const { Option } = Select
@@ -66,6 +66,7 @@ export default function ArticleView (props: {
   const user = useUser()
   const locate = useServicesLocate()
   const langs = locate(ILangsService)
+  const [logo, setLogo] = useState('')
   const ref = React.createRef<HTMLDivElement>()
   const titleRef = React.createRef<HTMLDivElement>()
   const viewService = locate(IViewService)
@@ -314,6 +315,10 @@ export default function ArticleView (props: {
       if (recommendTitle) {
         setRecommendTitle(recommendTitle)
       }
+    })();
+    (async ()=>{
+      const logo = await locate(IConfigsService).getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
+      setLogo(logo)
     })();
     (async () => {
       const likesService = locate(ILikesService)

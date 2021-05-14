@@ -2,7 +2,7 @@ import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocate, useUser } from '../common/Contexts'
-import { MoreOutlined, DeleteColumnOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, DeleteOutlined, HighlightOutlined, BulbOutlined, BulbFilled, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MoreOutlined, DeleteColumnOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, DeleteOutlined, HighlightOutlined, BulbOutlined, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -196,7 +196,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                               !user.editingPermission || freeDraw ? undefined : <Menu.Item key="capture"><Button className="single-article-content-menu-btn" danger={editing} type="link" size="large" icon={<EditOutlined />} onClick={() => setEditing(!editing)}>{langs.get(LangKeys.Edit)}</Button></Menu.Item>
                             ]).concat(
                               <Menu.Divider ></Menu.Divider>,
-                              <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" icon={captureDict ? <BulbFilled /> : <BulbOutlined />} onClick={() => {
+                              <Menu.Item><Button className="single-article-content-menu-btn" type="link" size="large" danger={captureDict } icon={<BulbOutlined />} onClick={() => {
                                 setCaptureDict(!captureDict)
                                 configsService.set(CaptureDictKey, !captureDict)
                               }}>{langs.get(captureDict ? LangKeys.CaptureWordDisable : LangKeys.CaptureWordEnable)}</Button></Menu.Item>,
