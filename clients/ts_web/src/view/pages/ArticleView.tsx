@@ -486,7 +486,7 @@ export default function ArticleView (props: {
     <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' :recommendView ? generateRandomStyle() : '')}>
       <div className="article-title" ref={titleRef}>
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
-        }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}><RightSquareOutlined /></div> : <div onClick={ openDetail}><RightSquareOutlined />{name}</div>}
+        }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
         {
             (editing || recommendView) ? null : (<Menu onClick={({key}: { key: string } | any) => {
               switch (key) {
