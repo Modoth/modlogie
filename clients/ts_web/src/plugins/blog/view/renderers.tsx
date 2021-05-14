@@ -20,6 +20,10 @@ const renderers = {
         return <>{props.children}</>
     }
   },
+  // eslint-disable-next-line react/display-name
+  strong: (props: any) => {
+    return <>{props.children}</>
+  },
   emphasis,
   // eslint-disable-next-line react/display-name
   code: (props: { language: string, value: string}) => {
