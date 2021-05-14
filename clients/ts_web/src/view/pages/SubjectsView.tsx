@@ -3,7 +3,7 @@ import { Badge, Tabs } from 'antd'
 import { generateRandomStyle } from './common'
 import { PluginsConfig, ArticleType } from '../../pluginbase/IPluginInfo'
 import { useHistory, Link } from 'react-router-dom'
-import { useServicesLocate, useUser } from '../common/Contexts'
+import { useMagicSeed, useServicesLocate, useUser } from '../common/Contexts'
 import classNames from 'classnames'
 import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
@@ -20,6 +20,7 @@ function sortSubjectByChildrenCount (subjects: Subject[]) {
 
 function SubjectView (props: { type: ArticleType, subject: Subject, deepth: number, parentPath: string, rootPath: string }) {
   const displayName = props.subject.path!.slice(props.rootPath.length)
+  const magicSeed = useMagicSeed()
   const langs = useServicesLocate()(ILangsService)
   if (props.subject.children && props.subject.children.length) {
     const path = props.parentPath ? (props.parentPath + '/' + props.subject.name) : props.subject.name
@@ -32,7 +33,7 @@ function SubjectView (props: { type: ArticleType, subject: Subject, deepth: numb
   }
   return (
     <Badge count={props.subject.totalArticleCount} className={classNames('subject-content-wraper', `subject-${props.deepth}`)}>
-      <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames('subject-content', generateRandomStyle())}>
+      <Link to={{ pathname: '/' + props.type.route, state: { subjectId: props.subject.id } }} className={classNames('subject-content', generateRandomStyle(props.subject.id, magicSeed))}>
         {
           props.subject.resourceUrl
             ? <img src={props.subject.resourceUrl} />

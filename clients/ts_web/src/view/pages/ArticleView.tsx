@@ -4,7 +4,7 @@ import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse, Ra
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
 import { UploadOutlined,CloseOutlined,PictureOutlined, ShareAltOutlined,SaveOutlined,RightSquareOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
-import { useUser, useServicesLocate } from '../common/Contexts'
+import { useUser, useServicesLocate, useMagicSeed } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -106,6 +106,7 @@ export default function ArticleView (props: {
   const [defaultPrivate, setDefaultPrivate] = useState(false)
   const [floatLeft, setFloatLeft] = useState(0)
   const [floatTop, setFloatTop] = useState(0)
+  const magicSeed = useMagicSeed()
   const [privateType, setPrivateType] = useState<boolean|undefined>(props.article.private)
   const privateChanged = async (e:any) => {
     const p = e.target.value
@@ -483,7 +484,7 @@ export default function ArticleView (props: {
       </div>
   </div>:undefined}
   <div ref={ref} className={classNames(showFloat ? 'float-article' : '')} style={{ left: floatLeft, top: floatTop }}>
-    <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' :recommendView ? generateRandomStyle() : '')}>
+    <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' :recommendView ? generateRandomStyle(props.article.id!, magicSeed) : '')}>
       <div className="article-title" ref={titleRef}>
         {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
         }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}

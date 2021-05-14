@@ -9,6 +9,7 @@ import LocatableView from '../../../infrac/components/LocatableView'
 import { Button } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import { useMagicMask, useMagicSeed } from '../../../view/common/Contexts'
+import { getSimpleStringHash } from '../../../view/pages/common'
 
 const getText = (children: [React.ReactElement] | string): string => {
   if (children == null) {
@@ -25,13 +26,7 @@ const getText = (children: [React.ReactElement] | string): string => {
 
 const getSimpleHash = (children:any) => {
   const s : string = getText(children)
-  const maxStep = 100
-  const range = Math.ceil(s.length/ maxStep)
-  let hash = 0
-  for(let i = 0; i< s.length;i+=range){
-    hash += s.charCodeAt(i)
-  }
-  return hash;
+  return getSimpleStringHash(s)
 }
 
 const getRenders = (root: NavigationSection | undefined, magicMask: number, magicSeed: number) => {

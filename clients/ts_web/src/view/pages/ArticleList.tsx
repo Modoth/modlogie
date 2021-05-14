@@ -2,7 +2,7 @@ import './ArticleList.less'
 import { ArrowLeftOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
 import { ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { Button } from 'antd'
-import { useServicesLocate } from '../common/Contexts'
+import { useMagicSeed, useServicesLocate } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -28,6 +28,7 @@ export default function ArticleList () {
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
+  const magicSeed = useMagicSeed()
   const fetchArticles = async () => {
     viewService.setLoading(true)
     try {
@@ -128,7 +129,7 @@ export default function ArticleList () {
       <div ref={ref} className={classNames(`column-count-${columnCount}`, !hideIdx ? 'show-idx' : '', `border-style-${borderStyle}`, 'article-list')}>{items.filter(([article]) => article.content && article.content.sections).map(
         ([article, type]) =>
           article.lazyLoading ? <div key={article.name + '_ept'}></div>
-            : <type.Viewer articleId={article.id!} title={article.name} key={article.name} showTitle={!type.noTitle} print={true} className={classNames("article", borderStyle==4 ? generateRandomStyle() : '')} content={article.content!} files={article.files} type={type}></type.Viewer>
+            : <type.Viewer articleId={article.id!} title={article.name} key={article.name} showTitle={!type.noTitle} print={true} className={classNames("article", borderStyle==4 ? generateRandomStyle(article.name!, magicSeed) : '')} content={article.content!} files={article.files} type={type}></type.Viewer>
       )}
       </div>
     </div>
