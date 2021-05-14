@@ -120,6 +120,7 @@ export default function FreeDrawMask(props: PropsType) {
       ctx.restore()
     }
     const stopDraw = (ev: MouseEvent | TouchEvent) => {
+      if(!drawing){ return }
       if (props.penOnly && isNotPen(ev)) { return }
       drawing = false
       if (p.earse) {
