@@ -697,11 +697,17 @@ export default function ArticleView (props: {
         ) : null
       }
     </Card >
-    {showFloat? <><div className="share-panel">
-    <QrCode content={`${window.location.protocol}//${window.location.host}/#/article${props.article.path}`}></QrCode>
-    <a>{`${window.location.protocol}//${window.location.host}/#/article${props.article.path}`}</a>
-    </div> 
-    </>: undefined}
+      {(() => {
+        if (!showFloat) {
+          return
+        }
+        const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
+        return <><div className="share-panel">
+          <QrCode content={url}></QrCode>
+          <a href={url}>{url}</a>
+        </div>
+        </>
+      })()}
   </div>
   </>)
 }
