@@ -119,7 +119,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LocalFile = '本地文件';
   Login = '登陆';
   Logout = '注销';
-  MagicMaskLevel = "填空"
+  MagicMaskLevel = "空白"
   MagicMaskNone = "无";
   MagicMaskLow = "少";
   MagicMaskNormal = "中";
@@ -167,6 +167,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Reset = '重置';
   Save = '保存';
   ScreenShot = '截图(beta)';
+  ScreenShotTooHuge = '图片过大，操作失败';
   Scroll = '滚动';
   Search = '搜索';
   Sections = '章节';

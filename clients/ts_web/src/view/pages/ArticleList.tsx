@@ -104,7 +104,98 @@ export default function ArticleList() {
     locate(IViewService).previewArticleList(false)
   }
   useEffect(() => {
-    viewService.setFloatingMenus?.(ArticleList.name, <></>)
+    viewService.setFloatingMenus?.(ArticleList.name, <>
+      {
+        <Button type="primary" shape="circle" size="large" icon={<PictureOutlined />} onClick={() => {
+          (document.scrollingElement as HTMLElement).scrollTo({ top: 0, behavior: undefined })
+          locate(IViewService).captureElement(ref.current!)
+        }} />
+      }
+      {
+        user.editingPermission ?
+          <Button
+            icon={<DownloadOutlined />}
+            type="primary" shape="circle" size="large"
+            onClick={() => {
+              const typeEnum = [LangKeys.Anki].map(s => langs.get(s))
+              const tryExport = async (typeFilter: string) => {
+                let a: HTMLAnchorElement
+                let filename: string
+                try {
+                  viewService.setLoading(true)
+                  let exporter
+                  let exporterOpt
+                  const typeIdx = typeEnum.indexOf(typeFilter)
+                  switch (typeIdx) {
+                    case 0:
+                      exporter = locate(IAnkiItemsExporter)
+                      exporterOpt = {
+                        front: '<div class="front">{{Front}}</div>',
+                        back: '{{FrontSide}}\n\n<hr id="answer">\n\n<div class="back">{{Back}}</div>',
+                        css: ankiCss
+                      }
+                      break
+                    default:
+                      return
+                  }
+                  const fields: FieldInfo<{ article: [Article, ArticleContentType] }>[] = [
+                    {
+                      name: langs.get(LangKeys.Name),
+                      get: ({ article }: { article: [Article, ArticleContentType] }) => article[0].name!
+                    }
+                  ]
+                  const siteName = await locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
+                  const name = `${siteName}_${langs.get(LangKeys.FavoriteWords)}_${yyyyMMdd_HHmmss(new Date())}`
+                  const buffer = await (exporter.export as any)(name, items, fields, exporterOpt)
+                  filename = `${name}.${exporter.ext}`
+                  a = document.createElement('a')
+                  a.target = '_blank'
+                  a.download = filename
+                  if (store.url) {
+                    URL.revokeObjectURL(store.url)
+                  }
+                  store.url = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }))
+                  a.href = store.url!
+                  try {
+                    a.click()
+                    return
+                  } catch (e) {
+                    // ignore
+                  }
+                } catch (e) {
+                  viewService!.errorKey(langs, e.message)
+                  return
+                } finally {
+                  viewService.setLoading(false)
+                }
+
+                locate(IViewService).prompt(langs.get(LangKeys.ExportComplete), [
+                ], async () => {
+                  a.click()
+                  return true
+                })
+              }
+              locate(IViewService).prompt(langs.get(LangKeys.Export), [
+                {
+                  hint: langs.get(LangKeys.Type),
+                  type: 'Enum',
+                  value: typeEnum[0],
+                  values: typeEnum
+                }
+              ], async (typeFilter: string) => {
+                (() => {
+                  tryExport(typeFilter)
+                })()
+                return true
+              })
+            }}
+          >
+          </Button>
+          : undefined
+      }
+    </>,
+      <Button type="primary" shape="circle" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
+    )
   })
   useEffect(() => {
     return () => {
@@ -131,96 +222,6 @@ export default function ArticleList() {
           setBorderStyle(next)
           configsService.set(BorderStyleKey, next)
         }} />
-        {
-          <Button type="link" size="large" icon={<PictureOutlined />} onClick={() => {
-            (document.scrollingElement as HTMLElement).scrollTo({ top: 0, behavior: undefined })
-            locate(IViewService).captureElement(ref.current!)
-          }} />
-        }
-        <Button type="link" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
-        {
-          user.editingPermission ?
-            <Button
-              icon={<DownloadOutlined />}
-              type="link" size="large"
-              onClick={() => {
-                const typeEnum = [LangKeys.Anki].map(s => langs.get(s))
-                const tryExport = async (typeFilter: string) => {
-                  let a: HTMLAnchorElement
-                  let filename: string
-                  try {
-                    viewService.setLoading(true)
-                    let exporter
-                    let exporterOpt
-                    const typeIdx = typeEnum.indexOf(typeFilter)
-                    switch (typeIdx) {
-                      case 0:
-                        exporter = locate(IAnkiItemsExporter)
-                        exporterOpt = {
-                          front: '<div class="front">{{Front}}</div>',
-                          back: '{{FrontSide}}\n\n<hr id="answer">\n\n<div class="back">{{Back}}</div>',
-                          css: ankiCss
-                        }
-                        break
-                      default:
-                        return
-                    }
-                    const fields: FieldInfo<{ article: [Article, ArticleContentType] }>[] = [
-                      {
-                        name: langs.get(LangKeys.Name),
-                        get: ({ article }: { article: [Article, ArticleContentType] }) => article[0].name!
-                      }
-                    ]
-                    const siteName = await locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
-                    const name = `${siteName}_${langs.get(LangKeys.FavoriteWords)}_${yyyyMMdd_HHmmss(new Date())}`
-                    const buffer = await (exporter.export as any)(name, items, fields, exporterOpt)
-                    filename = `${name}.${exporter.ext}`
-                    a = document.createElement('a')
-                    a.target = '_blank'
-                    a.download = filename
-                    if (store.url) {
-                      URL.revokeObjectURL(store.url)
-                    }
-                    store.url = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }))
-                    a.href = store.url!
-                    try {
-                      a.click()
-                      return
-                    } catch (e) {
-                      // ignore
-                    }
-                  } catch (e) {
-                    viewService!.errorKey(langs, e.message)
-                    return
-                  } finally {
-                    viewService.setLoading(false)
-                  }
-
-                  locate(IViewService).prompt(langs.get(LangKeys.ExportComplete), [
-                  ], async () => {
-                    a.click()
-                    return true
-                  })
-                }
-                locate(IViewService).prompt(langs.get(LangKeys.Export), [
-                  {
-                    hint: langs.get(LangKeys.Type),
-                    type: 'Enum',
-                    value: typeEnum[0],
-                    values: typeEnum
-                  }
-                ], async (typeFilter: string) => {
-                  (() => {
-                    tryExport(typeFilter)
-                  })()
-                  return true
-                })
-              }}
-            >
-            </Button>
-            : undefined
-        }
-
       </div>
       <div ref={ref} className={classNames(`column-count-${columnCount}`, !hideIdx ? 'show-idx' : '', `border-style-${borderStyle}`, 'article-list')}>{items.filter(([article]) => article.content && article.content.sections).map(
         ([article, type]) =>

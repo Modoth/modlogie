@@ -59,6 +59,7 @@ export default function ServiceView (props: {
   setContentVisiable: { (visiable: boolean): void }
 }) {
   const locate = useServicesLocate()
+  const langs = locate(ILangsService)
   const viewService = locate(IViewService)
   const refFile = useRef<HTMLInputElement | null>(null)
   const [loading, setLoading] = useState(false)
@@ -279,6 +280,10 @@ export default function ServiceView (props: {
       const canvas = await html2canvas(element)
       viewService.setLoading(false)
       const imgUrl = canvas.toDataURL('image/png')
+      if(imgUrl === 'data:,'){
+        viewService.error(langs.get(LangKeys.ScreenShotTooHuge), 2000)
+        return
+      }
       viewService.previewImage(imgUrl)
     } catch (e) {
       // viewService!.errorKey(locate(ILangsService), LangKeys.UnknownError)

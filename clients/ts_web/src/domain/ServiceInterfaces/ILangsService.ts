@@ -115,6 +115,7 @@ export class LangKeysInterface {
   Reset = 'Reset';
   Save = 'Save';
   ScreenShot = 'ScreenShot';
+  ScreenShotTooHuge = 'ScreenShotTooHuge';
   Scroll = 'Scroll';
   Search = 'Search';
   Sections = 'Sections';
