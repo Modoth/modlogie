@@ -1,6 +1,6 @@
 import './ArticleList.less'
 import { ArrowLeftOutlined, DownloadOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
-import { ArticleContentType } from '../../pluginbase/IPluginInfo'
+import { ArticleContentType, ArticleContentViewerProps } from '../../pluginbase/IPluginInfo'
 import { Button } from 'antd'
 import { useMagicSeed, useServicesLocate, useUser } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
@@ -20,6 +20,7 @@ import ankiCss from '!!raw-loader!./ManageWords.Anki.css'
 // eslint-disable-next-line camelcase
 import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
 import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
+import ReactDOMServer from 'react-dom/server'
 
 const maxColumn = 3
 const maxBorderStyle = 4
@@ -30,6 +31,8 @@ const BorderStyleKey = 'ARTICLES_BORDER_STYLE'
 
 const HideIndexKey = 'ARTICLES_HIDE_INDEX'
 
+const GeneratorNames = [LangKeys.Anki]
+
 export default function ArticleList() {
   const locate = useServicesLocate()
   const langs = locate(ILangsService)
@@ -37,6 +40,7 @@ export default function ArticleList() {
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
+  const [generators, setGenerators] = useState<Map<string, Map<ArticleContentType, (props: ArticleContentViewerProps) => string>>>(new Map())
   const magicSeed = useMagicSeed()
   const fetchArticles = async () => {
     viewService.setLoading(true)
@@ -58,6 +62,23 @@ export default function ArticleList() {
         [count, all] = await articleListService.getArticles(0, maxCount)
       }
       setItems(all)
+      const gNames = GeneratorNames
+      const generators = new Map()
+      for (const gname of gNames) {
+        let generator: any = new Map<ArticleContentType, (props: ArticleContentViewerProps) => string>()
+        for (const [_, type] of all) {
+          const g = type.articleType.exporterGenerators?.get(gname)?.generator
+          if (!g) {
+            generator = undefined
+            break
+          }
+          generator.set(type, g)
+        }
+        if (generator) {
+          generators.set(gname, generator)
+        }
+      }
+      setGenerators(generators)
       await Promise.all(all.map(async ([a, t]) => {
         const tasks = []
         if (a.lazyLoading) {
@@ -112,12 +133,12 @@ export default function ArticleList() {
         }} />
       }
       {
-        user.editingPermission ?
+        generators.size ?
           <Button
             icon={<DownloadOutlined />}
             type="primary" shape="circle" size="large"
             onClick={() => {
-              const typeEnum = [LangKeys.Anki].map(s => langs.get(s))
+              const typeEnum = Array.from(generators.keys(), s => langs.get(s))
               const tryExport = async (typeFilter: string) => {
                 let a: HTMLAnchorElement
                 let filename: string
@@ -125,9 +146,8 @@ export default function ArticleList() {
                   viewService.setLoading(true)
                   let exporter
                   let exporterOpt
-                  const typeIdx = typeEnum.indexOf(typeFilter)
-                  switch (typeIdx) {
-                    case 0:
+                  switch (typeFilter) {
+                    case langs.get(LangKeys.Anki):
                       exporter = locate(IAnkiItemsExporter)
                       exporterOpt = {
                         front: '<div class="front">{{Front}}</div>',
@@ -138,10 +158,22 @@ export default function ArticleList() {
                     default:
                       return
                   }
-                  const fields: FieldInfo<{ article: [Article, ArticleContentType] }>[] = [
+                  const fields: FieldInfo<[Article, ArticleContentType]>[] = [
                     {
                       name: langs.get(LangKeys.Name),
-                      get: ({ article }: { article: [Article, ArticleContentType] }) => article[0].name!
+                      get: ([article, type]: [Article, ArticleContentType]) => {
+                        return article.name!
+                      }
+                    },
+                    {
+                      name: langs.get(LangKeys.Comment),
+                      get: ([article, type]: [Article, ArticleContentType]) => {
+                        const g = generators.get(LangKeys.Anki)?.get(type)
+                        if(!g){
+                          return undefined
+                        }
+                        return g({ content: article.content!, articleId: article.id! })
+                      }
                     }
                   ]
                   const siteName = await locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)

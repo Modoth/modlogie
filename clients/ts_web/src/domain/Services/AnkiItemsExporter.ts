@@ -2,8 +2,12 @@ import { Anki, AnkiTemplate } from '../../infrac/thirds/Anki'
 import { FieldInfo } from '../ServiceInterfaces/IItemsExporter'
 import IAnkiItemsExporter from '../ServiceInterfaces/IAnkiItemsExporter'
 
-function generateField<TItem> (item:TItem, field:FieldInfo<TItem>):string {
-  return `<div class="${field.name}">${String(field.get(item))}</div>`
+function generateField<TItem> (item:TItem, field:FieldInfo<TItem>):string|undefined {
+  const fieldContent = String(field.get(item))
+  if(!fieldContent){
+    return undefined
+  }
+  return `<div class="${field.name}">${fieldContent}</div>`
 }
 export default class AnkiItemsExporter implements IAnkiItemsExporter {
   get ext (): string {
@@ -18,7 +22,10 @@ export default class AnkiItemsExporter implements IAnkiItemsExporter {
       const frontField = fields.shift()!
       for (const item of items) {
         const front = generateField(item, frontField)
-        const back = fields.map(field => generateField(item, field)).join('</br>')
+        if(!front){
+          continue
+        }
+        const back = fields.map(field => generateField(item, field)).filter(i => i).join('</br>')
         exporter.addCard(front, back)
       }
     }

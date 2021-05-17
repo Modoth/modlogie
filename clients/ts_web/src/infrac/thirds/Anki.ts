@@ -302,7 +302,6 @@ export class Anki {
       ':csum': parseInt(sha1((front + separator + back)).substr(0, 8), 16)
     })
     query = `insert or replace into cards values(${this.getCardId(noteId as any, now)},${noteId},${topDeckId},0,${this.getLatestIdOfTable('cards', 'mod', now)},-1,0,0,179,0,0,0,0,0,0,0,0,"")`
-    console.log(query)
     return this.db.prepare(query).getAsObject({})
   }
 

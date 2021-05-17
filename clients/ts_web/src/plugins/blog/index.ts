@@ -11,6 +11,7 @@ import WxGenerator from './view/WxGenerator'
 import WxPreview from '!!raw-loader!./view/WxPreview.html'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import PlainPreview from '!!raw-loader!./view/PlainPreview.html'
+import AnkiGenerator from './view/AnkiGenerator'
 
 export default class Blog extends PluginInfoBase implements IPluginInfo {
   static get typeName () { return 'Blog' }
@@ -23,6 +24,9 @@ export default class Blog extends PluginInfoBase implements IPluginInfo {
         publishGenerators: new Map([
           [LangKeys.PUBLISH_WX, { generator: WxGenerator, previewTemplate: WxPreview }],
           [LangKeys.PUBLISH_CONTENT, { generator: PlainGenerator, autoUpdate: true, previewTemplate: PlainPreview }]
+        ]),
+        exporterGenerators: new Map([
+          [LangKeys.Anki, { generator: AnkiGenerator }],
         ])
       })
   }
