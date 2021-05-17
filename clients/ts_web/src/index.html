@@ -50,6 +50,12 @@
     animation: loading 1.5s infinite;
   }
 
+  .force-refresh{
+    position: fixed;
+    right: 20px;
+    top: 20px;
+  }
+
   @keyframes loading-text {
     0% {
       color: #99cccc;
@@ -103,6 +109,7 @@
       <div class="loading-text">正在加载，请稍后</div>
       <div><a class="jumpto-cache" href="/s/content">先睹为快</a></div>
     </div>
+    <div><a class="force-refresh" href="./">刷新</a></div>
   </div>
 </body>
 
