@@ -1,6 +1,6 @@
 import './Modlogie.less'
 import { Button } from 'antd'
-import { DragOutlined, EllipsisOutlined } from '@ant-design/icons'
+import { DragOutlined } from '@ant-design/icons'
 import { useServicesLocate } from '../common/Contexts'
 import classNames from 'classnames'
 import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
@@ -156,7 +156,7 @@ export default function Modlogie () {
           store.destory = registerDragMove(document, dot, start, moving, end)
         }}>
           <Button size="large" type="primary"
-            shape="circle" icon={<EllipsisOutlined /> } ></Button>
+            shape="circle" icon={<DragOutlined /> } ></Button>
         </div>
         {open ? bMenu : fMenu}
       </div>
