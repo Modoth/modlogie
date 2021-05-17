@@ -1,6 +1,6 @@
 import './ArticleList.less'
 import { ArrowLeftOutlined, DownloadOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
-import { ArticleContentType, ArticleContentViewerProps } from '../../pluginbase/IPluginInfo'
+import { ArticleContentExporterProps, ArticleContentType, ArticleContentViewerProps } from '../../pluginbase/IPluginInfo'
 import { Button } from 'antd'
 import { useMagicSeed, useServicesLocate, useUser } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
@@ -13,14 +13,12 @@ import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
 import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
 import { generateRandomStyle } from './common'
-import sleep from '../../infrac/Lang/sleep'
 import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import ankiCss from '!!raw-loader!./ManageWords.Anki.css'
+import ankiCss from '!!raw-loader!./ArticleList.Anki.css'
 // eslint-disable-next-line camelcase
 import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
 import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
-import ReactDOMServer from 'react-dom/server'
 
 const maxColumn = 3
 const maxBorderStyle = 4
@@ -40,7 +38,7 @@ export default function ArticleList() {
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
-  const [generators, setGenerators] = useState<Map<string, Map<ArticleContentType, (props: ArticleContentViewerProps) => string>>>(new Map())
+  const [generators, setGenerators] = useState<Map<string, Map<ArticleContentType, (props: ArticleContentExporterProps) => string>>>(new Map())
   const magicSeed = useMagicSeed()
   const fetchArticles = async () => {
     viewService.setLoading(true)
@@ -162,17 +160,18 @@ export default function ArticleList() {
                     {
                       name: langs.get(LangKeys.Name),
                       get: ([article, type]: [Article, ArticleContentType]) => {
-                        return article.name!
+                        return [article.name!, undefined]
                       }
                     },
                     {
                       name: langs.get(LangKeys.Comment),
                       get: ([article, type]: [Article, ArticleContentType]) => {
                         const g = generators.get(LangKeys.Anki)?.get(type)
+                        const resources: any = []
                         if(!g){
-                          return undefined
+                          return [undefined, undefined]
                         }
-                        return g({ content: article.content!, articleId: article.id! })
+                        return [g({ content: article.content!, articleId: article.id! ,resources}), resources]
                       }
                     }
                   ]

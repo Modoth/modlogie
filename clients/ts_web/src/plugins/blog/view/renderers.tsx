@@ -30,6 +30,9 @@ const renderers = {
     if (props.language && ~props.language.indexOf(Seperators.Fields)) {
       return <></>
     }
+    if(!props.language){
+      return <>{props.value}</>
+    }
     return <Highlight language={props.language} value={props.value}></Highlight>
   }
 } as any

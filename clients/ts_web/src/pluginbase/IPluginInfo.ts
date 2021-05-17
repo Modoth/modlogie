@@ -25,7 +25,7 @@ export interface ArticleType {
   Viewer: (props: ArticleContentViewerProps) => JSX.Element;
   Editor: (props: ArticleContentEditorProps) => JSX.Element;
   publishGenerators?: Map<string, { generator: (props: ArticleContentViewerProps) => string, previewTemplate?: string, autoUpdate?: boolean }>;
-  exporterGenerators?: Map<string, { generator: (props: ArticleContentViewerProps) => string, previewTemplate?: string }>;
+  exporterGenerators?: Map<string, { generator: (props: ArticleContentExporterProps) => string, previewTemplate?: string }>;
 }
 
 export interface ArticleContentEditorCallbacks<T> {
@@ -73,6 +73,8 @@ export class ArticleContentViewerProps {
   print?: boolean;
   articleId: string
 }
+
+export type ArticleContentExporterProps =  ArticleContentViewerProps & {resources:{name:string, url:string} []}
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {
   callbacks: ArticleContentEditorCallbacks<[ArticleContent, Set<string>]>

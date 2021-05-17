@@ -224,17 +224,17 @@ export default function ManageWrods () {
             const fields:FieldInfo<WordWithExplain>[] = [
               {
                 name: langs.get(LangKeys.Word),
-                get: (word:WordWithExplain) => word.value
+                get: (word:WordWithExplain) => [word.value, undefined]
               },
               {
                 name: langs.get(LangKeys.Example),
-                get: (word:WordWithExplain) => word.eg || ''
+                get: (word:WordWithExplain) => [word.eg, undefined]
               }
             ]
             if (exp) {
               fields.push({
                 name: langs.get(LangKeys.Explain),
-                get: (word:WordWithExplain) => word.explain || ''
+                get: (word:WordWithExplain) => [word.explain, undefined]
               })
             }
             const siteName = await locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)

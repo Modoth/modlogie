@@ -84,7 +84,7 @@ module.exports = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: "node_modules/sql.js/dist/sql-wasm.wasm", to: "static/js/sql-wasm.v1.5.0.wasm" },
+        { from: "node_modules/sql.js/dist/sql-wasm.wasm", to: "assets/sql-wasm.v1.5.0.wasm" },
       ],
       options: {
         concurrency: 100,

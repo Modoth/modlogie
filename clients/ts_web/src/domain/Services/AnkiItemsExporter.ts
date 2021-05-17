@@ -1,9 +1,12 @@
 import { Anki, AnkiTemplate } from '../../infrac/thirds/Anki'
-import { FieldInfo } from '../ServiceInterfaces/IItemsExporter'
+import { ExportResource, FieldInfo } from '../ServiceInterfaces/IItemsExporter'
 import IAnkiItemsExporter from '../ServiceInterfaces/IAnkiItemsExporter'
 
-function generateField<TItem> (item:TItem, field:FieldInfo<TItem>):string|undefined {
-  const fieldContent = String(field.get(item))
+function generateField<TItem> (item:TItem, field:FieldInfo<TItem>, resources: ExportResource[]):string|undefined {
+  const [fieldContent, r] = field.get(item)
+  if(r && r.length){
+    resources.push(...r)
+  }
   if(!fieldContent){
     return undefined
   }
@@ -18,16 +21,21 @@ export default class AnkiItemsExporter implements IAnkiItemsExporter {
     const exporter = new Anki()
     const template = data as AnkiTemplate
     await exporter.init(name, template)
+    const resources: ExportResource[] = []
     if (fields.length) {
       const frontField = fields.shift()!
       for (const item of items) {
-        const front = generateField(item, frontField)
+        const front = generateField(item, frontField, resources)
         if(!front){
           continue
         }
-        const back = fields.map(field => generateField(item, field)).filter(i => i).join('</br>')
+        const back = fields.map(field => generateField(item, field, resources)).filter(i => i).join('</br>')
         exporter.addCard(front, back)
       }
+    }
+    for(const r of resources){
+      const data = await (await fetch(r.path)).arrayBuffer()
+      exporter.addMedia(r.name, data)
     }
     const buffer = await exporter.export() as ArrayBuffer
     return buffer
