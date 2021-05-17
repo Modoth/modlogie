@@ -4,9 +4,12 @@ export function generateRandomStyle(id: string, magicSeed: number) {
 }
 
 export function getSimpleStringHash(s: string, r: number) {
+  const maxStep = 100
+  const range = Math.ceil(s.length / maxStep)
   let hash = s.length
-  hash += s.charCodeAt(s.length -1 )
-  hash += s.charCodeAt(0)
+  for (let i = 0; i < s.length; i += range) {
+    hash += s.charCodeAt(i)
+  }
   hash += s.charCodeAt(r % s.length)
   return hash;
 }
