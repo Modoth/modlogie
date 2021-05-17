@@ -479,9 +479,6 @@ export default function ArticleView (props: {
 
   return (<>
   { showFloat? <div className={classNames(showFloat? 'float-article-bg':'')} onClick={()=>setShowFloat(false)}>
-  <div className="share-menus">
-        <Button className="close-btn" onClick={()=>setShowFloat(false)} type="primary" size="large" shape="circle" danger icon={<CloseOutlined />} ></Button>
-      </div>
   </div>:undefined}
   <div ref={ref} className={classNames(showFloat ? 'float-article' : '')} style={{ left: floatLeft, top: floatTop }}>
     <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' :recommendView ? generateRandomStyle(props.article.id!, magicSeed) : '')}>

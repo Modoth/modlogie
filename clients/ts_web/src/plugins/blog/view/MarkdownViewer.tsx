@@ -115,12 +115,9 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   }, [])
   return <>
     <span className="embed-img" ><img alt={props.alt} src={props.src} onClick={toggleFullscreen} /></span>
-    <div className={classNames("full-img", fullscreen ? "" : "hidden")}>
-      <img onClick={ev => ev.stopPropagation()} ref={imgRef}
-        style={{ width: `${scale}%`, maxWidth: `${scale}%`, maxHeight: `${scale}%` }} alt={props.alt} src={props.src} />
-      <div className="img-menus">
-        <Button className="close-btn" onClick={toggleFullscreen} type="primary" size="large" shape="circle" danger icon={<CloseOutlined />} ></Button>
-      </div>
+    <div onClick={toggleFullscreen}  className={classNames("full-img", fullscreen ? "" : "hidden")}>
+      <img ref={imgRef}
+        style={{ width: `${scale}%`, maxWidth: `${scale}%`, maxHeight: `${100}%` }} alt={props.alt} src={props.src} />
     </div>
   </>
 }
