@@ -24,9 +24,9 @@ const getText = (children: [React.ReactElement] | string): string => {
   return (children as [React.ReactElement]).map(c => c.props?.children ? getText(c.props?.children) : "").join("")
 }
 
-const getSimpleHash = (children:any) => {
+const getSimpleHash = (children:any, seed:number) => {
   const s : string = getText(children)
-  return getSimpleStringHash(s)
+  return getSimpleStringHash(s, seed)
 }
 
 const getRenders = (root: NavigationSection | undefined, magicMask: number, magicSeed: number) => {
@@ -41,7 +41,7 @@ const getRenders = (root: NavigationSection | undefined, magicMask: number, magi
 
   renders.strong = (props: any) => {
     const maxLevel = 2
-    if (magicMask === maxLevel || (magicMask >= 1 && (getSimpleHash(props.children) + magicSeed) % maxLevel < magicMask)) {
+    if (magicMask === maxLevel || (magicMask >= 1 && (getSimpleHash(props.children, magicSeed) + magicSeed) % maxLevel < magicMask)) {
       return <span className="mask-word">{props.children}</span>
     }
     return <>{props.children}</>
