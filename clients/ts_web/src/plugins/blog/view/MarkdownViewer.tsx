@@ -65,7 +65,7 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   const [fullscreen, setFullscreen] = useState(false)
   const [scale, setScale] = useState(maxScale)
   const imgRef = React.createRef<HTMLImageElement>()
-  const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
+  const smallScreen = true;// window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
   const toggleFullscreen = smallScreen ? (ev: any) => { ev.stopPropagation(); setFullscreen(!fullscreen) } : undefined
   useEffect(() => {
     const img = imgRef.current!

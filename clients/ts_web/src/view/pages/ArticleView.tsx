@@ -361,7 +361,7 @@ export default function ArticleView (props: {
     }
   }
   const hasMore = props.article.additionId || (type && type.smartHiddenSections && type.smartHiddenSections.size)
-  const openQrCode = () => {
+  const openShare = () => {
     if (ref.current) {
       const offset = Math.min(window.innerHeight * 0.2, 120)
       const elementPos = ref.current.getBoundingClientRect()
@@ -503,7 +503,7 @@ export default function ArticleView (props: {
                   return
                 case 'qrcode':
                   setTimeout(() => {
-                    openQrCode()
+                    openShare()
                   }, 50);
                   return
                 case 'like':
