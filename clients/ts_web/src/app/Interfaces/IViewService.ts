@@ -43,7 +43,7 @@ export default class IViewService {
     throw new Error('Method not implemented.')
   }
 
-  setFloatingMenus? (key:string, menus?:React.ReactNode, opacity = false) {
+  setFloatingMenus? (key:string, bmenus?:React.ReactNode, fmenus?:React.ReactNode, opacity = false) {
     throw new Error('Method not implemented.')
   }
 

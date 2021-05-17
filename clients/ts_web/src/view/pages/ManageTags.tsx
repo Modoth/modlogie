@@ -185,9 +185,9 @@ export function ManageTags () {
     )
   }
   useEffect(() => {
-  viewService.setFloatingMenus?.(ManageTags.name, <Button
+  viewService.setFloatingMenus?.(ManageTags.name, undefined, <Button
     icon={<PlusOutlined />}
-    type="default"
+    type="primary"
     size="large" shape="circle"
     onClick={addTag}
   >

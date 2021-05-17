@@ -6,7 +6,7 @@ let initsql :Promise<SqlJs.SqlJsStatic>
 const initSql = () :Promise<SqlJs.SqlJsStatic> => {
   if (!initsql) {
     initsql = (window as any).initSqlJs({
-      locateFile: (file:string) => `https://sql.js.org/dist/${file}`
+      locateFile: (_:string) => `/static/js/sql-wasm.v1.5.0.wasm`
     })
   }
   return initsql

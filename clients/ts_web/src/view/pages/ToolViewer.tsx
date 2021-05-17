@@ -56,11 +56,11 @@ export function ToolViewer() {
   }
   useEffect(() => {
     viewService.setFloatingMenus?.(ToolViewer.name, <>
-      <Button type="primary" size="large" shape="circle" icon={<FileOutlined />} onClick={selectFile}></Button>
       {file ? <Button type="primary" size="large" shape="circle" danger icon={<CloseOutlined />} onClick={() => {
         loadFile()
       }}></Button> : undefined}
-    </>, !!file)
+    </>,  <Button type="primary" size="large" shape="circle" icon={<FileOutlined />} onClick={selectFile}></Button>
+    , !!file)
   })
   useEffect(() => {
     const loadLastFile = async () => {

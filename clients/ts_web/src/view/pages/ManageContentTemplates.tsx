@@ -128,9 +128,9 @@ export function ManageContentTemplates () {
     )
   }
   useEffect(() => {
-  viewService.setFloatingMenus?.(ManageContentTemplates.name, <Button
+  viewService.setFloatingMenus?.(ManageContentTemplates.name,undefined, <Button
     icon={<PlusOutlined />}
-    type="default"
+    type="primary"
     size="large" shape="circle"
     onClick={addTemplate}
   >

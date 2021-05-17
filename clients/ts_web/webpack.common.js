@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 const webpack = require('webpack')
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: './src/index.tsx',
@@ -80,6 +81,14 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html'
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: "node_modules/sql.js/dist/sql-wasm.wasm", to: "static/js/sql-wasm.v1.5.0.wasm" },
+      ],
+      options: {
+        concurrency: 100,
+      },
     }),
     new webpack.DefinePlugin({
       ENV: { 

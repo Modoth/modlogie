@@ -46,14 +46,15 @@ const applyFloatingStyleFromPos = (style:Partial<CSSStyleDeclaration>, pos:Modlo
 type Store = {
   destory?():void
   pos:ModlogiePos,
-  menus:[string, React.ReactNode, boolean?][]
+  menus:[string, React.ReactNode,React.ReactNode, boolean?][]
 }
 
 export default function Modlogie () {
   const [store] = useState<Store>({ menus: [], pos: initPos })
   const [hidden, setHidden] = useState(false)
   const [inited, setInited] = useState(false)
-  const [floatingMenus, setFloatingMenus] = useState<React.ReactNode|undefined>()
+  const [fMenu, setFMenu] = useState<React.ReactNode|undefined>()
+  const [bMenu, setBMenu] = useState<React.ReactNode|undefined>()
   const [opacity, setOpacity] = useState<boolean|undefined>()
   const clearUp = () => {
     if (store.destory) {
@@ -64,13 +65,14 @@ export default function Modlogie () {
   const locate = useServicesLocate()
   const viewService = locate(IViewService)
   viewService.setShowFloatingMenu = (show?:boolean) => { setHidden(!show); return !hidden }
-  viewService.setFloatingMenus = (key:string, menus?:React.ReactNode, opacity?:boolean) => {
+  viewService.setFloatingMenus = (key:string, bmenus?:React.ReactNode,fmenus?:React.ReactNode,  opacity?:boolean) => {
     store.menus = store.menus.filter(([k]) => k !== key)
-    if (menus) {
-      store.menus.unshift([key, menus, opacity])
+    if (fmenus || bmenus) {
+      store.menus.unshift([key, bmenus, fmenus, opacity])
     }
-    setFloatingMenus(store.menus[0]?.[1])
-    setOpacity(store.menus[0]?.[2])
+    setBMenu(store.menus[0]?.[1])
+    setFMenu(store.menus[0]?.[2])
+    setOpacity(store.menus[0]?.[3])
   }
   const configService = locate(IUserConfigsService)
   useEffect(() => {
@@ -156,7 +158,7 @@ export default function Modlogie () {
           <Button size="large" type="primary"
             shape="circle" icon={<DragOutlined /> } ></Button>
         </div>
-        {open ? undefined : floatingMenus}
+        {open ? bMenu : fMenu}
       </div>
 
       {open ? <div onClick={(ev) => ev.stopPropagation()} > <ModlogieView onClose={() => setOpen(false)}></ModlogieView> </div> : undefined}

@@ -127,7 +127,8 @@ export function ManageConfigs () {
   useEffect(() => {
     viewService.setFloatingMenus?.(ManageConfigs.name, <Button
       icon={<ClearOutlined />}
-      type="default"
+      type="primary"
+      danger
       size="large" shape="circle"
       onClick={() => resetAll()}
     >

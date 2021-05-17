@@ -183,9 +183,9 @@ export function ManageUsers () {
     )
   }
   useEffect(() => {
-  viewService.setFloatingMenus?.(ManageUsers.name, <Button
+  viewService.setFloatingMenus?.(ManageUsers.name, undefined, <Button
     icon={<PlusOutlined />}
-    type="default"
+    type="primary"
     size="large" shape="circle"
     onClick={addUser}
   >

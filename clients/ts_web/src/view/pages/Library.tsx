@@ -587,7 +587,17 @@ export default function Library (props: LibraryProps) {
             ></Button>
           </Badge>
         ) : null}
-        <Button
+        {user.editingPermission ? (
+          <Button
+            icon={<PlusOutlined />}
+            type="primary"
+            size="large"
+            shape="circle"
+            onClick={addArticle}
+          ></Button>
+        ) : null}
+      </>,         
+      <Button
           type = 'primary'
           danger={!!filter 
             || !!(selectedPublishTag && selectedPublishTag.id) 
@@ -598,17 +608,7 @@ export default function Library (props: LibraryProps) {
           shape="circle"
           onClick={() => setShowFilter(true)}
           icon={<SearchOutlined />}
-        ></Button>
-        {user.editingPermission ? (
-          <Button
-            icon={<PlusOutlined />}
-            type="default"
-            size="large"
-            shape="circle"
-            onClick={addArticle}
-          ></Button>
-        ) : null}
-      </>)
+        ></Button>)
     }
   })
   const titleClick = () => {

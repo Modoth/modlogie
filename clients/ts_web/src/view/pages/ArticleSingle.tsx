@@ -107,7 +107,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
   const configsService = locate(IUserConfigsService)
   useEffect(() => {
     if (!sidePopup) {
-      viewService.setFloatingMenus?.(ArticleSingle.name, <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
+      viewService.setFloatingMenus?.(ArticleSingle.name, undefined,<Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
         size="large"
         shape="circle" onClick={() => setSidePopup(true)}>
       </Button>)

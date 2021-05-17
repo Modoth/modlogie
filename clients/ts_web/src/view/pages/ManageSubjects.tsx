@@ -397,20 +397,20 @@ export function ManageSubjects () {
   useEffect(() => {
     viewService.setFloatingMenus?.(ManageSubjects.name, <>
       <Button
-        icon={<SisternodeOutlined />}
-        type="default"
-        size="large" shape="circle"
-        onClick={() => addSubject()}
-      >
-      </Button>
-      <Button
         icon={<UploadOutlined />}
-        type="default"
+        type="primary"
         size="large" shape="circle"
         onClick={() => importTo()}
       >
       </Button>
-    </>)
+    </>,
+    <Button
+    icon={<SisternodeOutlined />}
+    type="primary"
+    size="large" shape="circle"
+    onClick={() => addSubject()}
+  >
+  </Button>)
   })
 
   useEffect(() => {
