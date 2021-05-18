@@ -12,6 +12,8 @@ import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 import Langs from '../common/Langs'
+import ISubjectsService from '../../domain/ServiceInterfaces/ISubjectsService'
+import Subject from '../../domain/ServiceInterfaces/Subject'
 
 const LastModlogiePosKey = 'LastModlogiePosKey'
 
@@ -60,9 +62,8 @@ export default function Modlogie () {
   const [fMenu, setFMenu] = useState<React.ReactNode|undefined>()
   const [bMenu, setBMenu] = useState<React.ReactNode|undefined>()
   const [opacity, setOpacity] = useState<boolean|undefined>()
-  const [root, setRoot] = useState('')
-  const [currentPage, setCurrentPage] = useState('')
-  const [currentHelpPage, setCurrentHelpPage] = useState('')
+  const [helpSubject, setHelpSubject] = useState<Subject|undefined>()
+  const [currentPage, setCurrentPage] = useState<string|undefined>()
   const clearUp = () => {
     if (store.destory) {
       store.destory()
@@ -73,9 +74,12 @@ export default function Modlogie () {
   const viewService = locate(IViewService)
   const langs = locate(ILangsService)
   const openHelp = async () => {
+    if (!helpSubject || !currentPage) {
+      return
+    }
     locate(IViewService).prompt(`[${langs.get(Langs.Help)}]${currentPage}`, [
-      { type: 'FolderOrArticle', value: currentHelpPage }
-    ], async () => true)
+      { type: 'FolderOrArticle', value: `${helpSubject.path}/${currentPage}` }
+    ])
   }
   viewService.setShowFloatingMenu = (show?:boolean) => { setHidden(!show); return !hidden }
   viewService.setFloatingMenus = (key:string, bmenus?:React.ReactNode, fmenus?:React.ReactNode, opacity?:boolean) => {
@@ -83,8 +87,10 @@ export default function Modlogie () {
     if (fmenus || bmenus) {
       store.menus.unshift([key, bmenus, fmenus, opacity])
       const currentPage = langs.get(key)
-      setCurrentPage(currentPage)
-      setCurrentHelpPage(root && (root + '/' + currentPage))
+      if (helpSubject && helpSubject.children && helpSubject.children.length) {
+        const currentHelpSub = helpSubject.children.find(s => s.name === currentPage)
+        setCurrentPage(currentHelpSub?.name)
+      }
     }
     setBMenu(store.menus[0]?.[1])
     setFMenu(store.menus[0]?.[2])
@@ -96,8 +102,9 @@ export default function Modlogie () {
       const pos = await configService.getOrDefault(LastModlogiePosKey, defaultPos)
       pos.bottom = Math.min(90, Math.max(pos.bottom, 0))
       const root = await locate(IConfigsService).getValueOrDefault(ConfigKeys.DOCS_PATH)
-      setRoot(root)
+      const subject = await locate(ISubjectsService).getByPath(root)
       store.pos = pos
+      setHelpSubject(subject)
       setInited(true)
     }
     loadConfigs()

@@ -108,6 +108,6 @@ export default function ClockView (props:{clock:IClock}) {
           }
         }}>{lang.get(LangKeys.ClockStart)}</Button>
     }
-     <span className="title" onClick={selectTimeAndRestart}><NumGroup value={hour}></NumGroup><NumGroup value={min}></NumGroup><NumGroup value={sec}></NumGroup></span>
+    <span className="title" onClick={selectTimeAndRestart}><NumGroup value={hour}></NumGroup><NumGroup value={min}></NumGroup><NumGroup value={sec}></NumGroup></span>
   </div>
 }
