@@ -46,9 +46,10 @@ export interface ArticleContentType {
 }
 
 export class NavigationSection {
-  constructor(public name: string, public level = 0) {
+  constructor (public name: string, public level = 0) {
 
   }
+
   children: Array<NavigationSection>
   locate?(direct?: boolean): void
   onLocated?(): void
@@ -74,7 +75,7 @@ export class ArticleContentViewerProps {
   articleId: string
 }
 
-export type ArticleContentExporterProps =  ArticleContentViewerProps & {resources:{name:string, url:string} []}
+export type ArticleContentExporterProps = ArticleContentViewerProps & {resources:{name:string, url:string} []}
 
 export class ArticleContentEditorProps extends ArticleContentViewerProps {
   callbacks: ArticleContentEditorCallbacks<[ArticleContent, Set<string>]>
@@ -82,49 +83,49 @@ export class ArticleContentEditorProps extends ArticleContentViewerProps {
 }
 
 export default class IPluginInfo {
-  constructor(typeNames: string[]) {
+  constructor (typeNames: string[]) {
     throw new Error('Method not implemented.')
   }
 
-  init(configs: IConfigsService): Promise<any> {
+  init (configs: IConfigsService): Promise<any> {
     throw new Error('Method not implemented.')
   }
 
-  get name(): string {
+  get name (): string {
     throw new Error('Method not implemented.')
   }
 
-  get types(): ArticleType[] {
+  get types (): ArticleType[] {
     throw new Error('Method not implemented.')
   }
 
-  get defaultConfigs(): Config[] {
+  get defaultConfigs (): Config[] {
     throw new Error('Method not implemented.')
   }
 
-  get langs(): { [key: string]: string } {
+  get langs (): { [key: string]: string } {
     throw new Error('Method not implemented.')
   }
 }
 
 export class PluginsConfig {
-  constructor(private _plugins: IPluginInfo[]) {
+  constructor (private _plugins: IPluginInfo[]) {
     this._allTypes = this._plugins.flatMap(p => p.types).filter(t => t.rootSubjectId)
     this._normalTypes = this._allTypes.filter(t => !t.admOnly && t.initArticleCount)
   };
 
-  get Plugins() {
+  get Plugins () {
     return Array.from(this._plugins)
   }
 
   private _allTypes: ArticleType[];
   private _normalTypes: ArticleType[];
 
-  get AllTypes() {
+  get AllTypes () {
     return this._allTypes
   }
 
-  get NormalTypes() {
+  get NormalTypes () {
     return this._normalTypes
   }
 }

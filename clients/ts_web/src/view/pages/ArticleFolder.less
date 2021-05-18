@@ -1,0 +1,28 @@
+.article-folder {
+  .article-folder-article {
+    touch-action: none;
+    pointer-events: none;
+  }
+  .ant-carousel .slick-dots {
+    z-index: 2;
+  }
+
+  .ant-carousel .slick-dots li {
+    width: 5px;
+    height: 5px;
+    button {
+      background: #f97241 !important;
+      opacity: 1 !important;
+      height: 5px;
+      border-radius: 5px;
+    }
+
+    &.slick-active {
+      width: 10px !important;
+    }
+  }
+
+  .ant-carousel {
+    touch-action: pan-x;
+  }
+}

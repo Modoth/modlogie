@@ -21,7 +21,7 @@ export default class PluginInfoBase implements IPluginInfo {
     public langs: { [key: string]: string } = {},
     public TypeDefaultConfigs:Config[] = []) {
     this.articleTypes = typeNames.map(typeName => {
-      const noTitle = typeName.startsWith('_')
+      const noTitle = typeName.startsWith('-')
       if (noTitle) {
         typeName = typeName.slice(1)
       }

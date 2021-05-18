@@ -49,7 +49,6 @@ function WikiLink (props: { href: string, target: string, children:any}) {
       }
       const name = decodeURIComponent(match[2]) || props.children[0]?.props?.value
       if (!name) { setNormal(true); return }
-      console.log(group, name)
       const wikiLevels = await locate(IWikiService).getWeights(group)
       const level = wikiLevels.get(name)
       if (level !== undefined && level >= curWikiLevel) {

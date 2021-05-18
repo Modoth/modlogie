@@ -60,7 +60,9 @@ export default function Modlogie () {
   const [fMenu, setFMenu] = useState<React.ReactNode|undefined>()
   const [bMenu, setBMenu] = useState<React.ReactNode|undefined>()
   const [opacity, setOpacity] = useState<boolean|undefined>()
+  const [root, setRoot] = useState('')
   const [currentPage, setCurrentPage] = useState('')
+  const [currentHelpPage, setCurrentHelpPage] = useState('')
   const clearUp = () => {
     if (store.destory) {
       store.destory()
@@ -71,12 +73,8 @@ export default function Modlogie () {
   const viewService = locate(IViewService)
   const langs = locate(ILangsService)
   const openHelp = async () => {
-    const root = await locate(IConfigsService).getValueOrDefault(ConfigKeys.DOCS_PATH)
-    if (!root) {
-      return
-    }
-    locate(IViewService).prompt(`[${langs.get(Langs.Help)}]${langs.get(currentPage)}`, [
-      { type: 'FolderOrArticle', value: root + '/' + currentPage }
+    locate(IViewService).prompt(`[${langs.get(Langs.Help)}]${currentPage}`, [
+      { type: 'FolderOrArticle', value: currentHelpPage }
     ], async () => true)
   }
   viewService.setShowFloatingMenu = (show?:boolean) => { setHidden(!show); return !hidden }
@@ -84,7 +82,9 @@ export default function Modlogie () {
     store.menus = store.menus.filter(([k]) => k !== key)
     if (fmenus || bmenus) {
       store.menus.unshift([key, bmenus, fmenus, opacity])
-      setCurrentPage(key)
+      const currentPage = langs.get(key)
+      setCurrentPage(currentPage)
+      setCurrentHelpPage(root && (root + '/' + currentPage))
     }
     setBMenu(store.menus[0]?.[1])
     setFMenu(store.menus[0]?.[2])
@@ -95,6 +95,8 @@ export default function Modlogie () {
     const loadConfigs = async () => {
       const pos = await configService.getOrDefault(LastModlogiePosKey, defaultPos)
       pos.bottom = Math.min(90, Math.max(pos.bottom, 0))
+      const root = await locate(IConfigsService).getValueOrDefault(ConfigKeys.DOCS_PATH)
+      setRoot(root)
       store.pos = pos
       setInited(true)
     }
