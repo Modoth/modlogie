@@ -3,6 +3,14 @@
   background: #fff;
   min-height: 100vh;
   font-family: monospace;
+  font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  font-size: 15px;
+  color: #404040;
+  font-feature-settings: "tnum";
+  font-variant: tabular-nums;
   margin-top: 50px;
   overflow: hidden;
   a {
@@ -85,7 +93,7 @@
         text-align: center;
       }
 
-      .status-text{
+      .status-text {
         flex: 1;
         align-self: center;
         margin-left: 5px;
@@ -119,32 +127,33 @@
     }
   }
 
-.mdg.hover {
-  &>.mdg-f{
-    background: #e8912e20;
-    @media print {
-      background: unset;
+  .mdg.hover {
+    & > .mdg-f {
+      background: #e8912e20;
+      @media print {
+        background: unset;
+      }
     }
   }
-}
 
   & > .article {
     max-width: 780px;
     user-select: text;
     position: relative;
     line-height: 2em;
-    
-    .article-content[contenteditable="true"], .embed-src {
+
+    .article-content[contenteditable="true"],
+    .embed-src {
       outline: none !important;
       .mdg.hover {
-        &>.mdg-f{
+        & > .mdg-f {
           background: unset;
           @media print {
             background: unset;
           }
         }
       }
-      .mdg>.mdg-b{
+      .mdg > .mdg-b {
         font-size: 0.85em;
         color: #0008;
         display: unset;
@@ -152,8 +161,9 @@
     }
   }
 
-  &.reading-theme-1 > .article p{
-    background-image: linear-gradient(to right, #00000008 1px, transparent 1px), linear-gradient(to bottom, #00000008 1px, transparent 1px);
+  &.reading-theme-1 > .article p {
+    background-image: linear-gradient(to right, #00000008 1px, transparent 1px),
+      linear-gradient(to bottom, #00000008 1px, transparent 1px);
     background-size: 1em 1em;
     line-height: 3em;
     padding-bottom: 1px;
@@ -184,24 +194,24 @@
         }
         &.item {
           border-top: 1px solid #00000008;
-          & .item-indent{
-            white-space:pre;
+          & .item-indent {
+            white-space: pre;
             color: #0003;
             font-family: monospace;
           }
-          &:first-of-type{
+          &:first-of-type {
             border-top: none;
           }
         }
 
-        &.item-0{
+        &.item-0 {
           font-size: 1.05em;
-          & .item-indent{
+          & .item-indent {
             display: none;
           }
         }
 
-        &.current-item{
+        &.current-item {
           // background: linear-gradient(0, #e8912e, #e8912ecc);
           color: #e8912ecc;
           font-weight: bolder;
@@ -210,9 +220,9 @@
     }
   }
 
-  .show-pop.side .catelog > div.item{
-        padding: 8px 5px;
-    }
+  .show-pop.side .catelog > div.item {
+    padding: 8px 5px;
+  }
 }
 
 .single-article-content-menu-btn.title {
@@ -228,12 +238,7 @@
 @media (min-width: 780px) {
   .single-article {
     background-color: #fff;
-    color: #404040;
     margin-left: 25%;
-    font-size: 15px;
-    font-family: -apple-system,BlinkMacSystemFont,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-feature-settings: "tnum";
-    font-variant: tabular-nums;
     .menus {
       left: 25%;
       background-color: #fff;
@@ -297,7 +302,7 @@
       display: none;
     }
 
-    .t{
+    .t {
       color: unset;
     }
 

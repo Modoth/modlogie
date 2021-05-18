@@ -91,7 +91,7 @@ export default class ClocksAppService extends IServicesLocator implements IClock
      const title = clocks.map(clock => `${'until' in clock
      ? new Date(clock.until).toLocaleTimeString()
     : new Date().toLocaleTimeString()} ${clock.msg || ''}`).join('\n')
-     viewService.prompt(title, []])
+     viewService.prompt(title, [])
    }
 
    async init ():Promise<void> {
