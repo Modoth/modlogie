@@ -539,7 +539,7 @@ export default function ArticleView (props: {
               }
             }} mode="horizontal" className={classNames('actions-list')}>{[
                 favoriteService ? <MenuItem key="toogle-fav"><Badge>
-                  <Button type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
+                  <Button type="link" className="heart" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
                     key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
                 </Badge></MenuItem> : null,
                 user.printPermission ? (inArticleList

@@ -112,6 +112,7 @@ export default function ServiceView (props: {
     setModalTitle('')
     setModalSubTitle('')
     setModalVisible(false)
+    document.body.style.overflow = ''
     setModalFileds([])
     setOnModalOk(undefined)
     setModalImageField(false)
@@ -138,6 +139,7 @@ export default function ServiceView (props: {
         setModalFileds(fields)
         setOnModalOk({ onOk })
         setModalVisible(true)
+        document.body.style.overflow = 'hidden'
         setModalFileFieldData(undefined)
       }
       const singleField = fields.length === 1 ? fields[0] : undefined
@@ -280,7 +282,7 @@ export default function ServiceView (props: {
       const canvas = await html2canvas(element)
       viewService.setLoading(false)
       const imgUrl = canvas.toDataURL('image/png')
-      if(imgUrl === 'data:,'){
+      if (imgUrl === 'data:,') {
         viewService.error(langs.get(LangKeys.ScreenShotTooHuge), 2000)
         return
       }
@@ -422,7 +424,7 @@ export default function ServiceView (props: {
 
           ? <>
 
-            <div className="img-preview" onClick={()=>setPreviewImgUrl('')}>
+            <div className="img-preview" onClick={() => setPreviewImgUrl('')}>
               <div className="img-panel" >
                 <img ref={previewImgRef} src={previewImgUrl}></img>
               </div>

@@ -1,13 +1,50 @@
 import './MarkdownViewer.less'
 import { getSimpleStringHash } from '../../../view/pages/common'
 import { NavigationSection } from '../../../pluginbase/IPluginInfo'
-import { useMagicMask, useMagicSeed } from '../../../view/common/Contexts'
+import { useMagicMask, useMagicSeed, useServicesLocate, useWikiLevel } from '../../../view/common/Contexts'
 import classNames from 'classnames'
 import HighlightLive from '../../../view/pages/HighlightLive'
 import LocatableView from '../../../infrac/components/LocatableView'
 import Markdown from '../../../infrac/components/Markdown'
 import React, { useEffect, useState } from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
+import IWikiService from '../../../domain/ServiceInterfaces/IWikiService'
+
+function WikiLink (props: { href: string, target: string, children:any}) {
+  const curWikiLevel = useWikiLevel()
+  const locate = useServicesLocate()
+  const [normal, setNormal] = useState(false)
+  useEffect(() => {
+    (async () => {
+      setNormal(false)
+      if (curWikiLevel <= 0 || !props.href) { setNormal(true); return }
+      const match = props.href.match(/^(\w*?):(.*)$/)
+      if (!match) { setNormal(true); return }
+      const group = match[1]
+      if (!group) {
+        setNormal(true)
+        return
+      }
+      const proto = group.toLocaleLowerCase()
+      if (proto === 'http' || proto === 'https' || proto === 'article') {
+        setNormal(true)
+        return
+      }
+      const name = decodeURIComponent(match[2]) || props.children[0]?.props?.value
+      if (!name) { setNormal(true); return }
+      console.log(group, name)
+      const wikiLevels = await locate(IWikiService).getWeights(group)
+      const level = wikiLevels.get(name)
+      if (level !== undefined && level >= curWikiLevel) {
+        setNormal(true)
+      }
+    })()
+  }, [curWikiLevel])
+  if (normal) {
+    return <a href={props.href} target={props.target}>{props.children}</a>
+  }
+  return <>{props.children}</>
+}
 
 const getText = (children: [React.ReactElement] | string): string => {
   if (children == null) {
@@ -37,6 +74,8 @@ const getRenders = (root: NavigationSection | undefined, magicMask: number, magi
     const url = contentBase + props.src
     return <ImageViewer alt={props.alt} src={url}></ImageViewer>
   }
+
+  renders.link = WikiLink
 
   // eslint-disable-next-line react/display-name
   renders.strong = (props: any) => {

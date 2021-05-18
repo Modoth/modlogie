@@ -39,6 +39,10 @@ export default class IViewService {
     throw new Error('Method not implemented.')
   }
 
+  setWikiLevel? (wikiLevel: number): void {
+    throw new Error('Method not implemented.')
+  }
+
   setShowFloatingMenu? (show?: boolean): boolean {
     throw new Error('Method not implemented.')
   }

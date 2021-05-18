@@ -136,6 +136,10 @@ export class LangKeysInterface {
   Viewers = 'Viewers';
   Welcome = 'Welcome';
   Weight = 'Weight';
+  WikiLevel = 'WikiLevel';
+  WikiLevelLow = 'WikiLevelLow';
+  WikiLevelNormal = 'WikiLevelNormal';
+  WikiLevelHigh = 'WikiLevelHigh';
   Word = 'Word';
   Yes = 'Yes';
 }

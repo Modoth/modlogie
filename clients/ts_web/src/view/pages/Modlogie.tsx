@@ -46,7 +46,7 @@ const applyFloatingStyleFromPos = (style:Partial<CSSStyleDeclaration>, pos:Modlo
 type Store = {
   destory?():void
   pos:ModlogiePos,
-  menus:[string, React.ReactNode,React.ReactNode, boolean?][]
+  menus:[string, React.ReactNode, React.ReactNode, boolean?][]
 }
 
 export default function Modlogie () {
@@ -65,7 +65,7 @@ export default function Modlogie () {
   const locate = useServicesLocate()
   const viewService = locate(IViewService)
   viewService.setShowFloatingMenu = (show?:boolean) => { setHidden(!show); return !hidden }
-  viewService.setFloatingMenus = (key:string, bmenus?:React.ReactNode,fmenus?:React.ReactNode,  opacity?:boolean) => {
+  viewService.setFloatingMenus = (key:string, bmenus?:React.ReactNode, fmenus?:React.ReactNode, opacity?:boolean) => {
     store.menus = store.menus.filter(([k]) => k !== key)
     if (fmenus || bmenus) {
       store.menus.unshift([key, bmenus, fmenus, opacity])

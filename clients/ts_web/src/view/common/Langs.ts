@@ -119,7 +119,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LocalFile = '本地文件';
   Login = '登陆';
   Logout = '注销';
-  MagicMaskLevel = '空白'
+  MagicMaskLevel = '重点留白'
   MagicMaskNone = '无';
   MagicMaskLow = '少';
   MagicMaskNormal = '中';
@@ -188,6 +188,10 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Viewers = '阅读器(Beta)';
   Welcome = '感谢使用';
   Weight = '权重';
+  WikiLevel = '生词高亮';
+  WikiLevelLow = '少';
+  WikiLevelNormal = '中';
+  WikiLevelHigh = '多';
   Word = '单词';
   Yes = '是';
 }

@@ -31,22 +31,12 @@ export default class NavigationService extends IServicesLocator implements INavi
       window.location.href = url
       return
     }
-    if (lProto === 'comment:') {
-      this.locate(IViewService).prompt(
-        title, [
-          {
-            type: 'Markdown',
-            value: decodeURIComponent(u.pathname)
-          }
-        ])
-      return
-    }
     if (lProto) {
       var root:string|undefined = lProto.replace(/:$/, '')
       if (root === 'article') {
         root = undefined
       }
-      let articlePathOrName = u.pathname || title
+      let articlePathOrName = decodeURIComponent(u.pathname) || title
       if (!root) {
         if (articlePathOrName[0] !== '/') {
           articlePathOrName = '/' + articlePathOrName

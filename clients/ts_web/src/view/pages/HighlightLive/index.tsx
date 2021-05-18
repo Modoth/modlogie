@@ -58,7 +58,7 @@ export default function HighlightLive (props: { inline?:boolean, language: strin
       {user.editingPermission ? <EditOutlined className="jump-to" onClick={previewArticleByPath(locate, pathOrName, filename(pathOrName), proto)} /> : undefined}
     </div>
   }
-  if(props.inline){
+  if (props.inline) {
     return <code>{props.value}</code>
   }
   const viewerInfo = locate(IEditorsService).getViewerByFileName(lang)

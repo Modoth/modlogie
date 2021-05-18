@@ -14,6 +14,10 @@ export const MagicMaskContext = React.createContext<number>(0)
 export const useMagicMask = () => useContext(MagicMaskContext)
 export const MagicMaskProvider = MagicMaskContext.Provider
 
+export const WikiLevelContext = React.createContext<number>(0)
+export const useWikiLevel = () => useContext(WikiLevelContext)
+export const WikiLevelProvider = WikiLevelContext.Provider
+
 export const MagicSeedContext = React.createContext<number>(0)
 export const useMagicSeed = () => useContext(MagicSeedContext)
 export const MagicSeedProvider = MagicSeedContext.Provider

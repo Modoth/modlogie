@@ -70,7 +70,7 @@ import IUserConfigsService from './domain/ServiceInterfaces/IUserConfigsService'
 import IUserLoginService from './domain/ServiceInterfaces/IUserLoginService'
 import IUsersService from './domain/ServiceInterfaces/IUsersService'
 import IViewService from './app/Interfaces/IViewService'
-import IWikiService from './domain/ServiceInterfaces/IWikiService'
+import IWikiService, { WikiLevels } from './domain/ServiceInterfaces/IWikiService'
 import IWordsStorage from './domain/ServiceInterfaces/IWordsStorage'
 import KeyValueStorageManager from './domain/Services/KeyValueStorageManager'
 import LangInterpretersService from './domain/Services/Interpreters/LangInterpretersService'
@@ -364,6 +364,7 @@ const buildServicesLocator = () => {
 
 const bootstrap = async () => {
   const MagicMaskKey = 'Magic Mask Level'
+  const WikiLevelKey = 'Wiki Level Level'
   const invalidSurfix = window.location.origin + '/%23/'
   if (window.location.href.startsWith(invalidSurfix)) {
     window.location.href = window.location.href.replace(invalidSurfix, '/#/')
@@ -377,6 +378,7 @@ const bootstrap = async () => {
   const editorsService = serviceLocator.locate(IEditorsService)
   const account = await autoAccountService?.get()
   let magicMask = 0
+  let wikiLevel = 0
   await Promise.all([
     langsService.load(Langs, ...plugins.Plugins.map((p) => p.langs)),
     account && account.userName && account.password
@@ -385,13 +387,14 @@ const bootstrap = async () => {
         .catch((e) => console.log(e))
       : loginService.checkLogin(),
     editorsService.init(),
-    serviceLocator.locate(IUserConfigsService).getOrDefault(MagicMaskKey, 0).then(s => { magicMask = s })
+    serviceLocator.locate(IUserConfigsService).getOrDefault(MagicMaskKey, 0).then(s => { magicMask = s }),
+    serviceLocator.locate(IUserConfigsService).getOrDefault(WikiLevelKey, WikiLevels[WikiLevels.length - 1]).then(s => { wikiLevel = s })
   ])
   ReactDOM.render(
     <React.StrictMode>
       <ServicesLocateProvider value={serviceLocator.locate.bind(serviceLocator)}>
         <ConfigProvider locale={zhCN}>
-          <App magicMask={magicMask}/>
+          <App magicMask={magicMask} wikiLevel={wikiLevel}/>
         </ConfigProvider>
       </ServicesLocateProvider>
     </React.StrictMode>,
