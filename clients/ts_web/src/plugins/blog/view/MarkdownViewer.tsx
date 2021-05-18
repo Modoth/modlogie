@@ -9,6 +9,18 @@ import Markdown from '../../../infrac/components/Markdown'
 import React, { useEffect, useState } from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
 import IWikiService from '../../../domain/ServiceInterfaces/IWikiService'
+import IConfigsService from '../../../domain/ServiceInterfaces/IConfigsSercice'
+import ConfigKeys from '../../../domain/ServiceInterfaces/ConfigKeys'
+import IServicesLocator from '../../../infrac/ServiceLocator/IServicesLocator'
+
+let wikiSubjectsPromise : Promise<Set<string>>| undefined
+const getWikiSubjects = (locate:<IConfigsService>(ctor: new (...args: any) => IConfigsService) => IConfigsService & IServicesLocator) => {
+  if (!wikiSubjectsPromise) {
+    wikiSubjectsPromise = locate(IConfigsService).getValuesOrDefault(ConfigKeys.WIKI_SUBJECTS)
+      .then(s => new Set(s))
+  }
+  return wikiSubjectsPromise!
+}
 
 function WikiLink (props: { href: string, target: string, children:any}) {
   const curWikiLevel = useWikiLevel()
@@ -18,6 +30,11 @@ function WikiLink (props: { href: string, target: string, children:any}) {
     (async () => {
       setNormal(false)
       if (curWikiLevel <= 0 || !props.href) { setNormal(true); return }
+      const wikiSubjects = await getWikiSubjects(locate)
+      if (!wikiSubjects.size) {
+        setNormal(true)
+        return
+      }
       const match = props.href.match(/^(\w*?):(.*)$/)
       if (!match) { setNormal(true); return }
       const group = match[1]
@@ -26,7 +43,7 @@ function WikiLink (props: { href: string, target: string, children:any}) {
         return
       }
       const proto = group.toLocaleLowerCase()
-      if (proto === 'http' || proto === 'https' || proto === 'article') {
+      if (proto === 'http' || proto === 'https' || proto === 'article' || !wikiSubjects.has(group)) {
         setNormal(true)
         return
       }

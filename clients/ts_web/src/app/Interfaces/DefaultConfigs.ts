@@ -14,9 +14,9 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   ALLOW_LOGIN = new Config(ConfigKeys.ALLOW_LOGIN, ConfigType.BOOLEAN, 'false');
   ALLOW_PRINT = new Config(ConfigKeys.ALLOW_PRINT, ConfigType.ENUM, UserRoleKeys.UNLOGIN, '', [UserRoleKeys.UNLOGIN, UserRoleKeys.NORMAL, UserRoleKeys.AUTHORISED, UserRoleKeys.ADM]);
   EDITOR_TYPES=new Config(ConfigKeys.EDITOR_TYPES, ConfigType.STRING, '');// txt txt;
-  EDITORS_PATH=new Config(ConfigKeys.EDITORS_PATH, ConfigType.STRING, '/apps/editors');
+  EDITORS_PATH=new Config(ConfigKeys.EDITORS_PATH, ConfigType.STRING, '/_apps/editors');
   INTERPRETER_TYPES=new Config(ConfigKeys.INTERPRETER_TYPES, ConfigType.STRING, '');// go go;
-  INTERPRETERS_PATH=new Config(ConfigKeys.INTERPRETERS_PATH, ConfigType.STRING, '/apps/interpreters');
+  INTERPRETERS_PATH=new Config(ConfigKeys.INTERPRETERS_PATH, ConfigType.STRING, '/_apps/interpreters');
   FRAMEWORKS_PATH=new Config(ConfigKeys.FRAMEWORKS_PATH, ConfigType.STRING, '/fw');
   IMPORT_SUBJECTS_AUTOFIX = new Config(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX, ConfigType.BOOLEAN, 'false');
   LANGS_SERVER = new Config(ConfigKeys.LANGS_SERVER, ConfigType.STRING, '');// _https://www.modoth.cn:8000/$lang/$version/$code,perl,bash
@@ -28,15 +28,16 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   PLUGINS = new Config(ConfigKeys.PLUGINS, ConfigType.STRING, '');
   RECOMMENT_COUNT = new Config(ConfigKeys.RECOMMENT_COUNT, ConfigType.NUMBER, '');
   RECOMMENT_TITLE = new Config(ConfigKeys.RECOMMENT_TITLE, ConfigType.STRING, 'Recommends');
-  VIEWER_PATH=new Config(ConfigKeys.VIEWER_PATH, ConfigType.STRING, '/apps/viewers');
+  VIEWER_PATH=new Config(ConfigKeys.VIEWER_PATH, ConfigType.STRING, '/_apps/viewers');
   VIEWER_TYPES=new Config(ConfigKeys.VIEWER_TYPES, ConfigType.STRING, '');// txt txt;
-  WEB_SITE_AVATAR = new Config(ConfigKeys.WEB_SITE_AVATAR, ConfigType.RESOURCE, '/configs/avatar');
+  WEB_SITE_AVATAR = new Config(ConfigKeys.WEB_SITE_AVATAR, ConfigType.RESOURCE, '/_configs/avatar');
   WEB_SITE_DESCRIPTION = new Config(ConfigKeys.WEB_SITE_DESCRIPTION, ConfigType.TEXT, '');
   WEB_SITE_FOOTER = new Config(ConfigKeys.WEB_SITE_FOOTER, ConfigType.TEXT, '');
-  WEB_SITE_ICON = new Config(ConfigKeys.WEB_SITE_ICON, ConfigType.RESOURCE, '/configs/icon');
-  WEB_SITE_LOGO = new Config(ConfigKeys.WEB_SITE_LOGO, ConfigType.RESOURCE, '/configs/logo');
-  WEB_SITE_LOGO_TITLE = new Config(ConfigKeys.WEB_SITE_LOGO_TITLE, ConfigType.RESOURCE, '/configs/long_logo');
+  WEB_SITE_ICON = new Config(ConfigKeys.WEB_SITE_ICON, ConfigType.RESOURCE, '/_configs/icon');
+  WEB_SITE_LOGO = new Config(ConfigKeys.WEB_SITE_LOGO, ConfigType.RESOURCE, '/_configs/logo');
+  WEB_SITE_LOGO_TITLE = new Config(ConfigKeys.WEB_SITE_LOGO_TITLE, ConfigType.RESOURCE, '/_configs/long_logo');
   WEB_SITE_NAME = new Config(ConfigKeys.WEB_SITE_NAME, ConfigType.STRING, 'Blog');
+  WIKI_SUBJECTS = new Config(ConfigKeys.WIKI_SUBJECTS, ConfigType.STRING, '');
 }
 const DefaultConfigs: Config[] = Array.from(Object.values(new DefaultConfigsClass()))
 

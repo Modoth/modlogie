@@ -26,6 +26,7 @@ export class ConfigKeysInterface<T> {
     WEB_SITE_LOGO_TITLE: T = <any>'WEB_SITE_LOGO_TITLE';
     WEB_SITE_LOGO: T = <any>'WEB_SITE_LOGO';
     WEB_SITE_NAME: T = <any>'WEB_SITE_NAME';
+    WIKI_SUBJECTS:T=<any>'WIKI_SUBJECTS';
 }
 
 export function getArticleTags (typeName: string) {

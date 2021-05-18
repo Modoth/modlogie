@@ -37,6 +37,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   WEB_SITE_LOGO = '网站Logo';
   WEB_SITE_LOGO_TITLE = '网站标题Logo';
   WEB_SITE_NAME = '网站名';
+  WIKI_SUBJECTS = '百科主题';
   //
   STRING = '字符串';
   ENUM = '枚举';
