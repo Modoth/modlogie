@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +15,19 @@ using Modlogie.Api.Common;
 using Modlogie.Api.Files;
 using Modlogie.Api.Tags;
 using Modlogie.Domain;
+using Newtonsoft.Json;
 using static Modlogie.Api.Files.File.Types;
 using File = Modlogie.Domain.Models.File;
 using FileTag = Modlogie.Api.Files.FileTag;
 
 namespace Modlogie.Api.Services
 {
+    class VersionCache
+    {
+        public string Version { get; set; }
+        public DateTime Created { get; set; }
+    }
+
     public static class FilesServiceUtils
     {
         public static bool HasWritePermission(this LoginUser user)
@@ -48,6 +56,7 @@ namespace Modlogie.Api.Services
         private const string PathSep = "/";
 
         private const string FoldersVersionCacheKey = "FILES_VERSION";
+        private string FileWeightsVersionCacheKey(String rootName) => $"FILEWEIGHTS_VERSION_{rootName}";
 
         private static readonly Expression<Func<File, Files.File>> Selector = i =>
             new Files.File
@@ -129,17 +138,20 @@ namespace Modlogie.Api.Services
             return path.Substring(0, path.LastIndexOf(PathSep, StringComparison.Ordinal));
         }
 
-        private async Task<IQueryable<File>> FilterPrivate(IQueryable<File> items, ServerCallContext context){
+        private async Task<IQueryable<File>> FilterPrivate(IQueryable<File> items, ServerCallContext context)
+        {
             //todo: permission via filetype: File->Adm, Resource->Login
             var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
             if (!readPrivate)
             {
                 var defStr = await _keyValueService.GetValue(ServerKeys.DefaultPrivate.Key);
                 var defPrivate = defStr == "true";
-                if(defPrivate){
+                if (defPrivate)
+                {
                     items = items.Where(i => i.Private == (ulong)PrivateType.Public);
                 }
-                else{
+                else
+                {
                     items = items.Where(i => i.Private != (ulong)PrivateType.Private);
                 }
             }
@@ -286,6 +298,82 @@ namespace Modlogie.Api.Services
             }
         }
 
+        private async Task<FileWeightsReply> GetFileWeightsInternal(GetFileWeightsRequest request)
+        {
+            var reply = new FileWeightsReply();
+            if (string.IsNullOrWhiteSpace(request.RootName))
+            {
+                reply.Error = Error.NoSuchEntity;
+                return reply;
+            }
+            var path = PathSep + request.RootName;
+            var folder = await _service.All().Where(k => k.Name == request.RootName && k.Path == path && k.Type == (int)FileType.Folder)
+                    .FirstOrDefaultAsync();
+            if (folder == null)
+            {
+                reply.Error = Error.NoSuchEntity;
+                return reply;
+            }
+            var pathStart = folder.Path + PathSep;
+            var weights = await _service.All().Where(p => p.Type == (int)FileType.Normal && p.Path.StartsWith(pathStart)).Select(f => new { f.Name, f.Weight })
+            .ToArrayAsync();
+            foreach (var w in weights)
+            {
+                reply.Weights.Add(w.Name.ToString(), w.Weight ?? 0);
+            }
+            var codec = new MapField<string, int>.Codec(FieldCodec.ForString(0), FieldCodec.ForInt32(1), 0);
+            var version = await _contentService.Add(_cachesGroup, fs =>
+            {
+                using (var s = new CodedOutputStream(fs))
+                {
+                    reply.WriteTo(s);
+                }
+
+                return Task.FromResult(true);
+            }, "bin");
+            await _cache.SetStringAsync(FileWeightsVersionCacheKey(request.RootName), version);
+            return reply;
+        }
+
+        private async Task ClearFileWeightsCache(String path)
+        {
+            var paths = path.Split(PathSep);
+            if (paths.Length < 2)
+            {
+                return;
+            }
+            var rootName = paths[1];
+            var cacheKey = FileWeightsVersionCacheKey(rootName);
+            var version = await _cache.GetStringAsync(cacheKey);
+            if (!string.IsNullOrWhiteSpace(version))
+            {
+                await _cache.RemoveAsync(cacheKey);
+                try
+                {
+                    await _contentService.Delete(version);
+                }
+                catch
+                {
+                    //
+                }
+            }
+        }
+
+        public override async Task<FileWeightsReply> GetFileWeights(GetFileWeightsRequest request, ServerCallContext context)
+        {
+            var version = await _cache.GetStringAsync(FileWeightsVersionCacheKey(request.RootName));
+            if (string.IsNullOrWhiteSpace(version) || !await _contentService.Existed(version))
+            {
+                var reply = await GetFileWeightsInternal(request);
+                return reply;
+            }
+            else
+            {
+                var reply = new FileWeightsReply { Version = version };
+                return reply;
+            }
+        }
+
         public override async Task<FilesReply> GetFiles(GetFilesRequest request, ServerCallContext context)
         {
             var reply = new FilesReply();
@@ -311,7 +399,7 @@ namespace Modlogie.Api.Services
             }
 
             var readPrivate = (await _userService.GetUser(context.GetHttpContext())).HasReadPrivatePermission();
-            
+
             if (!readPrivate)
             {
                 items = items.Where(i => i.Private == (ulong)PrivateType.Public);
@@ -741,6 +829,10 @@ namespace Modlogie.Api.Services
                 {
                     await ClearFolderVersionsCache();
                 }
+                if (file.Type == (int)FileType.Normal)
+                {
+                    await ClearFileWeightsCache(file.Path);
+                }
 
                 await trans.Commit();
             }
@@ -809,6 +901,10 @@ namespace Modlogie.Api.Services
             if (item.Type == (int)FileType.Folder)
             {
                 await ClearFolderVersionsCache();
+            }
+            if (item.Type == (int)FileType.Normal || item.Type == (int)FileType.Folder)
+            {
+                await ClearFileWeightsCache(item.Path);
             }
 
             return reply;
@@ -929,8 +1025,10 @@ namespace Modlogie.Api.Services
             var originContent = item.Content;
             item.Content = await _contentService.Add(_resourcesGroup, request.Content);
             var resourceIds = new HashSet<Guid>();
-            foreach(var idStr in request.ResourceIds){
-                if (Guid.TryParse(idStr,out var resourceId)){
+            foreach (var idStr in request.ResourceIds)
+            {
+                if (Guid.TryParse(idStr, out var resourceId))
+                {
                     resourceIds.Add(resourceId);
                 }
             }
@@ -1004,7 +1102,8 @@ namespace Modlogie.Api.Services
 
         public override async Task<Reply> UpdateComment(UpdateCommentRequest request, ServerCallContext context)
         {
-            return await UpdateFields(request.Id, context, item => {
+            return await UpdateFields(request.Id, context, item =>
+            {
                 item.Comment = request.Comment;
                 return Task.FromResult(Error.None);
             });
@@ -1012,15 +1111,21 @@ namespace Modlogie.Api.Services
 
         public override async Task<Reply> UpdateWeight(UpdateWeightRequest request, ServerCallContext context)
         {
-            return await UpdateFields(request.Id, context, item => {
+            return await UpdateFields(request.Id, context, async item =>
+            {
+                if (item.Type == (int)FileType.Normal)
+                {
+                    await ClearFileWeightsCache(item.Path);
+                }
                 item.Weight = request.Weight;
-                return Task.FromResult(Error.None);
+                return Error.None;
             });
         }
 
         public override async Task<Reply> UpdatePrivate(UpdatePrivateRequest request, ServerCallContext context)
         {
-            return await UpdateFields(request.Id, context, item => {
+            return await UpdateFields(request.Id, context, item =>
+            {
                 item.Private = (ulong)request.Private;
                 return Task.FromResult(Error.None);
             });
@@ -1028,7 +1133,8 @@ namespace Modlogie.Api.Services
 
         public override async Task<Reply> UpdateAdditionalType(UpdateAdditionalTypeRequest request, ServerCallContext context)
         {
-            return await UpdateFields(request.Id, context, item => {
+            return await UpdateFields(request.Id, context, item =>
+            {
                 item.AdditionalType = request.AdditionalType;
                 return Task.FromResult(Error.None);
             });
@@ -1140,7 +1246,8 @@ namespace Modlogie.Api.Services
                     {
                         foreach (var sub in children)
                         {
-                            if(sub.Type == (int)FileType.Resource){
+                            if (sub.Type == (int)FileType.Resource)
+                            {
                                 resourceContentToDelete.Add(sub.Content);
                             }
                         }
@@ -1169,6 +1276,10 @@ namespace Modlogie.Api.Services
                     else if (file.Type == (int)FileType.Folder)
                     {
                         await ClearFolderVersionsCache();
+                    }
+                    if (file.Type == (int)FileType.Normal || file.Type == (int)FileType.Folder)
+                    {
+                        await ClearFileWeightsCache(file.Path);
                     }
 
                     await trans.Commit();

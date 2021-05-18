@@ -7,6 +7,7 @@ option csharp_namespace = "Modlogie.Api.Files";
 
 service FilesService {
   rpc GetFolders(google.protobuf.Empty) returns (FilesReply);
+  rpc GetFileWeights(GetFileWeightsRequest) returns (FileWeightsReply);
   rpc AddFolders(AddFoldersRequest) returns (FilesReply);
   rpc GetFiles(GetFilesRequest) returns (FilesReply);
   rpc Delete(modlogie.messages.StringId) returns (modlogie.messages.Reply);
@@ -127,6 +128,12 @@ message File {
   repeated FileTag tags = 12;
 }
 
+message FileWeightsReply{
+  modlogie.messages.Error error = 1;
+  string version = 2;
+  map<string, int32> weights = 3;
+}
+
 message FilesReply {
   modlogie.messages.Error error = 1;
   int32 total = 2;
@@ -158,6 +165,10 @@ message GetFilesRequest {
   string parent_id = 1;
   int32 skip = 2;
   int32 take = 3;
+}
+
+message GetFileWeightsRequest {
+  string rootName = 1;
 }
 
 message FileReply {

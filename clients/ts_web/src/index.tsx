@@ -70,6 +70,7 @@ import IUserConfigsService from './domain/ServiceInterfaces/IUserConfigsService'
 import IUserLoginService from './domain/ServiceInterfaces/IUserLoginService'
 import IUsersService from './domain/ServiceInterfaces/IUsersService'
 import IViewService from './app/Interfaces/IViewService'
+import IWikiService from './domain/ServiceInterfaces/IWikiService'
 import IWordsStorage from './domain/ServiceInterfaces/IWordsStorage'
 import KeyValueStorageManager from './domain/Services/KeyValueStorageManager'
 import LangInterpretersService from './domain/Services/Interpreters/LangInterpretersService'
@@ -98,6 +99,7 @@ import TextImageServiceSingleton from './infrac/Image/TextImageServiceSingleton'
 import UserConfigsService from './domain/Services/UserConfigsService'
 import UserLoginService from './impl/RemoteServices/UserLoginService'
 import UsersService from './impl/RemoteServices/UsersService'
+import WikiServiceSingleton from './domain/Services/WikiServiceSingleton'
 import WordsStorageSingleton from './impl/WordsStorageSingleton'
 import zhCN from 'antd/es/locale/zh_CN'
 
@@ -267,6 +269,7 @@ const buildServicesLocator = () => {
   serviceLocator.register(IWordsStorage, WordsStorageSingleton)
   serviceLocator.register(ICsvItemsExporter, CsvItemsExporter)
   serviceLocator.register(IAnkiItemsExporter, AnkiItemsExporter)
+  serviceLocator.registerInstance(IWikiService, new WikiServiceSingleton())
 
   const interpretersService = new LangInterpretersService()
   serviceLocator.registerInstance(
