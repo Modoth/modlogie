@@ -26,6 +26,15 @@ namespace Modlogie.Infrastructure.Data
         public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseMySql("server=db;database=modlogie;user=root;password=123456", x => x.ServerVersion("10.5.9-mariadb"));
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Content>(entity =>
@@ -152,6 +161,8 @@ namespace Modlogie.Infrastructure.Data
 
                 entity.HasIndex(e => e.Type);
 
+                entity.HasIndex(e => e.Weight);
+
                 entity.Property(e => e.Id)
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
@@ -176,10 +187,6 @@ namespace Modlogie.Infrastructure.Data
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
 
-                entity.Property(e => e.NormalFilesCount)
-                    .HasColumnType("int(11)")
-                    .HasDefaultValueSql("'0'");
-
                 entity.Property(e => e.ParentId)
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
@@ -191,10 +198,14 @@ namespace Modlogie.Infrastructure.Data
                     .HasCollation("utf8mb4_unicode_ci");
 
                 entity.Property(e => e.Private)
-                    .HasColumnType("bit(1)")
+                    .HasColumnType("bit(2)")
                     .HasDefaultValueSql("b'0'");
 
                 entity.Property(e => e.Type)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.Weight)
                     .HasColumnType("int(11)")
                     .HasDefaultValueSql("'0'");
 

@@ -1,27 +1,25 @@
 import './MarkdownViewer.less'
+import { getSimpleStringHash } from '../../../view/pages/common'
+import { NavigationSection } from '../../../pluginbase/IPluginInfo'
+import { useMagicMask, useMagicSeed } from '../../../view/common/Contexts'
 import classNames from 'classnames'
 import HighlightLive from '../../../view/pages/HighlightLive'
+import LocatableView from '../../../infrac/components/LocatableView'
 import Markdown from '../../../infrac/components/Markdown'
 import React, { useEffect, useState } from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
-import { NavigationSection } from '../../../pluginbase/IPluginInfo'
-import LocatableView from '../../../infrac/components/LocatableView'
-import { Button } from 'antd'
-import { CloseOutlined } from '@ant-design/icons'
-import { useMagicMask, useMagicSeed } from '../../../view/common/Contexts'
-import { getSimpleStringHash } from '../../../view/pages/common'
 
 const getText = (children: [React.ReactElement] | string): string => {
   if (children == null) {
-    return ""
+    return ''
   }
-  if (typeof (children) === "string") {
+  if (typeof (children) === 'string') {
     return children
   }
   if (!children.length) {
-    return ""
+    return ''
   }
-  return (children as [React.ReactElement]).map(c => c.props?.children ? getText(c.props?.children) : "").join("")
+  return (children as [React.ReactElement]).map(c => c.props?.children ? getText(c.props?.children) : '').join('')
 }
 
 const getSimpleHash = (children:any, seed:number) => {
@@ -31,14 +29,16 @@ const getSimpleHash = (children:any, seed:number) => {
 
 const getRenders = (root: NavigationSection | undefined, magicMask: number, magicSeed: number) => {
   const renders: any = {
-    code: HighlightLive,
+    code: HighlightLive
   }
-  const contentBase = (window.ENV_OVERRIDE || ENV).CONTENT_BASE || ""
+  const contentBase = (window.ENV_OVERRIDE || window.ENV || {}).CONTENT_BASE || ''
+  // eslint-disable-next-line react/display-name
   renders.image = (props: { alt: string, src: string }) => {
     const url = contentBase + props.src
     return <ImageViewer alt={props.alt} src={url}></ImageViewer>
   }
 
+  // eslint-disable-next-line react/display-name
   renders.strong = (props: any) => {
     const maxLevel = 2
     if (magicMask === maxLevel || (magicMask >= 1 && (getSimpleHash(props.children, magicSeed) + magicSeed) % maxLevel < magicMask)) {
@@ -51,6 +51,8 @@ const getRenders = (root: NavigationSection | undefined, magicMask: number, magi
     return renders
   }
   root.children = []
+
+  // eslint-disable-next-line react/display-name
   renders.heading = ({ level, children }: { level: number, children: [React.ReactElement] }) => {
     const s = new NavigationSection(getText(children), level)
     root.children.push(s)
@@ -59,13 +61,13 @@ const getRenders = (root: NavigationSection | undefined, magicMask: number, magi
   return renders
 }
 
-function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
+function ImageViewer (props: React.ImgHTMLAttributes<HTMLImageElement>) {
   const maxScale = 500
   const minScale = 100
   const [fullscreen, setFullscreen] = useState(false)
   const [scale, setScale] = useState(maxScale)
   const imgRef = React.createRef<HTMLImageElement>()
-  const smallScreen = true;// window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
+  const smallScreen = true// window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
   const toggleFullscreen = smallScreen ? (ev: any) => { ev.stopPropagation(); setFullscreen(!fullscreen) } : undefined
   useEffect(() => {
     const img = imgRef.current!
@@ -79,7 +81,7 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
 
     const start = (ev: TouchEvent) => {
       if (ev.touches.length === 2 && smallScreen) {
-        scaling = true;
+        scaling = true
         ev.stopPropagation()
         startDist = dist(ev)
         startScale = lastScale
@@ -93,8 +95,8 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
         return
       }
       ev.stopPropagation()
-      let curDist = dist(ev)
-      let s = curDist * startScale / startDist
+      const curDist = dist(ev)
+      const s = curDist * startScale / startDist
       lastScale = Math.min(Math.max(minScale, s), maxScale)
       requestAnimationFrame(() => moveInFrame(s))
     }
@@ -115,14 +117,14 @@ function ImageViewer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   }, [])
   return <>
     <span className="embed-img" ><img alt={props.alt} src={props.src} onClick={toggleFullscreen} /></span>
-    <div onClick={toggleFullscreen}  className={classNames("full-img", fullscreen ? "" : "hidden")}>
+    <div onClick={toggleFullscreen} className={classNames('full-img', fullscreen ? '' : 'hidden')}>
       <img ref={imgRef}
         style={{ width: `${scale}%`, maxWidth: `${scale}%`, maxHeight: `${100}%` }} alt={props.alt} src={props.src} />
     </div>
   </>
 }
 
-export default function MarkdownViewer(props: SectionViewerProps) {
+export default function MarkdownViewer (props: SectionViewerProps) {
   const magicMask = useMagicMask()
   const magicSeed = useMagicSeed()
   const renderers = getRenders(props.navigationRoot, magicMask, magicSeed) as any

@@ -15,7 +15,7 @@ const renderers = {
   },
   // eslint-disable-next-line react/display-name
   link: (props:{href:string, children:JSX.Element[]}) => {
-    switch(props.href){
+    switch (props.href) {
       default:
         return <>{props.children}</>
     }
@@ -30,7 +30,7 @@ const renderers = {
     if (props.language && ~props.language.indexOf(Seperators.Fields)) {
       return <></>
     }
-    if(!props.language){
+    if (!props.language) {
       return <>{props.value}</>
     }
     return <Highlight language={props.language} value={props.value}></Highlight>

@@ -11,7 +11,7 @@ CREATE TABLE `File` (
   `Content` varchar(255) DEFAULT NULL,
   `Comment` varchar(255) DEFAULT NULL,
   `Private` bit(2) DEFAULT 0,
-  `NormalFilesCount` int DEFAULT 0,
+  `Weight` int DEFAULT 0,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `IX_File_Path` (`Path`),
   KEY `IX_File_Modified` (`Modified`),
@@ -21,6 +21,7 @@ CREATE TABLE `File` (
   KEY `IX_File_Type` (`Type`),
   KEY `IX_File_AdditionalType` (`AdditionalType`),
   KEY `IX_File_Private` (`Private`),
+  KEY `IX_File_Weight` (`Weight`),
   CONSTRAINT `FK_File_File_ParentId` FOREIGN KEY (`ParentId`) REFERENCES `File` (`Id`) ON DELETE
   SET NULL
 );

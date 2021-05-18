@@ -316,7 +316,7 @@ const buildServicesLocator = () => {
   serviceLocator.register(IContentTemplatesService, ContentTemplatesService)
 
   // eslint-disable-next-line no-undef
-  const apiBase = (window.ENV_OVERRIDE || ENV).API_BASE
+  const apiBase = (window.ENV_OVERRIDE || window.ENV || {}).API_BASE
   const clientHost = apiBase || (window.origin + '/api')
   const credentials :any = undefined
   const options :any = apiBase && { withCredentials: true }
@@ -360,7 +360,7 @@ const buildServicesLocator = () => {
 }
 
 const bootstrap = async () => {
-  const MagicMaskKey = "Magic Mask Level"
+  const MagicMaskKey = 'Magic Mask Level'
   const invalidSurfix = window.location.origin + '/%23/'
   if (window.location.href.startsWith(invalidSurfix)) {
     window.location.href = window.location.href.replace(invalidSurfix, '/#/')
@@ -382,7 +382,7 @@ const bootstrap = async () => {
         .catch((e) => console.log(e))
       : loginService.checkLogin(),
     editorsService.init(),
-    serviceLocator.locate(IUserConfigsService).getOrDefault(MagicMaskKey, 0).then(s => magicMask = s)
+    serviceLocator.locate(IUserConfigsService).getOrDefault(MagicMaskKey, 0).then(s => { magicMask = s })
   ])
   ReactDOM.render(
     <React.StrictMode>

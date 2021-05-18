@@ -94,8 +94,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Edit = '编辑';
   Editors = '编辑器';
   Email = '邮箱';
-  EmbedSrcEnable = "显示原文";
-  EmbedSrcDisable = "隐藏原文";
+  EmbedSrcEnable = '显示原文';
+  EmbedSrcDisable = '隐藏原文';
   EnableAutoLogin = '自动登陆';
   Enabled = '激活';
   EnumValue = '枚举值';
@@ -119,11 +119,11 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LocalFile = '本地文件';
   Login = '登陆';
   Logout = '注销';
-  MagicMaskLevel = "空白"
-  MagicMaskNone = "无";
-  MagicMaskLow = "少";
-  MagicMaskNormal = "中";
-  MagicMaskHigh = "多";
+  MagicMaskLevel = '空白'
+  MagicMaskNone = '无';
+  MagicMaskLow = '少';
+  MagicMaskNormal = '中';
+  MagicMaskHigh = '多';
   Manage = '管理';
   ManageDict = '管理字典';
   Menu = '目录';
@@ -187,6 +187,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Value = '值';
   Viewers = '阅读器(Beta)';
   Welcome = '感谢使用';
+  Weight = '权重';
   Word = '单词';
   Yes = '是';
 }

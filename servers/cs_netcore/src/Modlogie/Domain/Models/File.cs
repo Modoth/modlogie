@@ -23,7 +23,7 @@ namespace Modlogie.Domain.Models
         public string Content { get; set; }
         public string Comment { get; set; }
         public ulong? Private { get; set; }
-        public int? NormalFilesCount { get; set; }
+        public int? Weight { get; set; }
 
         public virtual File Parent { get; set; }
         public virtual ICollection<FileTag> FileTags { get; set; }

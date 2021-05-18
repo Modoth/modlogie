@@ -255,6 +255,8 @@ namespace Modlogie.Api.Common
             {
                 case nameof(File.Id):
                     return file => file.Id == Guid.Parse(value);
+                case nameof(File.Weight):
+                    return file => file.Weight == Int32.Parse(value);
                 case nameof(File.Name):
                     return file => file.Name == value;
                 case nameof(File.Path):

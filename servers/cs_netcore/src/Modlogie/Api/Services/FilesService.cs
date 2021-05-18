@@ -55,7 +55,7 @@ namespace Modlogie.Api.Services
                 Id = i.Id.ToString(),
                 Name = i.Name,
                 Path = i.Path,
-                NormalFilesCount = i.NormalFilesCount ?? 0,
+                Weight = i.Weight ?? 0,
                 ParentId = i.ParentId != null ? i.ParentId.ToString() : string.Empty,
                 Content = i.Content ?? string.Empty,
                 Comment = i.Comment ?? string.Empty,
@@ -733,7 +733,7 @@ namespace Modlogie.Api.Services
                 if (file.Type == (int)FileType.Normal && file.Parent != null &&
                     file.Parent.Type == (int)FileType.Folder)
                 {
-                    file.Parent.NormalFilesCount = (file.Parent.NormalFilesCount ?? 0) + 1;
+                    file.Parent.Weight = (file.Parent.Weight ?? 0) + 1;
                     await _service.Update(file.Parent);
                     await ClearFolderVersionsCache();
                 }
@@ -856,7 +856,7 @@ namespace Modlogie.Api.Services
                 if (file.Type == (int)FileType.Normal && file.Parent != null &&
                     file.Parent.Type == (int)FileType.Folder)
                 {
-                    file.Parent.NormalFilesCount = Math.Max(0, (file.Parent.NormalFilesCount ?? 0) - 1);
+                    file.Parent.Weight = Math.Max(0, (file.Parent.Weight ?? 0) - 1);
                     await _service.Update(file.Parent);
                     await ClearFolderVersionsCache();
                 }
@@ -885,7 +885,7 @@ namespace Modlogie.Api.Services
                 if (file.Type == (int)FileType.Normal && file.Parent != null &&
                     file.Parent.Type == (int)FileType.Folder)
                 {
-                    file.Parent.NormalFilesCount = Math.Max(0, (file.Parent.NormalFilesCount ?? 0) + 1);
+                    file.Parent.Weight = Math.Max(0, (file.Parent.Weight ?? 0) + 1);
                     await _service.Update(file.Parent);
                 }
 
@@ -1006,6 +1006,14 @@ namespace Modlogie.Api.Services
         {
             return await UpdateFields(request.Id, context, item => {
                 item.Comment = request.Comment;
+                return Task.FromResult(Error.None);
+            });
+        }
+
+        public override async Task<Reply> UpdateWeight(UpdateWeightRequest request, ServerCallContext context)
+        {
+            return await UpdateFields(request.Id, context, item => {
+                item.Weight = request.Weight;
                 return Task.FromResult(Error.None);
             });
         }
@@ -1155,7 +1163,7 @@ namespace Modlogie.Api.Services
                         file.Parent.Type == (int)FileType.Folder)
                     {
                         await ClearFolderVersionsCache();
-                        file.Parent.NormalFilesCount = Math.Max(0, (file.Parent.NormalFilesCount ?? 0) - 1);
+                        file.Parent.Weight = Math.Max(0, (file.Parent.Weight ?? 0) - 1);
                         await _service.Update(file.Parent);
                     }
                     else if (file.Type == (int)FileType.Folder)

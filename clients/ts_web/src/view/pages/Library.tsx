@@ -3,13 +3,13 @@ import './Library.less'
 import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase/IPluginInfo'
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
+import { MmIcon } from '../common/Icons'
 import { PlusOutlined, AppstoreOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocate, useUser } from '../common/Contexts'
 import { v4 } from 'uuid'
-import { MmIcon } from '../common/Icons'
-import Article, { ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
+import Article, { ArticleTag, ArticleAdditionalType, ArticleWeights } from '../../domain/ServiceInterfaces/Article'
 import ArticleListSummary from './ArticleListSummary'
 import ArticleView from './ArticleView'
 import classNames from 'classnames'
@@ -58,10 +58,10 @@ export default function Library (props: LibraryProps) {
       return <Redirect to="/"></Redirect>
     }
   }
-  const [privateOptions] = useState(()=>({
-    [langs.get(LangKeys.Default)]:undefined,
-    [langs.get(LangKeys.Private)]:true,
-    [langs.get(LangKeys.Public)]:false 
+  const [privateOptions] = useState(() => ({
+    [langs.get(LangKeys.Default)]: undefined,
+    [langs.get(LangKeys.Private)]: true,
+    [langs.get(LangKeys.Public)]: false
   }))
   const [showFilter, setShowFilter] = useState(false)
   const [articleId, setArticleId] = useState(params.articleId)
@@ -137,6 +137,7 @@ export default function Library (props: LibraryProps) {
   const [publishTags, setPublishTags] = useState<ArticleTag[]>([])
   const [selectedPublishTag, setSelectedPublishTag] = useState<ArticleTag|undefined>(undefined)
   const [selectedPrivate, setSelectedPrivate] = useState<boolean|undefined>(undefined)
+  const [selectedWeight, setSelectedWeight] = useState<number|undefined>()
   const fetchTags = async () => {
     const tagsService = locate(ITagsService)
     const allTags = (await tagsService.all())
@@ -298,11 +299,17 @@ export default function Library (props: LibraryProps) {
                 .setType(Condition.ConditionType.HAS)
                 .setProp(selectedPublishTag.name)
             ] : []),
-            ...(selectedPrivate != undefined ? [
+            ...(selectedPrivate !== undefined ? [
               new Condition()
                 .setType(Condition.ConditionType.EQUAL)
                 .setProp('Private')
                 .setValue(selectedPrivate.toString())
+            ] : []),
+            ...(selectedWeight !== undefined ? [
+              new Condition()
+                .setType(Condition.ConditionType.EQUAL)
+                .setProp('Weight')
+                .setValue(selectedWeight.toString())
             ] : []),
             ...articleTags
               .filter((t) => t.value)
@@ -319,8 +326,8 @@ export default function Library (props: LibraryProps) {
         if (props.type.orderByDesc) {
           query.setOrderByDesc(true)
         }
-      }else{
-        query.setOrderBy("Name")
+      } else {
+        query.setOrderBy('Name')
       }
     }
 
@@ -480,7 +487,7 @@ export default function Library (props: LibraryProps) {
       var date = new Date()
       await service.updatePublished(newArticle.id!, date)
       newArticle.published = date
-      if(pri !== undefined){
+      if (pri !== undefined) {
         await service.updatePrivate(newArticle.id!, pri)
         newArticle.private = pri
       }
@@ -497,18 +504,18 @@ export default function Library (props: LibraryProps) {
 
   const addArticle = async () => {
     const privateFile = await locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE)
-    const fields : IPromptField<any, any>[]= []
+    const fields : IPromptField<any, any>[] = []
     const priValues = Array.from(Object.keys(privateOptions))
     const autoName = props.type.noTitle ? v4() : ''
-    if(!autoName){
+    if (!autoName) {
       fields.push({ type: 'Text', value: '', hint: langs.get(LangKeys.Name) })
     }
-    fields.push({ type: 'Enum', values: priValues, value: privateFile ? priValues [1]: priValues[0], hint: '' })
+    fields.push({ type: 'Enum', values: priValues, value: privateFile ? priValues[1] : priValues[0], hint: '' })
     viewService.prompt(
       langs.get(LangKeys.Create),
       fields,
-      async (v1: string,v2: string) => {
-        if(autoName){
+      async (v1: string, v2: string) => {
+        if (autoName) {
           return addArticleWithTags(autoName, privateOptions[v1])
         }
         return addArticleWithTags(v1, privateOptions[v2])
@@ -596,19 +603,19 @@ export default function Library (props: LibraryProps) {
             onClick={addArticle}
           ></Button>
         ) : null}
-      </>,         
+      </>,
       <Button
-          type = 'primary'
-          danger={!!filter 
-            || !!(selectedPublishTag && selectedPublishTag.id) 
-            || !!(articleTags && articleTags.filter((t) => t.value).length)
-            || !!(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId)
-          }
-          size="large"
-          shape="circle"
-          onClick={() => setShowFilter(true)}
-          icon={<SearchOutlined />}
-        ></Button>)
+        type = 'primary'
+        danger={!!filter ||
+            !!(selectedPublishTag && selectedPublishTag.id) ||
+            !!(articleTags && articleTags.filter((t) => t.value).length) ||
+            !!(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId)
+        }
+        size="large"
+        shape="circle"
+        onClick={() => setShowFilter(true)}
+        icon={<SearchOutlined />}
+      ></Button>)
     }
   })
   const titleClick = () => {
@@ -631,9 +638,9 @@ export default function Library (props: LibraryProps) {
             icon: <AppstoreOutlined className="menu-icon" />
           },
           {
-            onClick:titleClick,
+            onClick: titleClick,
             icon: <img className="icon-img" src={(rootSubject && effectiveSubjects.length < 2 ? (effectiveSubjects[0] || rootSubject).resourceUrl : '') || logo}></img>
-          } as any,
+          } as any
         ]}></TitleBar>
 
       {articles.length || recommendsArticles.length ? null : (
@@ -752,6 +759,23 @@ export default function Library (props: LibraryProps) {
                 { label: langs.get(LangKeys.All), value: undefined },
                 { label: langs.get(LangKeys.Private), value: true },
                 { label: langs.get(LangKeys.Public), value: false }
+              ].map((tag) => (
+                <Radio.Button className="tag-item" key={`${tag.value}`} value={tag.value}>
+                  {tag.label}
+                </Radio.Button>
+              ))}
+            </Radio.Group> : undefined
+          }
+          {
+            user.editingPermission ? <Radio.Group
+              className="tag-list"
+              defaultValue={selectedWeight}
+              buttonStyle="solid"
+              onChange={(e) => setSelectedWeight(e.target.value)}
+            >
+              {...[
+                { label: langs.get(LangKeys.Weight), value: undefined },
+                ...ArticleWeights.map(value => ({ label: value.toString(), value }))
               ].map((tag) => (
                 <Radio.Button className="tag-item" key={`${tag.value}`} value={tag.value}>
                   {tag.label}

@@ -29,20 +29,23 @@ export enum ArticleAdditionalType {
   Recommend = 1
 }
 
+export const ArticleWeights = Array.from({ length: 7 }, (_, i) => i + 1)
+
 export default interface Article {
   id?: string;
-  path?: string;
-  additionId?: string,
-  subjectId?: string;
-  name?: string;
   additionalType?: ArticleAdditionalType,
+  additionId?: string,
   content?: ArticleContent;
-  published?: Date,
   files?: ArticleFile[];
+  name?: string;
+  path?: string;
+  private?:boolean,
+  published?: Date,
+  publishedIds?:Map<string, string>;
+  subjectId?: string;
   tags?: Array<ArticleTag>;
   tagsDict?: Map<string, ArticleTag>;
-  publishedIds?:Map<string, string>;
-  private?:boolean,
+  weight?: number
   lazyLoading?: { (): Promise<void> }
   lazyLoadingAddition?: { (): Promise<void> }
 }

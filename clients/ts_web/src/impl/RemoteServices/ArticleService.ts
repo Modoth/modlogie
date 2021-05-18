@@ -1,4 +1,4 @@
-import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest, AddResourceRequest, UpdateCommentRequest, UpdateAdditionalTypeRequest, UpdatePublishedRequest, Condition, UpdatePrivateRequest } from '../remote-apis/files_pb'
+import { File, AddRequest, UpdateContentRequest, UpdateNameRequest, MoveRequest, GetFilesRequest, Query, QueryRequest, AddResourceRequest, UpdateCommentRequest, UpdateAdditionalTypeRequest, UpdatePublishedRequest, Condition, UpdatePrivateRequest, UpdateWeightRequest } from '../remote-apis/files_pb'
 import { FilesServiceClient } from '../remote-apis/FilesServiceClientPb'
 import { StringId } from '../remote-apis/messages_pb'
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb'
@@ -21,8 +21,8 @@ export default class ArticleService extends FilesServiceBase implements IArticle
 
   private async tryParseContent (url: string): Promise<any> {
     try {
-      const contentBase = (window.ENV_OVERRIDE || ENV).CONTENT_BASE || ""
-      url = contentBase  + url
+      const contentBase = (window.ENV_OVERRIDE || window.ENV || {}).CONTENT_BASE || ''
+      url = contentBase + url
       return await (await fetch(url, contentBase ? { mode: 'cors' } : undefined)).json()
     } catch (e) {
       console.log(e)
@@ -59,12 +59,13 @@ export default class ArticleService extends FilesServiceBase implements IArticle
       additionalType: item.getAdditionalType() as ArticleAdditionalType,
       publishedIds: publishes,
       tags,
+      weight: item.getWeight(),
       tagsDict: new Map(tags.map(t => [t.name, t]))
     }
-    let p = item.getPrivate()
-    if (p == File.PrivateType.PRIVATE){
+    const p = item.getPrivate()
+    if (p === File.PrivateType.PRIVATE) {
       article.private = true
-    }else if(p == File.PrivateType.PUBLIC){
+    } else if (p === File.PrivateType.PUBLIC) {
       article.private = false
     }
     let loadingTask: Promise<void> | undefined
@@ -167,12 +168,16 @@ export default class ArticleService extends FilesServiceBase implements IArticle
 
   async updatePrivate (id: string, privateType: boolean | undefined): Promise<void> {
     let t = File.PrivateType.UNSET
-    if (privateType === false){
+    if (privateType === false) {
       t = File.PrivateType.PUBLIC
-    }else if(privateType === true){
+    } else if (privateType === true) {
       t = File.PrivateType.PRIVATE
     }
     await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updatePrivate(new UpdatePrivateRequest().setId(id).setPrivate(t), null))
+  }
+
+  async updateWeight (id: string, weight: number): Promise<void> {
+    await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updateWeight(new UpdateWeightRequest().setId(id).setWeight(weight), null))
   }
 
   async move (articleId: string, subjectId: string): Promise<Article> {
@@ -197,7 +202,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
       const hiddenContentStr = JSON.stringify({ content: hiddenContent })
       if (!article.additionId) {
         const shadowSectionPrivate = await this.locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE_SHADOW_SECTION)
-        const additionId = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(article.id!).setTextContent(hiddenContentStr).setPrivate(shadowSectionPrivate? File.PrivateType.PRIVATE: File.PrivateType.UNSET), null))).getId()
+        const additionId = await (await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).addResource(new AddResourceRequest().setParentId(article.id!).setTextContent(hiddenContentStr).setPrivate(shadowSectionPrivate ? File.PrivateType.PRIVATE : File.PrivateType.UNSET), null))).getId()
         await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updateComment(new UpdateCommentRequest().setId(article.id!).setComment(additionId), null))
         article.additionId = additionId
       } else {
@@ -210,7 +215,7 @@ export default class ArticleService extends FilesServiceBase implements IArticle
         article.additionId = undefined
       }
     }
-    if(article.additionId){
+    if (article.additionId) {
       resourceIds.push(article.additionId!)
     }
     await this.locate(IRemoteServiceInvoker).invoke(() => this.locate(FilesServiceClient).updateContent(new UpdateContentRequest().setId(article.id!).setContent(JSON.stringify({ content: normalContent, files })).setResourceIdsList(resourceIds || []), null))

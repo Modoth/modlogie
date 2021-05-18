@@ -43,8 +43,8 @@ export class LangKeysInterface {
   Edit = 'Edit';
   Editors = 'Editors';
   Email = 'Email';
-  EmbedSrcEnable = "EmbedSrcEnable";
-  EmbedSrcDisable = "EmbedSrcDisable";
+  EmbedSrcEnable = 'EmbedSrcEnable';
+  EmbedSrcDisable = 'EmbedSrcDisable';
   EnableAutoLogin = 'EnableAutoLogin';
   Enabled = 'Enabled';
   EnumValue = 'EnumValue';
@@ -68,10 +68,10 @@ export class LangKeysInterface {
   LocalFile = 'LocalFile';
   Login = 'Login';
   Logout = 'Logout';
-  MagicMaskLevel = "MagicMaskLevel"
-  MagicMaskNone = "MagicMaskNone";
-  MagicMaskNormal = "MagicMaskNormal";
-  MagicMaskHigh = "MagicMaskHigh";
+  MagicMaskLevel = 'MagicMaskLevel'
+  MagicMaskNone = 'MagicMaskNone';
+  MagicMaskNormal = 'MagicMaskNormal';
+  MagicMaskHigh = 'MagicMaskHigh';
   Manage = 'Manage';
   ManageDict = 'ManageDict';
   Menu = 'Menu';
@@ -135,6 +135,7 @@ export class LangKeysInterface {
   Value = 'Value';
   Viewers = 'Viewers';
   Welcome = 'Welcome';
+  Weight = 'Weight';
   Word = 'Word';
   Yes = 'Yes';
 }

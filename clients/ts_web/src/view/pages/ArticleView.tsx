@@ -1,13 +1,15 @@
 import './ArticleView.less'
 import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType, ArticleContentViewerProps } from '../../pluginbase/IPluginInfo'
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse, Radio } from 'antd'
+import { generateRandomStyle } from './common'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
-import { UploadOutlined,CloseOutlined,PictureOutlined, ShareAltOutlined,SaveOutlined,RightSquareOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
+import { UploadOutlined, CloseOutlined, ShareAltOutlined, SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate, useMagicSeed } from '../common/Contexts'
-import Article, { ArticleContent, ArticleTag, ArticleAdditionalType } from '../../domain/ServiceInterfaces/Article'
+import Article, { ArticleContent, ArticleTag, ArticleAdditionalType, ArticleWeights } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import defaultLogo from '../assets/logo.png'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IArticleListService from '../../app/Interfaces/IArticleListService'
 import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
@@ -19,11 +21,9 @@ import IViewService from '../../app/Interfaces/IViewService'
 import MenuItem from 'antd/lib/menu/MenuItem'
 import moment from 'moment'
 import PublishArticle from './PublishArticle'
+import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useEffect } from 'react'
 import SubjectViewModel from './SubjectViewModel'
-import { generateRandomStyle } from './common'
-import QrCode from '../../infrac/components/QrCode'
-import defaultLogo from '../assets/logo.png'
 
 const { Panel } = Collapse
 const { Option } = Select
@@ -97,11 +97,11 @@ export default function ArticleView (props: {
   const [recommendView, setRecommendView] = useState(props.recommendView || false)
   const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend)
   const [recommendTitle, setRecommendTitle] = useState('')
-  const [autoUpdaters] = useState(()=>getAutoUpdaters(props.type.publishGenerators))
+  const [autoUpdaters] = useState(() => getAutoUpdaters(props.type.publishGenerators))
   const [privateOptions] = useState<{label:string, value: boolean|undefined}[]>([
-    {label:langs.get(LangKeys.Default), value:undefined},
-    {label:langs.get(LangKeys.Private), value:true},
-    {label:langs.get(LangKeys.Public), value:false}
+    { label: langs.get(LangKeys.Default), value: undefined },
+    { label: langs.get(LangKeys.Private), value: true },
+    { label: langs.get(LangKeys.Public), value: false }
   ])
   const [defaultPrivate, setDefaultPrivate] = useState(false)
   const [floatLeft, setFloatLeft] = useState(0)
@@ -116,7 +116,7 @@ export default function ArticleView (props: {
       setPrivateType(p)
     } catch (e) {
       viewService!.errorKey(langs, e.message)
-    }    
+    }
   }
   const autoUpdate = async () => {
     if (autoUpdaters && autoUpdaters.length) {
@@ -189,10 +189,10 @@ export default function ArticleView (props: {
     }
   }
 
-  const save = async (close = false)=>{
+  const save = async (close = false) => {
     try {
       const service = locate(IArticleService)
-      const [newContent,newFileNames] = editorRefs.getEditedContent()
+      const [newContent, newFileNames] = editorRefs.getEditedContent()
       if (
         newContent.sections !== undefined &&
         newContent.sections !== content?.sections
@@ -203,7 +203,7 @@ export default function ArticleView (props: {
         setFiles(newFiles)
         await autoUpdate()
       }
-      if(close){
+      if (close) {
         setEditing(false)
       }
     } catch (e) {
@@ -224,6 +224,16 @@ export default function ArticleView (props: {
       return
     }
     save(true)
+  }
+
+  const updateWeight = async (weight: number) => {
+    const service = locate(IArticleService)
+    try {
+      await service.updateWeight(props.article.id!, weight || 0)
+      props.article.weight = weight
+    } catch (e) {
+      viewService!.errorKey(langs, e.message)
+    }
   }
 
   const updateTag = async (tag: ArticleTag, tagValue: string) => {
@@ -317,7 +327,7 @@ export default function ArticleView (props: {
         setRecommendTitle(recommendTitle)
       }
     })();
-    (async ()=>{
+    (async () => {
       const logo = await locate(IConfigsService).getResource(ConfigKeys.WEB_SITE_LOGO) || defaultLogo
       setLogo(logo)
     })();
@@ -339,11 +349,11 @@ export default function ArticleView (props: {
         setDislikeCount(dislikeCount)
       }
     })()
-    if(user.editingPermission){
-      async ()=>{
+    if (user.editingPermission) {
+      (async () => {
         const privateFile = await locate(IConfigsService).getValueOrDefaultBoolean(ConfigKeys.NEW_FILE_DEFAULT_PRIVATE)
         setDefaultPrivate(privateFile)
-      }
+      })()
     }
     locate(IArticleAppservice)
       .getArticleType(locate(IConfigsService), props.type, props.type.subTypeTag ? tagsDict?.get(props.type.subTypeTag!)?.value : undefined).then(type => setType(type))
@@ -365,8 +375,8 @@ export default function ArticleView (props: {
     if (ref.current) {
       const offset = Math.min(window.innerHeight * 0.2, 120)
       const elementPos = ref.current.getBoundingClientRect()
-      const left = (window.innerWidth)/2  - (elementPos.right + elementPos.left)/2
-      const top = (window.innerHeight)/2  - (elementPos.bottom + elementPos.top)/2 - offset
+      const left = (window.innerWidth) / 2 - (elementPos.right + elementPos.left) / 2
+      const top = (window.innerHeight) / 2 - (elementPos.bottom + elementPos.top) / 2 - offset
       setFloatLeft(left)
       setFloatTop(top)
       setShowFloat(true)
@@ -478,15 +488,15 @@ export default function ArticleView (props: {
   }
 
   return (<>
-  { showFloat? <div className={classNames(showFloat? 'float-article-bg':'')} onClick={()=>setShowFloat(false)}>
-  </div>:undefined}
-  <div ref={ref} className={classNames(showFloat ? 'float-article' : '')} style={{ left: floatLeft, top: floatTop }}>
-    <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' :recommendView ? generateRandomStyle(props.article.id!, magicSeed) : '')}>
-      <div className="article-title" ref={titleRef}>
-        {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
-        }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
-        {
-            (editing || recommendView) ? null : (<Menu onClick={({key}: { key: string } | any) => {
+    { showFloat ? <div className={classNames(showFloat ? 'float-article-bg' : '')} onClick={() => setShowFloat(false)}>
+    </div> : undefined}
+    <div ref={ref} className={classNames(showFloat ? 'float-article' : '')} style={{ left: floatLeft, top: floatTop }}>
+      <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' : recommendView ? generateRandomStyle(props.article.id!, magicSeed) : '')}>
+        <div className="article-title" ref={titleRef}>
+          {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
+          }{props.type.noTitle ? <div className="empty-title" onClick={openDetail}></div> : <div onClick={ openDetail}>{name}</div>}
+          {
+            (editing || recommendView) ? null : (<Menu onClick={({ key }: { key: string } | any) => {
               switch (key) {
                 case 'toogle-fav':
                   toogleFavorite()
@@ -504,7 +514,7 @@ export default function ArticleView (props: {
                 case 'qrcode':
                   setTimeout(() => {
                     openShare()
-                  }, 50);
+                  }, 50)
                   return
                 case 'like':
                   touchLike()
@@ -526,166 +536,162 @@ export default function ArticleView (props: {
                   return
                 case 'delete':
                   props.articleHandlers.onDelete(props.article.id!)
-                  return
-                default:
-                  return
               }
-          }} mode="horizontal" className={classNames('actions-list')}>{[
-            favoriteService ? <MenuItem key="toogle-fav"><Badge>
-              <Button type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
-                key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
-            </Badge></MenuItem> : null,
-            user.printPermission ? (inArticleList
-              ? <MenuItem key='remove-print'><Badge >
-                <Button type="link" icon={<PrinterFilled />} key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
-              </Badge></MenuItem>
-              : <MenuItem key="add-print"><Badge className="printer-icons">
-                <Button type="link" icon={<PrinterOutlined />} key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
-              </Badge></MenuItem>
-            ) : null,
-            <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />}
-            ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
-            ...(likesService ? [<MenuItem key="like"><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
-              <Button type="link" icon={<LikeOutlined />}
-              ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
-            <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button type="link" icon={<DislikeOutlined />}
-            ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
-            // <MenuItem key="snapshot"><Button type="link" icon={<PictureOutlined />} onClick={(ev:React.MouseEvent<HTMLElement>)=>{
-            //   let menu = (titleRef.current!.lastChild as HTMLElement|undefined)
-            //   if(menu){
-            //     menu.style.opacity = "0"
-            //   }
-            //   locate(IViewService).captureElement(ref.current!.parentElement || ref.current!)
-            //   if(menu){
-            //     menu.style.opacity = "1"
-            //   }
-            // }}
-            // ><span className="action-name">{langs.get(LangKeys.ScreenShot)}</span></Button></MenuItem>,
-            ...(user.editingPermission ? [
-              <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />}
-              ><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
-              (!props.type.noTitle) ? <MenuItem key="rename"> <Button type="link" icon={ <FontColorsOutlined /> }
-              ><span className="action-name">{langs.get(LangKeys.Rename)}</span></Button></MenuItem> : undefined,
-              <MenuItem key="edit"> <Button type="link" icon={<EditOutlined />}
-              ><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,
-              <MenuItem key="fullscreen"><Button type="link" icon={<ExpandOutlined />}
-              ><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>,
-              <MenuItem key="delete"><Button type="link" danger icon={<DeleteOutlined />} ><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>,
-              ...(type.articleType.publishGenerators && type.articleType.publishGenerators.size ? Array.from(type.articleType.publishGenerators, ([publishName]) =>
-                <MenuItem key={publishName}><Button type="link" danger={publishedIds?.has(publishName)} icon={<ShareAltOutlined />} onClick={() => openPublishDetail(publishName)}
-                ><span className="action-name">{langs.get(publishName)}</span></Button></MenuItem>
-              ) : []),
-              <MenuItem key="private"><Radio.Group options={privateOptions as any} onChange={privateChanged} value={privateType as boolean} /></MenuItem>
-            ] : [])]}
-          </Menu>)
-        }
-      </div>{
-        loaded ? <div className="article-body">
-          {editing ? (
-            <>
-              <props.type.Editor
-                onpaste={addFile}
-                content={content}
-                files={files}
-                callbacks={editorRefs}
-                type={type}
-                articleId = {props.article.id!}
-              />
-              <Collapse className={classNames('editing-preview')} >
-                <Panel header={
-                  <div className="preview-title-panel">
-                    <span className="preview-title">{langs.get(LangKeys.Edit) + ': ' + (name || '')}</span>
-                    <Button
-                      type="link"
-                      onClick={toggleEditing}
-                      key="endEdit"
-                      icon={<CheckOutlined />}
-                    ></Button>,
-                    <Button
-                      type="link"
-                      onClick={(e)=> {e.stopPropagation();save()}}
-                      key="save"
-                      icon={<SaveOutlined />}
-                    ></Button>,
-                    <Button
-                      type="link"
-                      icon={<UploadOutlined />}
-                      onClick={(e) => { e.stopPropagation(); addFile() }}
-                    ></Button>,
-                    <Button
-                      type="link"
-                      onClick={(e)=> {e.stopPropagation();setEditing(false)}}
-                      key="exit"
-                      danger
-                      icon={<CloseOutlined />}
-                    ></Button>
-                  </div>} key="1">
-                  <props.type.Viewer articleId={props.article.id!} showAdditionals={true} content={content} files={files} type={type} />
-                </Panel>
-              </Collapse>
-            </>
-          ) : (
-            <props.type.Viewer articleId={props.article.id!} content={content} files={files} type={type} />
-          )}
-          {
-            (hasMore) ? <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div> : null
+            }} mode="horizontal" className={classNames('actions-list')}>{[
+                favoriteService ? <MenuItem key="toogle-fav"><Badge>
+                  <Button type="link" icon={favorite ? < HeartFilled /> : <HeartOutlined />}
+                    key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
+                </Badge></MenuItem> : null,
+                user.printPermission ? (inArticleList
+                  ? <MenuItem key='remove-print'><Badge >
+                    <Button type="link" icon={<PrinterFilled />} key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
+                  </Badge></MenuItem>
+                  : <MenuItem key="add-print"><Badge className="printer-icons">
+                    <Button type="link" icon={<PrinterOutlined />} key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
+                  </Badge></MenuItem>
+                ) : null,
+                <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />}
+                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
+                ...(likesService ? [<MenuItem key="like"><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
+                  <Button type="link" icon={<LikeOutlined />}
+                  ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
+                <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button type="link" icon={<DislikeOutlined />}
+                ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
+                ...(user.editingPermission ? [
+                  <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />}
+                  ><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
+                  (!props.type.noTitle) ? <MenuItem key="rename"> <Button type="link" icon={ <FontColorsOutlined /> }
+                  ><span className="action-name">{langs.get(LangKeys.Rename)}</span></Button></MenuItem> : undefined,
+                  <MenuItem key="edit"> <Button type="link" icon={<EditOutlined />}
+                  ><span className="action-name">{langs.get(LangKeys.Edit)}</span></Button></MenuItem>,
+                  <MenuItem key="fullscreen"><Button type="link" icon={<ExpandOutlined />}
+                  ><span className="action-name">{langs.get(LangKeys.Detail)}</span></Button></MenuItem>,
+                  <MenuItem key="delete"><Button type="link" danger icon={<DeleteOutlined />} ><span className="action-name">{langs.get(LangKeys.Delete)}</span></Button></MenuItem>,
+                  ...(type.articleType.publishGenerators && type.articleType.publishGenerators.size ? Array.from(type.articleType.publishGenerators, ([publishName]) =>
+                    <MenuItem key={publishName}><Button type="link" danger={publishedIds?.has(publishName)} icon={<ShareAltOutlined />} onClick={() => openPublishDetail(publishName)}
+                    ><span className="action-name">{langs.get(publishName)}</span></Button></MenuItem>
+                  ) : []),
+                  <MenuItem key="private"><Radio.Group options={privateOptions as any} onChange={privateChanged} value={privateType as boolean} /></MenuItem>
+                ] : [])]}
+            </Menu>)
           }
-        </div> : <div className="article-body"></div>
-      }
-      {
-        editing ? (<div className="actions-tags-list">{[
-          <TreeSelect
-            key="subject"
-            onChange={updateSubjectId}
-            defaultValue={subjectId}
-            treeData={props.subjects}
-            placeholder={langs.get(LangKeys.Subject)}
-          />,
-          ...props.tags.map((tag) => (
-            <Select
-              key={tag.name}
-              onChange={(value) => updateTag(tag, value)}
-              defaultValue={
+        </div>{
+          loaded ? <div className="article-body">
+            {editing ? (
+              <>
+                <props.type.Editor
+                  onpaste={addFile}
+                  content={content}
+                  files={files}
+                  callbacks={editorRefs}
+                  type={type}
+                  articleId = {props.article.id!}
+                />
+                <Collapse className={classNames('editing-preview')} >
+                  <Panel header={
+                    <div className="preview-title-panel">
+                      <span className="preview-title">{langs.get(LangKeys.Edit) + ': ' + (name || '')}</span>
+                      <Button
+                        type="link"
+                        onClick={toggleEditing}
+                        key="endEdit"
+                        icon={<CheckOutlined />}
+                      ></Button>,
+                      <Button
+                        type="link"
+                        onClick={(e) => { e.stopPropagation(); save() }}
+                        key="save"
+                        icon={<SaveOutlined />}
+                      ></Button>,
+                      <Button
+                        type="link"
+                        icon={<UploadOutlined />}
+                        onClick={(e) => { e.stopPropagation(); addFile() }}
+                      ></Button>,
+                      <Button
+                        type="link"
+                        onClick={(e) => { e.stopPropagation(); setEditing(false) }}
+                        key="exit"
+                        danger
+                        icon={<CloseOutlined />}
+                      ></Button>
+                    </div>} key="1">
+                    <props.type.Viewer articleId={props.article.id!} showAdditionals={true} content={content} files={files} type={type} />
+                  </Panel>
+                </Collapse>
+              </>
+            ) : (
+              <props.type.Viewer articleId={props.article.id!} content={content} files={files} type={type} />
+            )}
+            {
+              (hasMore) ? <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div> : null
+            }
+          </div> : <div className="article-body"></div>
+        }
+        {
+          editing ? (<div className="actions-tags-list">{[
+            <TreeSelect
+              key="subject"
+              onChange={updateSubjectId}
+              defaultValue={subjectId}
+              treeData={props.subjects}
+              placeholder={langs.get(LangKeys.Subject)}
+            />,
+            ...props.tags.map((tag) => (
+              <Select
+                key={tag.name}
+                onChange={(value) => updateTag(tag, value)}
+                defaultValue={
                 tagsDict?.get(tag.name)?.value || `(${tag.name})`
-              }
-            >
-              <Option value={undefined!}>{`(${tag.name})`}</Option>
+                }
+              >
+                <Option value={undefined!}>{`(${tag.name})`}</Option>
               {...tag.values.map((v) => (
                 <Option key={v} value={v}>
                   {v}
                 </Option>
               ))}
-            </Select>
-          ))
-        ]}
-        <DatePicker showToday={true} clearIcon={false} value={moment(published)} onChange={async e => {
-          try {
-            const date = e!.toDate()
-            await locate(IArticleService).updatePublished(props.article.id!, date)
-            setPublished(date)
-            return true
-          } catch (e) {
+              </Select>
+            ))
+          ]}
+          <Select
+            onChange={(value) => updateWeight(value)}
+            defaultValue={props.article.weight}>
+            <Option value={0}>{`(${langs.get(LangKeys.Weight)})`}</Option>
+              {...ArticleWeights.map((v) => (
+                <Option key={v} value={v}>
+                  {v}
+                </Option>
+              ))}
+          </Select>
+          <DatePicker showToday={true} clearIcon={false} value={moment(published)} onChange={async e => {
+            try {
+              const date = e!.toDate()
+              await locate(IArticleService).updatePublished(props.article.id!, date)
+              setPublished(date)
+              return true
+            } catch (e) {
               viewService!.errorKey(langs, e.message)
-          }
-        }} />
-        </div>) : null
-      }
-      {
-        editing ? (
-          <>
-            <div className="files-list">
-              <Button
-                type="link"
-                onClick={toggleEditing}
-                key="endEdit"
-                icon={<CheckOutlined />}
-              >{langs.get(LangKeys.Ok)}</Button>,
-              <Button
-                type="link"
-                icon={<UploadOutlined />}
-                onClick={() => addFile()}
-              >{langs.get(LangKeys.Import)}</Button>
-              {/* {files?.length
+            }
+          }} />
+          </div>) : null
+        }
+        {
+          editing ? (
+            <>
+              <div className="files-list">
+                <Button
+                  type="link"
+                  onClick={toggleEditing}
+                  key="endEdit"
+                  icon={<CheckOutlined />}
+                >{langs.get(LangKeys.Ok)}</Button>,
+                <Button
+                  type="link"
+                  icon={<UploadOutlined />}
+                  onClick={() => addFile()}
+                >{langs.get(LangKeys.Import)}</Button>
+                {/* {files?.length
               ? files!.map((file) => (
                 <ArticleFileViewer
                   key={file.url}
@@ -695,11 +701,11 @@ export default function ArticleView (props: {
                 ></ArticleFileViewer>
               ))
               : null} */}
-            </div>
-          </>
-        ) : null
-      }
-    </Card >
+              </div>
+            </>
+          ) : null
+        }
+      </Card >
       {(() => {
         if (!showFloat) {
           return
@@ -711,6 +717,6 @@ export default function ArticleView (props: {
         </div>
         </>
       })()}
-  </div>
+    </div>
   </>)
 }
