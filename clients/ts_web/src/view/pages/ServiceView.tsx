@@ -18,6 +18,7 @@ import Markdown from '../../infrac/components/Markdown'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
+import { ArticleFolder } from './ArticleFolder'
 
 export const previewArticleByPath = (locate: LocateFunction, pathOrName: string | undefined, title: string | undefined, root?:string|undefined) => {
   if (!pathOrName) {
@@ -384,6 +385,8 @@ export default function ServiceView (props: {
                 return (<div className="service-view-qrcode"><QrCode content={field.value}></QrCode></div>)
               case 'Article':
                 return (<ArticlePreview className="md" root={field.value.root} pathOrName={field.value.root ? field.value.name : field.value}></ArticlePreview>)
+              case 'FolderOrArticle':
+                return <ArticleFolder path={field.value}></ArticleFolder>
               case 'Password':
                 return (
                   <Input.Password

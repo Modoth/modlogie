@@ -7,7 +7,6 @@ import IConfigsService, { Config, ConfigType, ConfigNames } from '../../domain/S
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
-
 export function ManageConfigs () {
   const user = useUser()
   if (!user.editingPermission) {
@@ -125,7 +124,7 @@ export function ManageConfigs () {
     )
   }
   useEffect(() => {
-    viewService.setFloatingMenus?.(ManageConfigs.name, <Button
+    viewService.setFloatingMenus?.(LangKeys.PageManageConfigs, <Button
       icon={<ClearOutlined />}
       type="primary"
       danger
@@ -137,7 +136,7 @@ export function ManageConfigs () {
 
   useEffect(() => {
     return () => {
-      viewService.setFloatingMenus?.(ManageConfigs.name)
+      viewService.setFloatingMenus?.(LangKeys.PageManageConfigs)
     }
   }, [])
 

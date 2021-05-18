@@ -395,7 +395,7 @@ export function ManageSubjects () {
     )
   }
   useEffect(() => {
-    viewService.setFloatingMenus?.(ManageSubjects.name, <>
+    viewService.setFloatingMenus?.(LangKeys.PageManageSubjects, <>
       <Button
         icon={<UploadOutlined />}
         type="primary"
@@ -405,17 +405,17 @@ export function ManageSubjects () {
       </Button>
     </>,
     <Button
-    icon={<SisternodeOutlined />}
-    type="primary"
-    size="large" shape="circle"
-    onClick={() => addSubject()}
-  >
-  </Button>)
+      icon={<SisternodeOutlined />}
+      type="primary"
+      size="large" shape="circle"
+      onClick={() => addSubject()}
+    >
+    </Button>)
   })
 
   useEffect(() => {
     return () => {
-      viewService.setFloatingMenus?.(ManageSubjects.name)
+      viewService.setFloatingMenus?.(LangKeys.PageManageSubjects)
     }
   }, [])
   return (

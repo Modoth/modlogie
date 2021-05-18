@@ -185,7 +185,7 @@ export function ManageTags () {
     )
   }
   useEffect(() => {
-  viewService.setFloatingMenus?.(ManageTags.name, undefined, <Button
+  viewService.setFloatingMenus?.(LangKeys.PageManageTags, undefined, <Button
     icon={<PlusOutlined />}
     type="primary"
     size="large" shape="circle"
@@ -195,7 +195,7 @@ export function ManageTags () {
   })
   useEffect(() => {
     return () => {
-      viewService.setFloatingMenus?.(ManageTags.name)
+      viewService.setFloatingMenus?.(LangKeys.PageManageTags)
     }
   }, [])
   return (

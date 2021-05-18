@@ -56,6 +56,7 @@ export class LangKeysInterface {
   FavoriteWords = 'FavoriteWords';
   FreeDraw = 'FreeDraw';
   History = 'History'
+  Help = 'Help';
   Home = 'Home';
   Import = 'Import';
   ItemsCount = 'ItemsCount';
@@ -96,7 +97,18 @@ export class LangKeysInterface {
   Ok = 'Ok';
   Open = 'Open';
   Order = 'Order';
+  PageArticleList = 'PageArticleList';
+  PageArticleSingle = 'PageArticleSingle';
+  PageLibrary = 'PageLibrary';
+  PageManageConfigs = 'PageManageConfigs';
+  PageManageContentTemplates = 'PageManageContentTemplates';
+  PageManageDicts= 'PageManageDicts';
+  PageManageSubjects = 'PageManageSubjects';
+  PageManageTags = 'PageManageTags';
+  PageManageUsers = 'PageManageUsers';
+  PageManageWords = 'PageManageWords';
   PageSize = 'PageSize';
+  PageToolViewer = 'PageToolViewer';
   Paging = 'Paging';
   Password = 'Password';
   Preview = 'Preview';
@@ -127,6 +139,7 @@ export class LangKeysInterface {
   Time = 'Time';
   Tools = 'Tools';
   Top = 'Top';
+  TranslateSectionSurfix = 'TranslateSectionSurfix';
   Type = 'Type';
   UnknownError = 'UnknownError';
   Url = 'Url';
@@ -134,12 +147,12 @@ export class LangKeysInterface {
   UserName = 'UserName';
   Value = 'Value';
   Viewers = 'Viewers';
-  Welcome = 'Welcome';
   Weight = 'Weight';
+  Welcome = 'Welcome';
   WikiLevel = 'WikiLevel';
+  WikiLevelHigh = 'WikiLevelHigh';
   WikiLevelLow = 'WikiLevelLow';
   WikiLevelNormal = 'WikiLevelNormal';
-  WikiLevelHigh = 'WikiLevelHigh';
   Word = 'Word';
   Yes = 'Yes';
 }

@@ -12,7 +12,6 @@ import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsServ
 import IViewService from '../../app/Interfaces/IViewService'
 import LocatableView, { Div, LocatableViewCallbacks } from '../../infrac/components/LocatableView'
 import React, { useEffect, useState } from 'react'
-
 const themeCount = 2
 const getThemeClass = (idx: number) => idx >= 0 ? `reading-theme reading-theme-${idx}` : ''
 const ThemeKey = 'READING_THEME'
@@ -23,24 +22,24 @@ const drawPens: [string, number, string | null][] = [
   ['#ffff0040', 12, '#ffff00'],
   ['#4169E1', 1, null],
   ['#ff0000', 1, null],
-  ['#2d2d2d', 1, null],
+  ['#2d2d2d', 1, null]
 ]
 const findMdgElement = (from: HTMLElement | null, to: HTMLElement | null): HTMLElement | undefined => {
   if (!from || !to) {
     return undefined
   }
   let cur: HTMLElement | null = from
-  while (cur && cur != to) {
-    if (cur.className === "mdg") {
+  while (cur && cur !== to) {
+    if (cur.className === 'mdg') {
       return cur
     }
-    if (cur.tagName === "A") {
+    if (cur.tagName === 'A') {
       return undefined
     }
     cur = cur.parentElement
   }
 }
-export default function ArticleSingle(props: { article: Article, type: ArticleContentType }) {
+export default function ArticleSingle (props: { article: Article, type: ArticleContentType }) {
   const locate = useServicesLocate()
   const [sections, setSections] = useState<NavigationSection[]>([])
   const [hasSource, setHasSource] = useState(false)
@@ -79,13 +78,13 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     })
   }
   callbacks.onSections = (secs) => {
-    setHasSource(!!secs.find(s => s.name?.endsWith("(译)")))
+    setHasSource(!!secs.find(s => s.name?.endsWith(langs.get(LangKeys.TranslateSectionSurfix))))
     setSections(secs)
   }
   const configsService = locate(IUserConfigsService)
   useEffect(() => {
     if (!sidePopup) {
-      viewService.setFloatingMenus?.(ArticleSingle.name, 
+      viewService.setFloatingMenus?.(LangKeys.PageArticleSingle,
         <>
           <Button key="capture-dict" type="primary" shape="circle" size="large" danger={captureDict} icon={<BulbOutlined />} onClick={() => {
             setCaptureDict(!captureDict)
@@ -109,12 +108,12 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
           ></Button>
         </>,
         <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
-        size="large"
-        shape="circle" onClick={() => setSidePopup(true)}>
-      </Button>)
+          size="large"
+          shape="circle" onClick={() => setSidePopup(true)}>
+        </Button>)
       viewService.setShowFloatingMenu?.(true)
     } else {
-      viewService.setFloatingMenus?.(ArticleSingle.name)
+      viewService.setFloatingMenus?.(LangKeys.PageArticleSingle)
       viewService.setShowFloatingMenu?.(false)
     }
   })
@@ -129,7 +128,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     }
     loadConfigs()
     return () => {
-      viewService.setFloatingMenus?.(ArticleSingle.name)
+      viewService.setFloatingMenus?.(LangKeys.PageArticleSingle)
       viewService.setShowFloatingMenu?.(true)
     }
   }, [])
@@ -140,13 +139,13 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
     }
     section.onLocated = () => setCurrentSection(section)
     return <>
-      <div key={section + 'menu'} className={`item item-${section.level} ${section === currentSection ? "current-item" : ""}`} onClick={() => {
+      <div key={section + 'menu'} className={`item item-${section.level} ${section === currentSection ? 'current-item' : ''}`} onClick={() => {
         setSidePopup(false)
         embedSrc || setHightlight()
         section.locate?.()
         setCurrentSection(section)
       }}>
-        <span><span className="item-indent">{"  ".repeat(section.level) + "- "}</span>{section.name}</span>
+        <span><span className="item-indent">{'  '.repeat(section.level) + '- '}</span>{section.name}</span>
       </div>
       { section.children && section.children.length ? section.children.map(NavigationSectionView) : undefined}
     </>
@@ -180,25 +179,24 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>
                 <div className={classNames('status-text')}>{statusText}</div>
               </>
-                :
-                <>
+                : <>
                   {freeDraw ? undefined : <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>}
                   {
                     !freeDraw ? (<>
-                    {props.type.noTitle ? <div className={classNames('title')}></div> : <div className={classNames('title')}>{props.article.name}</div>}
-                    <Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                      {props.type.noTitle ? <div className={classNames('title')}></div> : <div className={classNames('title')}>{props.article.name}</div>}
+                      <Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
                     </>) : (<>
-                        <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ShakeOutlined />} onClick={() => setEarse(!earse)}></Button>
-                        {drawPens.map(c => <Button key={c[0]} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={ !earse && c === drawPen ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c[2] || c[0] }} />} onClick={() => {
-                          setDrawPen(c)
-                          setEarse(false)
-                        }}></Button>)}
-                        {earse ? undefined: drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawPen[2] || drawPen[0] }}></span>} onClick={() => setDrawSize(s)}></Button>)}
-                        {existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? "primary" : "link"} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined}
-                        <div className={classNames('title')}></div>
-                        <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<ClearOutlined />} onClick={() => setDrawVersion(drawVersion + 1)}></Button>
-                        <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
-                      </>)
+                      <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ShakeOutlined />} onClick={() => setEarse(!earse)}></Button>
+                      {drawPens.map(c => <Button key={c[0]} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={ !earse && c === drawPen ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c[2] || c[0] }} />} onClick={() => {
+                        setDrawPen(c)
+                        setEarse(false)
+                      }}></Button>)}
+                      {earse ? undefined : drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawPen[2] || drawPen[0] }}></span>} onClick={() => setDrawSize(s)}></Button>)}
+                      {existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? 'primary' : 'link'} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined}
+                      <div className={classNames('title')}></div>
+                      <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<ClearOutlined />} onClick={() => setDrawVersion(drawVersion + 1)}></Button>
+                      <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                    </>)
                   }
                 </>
             }
@@ -218,7 +216,7 @@ export default function ArticleSingle(props: { article: Article, type: ArticleCo
           </div>
         </div>
         <div ref={ref} className={classNames('article')}>
-          <div className={classNames("article-content", embedSrc ? 'embed-src' : '')} onClick={embedSrc ? undefined : onViewerClick} spellCheck="false" >
+          <div className={classNames('article-content', embedSrc ? 'embed-src' : '')} onClick={embedSrc ? undefined : onViewerClick} spellCheck="false" >
             <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
           </div>
           <FreeDrawMask hidden={false} enabled={true} version={drawVersion} penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true); return true }} earse={earse} size={drawSize} pen={drawPen as any} explicit={freeDraw}></FreeDrawMask>

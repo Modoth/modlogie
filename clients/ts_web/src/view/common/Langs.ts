@@ -11,6 +11,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   ARTICLE_SECTIONS = '文章段';
   ARTICLE_TAGS = '文章标签';
   DISPLAY_NAME = '显示名';
+  DOCS_PATH = '帮助文档路径';
   EDITOR_TYPES = '编辑器类型';
   EDITORS_PATH = '编辑器路径';
   FRAMEWORKS_PATH = '框架路径';
@@ -108,6 +109,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   FavoriteWords = '生词本';
   FreeDraw = '马克笔';
   History = '历史';
+  Help = '帮助';
   Home = '首页';
   Import = '导入';
   ItemsCount = '总词条数:';
@@ -149,6 +151,17 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Ok = '确定';
   Open = '打开';
   Order = '顺序';
+  PageArticleList = '导出&打印';
+  PageArticleSingle = '阅读';
+  PageLibrary = '搜索';
+  PageManageConfigs = '配置';
+  PageManageContentTemplates = '模板管理';
+  PageManageDicts= '字典';
+  PageManageSubjects = '主题管理';
+  PageManageTags = '标签管理';
+  PageManageWords = '生词本';
+  PageManageUsers = '用户管理'
+  PageToolViewer = '实用工具';
   PageSize = '单页数量';
   Paging = '分页(Beta)';
   Password = '密码';
@@ -180,6 +193,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Time = '时间';
   Tools = '工具';
   Top = '回到顶部';
+  TranslateSectionSurfix = '(译)';
   Type = '类型';
   UnknownError = '失败了';
   Url = 'Url';

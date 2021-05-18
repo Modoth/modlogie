@@ -183,7 +183,7 @@ export function ManageUsers () {
     )
   }
   useEffect(() => {
-  viewService.setFloatingMenus?.(ManageUsers.name, undefined, <Button
+  viewService.setFloatingMenus?.(LangKeys.PageManageUsers, undefined, <Button
     icon={<PlusOutlined />}
     type="primary"
     size="large" shape="circle"
@@ -193,7 +193,7 @@ export function ManageUsers () {
   })
   useEffect(() => {
     return () => {
-      viewService.setFloatingMenus?.(ManageUsers.name)
+      viewService.setFloatingMenus?.(LangKeys.PageManageUsers)
     }
   }, [])
   return (

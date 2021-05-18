@@ -1,6 +1,6 @@
 import './Modlogie.less'
 import { Button } from 'antd'
-import { DragOutlined } from '@ant-design/icons'
+import { DragOutlined, QuestionOutlined } from '@ant-design/icons'
 import { useServicesLocate } from '../common/Contexts'
 import classNames from 'classnames'
 import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
@@ -8,6 +8,10 @@ import IViewService from '../../app/Interfaces/IViewService'
 import ModlogieView from './ModlogieView'
 import React, { useEffect, useState } from 'react'
 import registerDragMove, { DragPosition } from '../../infrac/Web/registerDragMove'
+import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
+import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
+import Langs from '../common/Langs'
 
 const LastModlogiePosKey = 'LastModlogiePosKey'
 
@@ -56,6 +60,7 @@ export default function Modlogie () {
   const [fMenu, setFMenu] = useState<React.ReactNode|undefined>()
   const [bMenu, setBMenu] = useState<React.ReactNode|undefined>()
   const [opacity, setOpacity] = useState<boolean|undefined>()
+  const [currentPage, setCurrentPage] = useState('')
   const clearUp = () => {
     if (store.destory) {
       store.destory()
@@ -64,11 +69,22 @@ export default function Modlogie () {
   }
   const locate = useServicesLocate()
   const viewService = locate(IViewService)
+  const langs = locate(ILangsService)
+  const openHelp = async () => {
+    const root = await locate(IConfigsService).getValueOrDefault(ConfigKeys.DOCS_PATH)
+    if (!root) {
+      return
+    }
+    locate(IViewService).prompt(`[${langs.get(Langs.Help)}]${langs.get(currentPage)}`, [
+      { type: 'FolderOrArticle', value: root + '/' + currentPage }
+    ], async () => true)
+  }
   viewService.setShowFloatingMenu = (show?:boolean) => { setHidden(!show); return !hidden }
   viewService.setFloatingMenus = (key:string, bmenus?:React.ReactNode, fmenus?:React.ReactNode, opacity?:boolean) => {
     store.menus = store.menus.filter(([k]) => k !== key)
     if (fmenus || bmenus) {
       store.menus.unshift([key, bmenus, fmenus, opacity])
+      setCurrentPage(key)
     }
     setBMenu(store.menus[0]?.[1])
     setFMenu(store.menus[0]?.[2])
@@ -158,6 +174,8 @@ export default function Modlogie () {
           <Button size="large" type="primary"
             shape="circle" icon={<DragOutlined /> } ></Button>
         </div>
+        {open && currentPage ? <Button size="large" type="primary" danger onClick={openHelp}
+          shape="circle" icon={<QuestionOutlined /> } ></Button> : undefined}
         {open ? bMenu : fMenu}
       </div>
 

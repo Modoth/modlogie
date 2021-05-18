@@ -19,7 +19,6 @@ import ankiCss from '!!raw-loader!./ArticleList.Anki.css'
 // eslint-disable-next-line camelcase
 import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
 import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
-
 const maxColumn = 3
 const maxBorderStyle = 4
 
@@ -31,14 +30,14 @@ const HideIndexKey = 'ARTICLES_HIDE_INDEX'
 
 const GeneratorNames = [LangKeys.Anki]
 
-export default function ArticleList() {
+export default function ArticleList () {
   const locate = useServicesLocate()
   const langs = locate(ILangsService)
   const user = useUser()
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
-  const [generators, setGenerators] = useState<Map<string, Map<ArticleContentType, (props: ArticleContentExporterProps) => string>>>(new Map())
+  const [generators, setGenerators] = useState<Map<string, Map<ArticleContentType, {(props: ArticleContentExporterProps): string}>>>(new Map())
   const magicSeed = useMagicSeed()
   const fetchArticles = async () => {
     viewService.setLoading(true)
@@ -63,7 +62,7 @@ export default function ArticleList() {
       const gNames = GeneratorNames
       const generators = new Map()
       for (const gname of gNames) {
-        let generator: any = new Map<ArticleContentType, (props: ArticleContentViewerProps) => string>()
+        let generator: any = new Map<ArticleContentType, {(props: ArticleContentViewerProps): string }>()
         for (const [_, type] of all) {
           const g = type.articleType.exporterGenerators?.get(gname)?.generator
           if (!g) {
@@ -123,7 +122,7 @@ export default function ArticleList() {
     locate(IViewService).previewArticleList(false)
   }
   useEffect(() => {
-    viewService.setFloatingMenus?.(ArticleList.name, <>
+    viewService.setFloatingMenus?.(LangKeys.PageArticleList, <>
       {
         <Button type="primary" shape="circle" size="large" icon={<PictureOutlined />} onClick={() => {
           (document.scrollingElement as HTMLElement).scrollTo({ top: 0, behavior: undefined })
@@ -131,8 +130,8 @@ export default function ArticleList() {
         }} />
       }
       {
-        generators.size ?
-          <Button
+        generators.size
+          ? <Button
             icon={<DownloadOutlined />}
             type="primary" shape="circle" size="large"
             onClick={() => {
@@ -168,10 +167,10 @@ export default function ArticleList() {
                       get: ([article, type]: [Article, ArticleContentType]) => {
                         const g = generators.get(LangKeys.Anki)?.get(type)
                         const resources: any = []
-                        if(!g){
+                        if (!g) {
                           return [undefined, undefined]
                         }
-                        return [g({ content: article.content!, articleId: article.id! ,resources}), resources]
+                        return [g({ content: article.content!, articleId: article.id!, resources }), resources]
                       }
                     }
                   ]
@@ -230,7 +229,7 @@ export default function ArticleList() {
   })
   useEffect(() => {
     return () => {
-      viewService.setFloatingMenus?.(ArticleList.name)
+      viewService.setFloatingMenus?.(LangKeys.PageArticleList)
     }
   }, [])
   return (
@@ -257,7 +256,7 @@ export default function ArticleList() {
       <div ref={ref} className={classNames(`column-count-${columnCount}`, !hideIdx ? 'show-idx' : '', `border-style-${borderStyle}`, 'article-list')}>{items.filter(([article]) => article.content && article.content.sections).map(
         ([article, type]) =>
           article.lazyLoading ? <div key={article.name + '_ept'}></div>
-            : <type.Viewer articleId={article.id!} title={article.name} key={article.name} showTitle={!type.noTitle} print={true} className={classNames("article", borderStyle == 4 ? generateRandomStyle(article.name!, magicSeed) : '')} content={article.content!} files={article.files} type={type}></type.Viewer>
+            : <type.Viewer articleId={article.id!} title={article.name} key={article.name} showTitle={!type.noTitle} print={true} className={classNames('article', borderStyle === 4 ? generateRandomStyle(article.name!, magicSeed) : '')} content={article.content!} files={article.files} type={type}></type.Viewer>
       )}
       </div>
     </div>

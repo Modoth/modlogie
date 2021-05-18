@@ -128,7 +128,7 @@ export function ManageContentTemplates () {
     )
   }
   useEffect(() => {
-  viewService.setFloatingMenus?.(ManageContentTemplates.name,undefined, <Button
+  viewService.setFloatingMenus?.(LangKeys.PageManageContentTemplates, undefined, <Button
     icon={<PlusOutlined />}
     type="primary"
     size="large" shape="circle"
@@ -138,7 +138,7 @@ export function ManageContentTemplates () {
   })
   useEffect(() => {
     return () => {
-      viewService.setFloatingMenus?.(ManageContentTemplates.name)
+      viewService.setFloatingMenus?.(LangKeys.PageManageContentTemplates)
     }
   }, [])
   return (

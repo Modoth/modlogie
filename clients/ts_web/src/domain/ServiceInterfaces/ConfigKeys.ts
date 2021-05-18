@@ -2,6 +2,7 @@ export class ConfigKeysInterface<T> {
     ALLOW_LIKES: T = <any>'ALLOW_LIKES';
     ALLOW_LOGIN: T = <any>'ALLOW_LOGIN';
     ALLOW_PRINT: T = <any>'ALLOW_PRINT';
+    DOCS_PATH:T=<any>'DOCS_PATH';
     EDITOR_TYPES:T=<any>'EDITOR_TYPES';
     EDITORS_PATH:T=<any>'EDITORS_PATH';
     FRAMEWORKS_PATH:T=<any>'FRAMEWORKS_PATH';

@@ -106,7 +106,7 @@ export default function ManageDicts () {
     })()
   }, [])
   useEffect(() => {
-    viewService.setFloatingMenus?.(ManageDicts.name,
+    viewService.setFloatingMenus?.(LangKeys.PageManageDicts,
       <Button size="large" type="primary" shape="circle" danger icon={<DeleteOutlined />} onClick={clearDict}></Button>
     ,
     <Button size="large" type="primary" shape="circle" icon={<PlusOutlined />} onClick={() => {
@@ -118,7 +118,7 @@ export default function ManageDicts () {
   })
   useEffect(() => {
     return () => {
-      viewService.setFloatingMenus?.(ManageDicts.name)
+      viewService.setFloatingMenus?.(LangKeys.PageManageDicts)
     }
   }, [])
   return <div className="manage-dicts">

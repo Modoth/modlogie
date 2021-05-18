@@ -14,7 +14,7 @@ import WebFile from '../../infrac/Lang/WebFile'
 
 const RecentFileKey = 'ToolViewer'
 
-export function ToolViewer() {
+export function ToolViewer () {
   const [file, setFile] = useState<IFile | undefined>()
   const [name, setName] = useState<string | undefined>()
   const locate = useServicesLocate()
@@ -55,11 +55,11 @@ export function ToolViewer() {
     setName(file.name)
   }
   useEffect(() => {
-    viewService.setFloatingMenus?.(ToolViewer.name, <>
+    viewService.setFloatingMenus?.(LangKeys.PageToolViewer, <>
       {file ? <Button type="primary" size="large" shape="circle" danger icon={<CloseOutlined />} onClick={() => {
         loadFile()
       }}></Button> : undefined}
-    </>,  <Button type="primary" size="large" shape="circle" icon={<FileOutlined />} onClick={selectFile}></Button>
+    </>, <Button type="primary" size="large" shape="circle" icon={<FileOutlined />} onClick={selectFile}></Button>
     , !!file)
   })
   useEffect(() => {
@@ -72,11 +72,11 @@ export function ToolViewer() {
     }
     loadLastFile()
     return () => {
-      viewService.setFloatingMenus?.(ToolViewer.name)
+      viewService.setFloatingMenus?.(LangKeys.PageToolViewer)
     }
   }, [])
-  return file ?
-    <div className="tool-viewer-wraper">
+  return file
+    ? <div className="tool-viewer-wraper">
       <div className={classNames('tool-viewer', (navigator as any).standalone ? 'standalone' : '')}>
         {/* <div className="menu">
           <Button type="link" className="menu-title"> <span >{name || ''}</span></Button>

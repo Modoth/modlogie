@@ -1,6 +1,5 @@
 import { Config, ConfigType } from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ConfigKeys, { ConfigKeysInterface } from '../../domain/ServiceInterfaces/ConfigKeys'
-import Seperators from '../../domain/ServiceInterfaces/Seperators'
 
 export const UserRoleKeys = {
   UNLOGIN: 'UNLOGIN',
@@ -13,11 +12,12 @@ class DefaultConfigsClass implements ConfigKeysInterface<Config> {
   ALLOW_LIKES = new Config(ConfigKeys.ALLOW_LIKES, ConfigType.BOOLEAN, 'false');
   ALLOW_LOGIN = new Config(ConfigKeys.ALLOW_LOGIN, ConfigType.BOOLEAN, 'false');
   ALLOW_PRINT = new Config(ConfigKeys.ALLOW_PRINT, ConfigType.ENUM, UserRoleKeys.UNLOGIN, '', [UserRoleKeys.UNLOGIN, UserRoleKeys.NORMAL, UserRoleKeys.AUTHORISED, UserRoleKeys.ADM]);
+  DOCS_PATH=new Config(ConfigKeys.DOCS_PATH, ConfigType.STRING, '/_docs');
   EDITOR_TYPES=new Config(ConfigKeys.EDITOR_TYPES, ConfigType.STRING, '');// txt txt;
   EDITORS_PATH=new Config(ConfigKeys.EDITORS_PATH, ConfigType.STRING, '/_apps/editors');
   INTERPRETER_TYPES=new Config(ConfigKeys.INTERPRETER_TYPES, ConfigType.STRING, '');// go go;
   INTERPRETERS_PATH=new Config(ConfigKeys.INTERPRETERS_PATH, ConfigType.STRING, '/_apps/interpreters');
-  FRAMEWORKS_PATH=new Config(ConfigKeys.FRAMEWORKS_PATH, ConfigType.STRING, '/fw');
+  FRAMEWORKS_PATH=new Config(ConfigKeys.FRAMEWORKS_PATH, ConfigType.STRING, '/_fw');
   IMPORT_SUBJECTS_AUTOFIX = new Config(ConfigKeys.IMPORT_SUBJECTS_AUTOFIX, ConfigType.BOOLEAN, 'false');
   LANGS_SERVER = new Config(ConfigKeys.LANGS_SERVER, ConfigType.STRING, '');// _https://www.modoth.cn:8000/$lang/$version/$code,perl,bash
   MAX_FAVORITES_PER_TYPE = new Config(ConfigKeys.MAX_FAVORITES_PER_TYPE, ConfigType.NUMBER, '1000');

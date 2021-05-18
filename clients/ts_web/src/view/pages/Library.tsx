@@ -561,7 +561,7 @@ export default function Library (props: LibraryProps) {
     }
     return () => {
       viewService.setShowTitle?.(true)
-      viewService.setFloatingMenus?.(Library.name)
+      viewService.setFloatingMenus?.(LangKeys.PageLibrary)
       favoriteService.unsetCountChangedHandler(props.type.name)
       viewService.previewArticle()
     }
@@ -576,7 +576,7 @@ export default function Library (props: LibraryProps) {
 
   useEffect(() => {
     if (viewService.setFloatingMenus) {
-      viewService.setFloatingMenus(Library.name, <>
+      viewService.setFloatingMenus(LangKeys.PageLibrary, <>
         {user.printPermission ? (
           <ArticleListSummary></ArticleListSummary>
         ) : null}

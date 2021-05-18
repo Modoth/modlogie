@@ -4,6 +4,7 @@ import ILangsService from '../../domain/ServiceInterfaces/ILangsService'
 
 export interface IPromptField<TValue, TType extends
 'Article' |
+'FolderOrArticle' |
 'Enum' |
 'File' |
 'Image' |

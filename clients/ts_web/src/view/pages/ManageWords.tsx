@@ -81,7 +81,7 @@ export default function ManageWrods () {
       if (store.url) {
         URL.revokeObjectURL(store.url)
       }
-      viewService.setFloatingMenus?.(ManageWrods.name)
+      viewService.setFloatingMenus?.(LangKeys.PageManageWords)
     }
   }, [])
 
@@ -133,7 +133,7 @@ export default function ManageWrods () {
     )
   }
   useEffect(() => {
-    viewService.setFloatingMenus?.(ManageWrods.name, <>
+    viewService.setFloatingMenus?.(LangKeys.PageManageWords, <>
       <Button
         icon={<ClearOutlined />}
         type="primary"
@@ -298,24 +298,24 @@ export default function ManageWrods () {
       </Button>
     </>,
     <Button
-    icon={<SearchOutlined />}
-    danger={!!filter}
-    type="primary"
-    size="large" shape="circle"
-    onClick={() => {
-      locate(IViewService).prompt(langs.get(LangKeys.Search), [
-        {
-          type: 'Text',
-          value: filter || '',
-          hint: langs.get(LangKeys.Search)
-        }
-      ], async (filter: string) => {
-        setFilter(filter)
-        return true
-      })
-    }}
-  >
-  </Button>
+      icon={<SearchOutlined />}
+      danger={!!filter}
+      type="primary"
+      size="large" shape="circle"
+      onClick={() => {
+        locate(IViewService).prompt(langs.get(LangKeys.Search), [
+          {
+            type: 'Text',
+            value: filter || '',
+            hint: langs.get(LangKeys.Search)
+          }
+        ], async (filter: string) => {
+          setFilter(filter)
+          return true
+        })
+      }}
+    >
+    </Button>
   )
   })
   return (
