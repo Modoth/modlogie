@@ -2,7 +2,7 @@ import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocate, useUser } from '../common/Contexts'
-import { MoreOutlined, DeleteColumnOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, ShakeOutlined, HighlightOutlined, BulbOutlined, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontSizeOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MoreOutlined, DeleteColumnOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, ShakeOutlined, HighlightOutlined, BulbOutlined, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontColorsOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -93,7 +93,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                 setEmbedSrc(!embedSrc)
                 configsService.set(EmbedSourceKey, !embedSrc)
               }}></Button> : undefined}
-              <Button key="theme" type="primary" shape="circle" size="large" icon={<BgColorsOutlined />}
+              <Button key="theme" type="primary" shape="circle" size="large" icon={<FontColorsOutlined />}
                 onClick={() => {
                   const nextTheme = (currentTheme + 1) % themeCount
                   setCurrentTheme(nextTheme)
