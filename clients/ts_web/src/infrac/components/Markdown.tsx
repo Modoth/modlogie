@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import "./Markdown.less"
+import './Markdown.less'
 
 const transformLinkUri = (uri: string) => {
   if (uri) {
@@ -18,8 +18,8 @@ const transformLinkUri = (uri: string) => {
 
 // eslint-disable-next-line react/display-name
 const emphasis = (props: any) => {
-  let front = props.children.filter((c: any) => c.type !== emphasis)
-  let back = props.children.filter((c: any) => c.type === emphasis)
+  const front = props.children.filter((c: any) => c.type !== emphasis)
+  const back = props.children.filter((c: any) => c.type === emphasis)
   if (back.length) {
     return <span className="mdg">
       <span className="mdg-f" >{ front }</span>
@@ -39,7 +39,7 @@ const defaultRenderers = {
   }
 }
 
-export default function Markdown(props: ReactMarkdown.ReactMarkdownProps) {
+export default function Markdown (props: ReactMarkdown.ReactMarkdownProps) {
   const renderers = Object.assign({}, defaultRenderers, props.renderers)
   renderers.inlineCode = renderers.code
   return <ReactMarkdown transformLinkUri={transformLinkUri} {...props} renderers={renderers} skipHtml={true}></ReactMarkdown>

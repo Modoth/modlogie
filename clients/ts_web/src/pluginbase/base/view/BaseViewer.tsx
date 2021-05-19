@@ -20,15 +20,15 @@ const getSections = (allSections: Set<string>, additionalSections: Set<string>, 
   return s
 }
 
-export default function BaseViewer(TSectionViewer: { (props: SectionViewerProps): JSX.Element }, pluginName: string,
+export default function BaseViewer (TSectionViewer: { (props: SectionViewerProps): JSX.Element }, pluginName: string,
   TAdditionalSectionsViewer?: { (props: AdditionalSectionViewerProps): JSX.Element }) {
   const TAdditionalSectionsViewerMemo = TAdditionalSectionsViewer ? memo(TAdditionalSectionsViewer) : null
   // eslint-disable-next-line react/display-name
   return (props: ArticleContentViewerProps) => {
-    const [filesDict] = useState(()=>props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
-    const [sections] = useState(()=>(getSections(props.type?.allSections!, props.type?.additionalSections!, props.content?.sections || [])))
+    const [filesDict] = useState(() => props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
+    const [sections] = useState(() => (getSections(props.type?.allSections!, props.type?.additionalSections!, props.content?.sections || [])))
     const [showAdditional] = useState(props.showAdditionals === true)
-    const [navigationSections] = useState(()=>sections.map(s => (() => {
+    const [navigationSections] = useState(() => sections.map(s => (() => {
       var sec: NavigationSection & LocatableViewCallbacks & { section: ArticleSectionVm } = new NavigationSection(s.name!) as any
       sec.section = s
       return sec

@@ -2,21 +2,21 @@ import './FreeDrawMask.less'
 import classNames from 'classnames'
 import React, { useEffect, useState } from 'react'
 
-type PropsType = { enabled: boolean ,version: number, explicit: boolean, penOnly?: boolean, onPenFound?: () => boolean, size: number, pen: [string, number], earse: boolean, hidden: boolean }
+type PropsType = { enabled: boolean, version: number, explicit: boolean, penOnly?: boolean, onPenFound?: () => boolean, size: number, pen: [string, number], earse: boolean, hidden: boolean }
 let p: PropsType = {} as any
-const clearCanvas = (c:HTMLCanvasElement)=>{
+const clearCanvas = (c:HTMLCanvasElement) => {
   const ctx = c.getContext('2d')!
-    ctx.clearRect(0, 0, c.width, c.height)
+  ctx.clearRect(0, 0, c.width, c.height)
 }
-export default function FreeDrawMask(props: PropsType) {
+export default function FreeDrawMask (props: PropsType) {
   const ref = React.createRef<HTMLCanvasElement>()
   const tmpRef = React.createRef<HTMLCanvasElement>()
   p = props
   const delay = 10
   const minDist = 1
   const [existedPen, setExistedPen] = useState(false)
-  const [store] = useState({needUpdateScale:false})
-  useEffect(()=>{
+  const [store] = useState({ needUpdateScale: false })
+  useEffect(() => {
     ref.current && clearCanvas(ref.current)
     tmpRef.current && clearCanvas(tmpRef.current)
     store.needUpdateScale = true
@@ -25,7 +25,7 @@ export default function FreeDrawMask(props: PropsType) {
     const canvas = ref.current!
     const style = getComputedStyle(canvas)
     const tmpCanvas = tmpRef.current!
-    let scale = 1, tempScale = 1
+    let scale = 1; let tempScale = 1
     const updateScale = () => {
       clearCanvas(tmpCanvas)
       clearCanvas(canvas)
@@ -65,9 +65,9 @@ export default function FreeDrawMask(props: PropsType) {
     let lastPos: [number, number] | undefined
     let lastMoveTime = 0
     let lastPath: [number, number][] = []
-    const isNotPen = (ev: MouseEvent | TouchEvent) => (ev as TouchEvent).touches?.[0]?.["touchType"] !== "stylus"
+    const isNotPen = (ev: MouseEvent | TouchEvent) => (ev as TouchEvent).touches?.[0]?.['touchType'] !== 'stylus'
     const startDraw = (ev: MouseEvent | TouchEvent) => {
-      if(!p.enabled){
+      if (!p.enabled) {
         return
       }
       if (!p.explicit) {
@@ -85,18 +85,18 @@ export default function FreeDrawMask(props: PropsType) {
           p.onPenFound?.()
         }
       }
-      drawing = true;
-      if(store.needUpdateScale){
+      drawing = true
+      if (store.needUpdateScale) {
         updateScale()
       }
       let t: [number, number]
       [[x, y], t] = getPos(ev)
-      lastPath = [t];
+      lastPath = [t]
       lastPos = undefined
       lastMoveTime = 0
     }
     const drawLastPath = () => {
-      let paths = lastPath
+      const paths = lastPath
       if (paths.length < 3) {
         return
       }
@@ -107,20 +107,20 @@ export default function FreeDrawMask(props: PropsType) {
       ctx.strokeStyle = p.pen[0]
       ctx.lineWidth = p.size * scale * (p.pen[1] || 1)
       ctx.beginPath()
-      ctx.moveTo(...paths[0]);
+      ctx.moveTo(...paths[0])
       let i = 1
       for (i = 1; i < paths.length - 2; i++) {
-        let p1 = paths[i]
-        let p2 = paths[i + 1]
-        ctx.quadraticCurveTo(p1[0], p1[1], (p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2);
+        const p1 = paths[i]
+        const p2 = paths[i + 1]
+        ctx.quadraticCurveTo(p1[0], p1[1], (p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
       }
-      ctx.quadraticCurveTo(paths[i][0], paths[i][1], paths[i + 1][0], paths[i + 1][1]);
+      ctx.quadraticCurveTo(paths[i][0], paths[i][1], paths[i + 1][0], paths[i + 1][1])
       ctx.stroke()
       ctx.closePath()
       ctx.restore()
     }
     const stopDraw = (ev: MouseEvent | TouchEvent) => {
-      if(!drawing){ return }
+      if (!drawing) { return }
       if (props.penOnly && isNotPen(ev)) { return }
       drawing = false
       if (p.earse) {
@@ -144,7 +144,7 @@ export default function FreeDrawMask(props: PropsType) {
         const ctx = canvas.getContext('2d')!
         ctx.save()
         ctx.lineCap = 'round'
-        let r = p.size * scale * (p.pen[1] || 1) / 2
+        const r = p.size * scale * (p.pen[1] || 1) / 2
         ctx.clearRect(Math.min(x, tx) - r, Math.min(y, ty) - r, Math.abs(x - tx) + 2 * r, Math.abs(y - ty) + 2 * r)
         ctx.restore()
       } else {

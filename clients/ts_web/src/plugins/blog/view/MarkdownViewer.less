@@ -1,16 +1,20 @@
 .md-viewer {
   width: 100%;
 
-  .mask-word{
+  .mask-word {
     color: transparent;
     background: #00000018;
     border-radius: 5px;
     padding: 0 2px;
     margin: 0 2px;
-    &:hover{
+    display: inline-block;
+    line-height: 1em;
+    &:hover {
       background: var(--primary);
       color: #fff;
-      border-radius: 0;
+      border-radius: unset;
+      display: unset;
+      line-height: unset;
     }
   }
 
@@ -26,7 +30,7 @@
     align-items: center;
     overflow: scroll;
     touch-action: pan-x;
-    .img-menus{
+    .img-menus {
       position: fixed;
       bottom: 80px;
       opacity: 0.8;
@@ -34,8 +38,8 @@
       place-content: center;
       display: flex;
     }
-    
-    img{
+
+    img {
       object-fit: contain;
       box-shadow: unset !important;
       padding: 8px !important;
@@ -50,43 +54,44 @@
     display: none;
   }
 
-  td,th {
+  td,
+  th {
     padding: 10px 5px;
     text-align: left;
   }
 
-  table{
+  table {
     border-collapse: collapse;
     box-sizing: border-box;
   }
 
-  @media (max-width:780px) {
-
-    table{
+  @media (max-width: 780px) {
+    table {
       margin: 0 -20px;
     }
 
-    td,th {
+    td,
+    th {
       padding: 10px 5px;
       text-align: left;
-      &:first-child{
+      &:first-child {
         padding-left: 20px;
       }
-      &:last-child{
+      &:last-child {
         padding-right: 20px;
       }
     }
-  
-    tr{
+
+    tr {
       background: linear-gradient(to bottom, #00000004, #00000008);
     }
   }
 
-  p{
+  p {
     text-align: justify;
   }
 
-  a{
+  a {
     font-size: 0.95em;
   }
 
@@ -113,17 +118,17 @@
     font-weight: bold;
     font-size: 1.05em;
     display: block;
-    background: linear-gradient(0, #e8912e,#e8912ecc);
+    background: linear-gradient(0, #e8912e, #e8912ecc);
     user-select: none;
     color: white;
     box-shadow: var(--shadow);
     padding: 6px 15px 6px 20px;
     margin: 5px -20px 15px -20px;
-    @media (min-width:780px) {
+    @media (min-width: 780px) {
       margin: 5px -5px 15px -5px;
       padding: 5px 5px 5px 10px;
     }
-    @media print{
+    @media print {
       background: unset;
       padding: unset;
       color: unset;
@@ -133,7 +138,7 @@
   }
 
   &.edit-mode {
-    .md-name{
+    .md-name {
       background: unset;
       padding: unset;
       color: unset;
@@ -146,7 +151,7 @@
     .md-name {
       display: none;
     }
-    &>p:first-of-type img {
+    & > p:first-of-type img {
       max-width: 100px;
       float: right;
       object-fit: contain;

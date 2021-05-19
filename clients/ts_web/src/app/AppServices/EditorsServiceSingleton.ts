@@ -71,8 +71,8 @@ export default class EditorsServiceSingleton extends IServicesLocator implements
  }
 
  getInterpreterByFileName (name:string): EditorInfo|undefined {
-  return this.getType(ConfigKeys.INTERPRETER_TYPES, name)
-}
+   return this.getType(ConfigKeys.INTERPRETER_TYPES, name)
+ }
 
  getViewerByFileName (name:string): EditorInfo|undefined {
    return this.getType(ConfigKeys.VIEWER_TYPES, name) || this.getEditorByFileName(name)

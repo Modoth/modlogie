@@ -287,17 +287,17 @@ export class Anki {
     const zip = new Zip()
     const binaryArray = this.db.export()
     const mediaObj = this.media.reduce((prev: any, curr, idx) => {
-      prev[idx] = curr.name;
-      return prev;
-    }, {});
+      prev[idx] = curr.name
+      return prev
+    }, {})
     zip.file('collection.anki2', binaryArray)
     zip.file('media', JSON.stringify(mediaObj))
-    this.media.forEach((item, i) => zip.file(i.toString(), item.data));
+    this.media.forEach((item, i) => zip.file(i.toString(), item.data))
     return zip.generateAsync({ type: 'arraybuffer' })
   }
 
-  addMedia(name:string, data: ArrayBuffer) {
-    this.media.push({ name, data });
+  addMedia (name:string, data: ArrayBuffer) {
+    this.media.push({ name, data })
   }
 
   addCard (front:string, back:string) {

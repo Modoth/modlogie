@@ -16,7 +16,7 @@ export default function BaseEditor (TSectionEditor: { (props: SectionEditorProps
   return (props: ArticleContentEditorProps) => {
     const [type, setType] = useState<ArticleContentType | undefined>(undefined)
     const [sections, setSections] = useState<ArticleSection[]>([])
-    const [sectionOps] = useState(()=>new Map<ArticleSection, ArticleContentEditorCallbacks<[string, string[]]>>())
+    const [sectionOps] = useState(() => new Map<ArticleSection, ArticleContentEditorCallbacks<[string, string[]]>>())
     useEffect(() => {
       if (props.type === type) {
         return
@@ -26,7 +26,7 @@ export default function BaseEditor (TSectionEditor: { (props: SectionEditorProps
       secs.forEach(s => sectionOps.set(s, {} as any))
       setSections(secs)
     })
-    const [filesDict] = useState(()=>props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
+    const [filesDict] = useState(() => props.files ? new Map(props.files.map(f => [f.name!, f])) : new Map())
     const [newFiles] = useState(new Map<ArticleSection, string[]>())
     const [currentSection, setCurrentSection] = useState<ArticleSection | undefined>(undefined)
     const saveCurrentSectionAndChange = (next: ArticleSection) => {
@@ -47,9 +47,9 @@ export default function BaseEditor (TSectionEditor: { (props: SectionEditorProps
         sectionOps.get(section)!.removeFile(file)
       }
     }
-    const getNewFiles = ()=>{
-      sections.forEach(s =>{
-        if(!newFiles.get(s)){
+    const getNewFiles = () => {
+      sections.forEach(s => {
+        if (!newFiles.get(s)) {
           const [_, files] = sectionOps.get(s)!.getEditedContent()
           newFiles.set(s, files)
         }
@@ -66,7 +66,7 @@ export default function BaseEditor (TSectionEditor: { (props: SectionEditorProps
         sections: sections.map(s => ({ content: s.content, name: s.name }))
       },
       getNewFiles()
-    ]
+      ]
     }
     return <div className={classNames(props.className, props.type?.name, pluginName, 'base-editor')}>
       {sections.map(section =>

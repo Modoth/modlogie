@@ -5,7 +5,7 @@ import TurndownService from 'turndown'
 export const getSectionFileContent = (_: string) => {
   return getMdFileContent
 }
-export const getFilesInSectionContent = (_:string)=>{
+export const getFilesInSectionContent = (_:string) => {
   return getFilesInMdContent
 }
 const translateHtml2Markdown = (html: string) => {

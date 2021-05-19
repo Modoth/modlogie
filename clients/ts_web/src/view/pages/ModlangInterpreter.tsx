@@ -10,7 +10,7 @@ import BufferFile from '../../infrac/Lang/BufferFile'
 import IFile from '../../infrac/Lang/IFile'
 import classNames from 'classnames'
 
-export function ModlangInterpreter(props: { code: string, lang: string, version?: string, template?: string }) {
+export function ModlangInterpreter (props: { code: string, lang: string, version?: string, template?: string }) {
   const [request] = useState(() => new InterpretRequest(props.code, props.lang, props.version, props.template))
   const [output, setOutput] = useState<string | undefined>()
   const [compilerOutput, setCompilerOutput] = useState<string | undefined>()
@@ -72,15 +72,15 @@ export function ModlangInterpreter(props: { code: string, lang: string, version?
       }
     </div>
     {
-      opened ? <div onClick={(ev)=> ev.stopPropagation()} className={classNames(fullScreen ? "fullscreen-interpreter" : '', "result", (navigator as any).standalone ? 'standalone' : '')}>
+      opened ? <div onClick={(ev) => ev.stopPropagation()} className={classNames(fullScreen ? 'fullscreen-interpreter' : '', 'result', (navigator as any).standalone ? 'standalone' : '')}>
         <div className="menu">
-          <Button size={false ? "middle" : "small"} shape="circle" type="text" danger onClick={(ev) => { ev.stopPropagation(); clear() }} className="play" icon={<MinusOutlined />}></Button>
-{          interpreterPlugin ? undefined : <Button size={false ? "middle" : "small"} shape="circle" type="text" danger onClick={(ev) => { ev.stopPropagation(); setFullScreen(!fullScreen) }} className="play" icon={fullScreen ? <FullscreenExitOutlined />: <FullscreenOutlined />}></Button>
-}          {interpreter && interpreter.info.url && interpreter.info.name ? <a className="title" href={interpreter.info.url}>{interpreter.info.name}</a> : undefined}
+          <Button size="small" shape="circle" type="text" danger onClick={(ev) => { ev.stopPropagation(); clear() }} className="play" icon={<MinusOutlined />}></Button>
+          { interpreterPlugin ? undefined : <Button size="small" shape="circle" type="text" danger onClick={(ev) => { ev.stopPropagation(); setFullScreen(!fullScreen) }} className="play" icon={fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button>
+          }          {interpreter && interpreter.info.url && interpreter.info.name ? <a className="title" href={interpreter.info.url}>{interpreter.info.name}</a> : undefined}
         </div>
         {
-          interpreterPlugin ? <div className="embed-content"><ExternalViewer file={file!} info={interpreterPlugin} /></div> :
-            interpreterUrl
+          interpreterPlugin ? <div className="embed-content"><ExternalViewer file={file!} info={interpreterPlugin} /></div>
+            : interpreterUrl
               ? <div className="embed-content">
                 {
                   <iframe src={interpreterUrl}></iframe>

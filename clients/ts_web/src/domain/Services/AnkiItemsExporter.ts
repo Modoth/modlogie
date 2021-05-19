@@ -4,10 +4,10 @@ import IAnkiItemsExporter from '../ServiceInterfaces/IAnkiItemsExporter'
 
 function generateField<TItem> (item:TItem, field:FieldInfo<TItem>, resources: ExportResource[]):string|undefined {
   const [fieldContent, r] = field.get(item)
-  if(r && r.length){
+  if (r && r.length) {
     resources.push(...r)
   }
-  if(!fieldContent){
+  if (!fieldContent) {
     return undefined
   }
   return `<div class="${field.name}">${fieldContent}</div>`
@@ -26,14 +26,14 @@ export default class AnkiItemsExporter implements IAnkiItemsExporter {
       const frontField = fields.shift()!
       for (const item of items) {
         const front = generateField(item, frontField, resources)
-        if(!front){
+        if (!front) {
           continue
         }
         const back = fields.map(field => generateField(item, field, resources)).filter(i => i).join('</br>')
         exporter.addCard(front, back)
       }
     }
-    for(const r of resources){
+    for (const r of resources) {
       const data = await (await fetch(r.path)).arrayBuffer()
       exporter.addMedia(r.name, data)
     }

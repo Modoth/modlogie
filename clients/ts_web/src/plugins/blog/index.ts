@@ -26,7 +26,7 @@ export default class Blog extends PluginInfoBase implements IPluginInfo {
           [LangKeys.PUBLISH_CONTENT, { generator: PlainGenerator, autoUpdate: true, previewTemplate: PlainPreview }]
         ]),
         exporterGenerators: new Map([
-          [LangKeys.Anki, { generator: AnkiGenerator }],
+          [LangKeys.Anki, { generator: AnkiGenerator }]
         ])
       })
   }

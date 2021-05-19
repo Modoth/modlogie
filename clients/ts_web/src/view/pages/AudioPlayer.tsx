@@ -17,9 +17,9 @@ export default function AudioPlayer () {
   const fileService = locate(IRecentFileService)
   const audioService = locate(IAudioService)
   const langs = locate(ILangsService)
-  const [info, setInfo] = useState(()=>({ title: audioService.getTitle() }))
+  const [info, setInfo] = useState(() => ({ title: audioService.getTitle() }))
   const [store] = useState({ url: '' })
-  const [playing, setPlayging] = useState(()=>audioService.getPlay())
+  const [playing, setPlayging] = useState(() => audioService.getPlay())
   const [hasData, setHasData] = useState(!!info.title || playing)
   const releaseAudioSource = () => {
     if (store.url) {

@@ -101,7 +101,7 @@ export default function MathSectionEditor (props: SectionEditorProps) {
     const [start, end] = [textArea.selectionStart, textArea.selectionEnd]
     setContent(oldContent.slice(0, start) + text + oldContent.slice(end))
   }
-  const getNewFiles = ()=>{
+  const getNewFiles = () => {
     return Array.from(content.matchAll(/\$\$:(.*?)\$\$/g)).map(a => a[1])
   }
   props.callbacks.addFile = (file: ArticleFile) => {

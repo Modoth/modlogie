@@ -264,11 +264,14 @@
 }
 
 .share-panel {
+  --margin: 8px;
   position: absolute;
   z-index: 1000;
-  margin: 8px;
+  margin: var(--margin);
   display: flex;
   pointer-events: unset;
+  width: calc(100% - var(--margin) * 2);
+  box-sizing: border-box;
   img {
     width: 80px;
     height: 80px;

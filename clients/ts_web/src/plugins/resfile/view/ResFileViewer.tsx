@@ -134,7 +134,7 @@ function DownloadManagerView (props: { name: string, url: string, onProgress?(pr
 
 export default function ResFileViewer (props: SectionViewerProps) {
   const resfile = yaml.parse(props.section.content) as ResFile
-  const [url] = useState(()=>props.filesDict.get(resfile?.name)?.url)
+  const [url] = useState(() => props.filesDict.get(resfile?.name)?.url)
   if (!url) {
     return <></>
   }

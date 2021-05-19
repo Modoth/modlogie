@@ -54,7 +54,6 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   }
   const [statusText, setStatusText] = useState('')
   const langs = locate(ILangsService)
-  const user = useUser()
   const [freeDraw, setFreeDraw] = useState(false)
   const [drawVersion, setDrawVersion] = useState(0)
   const [penOnly, setPenOnly] = useState(false)
@@ -62,7 +61,6 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   const [sidePopup, setSidePopup] = useState(false)
   const [captureDict, setCaptureDict] = useState(false)
   const [embedSrc, setEmbedSrc] = useState(false)
-  const smallScreen = window.matchMedia && window.matchMedia('(max-width: 780px)')?.matches
   const [currentTheme, setCurrentTheme] = useState(0)
   const ref = React.createRef<HTMLDivElement>()
   const [callbacks] = useState({} as ArticleContentViewerCallbacks)
@@ -71,11 +69,6 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     if (locateRef && locateRef.locate) {
       locateRef.locate(direct, 50)
     }
-  }
-  const jumpTo = (url: string) => {
-    viewService.previewArticle(undefined, undefined, () => {
-      window.location.href = url
-    })
   }
   callbacks.onSections = (secs) => {
     setHasSource(!!secs.find(s => s.name?.endsWith(langs.get(LangKeys.TranslateSectionSurfix))))
@@ -90,22 +83,26 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
             setCaptureDict(!captureDict)
             configsService.set(CaptureDictKey, !captureDict)
           }}></Button>
-          {hasSource ? <Button key="embed-src" type="primary" shape="circle" size="large" danger={embedSrc} icon={<DeleteColumnOutlined />} onClick={() => {
-            setEmbedSrc(!embedSrc)
-            configsService.set(EmbedSourceKey, !embedSrc)
-          }}></Button> : undefined}
           <Button key="screen-shot" type="primary" shape="circle" size="large" icon={<PictureOutlined />} onClick={() => {
             scrollToTop(true)
             setTimeout(() => viewService.captureElement(ref.current!), 50)
           }} ></Button>
-          <Button key="theme" type="primary" shape="circle" size="large" icon={<BgColorsOutlined />}
-            onClick={() => {
-              const nextTheme = (currentTheme + 1) % themeCount
-              setCurrentTheme(nextTheme)
-              configsService.set(ThemeKey, nextTheme)
-            }
-            }
-          ></Button>
+          {
+            freeDraw ? undefined : <>
+              {hasSource ? <Button key="embed-src" type="primary" shape="circle" size="large" danger={embedSrc} icon={<DeleteColumnOutlined />} onClick={() => {
+                setEmbedSrc(!embedSrc)
+                configsService.set(EmbedSourceKey, !embedSrc)
+              }}></Button> : undefined}
+              <Button key="theme" type="primary" shape="circle" size="large" icon={<BgColorsOutlined />}
+                onClick={() => {
+                  const nextTheme = (currentTheme + 1) % themeCount
+                  setCurrentTheme(nextTheme)
+                  configsService.set(ThemeKey, nextTheme)
+                }
+                }
+              ></Button>
+            </>
+          }
         </>,
         <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
           size="large"
@@ -116,7 +113,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
       viewService.setFloatingMenus?.(LangKeys.PageArticleSingle)
       viewService.setShowFloatingMenu?.(false)
     }
-  })
+  }, [sidePopup, freeDraw, hasSource, embedSrc, currentTheme])
   useEffect(() => {
     const loadConfigs = async () => {
       const captureDict = await configsService.getOrDefault(CaptureDictKey, false)
@@ -177,14 +174,14 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
             {
               statusText ? <>
                 <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>
-                <div className={classNames('status-text')}>{statusText}</div>
+                <div className={classNames('status-text')}><span>{statusText}</span></div>
               </>
                 : <>
                   {freeDraw ? undefined : <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} ></Button>}
                   {
                     !freeDraw ? (<>
                       {props.type.noTitle ? <div className={classNames('title')}></div> : <div className={classNames('title')}>{props.article.name}</div>}
-                      <Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                      <Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(true)}></Button>
                     </>) : (<>
                       <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ShakeOutlined />} onClick={() => setEarse(!earse)}></Button>
                       {drawPens.map(c => <Button key={c[0]} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={ !earse && c === drawPen ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c[2] || c[0] }} />} onClick={() => {
@@ -195,7 +192,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                       {existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? 'primary' : 'link'} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined}
                       <div className={classNames('title')}></div>
                       <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<ClearOutlined />} onClick={() => setDrawVersion(drawVersion + 1)}></Button>
-                      <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => setFreeDraw(!freeDraw)}></Button>
+                      <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<CloseOutlined />} onClick={() => { setDrawVersion(drawVersion + 1); setFreeDraw(false) }}></Button>
                     </>)
                   }
                 </>
@@ -219,7 +216,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
           <div className={classNames('article-content', embedSrc ? 'embed-src' : '')} onClick={embedSrc ? undefined : onViewerClick} spellCheck="false" >
             <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
           </div>
-          <FreeDrawMask hidden={false} enabled={true} version={drawVersion} penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true); return true }} earse={earse} size={drawSize} pen={drawPen as any} explicit={freeDraw}></FreeDrawMask>
+          <FreeDrawMask hidden={false} enabled={true} version={drawVersion} penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true); setFreeDraw(true); return true }} earse={earse} size={drawSize} pen={drawPen as any} explicit={freeDraw}></FreeDrawMask>
           {
             captureDict
               ? <CaptureDict offset={-50}></CaptureDict>

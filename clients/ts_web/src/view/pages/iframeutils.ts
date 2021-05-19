@@ -47,16 +47,16 @@ export const genetateFileApi = (file:IFile):ApiInfo => ({
   },
   {
     name: 'readAsBase64',
-    handler: async(compress: boolean) =>{
+    handler: async (compress: boolean) => {
       const res = await file.read()
       let data = new Uint8Array(res[0])
-      if(compress){
+      if (compress) {
         data = pako.deflate(data)
       }
       return btoa(String.fromCharCode(...data))
     }
   }
-]
+  ]
 })
 
 export interface IFramework{
