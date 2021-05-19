@@ -122,7 +122,7 @@ export default function ManageDicts () {
     }
   }, [])
   return <div className="manage-dicts">
-    <div className={classNames('dict-query-wraper', (navigator as any).standalone ? 'standalone' : '')}>
+    <div className={classNames('dict-query-wraper')}>
       <div className='menu'>
         <Input placeholder={langs.get(LangKeys.Dict)} className="query" value={query} onChange={(e) => setQuery(e.target.value)}></Input>
         <Button className="menu-title" type="link" >{langs.get(LangKeys.ItemsCount)}{importing ? `${importProgress}%` : <span className="info">{(info && info.itemCount) || '0'}</span>}</Button>

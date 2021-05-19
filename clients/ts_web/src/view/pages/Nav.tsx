@@ -127,10 +127,15 @@ function Nav () {
             icon={<RocketOutlined />}
             title={langs.get(LangKeys.Tools)}
           >
-            <Menu.Item icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
-              {langs.get(LangKeys.Refresh)}
-            </Menu.Item>
-            <Menu.Divider></Menu.Divider>
+            {
+              (navigator as any).standalone ? <>
+                <Menu.Item icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
+                  {langs.get(LangKeys.Refresh)}
+                </Menu.Item>
+                <Menu.Divider></Menu.Divider>
+              </>
+                : undefined
+            }
             <Menu.Item icon={<FileWordOutlined />} >
               <Link to="/manage/dicts/">{langs.get(LangKeys.Dict)}</Link>
             </Menu.Item>

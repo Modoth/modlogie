@@ -72,7 +72,7 @@ export function ModlangInterpreter (props: { code: string, lang: string, version
       }
     </div>
     {
-      opened ? <div onClick={(ev) => ev.stopPropagation()} className={classNames(fullScreen ? 'fullscreen-interpreter' : '', 'result', (navigator as any).standalone ? 'standalone' : '')}>
+      opened ? <div onClick={(ev) => ev.stopPropagation()} className={classNames(fullScreen ? 'fullscreen-interpreter' : '', 'result')}>
         <div className="menu">
           <Button size="small" shape="circle" type="text" danger onClick={(ev) => { ev.stopPropagation(); clear() }} className="play" icon={<MinusOutlined />}></Button>
           { interpreterPlugin ? undefined : <Button size="small" shape="circle" type="text" danger onClick={(ev) => { ev.stopPropagation(); setFullScreen(!fullScreen) }} className="play" icon={fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button>

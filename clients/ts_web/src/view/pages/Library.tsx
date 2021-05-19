@@ -577,9 +577,6 @@ export default function Library (props: LibraryProps) {
   useEffect(() => {
     if (viewService.setFloatingMenus) {
       viewService.setFloatingMenus(LangKeys.PageLibrary, <>
-        {user.printPermission ? (
-          <ArticleListSummary></ArticleListSummary>
-        ) : null}
         {favoriteService && (favorite || favoriteCount) ? (
           <Badge count={favoriteCount}>
             <Button
@@ -604,18 +601,23 @@ export default function Library (props: LibraryProps) {
           ></Button>
         ) : null}
       </>,
-      <Button
-        type = 'primary'
-        danger={!!filter ||
+      <>
+        {user.printPermission ? (
+          <ArticleListSummary></ArticleListSummary>
+        ) : null}
+        <Button
+          type = 'primary'
+          danger={!!filter ||
             !!(selectedPublishTag && selectedPublishTag.id) ||
             !!(articleTags && articleTags.filter((t) => t.value).length) ||
             !!(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId)
-        }
-        size="large"
-        shape="circle"
-        onClick={() => setShowFilter(true)}
-        icon={<SearchOutlined />}
-      ></Button>)
+          }
+          size="large"
+          shape="circle"
+          onClick={() => setShowFilter(true)}
+          icon={<SearchOutlined />}
+        ></Button>
+      </>)
     }
   })
   const titleClick = () => {

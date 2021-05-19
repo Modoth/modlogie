@@ -390,6 +390,9 @@ const bootstrap = async () => {
     serviceLocator.locate(IUserConfigsService).getOrDefault(MagicMaskKey, 0).then(s => { magicMask = s }),
     serviceLocator.locate(IUserConfigsService).getOrDefault(WikiLevelKey, WikiLevels[WikiLevels.length - 1]).then(s => { wikiLevel = s })
   ])
+  if ((navigator as any).standalone) {
+    document.body.classList.add('standalone')
+  }
   ReactDOM.render(
     <React.StrictMode>
       <ServicesLocateProvider value={serviceLocator.locate.bind(serviceLocator)}>
