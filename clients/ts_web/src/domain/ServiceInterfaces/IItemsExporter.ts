@@ -1,4 +1,4 @@
-export type FieldInfo<TItem> = {name:string, get(item:TItem):[string|undefined, ExportResource[]|undefined]}
+export type FieldInfo<TItem> = {name:string, front?: boolean, get(item:TItem):[string|undefined, ExportResource[]|undefined]}
 export type ExportResource = {name:string, path: string}
 export default class IItemsExporter<TExportOpt> {
   get ext ():string {

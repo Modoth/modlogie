@@ -1,5 +1,7 @@
 import { getSectionFileContent, getFilesInSectionContent, getPasteSectionContent } from './view/Sections'
 import { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import AnkiClozeGenerator from './view/AnkiClozeGenerator'
+import AnkiGenerator from './view/AnkiGenerator'
 import CreateSectionEditor from '../../pluginbase/base/view/SectionEditor'
 import IPluginInfo from '../../pluginbase/IPluginInfo'
 import MarkdownViewer from './view/MarkdownViewer'
@@ -11,7 +13,6 @@ import WxGenerator from './view/WxGenerator'
 import WxPreview from '!!raw-loader!./view/WxPreview.html'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import PlainPreview from '!!raw-loader!./view/PlainPreview.html'
-import AnkiGenerator from './view/AnkiGenerator'
 
 export default class Blog extends PluginInfoBase implements IPluginInfo {
   static get typeName () { return 'Blog' }
@@ -26,7 +27,8 @@ export default class Blog extends PluginInfoBase implements IPluginInfo {
           [LangKeys.PUBLISH_CONTENT, { generator: PlainGenerator, autoUpdate: true, previewTemplate: PlainPreview }]
         ]),
         exporterGenerators: new Map([
-          [LangKeys.Anki, { generator: AnkiGenerator }]
+          [LangKeys.Anki, { generator: AnkiGenerator }],
+          [LangKeys.AnkiCloze, { generator: AnkiClozeGenerator }]
         ])
       })
   }

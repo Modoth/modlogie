@@ -224,6 +224,7 @@ export default function ManageWrods () {
             const fields:FieldInfo<WordWithExplain>[] = [
               {
                 name: langs.get(LangKeys.Word),
+                front: true,
                 get: (word:WordWithExplain) => [word.value, undefined]
               },
               {

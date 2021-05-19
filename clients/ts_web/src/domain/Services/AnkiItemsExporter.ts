@@ -23,13 +23,12 @@ export default class AnkiItemsExporter implements IAnkiItemsExporter {
     await exporter.init(name, template)
     const resources: ExportResource[] = []
     if (fields.length) {
-      const frontField = fields.shift()!
       for (const item of items) {
-        const front = generateField(item, frontField, resources)
+        const front = fields.filter(f => f.front).map(field => generateField(item, field, resources)).filter(i => i).join('</br>')
         if (!front) {
           continue
         }
-        const back = fields.map(field => generateField(item, field, resources)).filter(i => i).join('</br>')
+        const back = fields.filter(f => !f.front).map(field => generateField(item, field, resources)).filter(i => i).join('</br>')
         exporter.addCard(front, back)
       }
     }

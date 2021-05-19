@@ -6,6 +6,7 @@ export class LangKeysInterface {
   All = 'All';
   AlreadyLiked = 'AlreadyLiked';
   Anki = 'Anki';
+  AnkiCloze = 'AnkiCloze';
   AuthorisedUser = 'AuthorisedUser';
   BackgroundMusic = 'BackgroundMusic';
   BeyondMaxFavorites = 'BeyondMaxFavorites';

@@ -58,7 +58,8 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   AdmLogin = '管理员登陆';
   All = '全部';
   AlreadyLiked = '已经点过了';
-  Anki = 'Anki(Beta)';
+  Anki = 'Anki';
+  AnkiCloze = 'Anki(填空)';
   AuthorisedUser = 'VIP';
   BackgroundMusic = '背景音乐';
   BeyondMaxFavorites = '超出最大收藏';

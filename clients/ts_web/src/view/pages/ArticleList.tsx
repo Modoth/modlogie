@@ -16,6 +16,8 @@ import { generateRandomStyle } from './common'
 import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import ankiCss from '!!raw-loader!./ArticleList.Anki.css'
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import ankiClozeCss from '!!raw-loader!./ArticleList.AnkiCloze.css'
 // eslint-disable-next-line camelcase
 import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
 import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
@@ -28,7 +30,7 @@ const BorderStyleKey = 'ARTICLES_BORDER_STYLE'
 
 const HideIndexKey = 'ARTICLES_HIDE_INDEX'
 
-const GeneratorNames = [LangKeys.Anki]
+const GeneratorNames = [LangKeys.Anki, LangKeys.AnkiCloze]
 
 export default function ArticleList () {
   const locate = useServicesLocate()
@@ -39,6 +41,25 @@ export default function ArticleList () {
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
   const [generators, setGenerators] = useState<Map<string, Map<ArticleContentType, {(props: ArticleContentExporterProps): string}>>>(new Map())
   const magicSeed = useMagicSeed()
+  const updateGenerator = (all: [Article, ArticleContentType][]) => {
+    const gNames = GeneratorNames
+    const generators = new Map()
+    for (const gname of gNames) {
+      let generator: any = new Map<ArticleContentType, {(props: ArticleContentViewerProps): string }>()
+      for (const [_, type] of all) {
+        const g = type.articleType.exporterGenerators?.get(gname)?.generator
+        if (!g) {
+          generator = undefined
+          break
+        }
+        generator.set(type, g)
+      }
+      if (generator) {
+        generators.set(gname, generator)
+      }
+    }
+    setGenerators(generators)
+  }
   const fetchArticles = async () => {
     viewService.setLoading(true)
     try {
@@ -49,6 +70,7 @@ export default function ArticleList () {
           setItems([...all])
         })))
         setItems(all)
+        updateGenerator(all)
         viewService.setLoading(false)
         return
       }
@@ -59,23 +81,7 @@ export default function ArticleList () {
         [count, all] = await articleListService.getArticles(0, maxCount)
       }
       setItems(all)
-      const gNames = GeneratorNames
-      const generators = new Map()
-      for (const gname of gNames) {
-        let generator: any = new Map<ArticleContentType, {(props: ArticleContentViewerProps): string }>()
-        for (const [_, type] of all) {
-          const g = type.articleType.exporterGenerators?.get(gname)?.generator
-          if (!g) {
-            generator = undefined
-            break
-          }
-          generator.set(type, g)
-        }
-        if (generator) {
-          generators.set(gname, generator)
-        }
-      }
-      setGenerators(generators)
+      updateGenerator(all)
       await Promise.all(all.map(async ([a, t]) => {
         const tasks = []
         if (a.lazyLoading) {
@@ -139,6 +145,7 @@ export default function ArticleList () {
               const tryExport = async (typeFilter: string) => {
                 let a: HTMLAnchorElement
                 let filename: string
+                let fields: FieldInfo<[Article, ArticleContentType]>[]
                 try {
                   viewService.setLoading(true)
                   let exporter
@@ -151,29 +158,60 @@ export default function ArticleList () {
                         back: '{{FrontSide}}\n\n<hr id="answer">\n\n<div class="back">{{Back}}</div>',
                         css: ankiCss
                       }
+                      fields = [
+                        {
+                          name: langs.get(LangKeys.Name),
+                          front: true,
+                          get: ([article, type]: [Article, ArticleContentType]) => {
+                            return [article.name!, undefined]
+                          }
+                        },
+                        {
+                          name: langs.get(LangKeys.Comment),
+                          get: ([article, type]: [Article, ArticleContentType]) => {
+                            const g = generators.get(LangKeys.Anki)?.get(type)
+                            const resources: any = []
+                            if (!g) {
+                              return [undefined, undefined]
+                            }
+                            return [g({ content: article.content!, articleId: article.id!, resources }), resources]
+                          }
+                        }
+                      ]
+                      break
+                    case langs.get(LangKeys.AnkiCloze):
+                      exporter = locate(IAnkiItemsExporter)
+                      exporterOpt = {
+                        front: '<div class="front">{{cloze:Front}}</div>',
+                        back: '<div class="front">{{cloze:Front}}</div><br><div class="back">{{Back}}</div>',
+                        css: ankiClozeCss
+                      }
+                      fields = [
+                        {
+                          name: langs.get(LangKeys.Name),
+                          front: true,
+                          get: ([article, type]: [Article, ArticleContentType]) => {
+                            return [article.name!, undefined]
+                          }
+                        },
+                        {
+                          name: langs.get(LangKeys.Comment),
+                          front: true,
+                          get: ([article, type]: [Article, ArticleContentType]) => {
+                            const g = generators.get(LangKeys.AnkiCloze)?.get(type)
+                            const resources: any = []
+                            if (!g) {
+                              return [undefined, undefined]
+                            }
+                            return [g({ content: article.content!, articleId: article.id!, resources }), resources]
+                          }
+                        }
+                      ]
                       break
                     default:
                       return
                   }
-                  const fields: FieldInfo<[Article, ArticleContentType]>[] = [
-                    {
-                      name: langs.get(LangKeys.Name),
-                      get: ([article, type]: [Article, ArticleContentType]) => {
-                        return [article.name!, undefined]
-                      }
-                    },
-                    {
-                      name: langs.get(LangKeys.Comment),
-                      get: ([article, type]: [Article, ArticleContentType]) => {
-                        const g = generators.get(LangKeys.Anki)?.get(type)
-                        const resources: any = []
-                        if (!g) {
-                          return [undefined, undefined]
-                        }
-                        return [g({ content: article.content!, articleId: article.id!, resources }), resources]
-                      }
-                    }
-                  ]
+
                   const siteName = await locate(IConfigsService).getValueOrDefault(ConfigKeys.WEB_SITE_NAME)
                   const name = `${siteName}_${langs.get(LangKeys.FavoriteWords)}_${yyyyMMdd_HHmmss(new Date())}`
                   const buffer = await (exporter.export as any)(name, items, fields, exporterOpt)
