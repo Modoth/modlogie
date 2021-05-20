@@ -124,7 +124,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   LocalFile = '本地文件';
   Login = '登陆';
   Logout = '注销';
-  MagicMaskLevel = '重点留白'
+  MagicMaskLevel = '重点留空'
   MagicMaskNone = '无';
   MagicMaskLow = '少';
   MagicMaskNormal = '中';

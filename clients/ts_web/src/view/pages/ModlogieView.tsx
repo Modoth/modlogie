@@ -10,8 +10,8 @@ export default function ModlogieView (props:{onClose():void}) {
   return <div className="moglogie-view">
     <HistoryPanel onClose={props.onClose}></HistoryPanel>
     <ClocksPanel></ClocksPanel>
+    <AudioPlayer></AudioPlayer>
     <WikiLevelSetting onClose={props.onClose}/>
     <MagicMaskSetting onClose={props.onClose}/>
-    <AudioPlayer></AudioPlayer>
   </div>
 }
