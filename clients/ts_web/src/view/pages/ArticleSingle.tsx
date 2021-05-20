@@ -190,7 +190,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                         setDrawPen(c)
                         setEarse(false)
                       }}></Button>)}
-                      {earse ? undefined : drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawPen[2] || drawPen[0] }}></span>} onClick={() => setDrawSize(s)}></Button>)}
+                      {drawSizes.map(s => <Button key={s} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={s === drawSize ? 'primary' : 'link'} size="large" icon={<span className="pen-size" style={{ height: `${s}px`, background: drawPen[2] || drawPen[0] }}></span>} onClick={() => setDrawSize(s)}></Button>)}
                       {existedPen ? <Button className="single-article-content-menu-btn" type={penOnly ? 'primary' : 'link'} size="large" icon={<EditOutlined />} onClick={() => setPenOnly(!penOnly)}></Button> : undefined}
                       <div className={classNames('title')}></div>
                       <Button className="single-article-content-menu-btn" type="link" size="large" danger icon={<ClearOutlined />} onClick={() => setDrawVersion(drawVersion + 1)}></Button>
