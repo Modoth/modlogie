@@ -56,7 +56,6 @@ import ILangsService, { LangKeys } from './domain/ServiceInterfaces/ILangsServic
 import ILikesService from './domain/ServiceInterfaces/ILikesService'
 import ILoginAppservice from './app/Interfaces/ILoginAppservice'
 import IMmConverter from './domain/ServiceInterfaces/IMmConverter'
-import INavigationService from './app/Interfaces/INavigationService'
 import IPasswordStorage from './domain/ServiceInterfaces/IPasswordStorage'
 import IPluginInfo, { PluginsConfig } from './pluginbase/IPluginInfo'
 import IRecentFileService from './domain/ServiceInterfaces/IRecentFileService'
@@ -83,7 +82,6 @@ import LoginService from './app/AppServices/LoginService'
 import Math from './plugins/math'
 import MmConverter from './domain/Services/MmConverter'
 import ModLang from './plugins/modlang'
-import NavigationService from './app/AppServices/NavigationService'
 import PublishService from './impl/RemoteServices/PublishService'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -265,7 +263,6 @@ const buildServicesLocator = () => {
   )
   serviceLocator.registerInstance(IDictService, new DictService())
   serviceLocator.register(ILikesService, LikesService)
-  serviceLocator.register(INavigationService, NavigationService)
   serviceLocator.register(IWordsStorage, WordsStorageSingleton)
   serviceLocator.register(ICsvItemsExporter, CsvItemsExporter)
   serviceLocator.register(IAnkiItemsExporter, AnkiItemsExporter)

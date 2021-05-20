@@ -12,13 +12,13 @@ import { ToolViewer } from './ToolViewer'
 import { useServicesLocate } from '../common/Contexts'
 import Account from './Account'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import EnhancedMarkdown from './EnhancedMarkdown'
 import Home from './Home'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import Library from './Library'
 import Login from './Login'
 import ManageDicts from './ManageDicts'
 import ManageWords from './ManageWords'
-import Markdown from '../../infrac/components/Markdown'
 import React, { useState, useEffect } from 'react'
 
 function NavContent () {
@@ -43,7 +43,7 @@ function NavContent () {
         <>
           <Account />
           {
-            footer ? <Markdown className="footer" source={footer}></Markdown> : null
+            footer ? <EnhancedMarkdown className="footer" source={footer} /> : null
           }
         </>
       </Route>
@@ -84,7 +84,7 @@ function NavContent () {
         <>
           <Home />
           {
-            footer ? <Markdown className="footer" source={footer}></Markdown> : null
+            footer ? <EnhancedMarkdown className="footer" source={footer} /> : null
           }
         </>
       </Route>

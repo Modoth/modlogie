@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom'
 import { useUser, useServicesLocate } from '../common/Contexts'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
+import EnhancedMarkdown from './EnhancedMarkdown'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ILoginAppservice from '../../app/Interfaces/ILoginAppservice'
 import IViewService from '../../app/Interfaces/IViewService'
-import Markdown from '../../infrac/components/Markdown'
 import React, { useState, useEffect } from 'react'
 
 export default function Account () {
@@ -118,7 +118,7 @@ export default function Account () {
           </Button> : null
         }
         {
-          siteDesc ? <Markdown className="welcome-content" source={siteDesc}></Markdown> : null
+          siteDesc ? <EnhancedMarkdown className="welcome-content" source={siteDesc} /> : null
         }
 
         <Button

@@ -53,6 +53,7 @@ export class LangKeysInterface {
   Explain = 'Explain';
   Export = 'Export';
   ExportComplete = 'ExportComplete';
+  ExportOrPrint = 'ExportOrPrint';
   Favorite = 'Favorite';
   FavoriteWords = 'FavoriteWords';
   FreeDraw = 'FreeDraw';

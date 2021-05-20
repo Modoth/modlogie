@@ -4,7 +4,7 @@ import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse, Ra
 import { generateRandomStyle } from './common'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
-import { UploadOutlined, CloseOutlined, ShareAltOutlined, SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, PrinterFilled, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
+import { UploadOutlined, CloseOutlined, ShareAltOutlined, SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, ExportOutlined, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate, useMagicSeed } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType, ArticleWeights } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
@@ -538,20 +538,20 @@ export default function ArticleView (props: {
                   props.articleHandlers.onDelete(props.article.id!)
               }
             }} mode="horizontal" className={classNames('actions-list')}>{[
+                <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />}
+                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
                 favoriteService ? <MenuItem key="toogle-fav"><Badge>
                   <Button type="link" className="heart" danger={favorite} icon={ <HeartOutlined /> }
                     key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
                 </Badge></MenuItem> : null,
                 user.printPermission ? (inArticleList
                   ? <MenuItem key='remove-print'><Badge >
-                    <Button type="link" danger icon={<PrinterOutlined />} key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
+                    <Button type="link" danger icon={<ExportOutlined />} key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
                   </Badge></MenuItem>
                   : <MenuItem key="add-print"><Badge className="printer-icons">
-                    <Button type="link" icon={<PrinterOutlined />} key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
+                    <Button type="link" icon={<ExportOutlined />} key={LangKeys.AddToArticleList}><span className="action-name">{langs.get(LangKeys.AddToArticleList)}</span></Button>
                   </Badge></MenuItem>
                 ) : null,
-                <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />}
-                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
                 ...(likesService ? [<MenuItem key="like"><Badge count={likeCount ? <span className="icon-badges" >{shortNumber(likeCount)}</span> : null}>
                   <Button type="link" icon={<LikeOutlined />}
                   ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,

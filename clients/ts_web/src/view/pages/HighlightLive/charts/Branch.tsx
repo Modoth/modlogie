@@ -4,7 +4,7 @@ import { Gitgraph, Orientation, templateExtend, TemplateName } from '@gitgraph/r
 import { HighlightLiveViewerProps } from '..'
 import { previewArticleByPath } from '../../ServiceView'
 import { useServicesLocate } from '../../../common/Contexts'
-import Markdown from '../../../../infrac/components/Markdown'
+import EnhancedMarkdown from '../../EnhancedMarkdown'
 import React from 'react'
 
 class Node {
@@ -114,7 +114,7 @@ export function Branch (props: HighlightLiveViewerProps) {
                       <span className="flex"></span>
                       {n.publish ? <span className="published">{n.publish.toLocaleDateString()}</span> : undefined}
                     </div>
-                    {n.content ? <div className='content'><Markdown source={n.content}></Markdown> </div> : undefined}
+                    {n.content ? <div className='content'><EnhancedMarkdown source={n.content} /> </div> : undefined}
                   </div>
                 </foreignObject></g>)
             }

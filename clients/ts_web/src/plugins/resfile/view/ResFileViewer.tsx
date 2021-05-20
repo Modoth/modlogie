@@ -9,8 +9,8 @@ import { ResFileViewerProps } from './ResFileViewers/ResFileViewerProps'
 import { ResImage } from './ResFileViewers/ResImage'
 import { useServicesLocate } from '../../../view/common/Contexts'
 import classNames from 'classnames'
+import EnhancedMarkdown from '../../../view/pages/EnhancedMarkdown'
 import IEditorsService from '../../../app/Interfaces/IEditorsService'
-import Markdown from '../../../infrac/components/Markdown'
 import React, { useEffect, useState } from 'react'
 import SectionViewerProps from '../../../pluginbase/base/view/SectionViewerProps'
 import yaml from 'yaml'
@@ -139,7 +139,7 @@ export default function ResFileViewer (props: SectionViewerProps) {
     return <></>
   }
   return <div onClick={props.onClick} className={classNames('resfile-viewer', props.section.name?.match(/(^.*?)(\(|（|$)/)![1], props.pureViewMode ? 'view-mode' : 'edit-mode')} key={props.section.name}>
-    {resfile.comment ? <div className="comment"><Markdown source={resfile.comment}></Markdown></div> : undefined}
+    {resfile.comment ? <div className="comment"><EnhancedMarkdown source={resfile.comment} /></div> : undefined}
     <DownloadManagerView url={url} name={resfile.name}></DownloadManagerView>
   </div>
 }

@@ -1,7 +1,7 @@
 import './ArticleListSummary.less'
 import { ArticleContentType } from '../../pluginbase/IPluginInfo'
 import { Badge, Button } from 'antd'
-import { PrinterOutlined, ClearOutlined } from '@ant-design/icons'
+import { ExportOutlined, ClearOutlined } from '@ant-design/icons'
 import { useServicesLocate } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import IArticleListService from '../../app/Interfaces/IArticleListService'
@@ -30,18 +30,13 @@ export default function ArticleListSummary () {
     locate(IViewService).previewArticleList(true)
   }
 
-  const clear = () => {
-    articleListService.clear()
-  }
-
   return items.length > 0 ? (
     <>
-      <Button onClick={clear} type="primary" danger className="summary-button" size="large" shape="circle" icon={<ClearOutlined className="head-example" />} />
       <Badge count={items.length} className="article-list-summary">
-        <Button onClick={open} type="primary" className="summary-button" size="large" shape="circle" icon={<PrinterOutlined className="head-example" />} />
+        <Button onClick={open} type="primary" className="summary-button" size="large" shape="circle" icon={<ExportOutlined className="head-example" />} />
       </Badge>
     </>
   ) : <>
-    <Button onClick={open} type="primary" className="summary-button" size="large" shape="circle" icon={<PrinterOutlined className="head-example" />} />
+    <Button onClick={open} type="primary" className="summary-button" size="large" shape="circle" icon={<ExportOutlined className="head-example" />} />
   </>
 }

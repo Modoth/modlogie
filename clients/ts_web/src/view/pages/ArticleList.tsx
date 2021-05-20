@@ -1,7 +1,7 @@
 import './ArticleList.less'
-import { ArrowLeftOutlined, DownloadOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, ClearOutlined, DownloadOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
 import { ArticleContentExporterProps, ArticleContentType, ArticleContentViewerProps } from '../../pluginbase/IPluginInfo'
-import { Button } from 'antd'
+import { Badge, Button } from 'antd'
 import { useMagicSeed, useServicesLocate, useUser } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
@@ -39,6 +39,7 @@ export default function ArticleList () {
   const viewService = locate(IViewService)
   const articleListService = locate(IArticleListService)
   const [items, setItems] = useState<[Article, ArticleContentType][]>([])
+  const [addCount, setAddCount] = useState(0)
   const [generators, setGenerators] = useState<Map<string, Map<ArticleContentType, {(props: ArticleContentExporterProps): string}>>>(new Map())
   const magicSeed = useMagicSeed()
   const updateGenerator = (all: [Article, ArticleContentType][]) => {
@@ -65,12 +66,14 @@ export default function ArticleList () {
     try {
       let all = articleListService.all()
       let count = 0
+      setAddCount(0)
       if (all.length) {
         await Promise.all(all.filter(a => a[1].articleType.loadAdditionalsSync).map(a => a[0]).filter(a => a.lazyLoadingAddition).map(a => a.lazyLoadingAddition!().then(() => {
           setItems([...all])
         })))
         setItems(all)
         updateGenerator(all)
+        setAddCount(all.length)
         viewService.setLoading(false)
         return
       }
@@ -126,6 +129,10 @@ export default function ArticleList () {
   const ref = React.createRef<HTMLDivElement>()
   const close = () => {
     locate(IViewService).previewArticleList(false)
+  }
+  const clear = () => {
+    articleListService.clear()
+    close()
   }
   useEffect(() => {
     viewService.setFloatingMenus?.(LangKeys.PageArticleList, <>
@@ -262,7 +269,15 @@ export default function ArticleList () {
           : undefined
       }
     </>,
+    <>
       <Button type="primary" shape="circle" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
+      {
+        addCount ? <Badge count={addCount}>
+          <Button danger onClick={clear}type="primary" shape="circle" size="large" icon={<ClearOutlined />} />
+        </Badge>
+          : undefined
+      }
+    </>
     )
   })
   useEffect(() => {
@@ -274,7 +289,7 @@ export default function ArticleList () {
     <div className="article-list-wraper">
       <div className="article-list-menus" onClick={e => e.stopPropagation()}>
         <Button type="link" size="large" icon={<ArrowLeftOutlined />} onClick={close} />
-        <span className="spilter"></span>
+        <span className="title">{langs.get(LangKeys.ExportOrPrint)}</span>
         <Button type="link" size="large" icon={<OrderedListOutlined />} onClick={() => {
           const next = !hideIdx
           setHideIdx(next)

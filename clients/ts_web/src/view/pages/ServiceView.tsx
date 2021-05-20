@@ -1,7 +1,7 @@
 import './ServiceView.less'
 import { ArticleContentType } from '../../pluginbase/IPluginInfo'
+import { ArticleFolder } from './ArticleFolder'
 import { ArticlePreview } from './ArticlePreview'
-import { CloseOutlined, SaveOutlined } from '@ant-design/icons'
 import { LocateFunction } from '../../infrac/ServiceLocator/IServicesLocator'
 import { Spin, message, Modal, Input, Space, Radio, TreeSelect, Button } from 'antd'
 import { useServicesLocate } from '../common/Contexts'
@@ -14,11 +14,9 @@ import IHistoryService from '../../domain/ServiceInterfaces/IHistoryService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ImageEditor from '../../infrac/components/ImageEditor'
 import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
-import Markdown from '../../infrac/components/Markdown'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
-import { ArticleFolder } from './ArticleFolder'
 
 export const previewArticleByPath = (locate: LocateFunction, pathOrName: string | undefined, title: string | undefined, root?:string|undefined) => {
   if (!pathOrName) {
@@ -376,10 +374,6 @@ export default function ServiceView (props: {
               case 'Label':
                 return (
                   <label key={i}>{field.value}</label>
-                )
-              case 'Markdown':
-                return (
-                  <Markdown key={i} className="md" source={field.value} linkTarget="_blank"></Markdown>
                 )
               case 'QrCode':
                 return (<div className="service-view-qrcode"><QrCode content={field.value}></QrCode></div>)

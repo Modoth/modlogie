@@ -106,6 +106,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Explain = '释义';
   Export = '导出';
   ExportComplete = '导出完成、确定保存';
+  ExportOrPrint = '导出与打印';
   Favorite = '收藏';
   FavoriteWords = '生词本';
   FreeDraw = '马克笔';

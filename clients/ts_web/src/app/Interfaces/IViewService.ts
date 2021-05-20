@@ -9,7 +9,6 @@ export interface IPromptField<TValue, TType extends
 'File' |
 'Image' |
 'Label' |
-'Markdown' |
 'Password' |
 'QrCode' |
 'View'|

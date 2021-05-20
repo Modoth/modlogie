@@ -2,11 +2,7 @@ import './App.less'
 import './App.css'
 import { HashRouter } from 'react-router-dom'
 import { MagicMaskProvider, MagicSeedProvider, UserContext, useServicesLocate, WikiLevelProvider } from './common/Contexts'
-import ConfigKeys from '../domain/ServiceInterfaces/ConfigKeys'
-import defaultLogo from './assets/logo.png'
-import IConfigsService from '../domain/ServiceInterfaces/IConfigsSercice'
 import ILoginAppservice, { ILoginUser } from '../app/Interfaces/ILoginAppservice'
-import INavigationService from '../app/Interfaces/INavigationService'
 import IViewService from '../app/Interfaces/IViewService'
 import LoginService from '../app/AppServices/LoginService'
 import Modlogie from './pages/Modlogie'
@@ -31,15 +27,6 @@ export default function App (props: {magicMask: number, wikiLevel: number}) {
   loginService.onUserChanged = setUser
   const ref = React.createRef<HTMLDivElement>()
   const bgRef = React.createRef<HTMLStyleElement>()
-  const navigateTo = async (title: string | undefined, url: string | undefined) => {
-    const viewService = locate(IViewService)
-    viewService.setLoading(true)
-    try {
-      await locate(INavigationService).promptGoto(title, url)
-    } finally {
-      viewService.setLoading(false)
-    }
-  }
   const [magicMask, setMagicMask] = useState(props.magicMask)
   const [wikiLevel, setWikiLevel] = useState(props.wikiLevel)
   const [magicSeed, setMagicSeed] = useState(Date.now())
@@ -65,24 +52,6 @@ export default function App (props: {magicMask: number, wikiLevel: number}) {
       const clocksService = locate(IClocksAppService)
       await clocksService.init()
     })()
-    window.document.body.onclick = (e) => {
-      if ((e.target as any)?.nodeName === 'A') {
-        const a: HTMLLinkElement = e.target as HTMLLinkElement
-        if (a.href) {
-          const u = new URL(a.href)
-          if (u.origin === window.location.origin && u.pathname === '/' && (u.hash || u.search)) {
-            return
-          }
-        }
-        // todo:
-        if (a.parentElement?.className?.startsWith('ant-')) {
-          return
-        }
-        e.stopPropagation()
-        e.preventDefault()
-        navigateTo(((a as any).text || a.innerText || '').trim(), a.href)
-      }
-    }
   }, [])
   return (
     <>

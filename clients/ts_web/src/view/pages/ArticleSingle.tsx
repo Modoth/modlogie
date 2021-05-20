@@ -2,7 +2,7 @@ import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
 import { Button, Menu, Dropdown } from 'antd'
 import { LocatableOffsetProvider, useServicesLocate, useUser } from '../common/Contexts'
-import { MoreOutlined, DeleteColumnOutlined, OrderedListOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, ShakeOutlined, HighlightOutlined, BulbOutlined, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontColorsOutlined, UnorderedListOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { MoreOutlined, DeleteColumnOutlined, BarsOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, ShakeOutlined, HighlightOutlined, BulbOutlined, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontColorsOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -104,7 +104,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
             </>
           }
         </>,
-        <Button className="catelog-btn" icon={<OrderedListOutlined />} type="primary"
+        <Button className="catelog-btn" icon={<BarsOutlined />} type="primary"
           size="large"
           shape="circle" onClick={() => setSidePopup(true)}>
         </Button>)
