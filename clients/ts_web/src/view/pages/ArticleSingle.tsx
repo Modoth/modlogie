@@ -81,29 +81,29 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     if (!sidePopup) {
       viewService.setFloatingMenus?.(LangKeys.PageArticleSingle,
         <>
-          <Button key="capture-dict" type="primary" shape="circle" size="large" danger={captureDict} icon={<CaptureWordIcon />} onClick={() => {
-            setCaptureDict(!captureDict)
-            configsService.set(CaptureDictKey, !captureDict)
-          }}></Button>
           <Button key="screen-shot" type="primary" shape="circle" size="large" icon={<ScreenshotIcon />} onClick={() => {
             scrollToTop(true)
             setTimeout(() => viewService.captureElement(ref.current!), 50)
           }} ></Button>
+          <Button key="capture-dict" type={captureDict ? 'primary' : 'default'} shape="circle" size="large" danger={captureDict} icon={<CaptureWordIcon />} onClick={() => {
+            setCaptureDict(!captureDict)
+            configsService.set(CaptureDictKey, !captureDict)
+          }}></Button>
           {
             freeDraw ? undefined : <>
-              {hasSource ? <Button key="embed-src" type="primary" shape="circle" size="large" danger={embedSrc} onClick={() => {
+              {hasSource ? <Button key="embed-src" type={embedSrc ? 'primary' : 'default'} shape="circle" size="large" danger={embedSrc} onClick={() => {
                 setHightlight(undefined)
                 setEmbedSrc(!embedSrc)
                 configsService.set(EmbedSourceKey, !embedSrc)
               }}>{<span className="embed-src">中<span>En</span></span>}</Button> : undefined}
-              <Button key="theme" type="primary" shape="circle" size="large" icon={<FontSizeOutlined />}
+              {/* <Button key="theme" type="primary" shape="circle" size="large" icon={<FontSizeOutlined />}
                 onClick={() => {
                   const nextTheme = (currentTheme + 1) % themeCount
                   setCurrentTheme(nextTheme)
                   configsService.set(ThemeKey, nextTheme)
                 }
                 }
-              ></Button>
+              ></Button> */}
             </>
           }
         </>,
@@ -116,7 +116,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
       viewService.setFloatingMenus?.(LangKeys.PageArticleSingle)
       viewService.setShowFloatingMenu?.(false)
     }
-  }, [sidePopup, freeDraw, hasSource, embedSrc, currentTheme, captureDict])
+  })
   useEffect(() => {
     const loadConfigs = async () => {
       const captureDict = await configsService.getOrDefault(CaptureDictKey, false)
