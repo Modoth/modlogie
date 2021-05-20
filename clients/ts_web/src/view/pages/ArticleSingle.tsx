@@ -92,6 +92,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
           {
             freeDraw ? undefined : <>
               {hasSource ? <Button key="embed-src" type="primary" shape="circle" size="large" danger={embedSrc} onClick={() => {
+                setHightlight(undefined)
                 setEmbedSrc(!embedSrc)
                 configsService.set(EmbedSourceKey, !embedSrc)
               }}>{<span className="embed-src">中<span>En</span></span>}</Button> : undefined}

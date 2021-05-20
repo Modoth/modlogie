@@ -18,7 +18,6 @@ span.embed-src {
   background: #fff;
   min-height: 100vh;
   font-family: monospace;
-  // font-size: 16px;
   @media (min-width: 780px) {
     font-size: 16px;
   }
@@ -112,7 +111,7 @@ span.embed-src {
         align-self: center;
         margin-left: 5px;
         padding: 5px 0;
-        font-size: 0.85em;
+        font-size: 0.9em;
         line-height: 1.8;
         user-select: text;
       }
@@ -143,7 +142,7 @@ span.embed-src {
 
   .mdg.hover {
     & > .mdg-f {
-      background: var(--primary-20);
+      background: #ffeff0;
       @media print {
         background: unset;
       }
@@ -159,6 +158,9 @@ span.embed-src {
     .article-content[contenteditable="true"],
     .embed-src {
       outline: none !important;
+      .md-viewer p {
+        text-align: inherit;
+      }
       .mdg.hover {
         & > .mdg-f {
           background: unset;
@@ -168,9 +170,11 @@ span.embed-src {
         }
       }
       .mdg > .mdg-b {
-        font-size: 0.85em;
-        color: #0008;
+        font-size: 0.8em;
+        // color: #0008;
+        font-style: italic;
         display: unset;
+        line-height: 1em;
       }
     }
   }

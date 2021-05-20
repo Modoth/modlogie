@@ -18,12 +18,19 @@ a.wiki-link {
 }
 
 a.wiki-link {
-  background: #ffeff0;
+  background: var(--primary-20);
   color: unset;
+
+  .hover & {
+    background: unset;
+  }
 }
 
 code {
-  background: #f5f5f5;
+  background: #00000008;
+  .hover & {
+    background: unset;
+  }
 }
 
 a.wiki-link-disabled {
