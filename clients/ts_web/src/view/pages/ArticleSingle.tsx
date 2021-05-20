@@ -1,8 +1,9 @@
 import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
-import { Button, Menu, Dropdown } from 'antd'
-import { LocatableOffsetProvider, useServicesLocate, useUser } from '../common/Contexts'
-import { MoreOutlined, DeleteColumnOutlined, BarsOutlined, FileWordOutlined, EditOutlined, FileAddOutlined, ClearOutlined, ShakeOutlined, HighlightOutlined, BulbOutlined, CloseOutlined, ArrowLeftOutlined, PictureOutlined, FontColorsOutlined, BgColorsOutlined, ColumnHeightOutlined, ColumnWidthOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons'
+import { BarsOutlined, EditOutlined, ClearOutlined, ShakeOutlined, HighlightOutlined, CloseOutlined, ArrowLeftOutlined, FontSizeOutlined, BgColorsOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
+import { CaptureWordIcon, EraserIcon, ScreenshotIcon } from '../common/Icons'
+import { LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -12,6 +13,7 @@ import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsServ
 import IViewService from '../../app/Interfaces/IViewService'
 import LocatableView, { Div, LocatableViewCallbacks } from '../../infrac/components/LocatableView'
 import React, { useEffect, useState } from 'react'
+
 const themeCount = 2
 const getThemeClass = (idx: number) => idx >= 0 ? `reading-theme reading-theme-${idx}` : ''
 const ThemeKey = 'READING_THEME'
@@ -79,21 +81,21 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     if (!sidePopup) {
       viewService.setFloatingMenus?.(LangKeys.PageArticleSingle,
         <>
-          <Button key="capture-dict" type="primary" shape="circle" size="large" danger={captureDict} icon={<BulbOutlined />} onClick={() => {
+          <Button key="capture-dict" type="primary" shape="circle" size="large" danger={captureDict} icon={<CaptureWordIcon />} onClick={() => {
             setCaptureDict(!captureDict)
             configsService.set(CaptureDictKey, !captureDict)
           }}></Button>
-          <Button key="screen-shot" type="primary" shape="circle" size="large" icon={<PictureOutlined />} onClick={() => {
+          <Button key="screen-shot" type="primary" shape="circle" size="large" icon={<ScreenshotIcon />} onClick={() => {
             scrollToTop(true)
             setTimeout(() => viewService.captureElement(ref.current!), 50)
           }} ></Button>
           {
             freeDraw ? undefined : <>
-              {hasSource ? <Button key="embed-src" type="primary" shape="circle" size="large" danger={embedSrc} icon={<DeleteColumnOutlined />} onClick={() => {
+              {hasSource ? <Button key="embed-src" type="primary" shape="circle" size="large" danger={embedSrc} onClick={() => {
                 setEmbedSrc(!embedSrc)
                 configsService.set(EmbedSourceKey, !embedSrc)
-              }}></Button> : undefined}
-              <Button key="theme" type="primary" shape="circle" size="large" icon={<FontColorsOutlined />}
+              }}>{<span className="embed-src">中<span>En</span></span>}</Button> : undefined}
+              <Button key="theme" type="primary" shape="circle" size="large" icon={<FontSizeOutlined />}
                 onClick={() => {
                   const nextTheme = (currentTheme + 1) % themeCount
                   setCurrentTheme(nextTheme)
@@ -113,7 +115,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
       viewService.setFloatingMenus?.(LangKeys.PageArticleSingle)
       viewService.setShowFloatingMenu?.(false)
     }
-  }, [sidePopup, freeDraw, hasSource, embedSrc, currentTheme])
+  }, [sidePopup, freeDraw, hasSource, embedSrc, currentTheme, captureDict])
   useEffect(() => {
     const loadConfigs = async () => {
       const captureDict = await configsService.getOrDefault(CaptureDictKey, false)
@@ -183,7 +185,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
                       {props.type.noTitle ? <div className={classNames('title')}></div> : <div className={classNames('title')}>{props.article.name}</div>}
                       <Button className="single-article-content-menu-btn" type="link" size="large" icon={<HighlightOutlined />} onClick={() => setFreeDraw(true)}></Button>
                     </>) : (<>
-                      <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<ShakeOutlined />} onClick={() => setEarse(!earse)}></Button>
+                      <Button className="single-article-content-menu-btn single-article-content-menu-btn-draw" size="large" type={earse ? 'primary' : 'text'} icon={<EraserIcon />} onClick={() => setEarse(!earse)}></Button>
                       {drawPens.map(c => <Button key={c[0]} className="single-article-content-menu-btn single-article-content-menu-btn-draw" type={ !earse && c === drawPen ? 'primary' : 'link'} size="large" icon={<BgColorsOutlined style={{ color: c[2] || c[0] }} />} onClick={() => {
                         setDrawPen(c)
                         setEarse(false)

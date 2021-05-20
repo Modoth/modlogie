@@ -183,7 +183,7 @@ export default function Modlogie () {
           <Button size="large" type="primary"
             shape="circle" icon={<DragOutlined /> } ></Button>
         </div>
-        {open && currentPage ? <Button size="large" type="primary" danger onClick={openHelp}
+        {open && currentPage ? <Button size="large" type="primary" onClick={openHelp}
           shape="circle" icon={<QuestionOutlined /> } ></Button> : undefined}
         {open ? bMenu : fMenu}
       </div>

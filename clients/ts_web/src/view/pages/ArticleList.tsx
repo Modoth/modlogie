@@ -2,25 +2,26 @@ import './ArticleList.less'
 import { ArrowLeftOutlined, ClearOutlined, DownloadOutlined, PrinterOutlined, PicRightOutlined, BorderBottomOutlined, PictureOutlined, OrderedListOutlined } from '@ant-design/icons'
 import { ArticleContentExporterProps, ArticleContentType, ArticleContentViewerProps } from '../../pluginbase/IPluginInfo'
 import { Badge, Button } from 'antd'
+import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
+import { generateRandomStyle } from './common'
+import { ScreenshotIcon } from '../common/Icons'
 import { useMagicSeed, useServicesLocate, useUser } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
+import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
 import IArticleListService from '../../app/Interfaces/IArticleListService'
 import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
+import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
-import IUserConfigsService from '../../domain/ServiceInterfaces/IUserConfigsService'
-import { generateRandomStyle } from './common'
-import IAnkiItemsExporter from '../../domain/ServiceInterfaces/IAnkiItemsExporter'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import ankiCss from '!!raw-loader!./ArticleList.Anki.css'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import ankiClozeCss from '!!raw-loader!./ArticleList.AnkiCloze.css'
 // eslint-disable-next-line camelcase
 import { yyyyMMdd_HHmmss } from '../../infrac/Lang/DateUtils'
-import { FieldInfo } from '../../domain/ServiceInterfaces/IItemsExporter'
 const maxColumn = 3
 const maxBorderStyle = 4
 
@@ -137,7 +138,7 @@ export default function ArticleList () {
   useEffect(() => {
     viewService.setFloatingMenus?.(LangKeys.PageArticleList, <>
       {
-        <Button type="primary" shape="circle" size="large" icon={<PictureOutlined />} onClick={() => {
+        <Button type="primary" shape="circle" size="large" icon={<ScreenshotIcon />} onClick={() => {
           (document.scrollingElement as HTMLElement).scrollTo({ top: 0, behavior: undefined })
           locate(IViewService).captureElement(ref.current!)
         }} />

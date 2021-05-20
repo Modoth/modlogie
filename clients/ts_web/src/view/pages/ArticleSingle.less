@@ -1,3 +1,18 @@
+span.embed-src {
+  transform: scale(0.8);
+  & > span {
+    font-size: 0.8em;
+    background: #f8f8f8;
+    color: var(--primary);
+    padding: 0 2px;
+    border-radius: 6px;
+
+    .ant-btn-dangerous & {
+      color: var(--danger);
+    }
+  }
+}
+
 .single-article {
   position: relative;
   background: #fff;
@@ -167,8 +182,9 @@
     // line-height: 3em;
     // padding-bottom: 1px;
     // line-height: 2.5em;
-    line-height: 3em;
+    // line-height: 3em;
     font-family: monospace;
+    font-size: 16px;
   }
 
   .paging {
