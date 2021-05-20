@@ -576,12 +576,19 @@ export default function Library (props: LibraryProps) {
 
   useEffect(() => {
     if (viewService.setFloatingMenus) {
+      const hasSearch = !!filter ||
+      !!(selectedPublishTag && selectedPublishTag.id) ||
+      !!(articleTags && articleTags.filter((t) => t.value).length) ||
+      !!(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId)
+
+      const Fav =
       viewService.setFloatingMenus(LangKeys.PageLibrary, <>
         {favoriteService && (favorite || favoriteCount) ? (
           <Badge count={favoriteCount}>
             <Button
+              className="heart-icon"
               icon={<HeartFilled />}
-              type = 'primary'
+              type = {favorite ? 'primary' : 'default'}
               danger={favorite}
               size="large"
               shape="circle"
@@ -606,12 +613,8 @@ export default function Library (props: LibraryProps) {
           <ArticleListSummary></ArticleListSummary>
         ) : null}
         <Button
-          type = 'primary'
-          danger={!!filter ||
-            !!(selectedPublishTag && selectedPublishTag.id) ||
-            !!(articleTags && articleTags.filter((t) => t.value).length) ||
-            !!(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId)
-          }
+          type = "primary"
+          danger={hasSearch}
           size="large"
           shape="circle"
           onClick={() => setShowFilter(true)}

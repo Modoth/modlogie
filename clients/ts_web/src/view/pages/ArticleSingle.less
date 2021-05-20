@@ -112,7 +112,9 @@ span.embed-src {
         align-self: center;
         margin-left: 5px;
         padding: 5px 0;
-        font-size: 0.9em;
+        @media (max-width: 780px) {
+          font-size: 0.8em;
+        }
         line-height: 1.8;
         user-select: text;
       }
@@ -143,7 +145,7 @@ span.embed-src {
 
   .mdg.hover {
     & > .mdg-f {
-      background: #ffeff0;
+      background: var(--primary-20);
       @media print {
         background: unset;
       }

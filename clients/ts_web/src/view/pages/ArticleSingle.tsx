@@ -167,12 +167,15 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   }
   const onViewerClick = (ev: React.MouseEvent<any>) => {
     const mdg = findMdgElement(ev.target as HTMLElement, ev.currentTarget as HTMLElement)
+    if (mdg === store.mdg) {
+      return
+    }
     setHightlight(mdg)
   }
   return (
     <LocatableOffsetProvider value={0}>
       <LocatableView View={Div} callbacks={locateRef} className={classNames('single-article', getThemeClass(currentTheme))}>
-        <div className={classNames('menus')}>
+        <div className={classNames('menus', statusText ? 'status-menus' : '')}>
           <div className={classNames('menus-bar')} onClick={e => e.stopPropagation()}>
             {
               statusText ? <>
