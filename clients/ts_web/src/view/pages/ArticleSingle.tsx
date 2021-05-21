@@ -81,9 +81,6 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     if (!sidePopup) {
       viewService.setFloatingMenus?.(LangKeys.PageArticleSingle,
         <>
-          <Button key="savepdf" type="primary" shape="circle" size="large" icon={<ScreenshotIcon />} onClick={() => {
-            (window as any).html2pdf(ref.current!)
-          }} ></Button>
           <Button key="screen-shot" type="primary" shape="circle" size="large" icon={<ScreenshotIcon />} onClick={() => {
             scrollToTop(true)
             setTimeout(() => viewService.captureElement(ref.current!), 50)
