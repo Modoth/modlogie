@@ -7,30 +7,35 @@ a.outsite-link {
 
 // }
 
-code,
+.inline-code,
 a.wiki-link {
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   padding: 0.1em 0.3em 0.1em;
   margin: 0 0.1em;
-  border-radius: 0.2em;
-  font-size: 0.9em;
+  border-radius: 0.3em;
+  font-size: 0.8em;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  white-space: pre-wrap;
+  position: relative;
+  vertical-align: middle;
+  font-family: monospace;
 }
 
 a.wiki-link {
-  background: #ffeff0;
-  color: unset;
+  color: #c7254e;
+  background-color: #ffeff0;
 
   .hover & {
     background: unset;
   }
 }
 
-code {
-  background: #0000000e;
-  font-family: monospace;
+.inline-code {
+  // color: #000;
+  // font-weight: 550;
+  background-color: #0001;
   .hover & {
     background: unset;
   }

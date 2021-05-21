@@ -59,7 +59,7 @@ export default function HighlightLive (props: { inline?:boolean, language: strin
     </div>
   }
   if (props.inline) {
-    return <code>{props.value}</code>
+    return <code className="inline-code">{props.value}</code>
   }
   const viewerInfo = locate(IEditorsService).getViewerByFileName(lang)
   if (viewerInfo) {
