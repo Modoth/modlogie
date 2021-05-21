@@ -317,6 +317,7 @@ export default function ServiceView (props: {
         visible={modalVisible}
         onOk={applyModal}
         onCancel={() => cancleModal(false)}
+        closable = {false}
         footer={(modalImageField || modalViewField || !onModalOk?.onOk) ? null : undefined}
         bodyStyle={
           modalFields.length
