@@ -538,12 +538,6 @@ export default function ArticleView (props: {
                   props.articleHandlers.onDelete(props.article.id!)
               }
             }} mode="horizontal" className={classNames('actions-list')}>{[
-                <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />}
-                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
-                favoriteService ? <MenuItem key="toogle-fav"><Badge>
-                  <Button type="link" className="heart" danger={favorite} icon={ <HeartOutlined /> }
-                    key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
-                </Badge></MenuItem> : null,
                 user.printPermission ? (inArticleList
                   ? <MenuItem key='remove-print'><Badge >
                     <Button type="link" danger icon={<ExportOutlined />} key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
@@ -557,6 +551,12 @@ export default function ArticleView (props: {
                   ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
                 <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button type="link" icon={<DislikeOutlined />}
                 ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
+                favoriteService ? <MenuItem key="toogle-fav"><Badge>
+                  <Button type="link" className="heart" danger={favorite} icon={ <HeartOutlined /> }
+                    key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
+                </Badge></MenuItem> : null,
+                <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />}
+                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
                 ...(user.editingPermission ? [
                   <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />}
                   ><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
