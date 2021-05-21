@@ -21,8 +21,8 @@ export default function TitleBar (props:TitleBarProps) {
   return <div className="title-bar-wraper">
     <div className="title-bar">
       {
-          props.menus?.map(menu =>
-            <Button key={menu.title} size="large" className="menu-item"
+          props.menus?.map((menu, i) =>
+            <Button key={menu.title || i.toString()} size="large" className="menu-item"
               onClick={'link' in menu ? undefined : menu.onClick}
               icon={'link' in menu ? <Link to={menu.link}>{menu.icon}</Link> : menu.icon}>
             </Button>)
