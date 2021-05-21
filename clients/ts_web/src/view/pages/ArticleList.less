@@ -52,7 +52,7 @@
   }
 
   .article-list {
-    padding: 10px 0 0 0;
+    padding: 10px 0;
     &.column-count-1 {
       column-count: 1;
     }
@@ -74,7 +74,10 @@
     }
 
     & > .article {
-      margin: 0 10px 10px 10px;
+      margin: 0 10px;
+      & ~ .article {
+        margin-top: 10px;
+      }
     }
   }
 }

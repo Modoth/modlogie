@@ -18,6 +18,10 @@ import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
 
+const setScrollable = (s: boolean) => {
+  document.body.style.overflow = s ? '' : 'hidden'
+}
+
 export const previewArticleByPath = (locate: LocateFunction, pathOrName: string | undefined, title: string | undefined, root?:string|undefined) => {
   if (!pathOrName) {
     return undefined
@@ -111,7 +115,7 @@ export default function ServiceView (props: {
     setModalTitle('')
     setModalSubTitle('')
     setModalVisible(false)
-    document.body.style.overflow = ''
+    setScrollable(true)
     setModalFileds([])
     setOnModalOk(undefined)
     setModalImageField(false)
@@ -138,7 +142,7 @@ export default function ServiceView (props: {
         setModalFileds(fields)
         setOnModalOk({ onOk })
         setModalVisible(true)
-        document.body.style.overflow = 'hidden'
+        setScrollable(false)
         setModalFileFieldData(undefined)
       }
       const singleField = fields.length === 1 ? fields[0] : undefined
@@ -248,6 +252,7 @@ export default function ServiceView (props: {
     })
   }
   const fPreviewImage = (url: string) => {
+    setScrollable(!url)
     setPreviewImgUrl(url)
   }
   const fPreviewArticleList = (visiable: boolean): void => {
@@ -422,7 +427,7 @@ export default function ServiceView (props: {
 
           ? <>
 
-            <div className="img-preview" onClick={() => setPreviewImgUrl('')}>
+            <div className="img-preview" onClick={() => fPreviewImage('')}>
               <div className="img-panel" >
                 <img ref={previewImgRef} src={previewImgUrl}></img>
               </div>
