@@ -150,15 +150,15 @@
       padding: unset;
       color: unset;
       box-shadow: unset;
-    }
-    .md-name::before {
-      content: " ";
-      background: #0002;
-      width: 4px;
-      height: 1em;
-      margin-top: 0.31em;
-      margin-right: 5px;
-      float: left;
+      display: flex;
+      align-items: center;
+      &::before {
+        content: " ";
+        background: #0002;
+        width: 4px;
+        height: 1em;
+        margin-right: 5px;
+      }
     }
     a {
       margin-right: 10px;
