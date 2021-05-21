@@ -25,7 +25,7 @@ const getRenders = (root: NavigationSection | undefined) => {
   renders.heading = ({ level, children }: { level: number, children: [React.ReactElement] }) => {
     const s = new NavigationSection(getText(children), level)
     root.children.push(s)
-    return <LocatableView callbacks={s} View={() => React.createElement(`h${level}`, null, ...children)}></LocatableView>
+    return <LocatableView callbacks={s} View={() => React.createElement(`h${level + 1}`, null, ...children)}></LocatableView>
   }
   return renders
 }
