@@ -3,7 +3,7 @@ import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } 
 import { BarsOutlined, EditOutlined, ClearOutlined, ShakeOutlined, HighlightOutlined, CloseOutlined, ArrowLeftOutlined, FontSizeOutlined, BgColorsOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import { CaptureWordIcon, EraserIcon, ScreenshotIcon } from '../common/Icons'
-import { LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
+import { DisableClozeHoverProvider, LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
 import Article from '../../domain/ServiceInterfaces/Article'
 import CaptureDict from './CaptureDict'
 import classNames from 'classnames'
@@ -26,15 +26,19 @@ const drawPens: [string, number, string | null][] = [
   ['#ff0000', 1, null],
   ['#2d2d2d', 1, null]
 ]
-const findMdgElement = (from: HTMLElement | null, to: HTMLElement | null): HTMLElement | undefined => {
+const findHighlightableElement = (from: HTMLElement | null, to: HTMLElement | null): HTMLElement | undefined => {
   if (!from || !to) {
     return undefined
   }
   let cur: HTMLElement | null = from
   while (cur && cur !== to) {
-    if (cur.className === 'mdg') {
-      return cur
+    switch (cur.className) {
+      case 'no-hover-cloze':
+      case 'cloze':
+      case 'mdg':
+        return cur
     }
+
     if (cur.tagName === 'A') {
       return undefined
     }
@@ -50,7 +54,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
   const [drawPen, setDrawPen] = useState(drawPens[0])
   const [earse, setEarse] = useState(false)
   const viewService = locate(IViewService)
-  const [store] = useState({} as { mdg?: HTMLElement })
+  const [store] = useState({} as { highlightable?: HTMLElement })
   const close = () => {
     viewService.previewArticle()
   }
@@ -141,7 +145,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     return <>
       <div key={section + 'menu'} className={`item item-${section.level} ${section === currentSection ? 'current-item' : ''}`} onClick={() => {
         setSidePopup(false)
-        embedSrc || setHightlight()
+        setHightlight()
         section.locate?.()
         setCurrentSection(section)
       }}>
@@ -150,27 +154,29 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
       { section.children && section.children.length ? section.children.map(NavigationSectionView) : undefined}
     </>
   }
-  const setHightlight = (mdg: HTMLElement | undefined = undefined) => {
-    if (mdg === store.mdg) {
+  const setHightlight = (highlightable: HTMLElement | undefined = undefined) => {
+    if (highlightable === store.highlightable) {
       return
     }
-    if (store.mdg) {
-      store.mdg.classList.remove('hover')
+    if (store.highlightable) {
+      store.highlightable.classList.remove('hover')
     }
-    store.mdg = mdg
+    store.highlightable = highlightable
     let statusText = ''
-    if (store.mdg) {
-      store.mdg.classList.add('hover')
-      statusText = (store.mdg.lastChild as any)?.innerText?.trim()
+    if (store.highlightable) {
+      store.highlightable.classList.add('hover')
+      if (store.highlightable.className === 'mdg') {
+        statusText = (store.highlightable.lastChild as any)?.innerText?.trim()
+      }
     }
     setStatusText(statusText)
   }
   const onViewerClick = (ev: React.MouseEvent<any>) => {
-    const mdg = findMdgElement(ev.target as HTMLElement, ev.currentTarget as HTMLElement)
-    if (mdg === store.mdg) {
+    const highlightable = findHighlightableElement(ev.target as HTMLElement, ev.currentTarget as HTMLElement)
+    if (highlightable === store.highlightable) {
       return
     }
-    setHightlight(mdg)
+    setHightlight(highlightable)
   }
   return (
     <LocatableOffsetProvider value={0}>
@@ -220,7 +226,9 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
         </div>
         <div ref={ref} className={classNames('article')}>
           <div className={classNames('article-content', embedSrc ? 'embed-src' : '')} onClick={embedSrc ? undefined : onViewerClick} spellCheck="false" >
-            <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+            <DisableClozeHoverProvider value={freeDraw}>
+              <props.type.Viewer articleId={props.article.id!} published={props.article.published} viewerCallbacks={callbacks} showAdditionals={true} content={props.article.content!} files={props.article.files} type={props.type}></props.type.Viewer>
+            </DisableClozeHoverProvider>
           </div>
           <FreeDrawMask hidden={false} enabled={true} version={drawVersion} penOnly={penOnly} onPenFound={() => { setExistedPen(true); setPenOnly(true); setFreeDraw(true); return true }} earse={earse} size={drawSize} pen={drawPen as any} explicit={freeDraw}></FreeDrawMask>
           {

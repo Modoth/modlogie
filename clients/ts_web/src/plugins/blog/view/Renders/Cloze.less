@@ -1,3 +1,4 @@
+.no-hover-cloze,
 .cloze {
   border-radius: 0.3em;
   color: transparent;
@@ -12,10 +13,13 @@
   text-underline-offset: 5px;
   transform: translate(0, -4px);
   // vertical-align: middle;
-  .mdg.hover &,
-  &:hover {
+  user-select: none;
+  // .mdg.hover &,
+  &:not(.no-hover-cloze):hover,
+  &.hover {
     background: var(--primary);
     color: #fff;
+    user-select: unset;
     text-decoration: unset;
     text-decoration-color: unset;
     transform: translate(0, -1px);
