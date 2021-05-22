@@ -29,14 +29,15 @@ span.embed-src {
   }
   .menus {
     position: fixed;
-    top: calc(0px - var(--overflow-top));
+    top: 0;
     left: 0;
     right: 0;
-    padding: 0 5px;
+    // padding: 0 5px;
     z-index: 2;
-    background: #fff8;
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
+    background: #fbfbfb;
+    .standalone & {
+      background: #fff;
+    }
     box-shadow: var(--shadow);
     // border-bottom: 1px solid #f0f0f0;
     .menus-dict {
@@ -64,7 +65,7 @@ span.embed-src {
       }
     }
     .menus-bar {
-      padding: calc(4px + var(--overflow-top)) 0 4px;
+      padding: 4px 0;
       display: flex;
       .single-article-content-menu-btn-draw {
         margin-right: 5px;
@@ -100,6 +101,7 @@ span.embed-src {
         white-space: nowrap;
         overflow: hidden;
         flex: 1;
+        font-size: 15px;
         text-align: center;
       }
 

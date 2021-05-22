@@ -4,7 +4,7 @@ import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { MmIcon } from '../common/Icons'
-import { PlusOutlined, AppstoreOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, ArrowLeftOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocate, useUser } from '../common/Contexts'
@@ -640,7 +640,7 @@ export default function Library (props: LibraryProps) {
           {
             title: langs.get(LangKeys.Home),
             link: '/',
-            icon: <AppstoreOutlined className="menu-icon" />
+            icon: <ArrowLeftOutlined />
           },
           {
             onClick: titleClick,
