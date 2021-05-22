@@ -96,11 +96,14 @@
 
   .article-title {
     word-break: break-all;
-    border-bottom: 1px groove #0000000c;
     padding: 5px 5px 0px 20px;
     color: #251202a0;
     font-weight: 550;
     margin: -1px -1px 0px -1px;
+    .float-article &{
+      border-bottom: 1px groove #0000000c;
+      margin-bottom: 10px;
+    }
     border-radius: 2px 2px 0 0;
     display: flex;
     align-items: center;
