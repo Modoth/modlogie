@@ -26,17 +26,15 @@ const drawPens: [string, number, string | null][] = [
   ['#ff0000', 1, null],
   ['#2d2d2d', 1, null]
 ]
+const highlightableClasses = ['no-hover-cloze', 'cloze', 'mdg']
 const findHighlightableElement = (from: HTMLElement | null, to: HTMLElement | null): HTMLElement | undefined => {
   if (!from || !to) {
     return undefined
   }
   let cur: HTMLElement | null = from
   while (cur && cur !== to) {
-    switch (cur.className) {
-      case 'no-hover-cloze':
-      case 'cloze':
-      case 'mdg':
-        return cur
+    if (highlightableClasses.find(c => cur?.classList.contains(c))) {
+      return cur
     }
 
     if (cur.tagName === 'A') {
@@ -167,7 +165,7 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     let statusText = ''
     if (store.highlightable) {
       store.highlightable.classList.add('hover')
-      if (store.highlightable.className === 'mdg') {
+      if (store.highlightable.classList.contains('mdg')) {
         statusText = (store.highlightable.lastChild as any)?.innerText?.trim()
       }
     }
