@@ -126,10 +126,12 @@
 
     & > img {
       object-fit: contain;
-      max-width: 100%;
+      object-fit: contain;
+      max-width: calc(100% - 2em);
       max-height: 100%;
+      margin: 0 auto;
 
-      @media (min-width:780px) {
+      @media (min-width: 780px) {
         max-width: 780px;
       }
     }

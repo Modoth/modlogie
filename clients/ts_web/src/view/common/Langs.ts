@@ -183,6 +183,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   Reset = '重置';
   Save = '保存';
   ScreenShot = '截图(beta)';
+  ScreenShotCutted = '图片过大，已截断';;
   ScreenShotTooHuge = '图片过大，操作失败';
   Scroll = '滚动';
   Search = '搜索';

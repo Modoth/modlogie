@@ -277,18 +277,26 @@ export default function ServiceView (props: {
       }
     }
   }
-  const fCaptureElement = async (element: HTMLElement | undefined): Promise<void> => {
+  const fCaptureElement = async (element: HTMLElement | undefined, fallback = false): Promise<void> => {
     if (!element) {
       return
     }
     try {
       viewService.setLoading(true)
-      const canvas = await html2canvas(element)
-      viewService.setLoading(false)
+      const canvas = await html2canvas(element, fallback ? { height: window.innerHeight * 2 } : undefined)
       const imgUrl = canvas.toDataURL('image/png')
       if (imgUrl === 'data:,') {
+        if (!fallback) {
+          await fCaptureElement(element, true)
+          return
+        }
+        viewService.setLoading(false)
         viewService.error(langs.get(LangKeys.ScreenShotTooHuge), 2000)
         return
+      }
+      viewService.setLoading(false)
+      if (fallback) {
+        viewService.error(langs.get(LangKeys.ScreenShotCutted), 2000)
       }
       viewService.previewImage(imgUrl)
     } catch (e) {
