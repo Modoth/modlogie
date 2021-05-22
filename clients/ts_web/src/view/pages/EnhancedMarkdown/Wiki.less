@@ -11,21 +11,23 @@ a.outsite-link {
 a.wiki-link {
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  padding: 0.1em 0.3em 0.1em;
-  margin: 0 0.1em;
-  border-radius: 0.3em;
-  font-size: 0.9em;
   overflow-wrap: break-word;
   word-wrap: break-word;
   white-space: pre-wrap;
   position: relative;
   vertical-align: middle;
   font-family: monospace;
+  @media screen {
+    padding: 0.1em 0.3em 0.1em;
+    margin: 0 0.1em;
+    border-radius: 0.3em;
+    font-size: 0.9em;
+    background-color: #f7f7f7;
+  }
 }
 
 a.wiki-link {
   color: #c7254e;
-  background-color: #f7f7f7;
 
   .hover & {
     background: unset;
@@ -35,7 +37,6 @@ a.wiki-link {
 .inline-code {
   // color: #000;
   // font-weight: 550;
-  background-color: #f7f7f7;
   .hover & {
     background: unset;
   }

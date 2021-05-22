@@ -137,12 +137,14 @@ export default function ArticleList () {
   }
   useEffect(() => {
     viewService.setFloatingMenus?.(LangKeys.PageArticleList, <>
-      {
-        <Button type="primary" shape="circle" size="large" icon={<ScreenshotIcon />} onClick={() => {
-          (document.scrollingElement as HTMLElement).scrollTo({ top: 0, behavior: undefined })
-          locate(IViewService).captureElement(ref.current!)
-        }} />
-      }
+
+      <Button type="primary" shape="circle" size="large" icon={<ScreenshotIcon />} onClick={() => {
+        (document.scrollingElement as HTMLElement).scrollTo({ top: 0, behavior: undefined })
+        locate(IViewService).captureElement(ref.current!)
+      }} />
+      <Button type="primary" shape="circle" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
+    </>,
+    <>
       {
         generators.size
           ? <Button
@@ -269,9 +271,6 @@ export default function ArticleList () {
           </Button>
           : undefined
       }
-    </>,
-    <>
-      <Button type="primary" shape="circle" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
       {
         addCount ? <Badge count={addCount}>
           <Button danger onClick={clear}type="primary" shape="circle" size="large" icon={<ClearOutlined />} />

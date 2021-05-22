@@ -1,6 +1,6 @@
 import './ArticleSingle.less'
 import { ArticleContentType, ArticleContentViewerCallbacks, NavigationSection } from '../../pluginbase/IPluginInfo'
-import { BarsOutlined, EditOutlined, ClearOutlined, ShakeOutlined, HighlightOutlined, CloseOutlined, ArrowLeftOutlined, FontSizeOutlined, BgColorsOutlined } from '@ant-design/icons'
+import { BarsOutlined, EditOutlined, ClearOutlined, PrinterOutlined, HighlightOutlined, CloseOutlined, ArrowLeftOutlined, FontSizeOutlined, BgColorsOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import { CaptureWordIcon, EraserIcon, ScreenshotIcon } from '../common/Icons'
 import { DisableClozeHoverProvider, LocatableOffsetProvider, useServicesLocate } from '../common/Contexts'
@@ -85,6 +85,8 @@ export default function ArticleSingle (props: { article: Article, type: ArticleC
     if (!sidePopup) {
       viewService.setFloatingMenus?.(LangKeys.PageArticleSingle,
         <>
+          { freeDraw ? undefined : <Button type="primary" shape="circle" size="large" icon={<PrinterOutlined />} onClick={() => window.print()} />
+          }
           <Button key="screen-shot" type="primary" shape="circle" size="large" icon={<ScreenshotIcon />} onClick={() => {
             scrollToTop(true)
             setTimeout(() => viewService.captureElement(ref.current!), 50)
