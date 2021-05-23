@@ -77,7 +77,7 @@ span.embed-src {
       }
       .pen-size {
         width: 60%;
-        border-radius: 30%;
+        border-radius: 320px;
         vertical-align: middle;
         display: inline-block;
       }
@@ -111,7 +111,7 @@ span.embed-src {
         margin-left: 5px;
         padding: 5px 0;
         font-size: 0.8em;
-        @media (min-width:780px) {
+        @media (min-width: 780px) {
           font-size: 0.9em;
         }
         line-height: 1.8;
@@ -262,9 +262,9 @@ span.embed-src {
 @media (min-width: 780px) {
   .single-article {
     background-color: #fff;
-    margin-left: 30%;
+    margin-left: 320px;
     .menus {
-      left: 30%;
+      left: 320px;
       background-color: #fff;
       box-shadow: unset;
       border-bottom: 1px solid #0001;
@@ -279,13 +279,13 @@ span.embed-src {
 
     .side {
       background: #f8f8f8;
-      width: 30%;
+      width: 320px;
       position: fixed;
       height: 100%;
       top: 0;
       left: 0;
       padding: 50px 0;
-      box-shadow: -0.1em 0 0.20em rgba(0, 0, 0, 0.1) inset;
+      box-shadow: -0.1em 0 0.2em rgba(0, 0, 0, 0.1) inset;
       .catelog {
         min-width: 10em;
         padding: 0 1em;
@@ -295,6 +295,15 @@ span.embed-src {
   }
   .catelog-btn {
     display: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  .single-article {
+    .article {
+      margin: 0 4em;
+      max-width: unset;
+    }
   }
 }
 
