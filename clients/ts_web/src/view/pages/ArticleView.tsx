@@ -21,11 +21,11 @@ import IViewService from '../../app/Interfaces/IViewService'
 import MenuItem from 'antd/lib/menu/MenuItem'
 import moment from 'moment'
 import PublishArticle from './PublishArticle'
-import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useEffect } from 'react'
 import SubjectViewModel from './SubjectViewModel'
 import html2canvas from 'html2canvas'
 import { ScreenshotIcon } from '../common/Icons'
+import ImagePreview from './ImagePreview'
 
 const { Panel } = Collapse
 const { Option } = Select
@@ -95,7 +95,6 @@ export default function ArticleView (props: {
   const [likeCount, setLikeCount] = useState(0)
   const [canDislike, setCanDislike] = useState(false)
   const [dislikeCount, setDislikeCount] = useState(0)
-  const [showFloat, setShowFloat] = useState(false)
   const [recommendView, setRecommendView] = useState(props.recommendView || false)
   const [recommend, setRecommend] = useState(props.article.additionalType === ArticleAdditionalType.Recommend)
   const [recommendTitle, setRecommendTitle] = useState('')
@@ -106,8 +105,8 @@ export default function ArticleView (props: {
     { label: langs.get(LangKeys.Public), value: false }
   ])
   const [defaultPrivate, setDefaultPrivate] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState('')
-  const [previewWidth, setPreviewWidth] = useState(0)
+  const [previewCache] = useState({ url: '', width: 0, link: '' })
+  const [preview, setPreview] = useState(false)
   const magicSeed = useMagicSeed()
   const [privateType, setPrivateType] = useState<boolean|undefined>(props.article.private)
   const privateChanged = async (e:any) => {
@@ -377,18 +376,20 @@ export default function ArticleView (props: {
     const cur = ref.current
     if (cur) {
       const elementPos = cur.getBoundingClientRect()
-      const width = elementPos.width
-      if (!previewUrl) {
+      if (!previewCache.url) {
+        const width = elementPos.width
+        const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
         // viewService.setLoading(true)
         cur.classList.add('_screenshot')
         const canvas = await html2canvas(cur, { y: (cur as any).offsetTop || 0 })
         cur.classList.remove('_screenshot')
         const imgUrl = canvas.toDataURL('image/png')
         viewService.setLoading(false)
-        setPreviewUrl(imgUrl)
-        setPreviewWidth(width)
+        previewCache.url = imgUrl
+        previewCache.width = width
+        previewCache.link = url
       }
-      setShowFloat(true)
+      setPreview(true)
       viewService.lockScrollable(true)
     }
   }
@@ -714,26 +715,7 @@ export default function ArticleView (props: {
           ) : null
         }
       </Card >
-      {(() => {
-        if (!showFloat) {
-          return
-        }
-        const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
-        return <div className={classNames(showFloat ? 'float-article-bg' : '')} onClick={() => {
-          setShowFloat(false)
-          viewService.lockScrollable(false)
-        }}>
-          <div></div>
-          <div className={classNames(showFloat ? 'float-article' : '')} style={{ width: previewWidth }} onClick={(ev) => ev.stopPropagation()} >
-            <div className="preview-img"><img src={previewUrl}/></div>
-            <div className="share-panel">
-              <QrCode content={url}></QrCode>
-              <a href={url}>{url}</a>
-            </div>
-          </div>
-          <div></div>
-        </div>
-      })()}
     </div>
+    { preview ? <ImagePreview {...previewCache} onClose={() => setPreview(false)}></ImagePreview> : undefined}
   </>)
 }

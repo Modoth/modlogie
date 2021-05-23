@@ -10,7 +10,7 @@ export default function QrCode (props: { content: string, logo?: string }) {
   if (!url) {
     return <></>
   }
-  return <span>
+  return <span className="qrcode">
     <img alt={props.content} src={url}></img>
     {
       props.logo ? <img className="qrcode-logo" src={props.logo}></img> : undefined

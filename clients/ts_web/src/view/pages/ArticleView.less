@@ -234,63 +234,6 @@
   }
 }
 
-.float-article-bg {
-  position: fixed;
-  left: 0%;
-  top: 0%;
-  z-index: 1000;
-  background: #0008;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  touch-action: pan-y;
-  align-items: center;
-  flex-direction: column;
-  .share-menus {
-    margin-bottom: 80px;
-  }
-  align-items: center;
-
-  & > div:first-child {
-    flex: 1;
-  }
-  & > div:last-child {
-    flex: 3;
-  }
-}
-.float-article {
-  padding: 0 8px;
-  .preview-img {
-    img {
-      max-width: 100%;
-      border-radius: 6px;
-      box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 2px 0px,
-        rgba(0, 0, 0, 0.25) 0px 1px 4px 0px, rgba(0, 0, 0, 0.25) 0px 2px 8px 0px;
-      box-sizing: border-box;
-    }
-  }
-  .share-panel {
-    display: flex;
-    margin-top: 20px;
-    box-sizing: border-box;
-    img {
-      width: 80px;
-      height: 80px;
-      border-radius: 6px;
-    }
-    a {
-      word-break: break-all;
-      border-radius: 6px;
-      margin-left: 10px;
-      color: #404040;
-      background: #fff;
-      padding: 5px 10px;
-    }
-  }
-}
-
 .ant-menu-submenu-popup {
   li.ant-menu-item.ant-menu-item-only-child .action-name {
     display: unset;
