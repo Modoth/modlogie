@@ -24,6 +24,8 @@ import PublishArticle from './PublishArticle'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useEffect } from 'react'
 import SubjectViewModel from './SubjectViewModel'
+import html2canvas from 'html2canvas'
+import { ScreenshotIcon } from '../common/Icons'
 
 const { Panel } = Collapse
 const { Option } = Select
@@ -104,6 +106,7 @@ export default function ArticleView (props: {
     { label: langs.get(LangKeys.Public), value: false }
   ])
   const [defaultPrivate, setDefaultPrivate] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState('')
   const [floatLeft, setFloatLeft] = useState(0)
   const [floatTop, setFloatTop] = useState(0)
   const magicSeed = useMagicSeed()
@@ -371,12 +374,21 @@ export default function ArticleView (props: {
     }
   }
   const hasMore = props.article.additionId || (type && type.smartHiddenSections && type.smartHiddenSections.size)
-  const openShare = () => {
+  const openShare = async () => {
     if (ref.current) {
       const offset = Math.min(window.innerHeight * 0.2, 120)
       const elementPos = ref.current.getBoundingClientRect()
       const left = (window.innerWidth) / 2 - (elementPos.right + elementPos.left) / 2
-      const top = (window.innerHeight) / 2 - (elementPos.bottom + elementPos.top) / 2 - offset
+      const top = (window.innerHeight) / 2 + (elementPos.top - elementPos.bottom * 3) / 2 - offset
+      if (!previewUrl) {
+        viewService.setLoading(true)
+        ref.current.classList.add('_snapshot')
+        const canvas = await html2canvas(ref.current, { y: elementPos.top + (document.scrollingElement?.scrollTop || 0) })
+        ref.current.classList.remove('_snapshot')
+        const imgUrl = canvas.toDataURL('image/png')
+        viewService.setLoading(false)
+        setPreviewUrl(imgUrl)
+      }
       setFloatLeft(left)
       setFloatTop(top)
       setShowFloat(true)
@@ -490,7 +502,7 @@ export default function ArticleView (props: {
   return (<>
     { showFloat ? <div className={classNames(showFloat ? 'float-article-bg' : '')} onClick={() => setShowFloat(false)}>
     </div> : undefined}
-    <div ref={ref} className={classNames(showFloat ? 'float-article' : '')} style={{ left: floatLeft, top: floatTop }}>
+    <div ref={ref} >
       <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' : recommendView ? generateRandomStyle(props.article.id!, magicSeed) : '')}>
         <div className="article-title" ref={titleRef}>
           {recommendView && recommendTitle ? <Button className="recommend-button" danger type="link" >{recommendTitle}</Button> : <span></span>
@@ -511,7 +523,7 @@ export default function ArticleView (props: {
                   })
                   setInArticleList(articleListService.has(props.article))
                   return
-                case 'qrcode':
+                case 'screenshot-share':
                   setTimeout(() => {
                     openShare()
                   }, 50)
@@ -538,6 +550,12 @@ export default function ArticleView (props: {
                   props.articleHandlers.onDelete(props.article.id!)
               }
             }} mode="horizontal" className={classNames('actions-list')}>{[
+                <MenuItem key="screenshot-share"><Button type="link" icon={<ScreenshotIcon />}
+                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
+                favoriteService ? <MenuItem key="toogle-fav"><Badge>
+                  <Button type="link" className="heart" danger={favorite} icon={ <HeartOutlined /> }
+                    key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
+                </Badge></MenuItem> : null,
                 user.printPermission ? (inArticleList
                   ? <MenuItem key='remove-print'><Badge >
                     <Button type="link" danger icon={<ExportOutlined />} key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
@@ -551,12 +569,6 @@ export default function ArticleView (props: {
                   ><span className="action-name">{langs.get(LangKeys.Like) + (likeCount ? ` (${likeCount})` : '')}</span></Button></Badge></MenuItem>,
                 <MenuItem key="dislike"><Badge count={dislikeCount ? <span className="icon-badges" >{shortNumber(dislikeCount)}</span> : null}><Button type="link" icon={<DislikeOutlined />}
                 ><span className="action-name">{langs.get(LangKeys.Dislike) + (dislikeCount ? ` (${dislikeCount})` : '')}</span></Button></Badge></MenuItem>] : []),
-                favoriteService ? <MenuItem key="toogle-fav"><Badge>
-                  <Button type="link" className="heart" danger={favorite} icon={ <HeartOutlined /> }
-                    key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
-                </Badge></MenuItem> : null,
-                <MenuItem key="qrcode"><Button type="link" icon={<QrcodeOutlined />}
-                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
                 ...(user.editingPermission ? [
                   <MenuItem key="recommend"> <Button type="link" icon={recommend ? <UpSquareFilled /> : <UpSquareOutlined />}
                   ><span className="action-name">{recommend ? langs.get(LangKeys.CancleRecommend) : langs.get(LangKeys.Recommend)}</span></Button></MenuItem>,
@@ -711,11 +723,13 @@ export default function ArticleView (props: {
           return
         }
         const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
-        return <><div className="share-panel">
-          <QrCode content={url}></QrCode>
-          <a href={url}>{url}</a>
+        return <div className={classNames(showFloat ? 'float-article' : '')} style={{ left: floatLeft, top: floatTop }}>
+          <div className="preview-img"><img src={previewUrl}/></div>
+          <div className="share-panel">
+            <QrCode content={url}></QrCode>
+            <a href={url}>{url}</a>
+          </div>
         </div>
-        </>
       })()}
     </div>
   </>)
