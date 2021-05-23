@@ -12,12 +12,16 @@
   text-underline-offset: 2px;
   transform: translate(0, -1px);
   user-select: none;
-  &:not(.no-hover-cloze):hover,
-  &.hover {
-    background: var(--primary);
-    color: #fff;
-    user-select: unset;
-    text-decoration: unset;
-    text-decoration-color: unset;
+  @media screen {
+    &:not(.no-hover-cloze):hover,
+    &.hover {
+      background: var(--primary);
+      color: #fff;
+      user-select: unset;
+      text-decoration: unset;
+      text-decoration-color: unset;
+      position: relative;
+      z-index: 2;
+    }
   }
 }
