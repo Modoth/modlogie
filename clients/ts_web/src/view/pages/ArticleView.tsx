@@ -107,8 +107,7 @@ export default function ArticleView (props: {
   ])
   const [defaultPrivate, setDefaultPrivate] = useState(false)
   const [previewUrl, setPreviewUrl] = useState('')
-  const [floatLeft, setFloatLeft] = useState(0)
-  const [floatTop, setFloatTop] = useState(0)
+  const [previewWidth, setPreviewWidth] = useState(0)
   const magicSeed = useMagicSeed()
   const [privateType, setPrivateType] = useState<boolean|undefined>(props.article.private)
   const privateChanged = async (e:any) => {
@@ -375,22 +374,20 @@ export default function ArticleView (props: {
   }
   const hasMore = props.article.additionId || (type && type.smartHiddenSections && type.smartHiddenSections.size)
   const openShare = async () => {
-    if (ref.current) {
-      const offset = Math.min(window.innerHeight * 0.2, 120)
-      const elementPos = ref.current.getBoundingClientRect()
-      const left = (window.innerWidth) / 2 - (elementPos.right + elementPos.left) / 2
-      const top = (window.innerHeight) / 2 + (elementPos.top - elementPos.bottom * 3) / 2 - offset
+    const cur = ref.current
+    if (cur) {
+      const elementPos = cur.getBoundingClientRect()
+      const width = elementPos.width
       if (!previewUrl) {
         viewService.setLoading(true)
-        ref.current.classList.add('_snapshot')
-        const canvas = await html2canvas(ref.current, { y: elementPos.top + (document.scrollingElement?.scrollTop || 0) })
-        ref.current.classList.remove('_snapshot')
+        cur.classList.add('_snapshot')
+        const canvas = await html2canvas(cur, { y: elementPos.top + (document.scrollingElement?.scrollTop || 0) })
+        cur.classList.remove('_snapshot')
         const imgUrl = canvas.toDataURL('image/png')
         viewService.setLoading(false)
         setPreviewUrl(imgUrl)
+        setPreviewWidth(width)
       }
-      setFloatLeft(left)
-      setFloatTop(top)
       setShowFloat(true)
     }
   }
@@ -500,8 +497,6 @@ export default function ArticleView (props: {
   }
 
   return (<>
-    { showFloat ? <div className={classNames(showFloat ? 'float-article-bg' : '')} onClick={() => setShowFloat(false)}>
-    </div> : undefined}
     <div ref={ref} >
       <Card className={classNames('article-view', recommendView ? '' : '', editing ? 'editing' : '', (privateType === true || (defaultPrivate && privateType === undefined)) ? 'private-article' : recommendView ? generateRandomStyle(props.article.id!, magicSeed) : '')}>
         <div className="article-title" ref={titleRef}>
@@ -723,11 +718,13 @@ export default function ArticleView (props: {
           return
         }
         const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
-        return <div className={classNames(showFloat ? 'float-article' : '')} style={{ left: floatLeft, top: floatTop }}>
-          <div className="preview-img"><img src={previewUrl}/></div>
-          <div className="share-panel">
-            <QrCode content={url}></QrCode>
-            <a href={url}>{url}</a>
+        return <div className={classNames(showFloat ? 'float-article-bg' : '')} onClick={() => setShowFloat(false)}>
+          <div className={classNames(showFloat ? 'float-article' : '')} style={{ width: previewWidth }} onClick={(ev) => ev.stopPropagation()} >
+            <div className="preview-img"><img src={previewUrl}/></div>
+            <div className="share-panel">
+              <QrCode content={url}></QrCode>
+              <a href={url}>{url}</a>
+            </div>
           </div>
         </div>
       })()}
