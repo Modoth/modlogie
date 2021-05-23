@@ -379,9 +379,9 @@ export default function ArticleView (props: {
       const elementPos = cur.getBoundingClientRect()
       const width = elementPos.width
       if (!previewUrl) {
-        viewService.setLoading(true)
+        // viewService.setLoading(true)
         cur.classList.add('_screenshot')
-        const canvas = await html2canvas(cur, { y: elementPos.top + (document.scrollingElement?.scrollTop || 0) })
+        const canvas = await html2canvas(cur, { y: (cur as any).offsetTop || 0 })
         cur.classList.remove('_screenshot')
         const imgUrl = canvas.toDataURL('image/png')
         viewService.setLoading(false)
