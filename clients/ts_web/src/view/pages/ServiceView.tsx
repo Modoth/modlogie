@@ -290,17 +290,16 @@ export default function ServiceView (props: {
           await fCaptureElement(element, true)
           return
         }
-        viewService.setLoading(false)
         viewService.error(langs.get(LangKeys.ScreenShotTooHuge), 2000)
         return
       }
-      viewService.setLoading(false)
       if (fallback) {
         viewService.error(langs.get(LangKeys.ScreenShotCutted), 2000)
       }
       viewService.previewImage(imgUrl)
     } catch (e) {
       // viewService!.errorKey(locate(ILangsService), LangKeys.UnknownError)
+    } finally {
       viewService.setLoading(false)
     }
   }

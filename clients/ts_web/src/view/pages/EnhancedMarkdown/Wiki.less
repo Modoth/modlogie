@@ -11,22 +11,12 @@ a.outsite-link {
 a.wiki-link {
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  overflow-wrap: break-word;
   word-wrap: break-word;
+  overflow-wrap: anywhere;
   white-space: pre-wrap;
-  position: relative;
-  vertical-align: middle;
+  line-break: anywhere;
   font-family: monospace;
-  @media screen {
-    padding: 0.1em 0.3em;
-    margin: -0.2em 0.1em 0;
-    border-radius: 0.3em;
-    font-size: 0.9em;
-    background: #f7f7f7;
-    height: 1.4em;
-    display: inline-flex;
-    align-items: center;
-  }
+  font-weight: 550;
 }
 
 a.wiki-link {
@@ -38,7 +28,10 @@ a.wiki-link {
 }
 
 .inline-code {
-  // color: #000;
+  color: #666;
+  @media print {
+    color: #333;
+  }
   // font-weight: 550;
   .hover & {
     background: unset;
