@@ -60,6 +60,7 @@ export class LangKeysInterface {
   History = 'History'
   Help = 'Help';
   Home = 'Home';
+  ImageSave = 'ImageSave';
   Import = 'Import';
   ItemsCount = 'ItemsCount';
   Keyword = 'Keyword';

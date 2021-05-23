@@ -17,6 +17,7 @@ import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
+import ImagePreview from './ImagePreview'
 
 export const previewArticleByPath = (locate: LocateFunction, pathOrName: string | undefined, title: string | undefined, root?:string|undefined) => {
   if (!pathOrName) {
@@ -325,8 +326,6 @@ export default function ServiceView (props: {
     captureElement: fCaptureElement
   })
 
-  const previewImgRef = React.createRef<HTMLImageElement>()
-
   return (
     <>
       <input type="file" className="hidden" ref={refFile}></input>
@@ -442,22 +441,8 @@ export default function ServiceView (props: {
           })}
         </Space>
       </Modal>
-      {
-        previewImgUrl
-
-          ? <>
-
-            <div className="img-preview" onClick={() => fPreviewImage('')}>
-              <div className="img-panel" >
-                <img ref={previewImgRef} src={previewImgUrl}></img>
-              </div>
-            </div>
-          </>
-          : null
-      }
-      {
-        previewArticleList ? <ArticleList></ArticleList> : null
-      }
+      { previewImgUrl ? <ImagePreview url={previewImgUrl} onClose={() => fPreviewImage('')}/> : null }
+      { previewArticleList ? <ArticleList /> : null }
       {
         previewArticle ? <ArticleSingle key={previewArticle.article.id} {...previewArticle}></ArticleSingle> : null
       }

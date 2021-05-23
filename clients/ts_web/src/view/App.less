@@ -136,7 +136,7 @@ span.token {
   // display: none;
   border: none;
   background: #fff8;
-    box-shadow: 0 1px 3px 1px #0001;
+  box-shadow: 0 1px 3px 1px #0001;
 }
 
 .ant-pagination-item-active {
@@ -151,6 +151,8 @@ span.token {
 
 .pop-up-wraper {
   background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
   position: fixed;
   left: 0;
   bottom: 0;
@@ -161,8 +163,6 @@ span.token {
   justify-content: center;
   touch-action: none;
   z-index: 3;
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
   .pop-up {
     display: unset !important;
     background: #fff;
