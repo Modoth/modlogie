@@ -380,9 +380,9 @@ export default function ArticleView (props: {
       const width = elementPos.width
       if (!previewUrl) {
         viewService.setLoading(true)
-        cur.classList.add('_snapshot')
+        cur.classList.add('_screenshot')
         const canvas = await html2canvas(cur, { y: elementPos.top + (document.scrollingElement?.scrollTop || 0) })
-        cur.classList.remove('_snapshot')
+        cur.classList.remove('_screenshot')
         const imgUrl = canvas.toDataURL('image/png')
         viewService.setLoading(false)
         setPreviewUrl(imgUrl)
@@ -545,12 +545,12 @@ export default function ArticleView (props: {
                   props.articleHandlers.onDelete(props.article.id!)
               }
             }} mode="horizontal" className={classNames('actions-list')}>{[
-                <MenuItem key="screenshot-share"><Button type="link" icon={<ScreenshotIcon />}
-                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
                 favoriteService ? <MenuItem key="toogle-fav"><Badge>
                   <Button type="link" className="heart" danger={favorite} icon={ <HeartOutlined /> }
                     key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
                 </Badge></MenuItem> : null,
+                <MenuItem key="screenshot-share"><Button type="link" icon={<ScreenshotIcon />}
+                ><span className="action-name">{langs.get(LangKeys.Share)}</span></Button></MenuItem>,
                 user.printPermission ? (inArticleList
                   ? <MenuItem key='remove-print'><Badge >
                     <Button type="link" danger icon={<ExportOutlined />} key={LangKeys.RemoveFromArticleList}><span className="action-name">{langs.get(LangKeys.RemoveFromArticleList)}</span></Button>
