@@ -78,4 +78,8 @@ export default class IViewService {
   captureElement (element: HTMLElement | undefined): void {
     throw new Error('Method not implemented.')
   }
+
+  lockScrollable (s: boolean) : void {
+    throw new Error('Method not implemented.')
+  }
 }

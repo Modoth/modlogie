@@ -389,6 +389,7 @@ export default function ArticleView (props: {
         setPreviewWidth(width)
       }
       setShowFloat(true)
+      viewService.lockScrollable(true)
     }
   }
 
@@ -718,7 +719,11 @@ export default function ArticleView (props: {
           return
         }
         const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
-        return <div className={classNames(showFloat ? 'float-article-bg' : '')} onClick={() => setShowFloat(false)}>
+        return <div className={classNames(showFloat ? 'float-article-bg' : '')} onClick={() => {
+          setShowFloat(false)
+          viewService.lockScrollable(false)
+        }}>
+          <div></div>
           <div className={classNames(showFloat ? 'float-article' : '')} style={{ width: previewWidth }} onClick={(ev) => ev.stopPropagation()} >
             <div className="preview-img"><img src={previewUrl}/></div>
             <div className="share-panel">
@@ -726,6 +731,7 @@ export default function ArticleView (props: {
               <a href={url}>{url}</a>
             </div>
           </div>
+          <div></div>
         </div>
       })()}
     </div>

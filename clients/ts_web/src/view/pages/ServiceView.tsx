@@ -18,10 +18,6 @@ import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
 
-const setScrollable = (s: boolean) => {
-  document.body.style.overflow = s ? '' : 'hidden'
-}
-
 export const previewArticleByPath = (locate: LocateFunction, pathOrName: string | undefined, title: string | undefined, root?:string|undefined) => {
   if (!pathOrName) {
     return undefined
@@ -47,6 +43,10 @@ export class ViewService implements IViewService {
 
   error (msg: string, timeout: number = 1000): void {
     message.error(msg, timeout / 1000)
+  }
+
+  public lockScrollable (lock: boolean) : void {
+    document.body.style.overflow = lock ? 'hidden' : ''
   }
 
   constructor (public setLoading: any,
@@ -115,7 +115,7 @@ export default function ServiceView (props: {
     setModalTitle('')
     setModalSubTitle('')
     setModalVisible(false)
-    setScrollable(true)
+    viewService.lockScrollable(false)
     setModalFileds([])
     setOnModalOk(undefined)
     setModalImageField(false)
@@ -142,7 +142,7 @@ export default function ServiceView (props: {
         setModalFileds(fields)
         setOnModalOk({ onOk })
         setModalVisible(true)
-        setScrollable(false)
+        viewService.lockScrollable(true)
         setModalFileFieldData(undefined)
       }
       const singleField = fields.length === 1 ? fields[0] : undefined
@@ -252,7 +252,7 @@ export default function ServiceView (props: {
     })
   }
   const fPreviewImage = (url: string) => {
-    setScrollable(!url)
+    viewService.lockScrollable(!!url)
     setPreviewImgUrl(url)
   }
   const fPreviewArticleList = (visiable: boolean): void => {
