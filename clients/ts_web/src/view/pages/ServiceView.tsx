@@ -277,24 +277,35 @@ export default function ServiceView (props: {
       }
     }
   }
-  const fCaptureElement = async (element: HTMLElement | undefined, fallback = false): Promise<void> => {
+  const scaleIncrease = 0.95
+  const minScale = 0.75
+  const fCaptureElement = async (element: HTMLElement | undefined, scale : number|undefined = undefined, cutted = false): Promise<void> => {
     if (!element) {
       return
     }
     try {
       viewService.setLoading(true)
-      const canvas = await html2canvas(element, fallback ? { height: window.innerHeight * 2 } : undefined)
+      let opt
+      if (cutted) {
+        opt = { scale: window.innerHeight * 2 }
+      } else if (scale !== undefined) {
+        opt = { scale }
+      }
+      const canvas = await html2canvas(element, opt)
       const imgUrl = canvas.toDataURL('image/png')
       if (imgUrl === 'data:,') {
-        if (!fallback) {
-          await fCaptureElement(element, true)
+        const nextScale = (scale === undefined ? 1 : scale) * scaleIncrease
+        if (!cutted) {
+          await fCaptureElement(element, nextScale, nextScale < minScale)
           return
         }
         viewService.error(langs.get(LangKeys.ScreenShotTooHuge), 2000)
         return
       }
-      if (fallback) {
+      if (cutted) {
         viewService.error(langs.get(LangKeys.ScreenShotCutted), 2000)
+      } else if (scale !== undefined) {
+        viewService.error(langs.get(LangKeys.ScreenShotScaled) + `(x ${Math.floor(scale * 100) / 100})`, 2000)
       }
       viewService.previewImage(imgUrl)
     } catch (e) {

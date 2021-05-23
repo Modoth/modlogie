@@ -130,6 +130,7 @@ export class LangKeysInterface {
   Save = 'Save';
   ScreenShot = 'ScreenShot';
   ScreenShotCutted = 'ScreenShotCutted';
+  ScreenShotScaled = 'ScreenShotScaled';
   ScreenShotTooHuge = 'ScreenShotTooHuge';
   Scroll = 'Scroll';
   Search = 'Search';
