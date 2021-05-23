@@ -6,10 +6,10 @@
   margin-top: 45px;
   padding: 0;
   @media (min-width: 780px) {
-    margin-top: 65px;
+    margin-top: 59px;
     padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #00000018;
+    border-radius: 0px;
+    box-shadow: var(--shadow);
     min-height: unset;
   }
 
@@ -19,6 +19,7 @@
     display: flex;
     position: fixed;
     width: 100%;
+    box-shadow: var(--shadow);
     background: #fbfbfb;
     .standalone & {
       background: #fff;
@@ -26,12 +27,6 @@
     box-shadow: var(--shadow);
     padding: 4px 0;
     z-index: 1;
-    @media (min-width: 780px) {
-      box-shadow: unset;
-      border-bottom: 1px solid #00000018;
-      background: #fff;
-      // padding-bottom: 5px;
-    }
 
     & > * {
       margin-left: 10px;

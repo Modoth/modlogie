@@ -264,10 +264,12 @@ export default function ServiceView (props: {
   }
   const fPreviewArticle = (article: Article, type: ArticleContentType, onclose?: { (): void }): void => {
     if (article) {
+      document.body.style.background = 'white'
       props.setContentVisiable(false)
       setPreviewArticle({ article, type, onclose })
       locate(IHistoryService).add(article.path!, article.name!)
     } else {
+      document.body.style.background = ''
       props.setContentVisiable(true)
       setPreviewArticle(undefined)
       if (onclose) {
