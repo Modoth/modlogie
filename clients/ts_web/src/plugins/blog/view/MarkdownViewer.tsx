@@ -15,7 +15,13 @@ const getRenders = (root: NavigationSection | undefined) => {
   renders.image = getImage((window.ENV_OVERRIDE || window.ENV || {}).CONTENT_BASE || '')
   renders.strong = Cloze
   renders.emphasis = Trans
-
+  // eslint-disable-next-line react/display-name
+  renders.paragraph = (props: any) => {
+    if (props.children?.[0]?.type === renders.image) {
+      return <p className="md-img-p">{props.children}</p>
+    }
+    return <p>{props.children}</p>
+  }
   if (!root) {
     return renders
   }
