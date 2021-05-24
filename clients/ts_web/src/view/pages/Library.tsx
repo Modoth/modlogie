@@ -580,23 +580,23 @@ export default function Library (props: LibraryProps) {
       !!(selectedPublishTag && selectedPublishTag.id) ||
       !!(articleTags && articleTags.filter((t) => t.value).length) ||
       !!(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId)
-
+      const Fav = favoriteService && (favorite || favoriteCount) ? (
+        <Badge count={favoriteCount}>
+          <Button
+            className="heart-icon"
+            icon={<HeartFilled />}
+            type = {favorite ? 'primary' : 'default'}
+            danger={favorite}
+            size="large"
+            shape="circle"
+            onClick={() => {
+              setFavorite(!favorite)
+            }}
+          ></Button>
+        </Badge>
+      ) : null
       viewService.setFloatingMenus(LangKeys.PageLibrary, <>
-        {favoriteService && (favorite || favoriteCount) ? (
-          <Badge count={favoriteCount}>
-            <Button
-              className="heart-icon"
-              icon={<HeartFilled />}
-              type = {favorite ? 'primary' : 'default'}
-              danger={favorite}
-              size="large"
-              shape="circle"
-              onClick={() => {
-                setFavorite(!favorite)
-              }}
-            ></Button>
-          </Badge>
-        ) : null}
+        {favorite ? undefined : Fav}
         {user.editingPermission ? (
           <Button
             icon={<PlusOutlined />}
@@ -611,14 +611,16 @@ export default function Library (props: LibraryProps) {
         {user.printPermission ? (
           <ArticleListSummary></ArticleListSummary>
         ) : null}
-        <Button
-          type = "primary"
-          danger={hasSearch}
-          size="large"
-          shape="circle"
-          onClick={() => setShowFilter(true)}
-          icon={<SearchOutlined />}
-        ></Button>
+        {
+          favorite ? Fav : <Button
+            type = "primary"
+            danger={hasSearch}
+            size="large"
+            shape="circle"
+            onClick={() => setShowFilter(true)}
+            icon={<SearchOutlined />}
+          ></Button>
+        }
       </>)
     }
   }, [filter, selectedPublishTag, articleTags, selectedSubjectIds, favorite, favoriteCount])
