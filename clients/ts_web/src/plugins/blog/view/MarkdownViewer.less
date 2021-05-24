@@ -78,8 +78,21 @@
     margin: 0 auto;
     display: block;
     &.md-svg {
-      ._screenshot & {
+      ._screenshot_before & {
         object-fit: none;
+        display: none;
+      }
+      ._screenshot & {
+        display: block;
+      }
+    }
+    &.md-svg-4-screenshot {
+      display: none;
+      ._screenshot_before & {
+        display: block;
+      }
+      ._screenshot & {
+        display: none;
       }
     }
   }

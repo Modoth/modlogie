@@ -281,7 +281,7 @@ export default function ServiceView (props: {
       }
     }
   }
-  const scaleIncrease = 0.95
+  const scaleFactor = 0.95
   const minScale = 0.75
   const fCaptureElement = async (element: HTMLElement | undefined, scale : number|undefined = undefined, cutted = false): Promise<void> => {
     if (!element) {
@@ -298,7 +298,7 @@ export default function ServiceView (props: {
       const canvas = await htmlToCanvas(element, opt)
       const imgUrl = canvas.toDataURL('image/png')
       if (imgUrl === 'data:,') {
-        const nextScale = (scale === undefined ? 1 : scale) * scaleIncrease
+        const nextScale = (scale === undefined ? 1 : scale) * scaleFactor
         if (!cutted) {
           await fCaptureElement(element, nextScale, nextScale < minScale)
           return
@@ -309,7 +309,7 @@ export default function ServiceView (props: {
       if (cutted) {
         viewService.error(langs.get(LangKeys.ScreenShotCutted), 2000)
       } else if (scale !== undefined) {
-        viewService.error(langs.get(LangKeys.ScreenShotScaled) + `(x ${Math.floor(scale * 100) / 100})`, 2000)
+        viewService.error(langs.get(LangKeys.ScreenShotScaled) + `(x${Math.floor(scale * 100) / 100})`, 2000)
       }
       viewService.previewImage(imgUrl)
     } catch (e) {
