@@ -581,7 +581,6 @@ export default function Library (props: LibraryProps) {
       !!(articleTags && articleTags.filter((t) => t.value).length) ||
       !!(selectedSubjectIds.length && effectiveSubjects?.[0]?.id !== type?.rootSubjectId)
 
-      const Fav =
       viewService.setFloatingMenus(LangKeys.PageLibrary, <>
         {favoriteService && (favorite || favoriteCount) ? (
           <Badge count={favoriteCount}>
@@ -622,7 +621,7 @@ export default function Library (props: LibraryProps) {
         ></Button>
       </>)
     }
-  })
+  }, [filter, selectedPublishTag, articleTags, selectedSubjectIds, favorite, favoriteCount])
   const titleClick = () => {
     if (articleId) {
       fetchArticles(1, true)
