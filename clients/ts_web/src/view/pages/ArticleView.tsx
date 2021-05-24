@@ -716,6 +716,9 @@ export default function ArticleView (props: {
         }
       </Card >
     </div>
-    { preview ? <ImagePreview {...previewCache} onClose={() => setPreview(false)}></ImagePreview> : undefined}
+    { preview ? <ImagePreview {...previewCache} onClose={() => {
+      setPreview(false)
+      viewService.lockScrollable(false)
+    }}></ImagePreview> : undefined}
   </>)
 }
