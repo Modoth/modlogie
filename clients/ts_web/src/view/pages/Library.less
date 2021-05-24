@@ -129,7 +129,13 @@
     margin: 0 auto;
     height: 100%;
     padding: 10px 0 30px 0;
-
+    & > div:first-child {
+      margin: 0;
+      background: #f5f5f5;
+      margin-top: -10px;
+      margin-bottom: 10px !important;
+      padding: 5px;
+    }
     .subjects {
       position: relative;
       .background-fixed {
@@ -142,8 +148,8 @@
       .ant-tree-show-line .ant-tree-switcher {
         align-self: center;
       }
-      background-color: #fefefe;
-      padding: 0;
+      // background-color: #fefefe;
+      padding: 10px 0 0 0;
       border-radius: 10px;
       // padding-bottom: 10px;
       // margin-bottom: 10px;
@@ -162,6 +168,7 @@
         background: transparent;
         overflow-y: auto;
         height: 100%;
+        // border-top: 1px solid #00000018;
 
         .ant-tree-treenode {
           align-items: center;
@@ -201,11 +208,11 @@
     }
 
     & .tag-list {
-      display: block;
+      display: flex;
       box-sizing: border-box;
-      padding: 3px 0;
+      // padding: 3px 0;
       // border-radius: 10px;
-      border-bottom: 1px solid #0001;
+      // border-bottom: 1px solid #0001;
       // background: #f9734108;
     }
 
@@ -213,9 +220,17 @@
       margin: 3px;
       // border-radius: 10px;
       // border-left-width: 1px;
+      padding: 0;
       border: none;
       border-radius: 5px;
-      box-shadow: 0px 0px 1px #0004;
+      box-shadow: 0px 0px 1px #0008;
+      flex: 1;
+      text-align: center;
+      &:first-child {
+        padding: 0 10px;
+        // box-shadow: unset;
+        flex: unset;
+      }
     }
 
     & .tag-item::before {
@@ -230,8 +245,8 @@
     & .filter-menus {
       display: flex;
       justify-content: space-between;
-      width: 100%;
-      margin: 0 3px;
+      // width: 100%;
+      margin: 0 4px 0 8px;
       line-height: 1.25em;
       align-items: center;
       & > button {
@@ -243,8 +258,12 @@
 
       & > .ant-input-affix-wrapper {
         flex: 1;
-        margin: 2px 10px;
+        margin: 2px 10px 2px 0px;
         border-radius: 5px;
+        & > input.ant-input {
+          padding: 2px 0;
+          border: none;
+        }
       }
     }
   }

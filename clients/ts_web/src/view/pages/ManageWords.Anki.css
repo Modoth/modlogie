@@ -21,11 +21,12 @@
   border-radius: 10px;
   text-align: left;
   padding: 10px;
+  font-family: monospace;
+  font-size: 0.8em;
 }
 
 .back > div ~ div {
   background: #0001;
-  font-size: 0.8em;
 }
 
 .nightMode.card {

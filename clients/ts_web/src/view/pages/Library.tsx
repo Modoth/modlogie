@@ -4,7 +4,7 @@ import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { MmIcon } from '../common/Icons'
-import { PlusOutlined, ArrowLeftOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, AppstoreOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocate, useUser } from '../common/Contexts'
@@ -639,7 +639,7 @@ export default function Library (props: LibraryProps) {
           {
             title: langs.get(LangKeys.Home),
             link: '/',
-            icon: <ArrowLeftOutlined />
+            icon: <AppstoreOutlined className="menu-icon"/>
           },
           {
             onClick: titleClick,
@@ -709,14 +709,6 @@ export default function Library (props: LibraryProps) {
       >
         <Space className="filters" direction="vertical">
           <div className="filter-menus">
-            <Button
-              type="link"
-              danger
-              icon={<CloseOutlined />}
-              onClick={() => {
-                setShowFilter(false)
-              }}
-            ></Button>
             {props.type.noTitle ? null : (
               <Input
                 placeholder={langs.get(LangKeys.Search)}
@@ -731,6 +723,14 @@ export default function Library (props: LibraryProps) {
                 }}
               ></Input>
             )}
+            {/* <Button
+              type="link"
+              danger
+              icon={<CloseOutlined />}
+              onClick={() => {
+                setShowFilter(false)
+              }}
+            ></Button> */}
             <Button
               type="link"
               icon={<SearchOutlined />}
