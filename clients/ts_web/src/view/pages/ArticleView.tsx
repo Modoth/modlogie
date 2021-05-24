@@ -3,6 +3,7 @@ import { ArticleType, ArticleContentEditorCallbacks, ArticleContentType, Article
 import { Card, Button, Select, TreeSelect, Badge, Menu, DatePicker, Collapse, Radio } from 'antd'
 import { generateRandomStyle } from './common'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
+import { ScreenshotIcon } from '../common/Icons'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
 import { UploadOutlined, CloseOutlined, ShareAltOutlined, SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, ExportOutlined, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useUser, useServicesLocate, useMagicSeed } from '../common/Contexts'
@@ -10,6 +11,7 @@ import Article, { ArticleContent, ArticleTag, ArticleAdditionalType, ArticleWeig
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
 import defaultLogo from '../assets/logo.png'
+import htmlToCanvas from '../../infrac/components/htmlToCanvas'
 import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IArticleListService from '../../app/Interfaces/IArticleListService'
 import IArticleService from '../../domain/ServiceInterfaces/IArticleService'
@@ -17,15 +19,13 @@ import IConfigsService from '../../domain/ServiceInterfaces/IConfigsSercice'
 import IFavoritesService from '../../domain/ServiceInterfaces/IFavoritesService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ILikesService from '../../domain/ServiceInterfaces/ILikesService'
+import ImagePreview from './ImagePreview'
 import IViewService from '../../app/Interfaces/IViewService'
 import MenuItem from 'antd/lib/menu/MenuItem'
 import moment from 'moment'
 import PublishArticle from './PublishArticle'
 import React, { useState, useEffect } from 'react'
 import SubjectViewModel from './SubjectViewModel'
-import html2canvas from 'html2canvas'
-import { ScreenshotIcon } from '../common/Icons'
-import ImagePreview from './ImagePreview'
 
 const { Panel } = Collapse
 const { Option } = Select
@@ -379,10 +379,8 @@ export default function ArticleView (props: {
       if (!previewCache.url) {
         const width = elementPos.width
         const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
-        // viewService.setLoading(true)
-        cur.classList.add('_screenshot')
-        const canvas = await html2canvas(cur, { y: (cur as any).offsetTop || 0 })
-        cur.classList.remove('_screenshot')
+        viewService.setLoading(true)
+        const canvas = await htmlToCanvas(cur, { y: (cur as any).offsetTop || 0 })
         const imgUrl = canvas.toDataURL('image/png')
         viewService.setLoading(false)
         previewCache.url = imgUrl

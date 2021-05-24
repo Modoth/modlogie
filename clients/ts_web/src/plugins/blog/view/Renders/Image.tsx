@@ -58,7 +58,7 @@ const getImage = (contentBase:string) =>
       img.ontouchcancel = end
     }, [])
     return <>
-      <span className="embed-img" ><img alt={props.alt} src={contentBase + props.src} onClick={toggleFullscreen} /></span>
+      <span className="embed-img" ><img className={classNames(props.src?.endsWith('.svg') ? 'md-svg' : '')} alt={props.alt} src={contentBase + props.src} onClick={toggleFullscreen} /></span>
       <div onClick={toggleFullscreen} className={classNames('full-img', fullscreen ? '' : 'hidden')}>
         <img ref={imgRef}
           style={{ width: `${scale}%`, maxWidth: `${scale}%`, maxHeight: `${100}%` }} alt={props.alt} src={contentBase + props.src} />

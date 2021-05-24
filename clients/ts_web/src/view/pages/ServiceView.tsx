@@ -9,15 +9,15 @@ import Article from '../../domain/ServiceInterfaces/Article'
 import ArticleList from './ArticleList'
 import ArticleSingle from './ArticleSingle'
 import classNames from 'classnames'
-import html2canvas from 'html2canvas'
+import htmlToCanvas from '../../infrac/components/htmlToCanvas'
 import IHistoryService from '../../domain/ServiceInterfaces/IHistoryService'
 import ILangsService, { LangKeys } from '../../domain/ServiceInterfaces/ILangsService'
 import ImageEditor from '../../infrac/components/ImageEditor'
+import ImagePreview from './ImagePreview'
 import IViewService, { IPromptField } from '../../app/Interfaces/IViewService'
 import QrCode from '../../infrac/components/QrCode'
 import React, { useState, useRef } from 'react'
 import TextArea from 'antd/lib/input/TextArea'
-import ImagePreview from './ImagePreview'
 
 export const previewArticleByPath = (locate: LocateFunction, pathOrName: string | undefined, title: string | undefined, root?:string|undefined) => {
   if (!pathOrName) {
@@ -295,7 +295,7 @@ export default function ServiceView (props: {
       } else if (scale !== undefined) {
         opt = { scale }
       }
-      const canvas = await html2canvas(element, opt)
+      const canvas = await htmlToCanvas(element, opt)
       const imgUrl = canvas.toDataURL('image/png')
       if (imgUrl === 'data:,') {
         const nextScale = (scale === undefined ? 1 : scale) * scaleIncrease
