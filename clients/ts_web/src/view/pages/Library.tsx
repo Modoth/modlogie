@@ -4,13 +4,12 @@ import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { MmIcon } from '../common/Icons'
-import { PlusOutlined, AppstoreOutlined, SearchOutlined, CloseOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, AppstoreOutlined, SearchOutlined, ExportOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocate, useUser } from '../common/Contexts'
 import { v4 } from 'uuid'
 import Article, { ArticleTag, ArticleAdditionalType, ArticleWeights } from '../../domain/ServiceInterfaces/Article'
-import ArticleListSummary from './ArticleListSummary'
 import ArticleView from './ArticleView'
 import classNames from 'classnames'
 import ConfigKeys, { getArticleTags } from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -566,6 +565,23 @@ export default function Library (props: LibraryProps) {
       viewService.previewArticle()
     }
   }, [])
+  const articleListService = locate(IArticleListService)
+
+  const [printCount, setPrintCount] = useState(0)
+  useEffect(() => {
+    const onArticleListChange = async () => {
+      setPrintCount(articleListService.all().length)
+    }
+    onArticleListChange()
+    articleListService.addChangeListener(onArticleListChange)
+    return function cleanup () {
+      articleListService.removeChangeListener(onArticleListChange)
+    }
+  }, [])
+
+  const open = () => {
+    locate(IViewService).previewArticleList(true)
+  }
 
   useEffect(() => {
     if (!subjects.length || !rootSubject) {
@@ -596,6 +612,9 @@ export default function Library (props: LibraryProps) {
         </Badge>
       ) : null
       viewService.setFloatingMenus(LangKeys.PageLibrary, <>
+        {user.printPermission && printCount <= 0 ? (
+          <Button onClick={open} type="primary" className="summary-button" size="large" shape="circle" icon={<ExportOutlined className="head-example" />} />
+        ) : null}
         {favorite ? undefined : Fav}
         {user.editingPermission ? (
           <Button
@@ -608,8 +627,10 @@ export default function Library (props: LibraryProps) {
         ) : null}
       </>,
       <>
-        {user.printPermission ? (
-          <ArticleListSummary></ArticleListSummary>
+        {user.printPermission && printCount > 0 ? (
+          <Badge count={printCount} className="article-list-summary">
+            <Button onClick={open} type="primary" className="summary-button" size="large" shape="circle" icon={<ExportOutlined className="head-example" />} />
+          </Badge>
         ) : null}
         {
           favorite ? Fav : <Button
@@ -623,7 +644,7 @@ export default function Library (props: LibraryProps) {
         }
       </>)
     }
-  }, [filter, selectedPublishTag, articleTags, selectedSubjectIds, favorite, favoriteCount])
+  }, [filter, selectedPublishTag, articleTags, selectedSubjectIds, favorite, favoriteCount, printCount])
   const titleClick = () => {
     if (articleId) {
       fetchArticles(1, true)

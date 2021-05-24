@@ -550,7 +550,7 @@ export default function ArticleView (props: {
               }
             }} mode="horizontal" className={classNames('actions-list')}>{[
                 favoriteService ? <MenuItem key="toogle-fav"><Badge>
-                  <Button type="link" className="heart" danger={favorite} icon={ <HeartOutlined /> }
+                  <Button type="link" className={classNames('heart', favorite ? 'heart-icon' : '')} icon={ <HeartOutlined /> }
                     key="favorite"><span className="action-name">{langs.get(LangKeys.Favorite)}</span></Button>
                 </Badge></MenuItem> : null,
                 <MenuItem key="screenshot-share"><Button type="link" icon={<ScreenshotIcon />}
