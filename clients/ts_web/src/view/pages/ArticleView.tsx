@@ -6,7 +6,7 @@ import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { ScreenshotIcon } from '../common/Icons'
 import { Tag } from '../../domain/ServiceInterfaces/ITagsService'
 import { UploadOutlined, CloseOutlined, ShareAltOutlined, SaveOutlined, CheckOutlined, EditOutlined, FontColorsOutlined, ExportOutlined, UpSquareOutlined, UpSquareFilled, HeartOutlined, HeartFilled, LikeOutlined, DislikeOutlined, ExpandOutlined, PrinterOutlined, CaretLeftOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
-import { useUser, useServicesLocate, useMagicSeed } from '../common/Contexts'
+import { useUser, useServicesLocate, useMagicSeed, useMagicMask, useWikiLevel } from '../common/Contexts'
 import Article, { ArticleContent, ArticleTag, ArticleAdditionalType, ArticleWeights } from '../../domain/ServiceInterfaces/Article'
 import classNames from 'classnames'
 import ConfigKeys from '../../domain/ServiceInterfaces/ConfigKeys'
@@ -83,6 +83,8 @@ export default function ArticleView (props: {
   const [editorRefs, setEditorRefs] = useState<ArticleContentEditorCallbacks<[ArticleContent, Set<string>]>>(
     {} as any
   )
+  const magicMask = useMagicMask()
+  const wikiLevel = useWikiLevel()
   const [type, setType] = useState<ArticleContentType | undefined>(undefined)
   const [inArticleList, setInArticleList] = useState(articleListService.has(props.article))
   const [content, setContent] = useState(props.article.content || {})
@@ -105,7 +107,7 @@ export default function ArticleView (props: {
     { label: langs.get(LangKeys.Public), value: false }
   ])
   const [defaultPrivate, setDefaultPrivate] = useState(false)
-  const [previewCache] = useState({ url: '', width: 0, link: '' })
+  const [previewCache] = useState({ img: '', width: 0, link: '', magicMask: 0, wikiLevel: 0 })
   const [preview, setPreview] = useState(false)
   const magicSeed = useMagicSeed()
   const [privateType, setPrivateType] = useState<boolean|undefined>(props.article.private)
@@ -376,16 +378,18 @@ export default function ArticleView (props: {
     const cur = ref.current
     if (cur) {
       const elementPos = cur.getBoundingClientRect()
-      if (!previewCache.url) {
+      if (!previewCache.img || previewCache.wikiLevel !== wikiLevel || previewCache.magicMask !== magicMask) {
         const width = elementPos.width
         const url = `${window.location.protocol}//${window.location.host}/#/article${props.article.path}`
         viewService.setLoading(true)
         const canvas = await htmlToCanvas(cur, { y: (cur as any).offsetTop || 0 })
         const imgUrl = canvas.toDataURL('image/png')
         viewService.setLoading(false)
-        previewCache.url = imgUrl
+        previewCache.img = imgUrl
         previewCache.width = width
         previewCache.link = url
+        previewCache.wikiLevel = wikiLevel
+        previewCache.magicMask = magicMask
       }
       setPreview(true)
       viewService.lockScrollable(true)
@@ -714,7 +718,7 @@ export default function ArticleView (props: {
         }
       </Card >
     </div>
-    { preview ? <ImagePreview {...previewCache} onClose={() => {
+    { preview ? <ImagePreview width={previewCache.width} url={previewCache.img} link={previewCache.link} onClose={() => {
       setPreview(false)
       viewService.lockScrollable(false)
     }}></ImagePreview> : undefined}
