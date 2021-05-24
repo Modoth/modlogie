@@ -108,6 +108,14 @@
     //   pointer-events: none;
     // }
 
+    ._screenshot & {
+      border-bottom: 1px solid #00000018;
+      margin-bottom: 6px;
+      ul {
+        margin-bottom: -7px;
+      }
+    }
+
     & > div:nth-child(2) {
       flex: 1;
       text-overflow: ellipsis;
@@ -147,15 +155,6 @@
       color: #25120240;
       &.ant-btn-dangerous {
         color: rgb(120, 20, 20, 0.65) !important;
-      }
-      border-radius: 50%;
-      background: #fff8 !important;
-      -webkit-backdrop-filter: 5px;
-      backdrop-filter: 5px;
-      width: 24px;
-      height: 24px;
-      & > .anticon {
-        margin-right: 0;
       }
     }
 
