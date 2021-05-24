@@ -282,6 +282,7 @@ export default function ArticleList () {
   })
   useEffect(() => {
     return () => {
+      close()
       viewService.setFloatingMenus?.(LangKeys.PageArticleList)
     }
   }, [])

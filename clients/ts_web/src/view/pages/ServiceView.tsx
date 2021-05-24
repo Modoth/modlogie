@@ -265,6 +265,7 @@ export default function ServiceView (props: {
   }
   const fPreviewArticle = (article: Article, type: ArticleContentType, onclose?: { (): void }): void => {
     if (article) {
+      fPreviewArticleList(false)
       document.body.style.background = 'white'
       props.setContentVisiable(false)
       setPreviewArticle({ article, type, onclose })
