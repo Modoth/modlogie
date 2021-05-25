@@ -111,9 +111,12 @@ span.embed-src {
       .status-text {
         flex: 1;
         align-self: center;
-        margin-left: 5px;
+        margin: 0 5px;
         padding: 5px 0;
         font-size: 0.9em;
+        @media (max-width: 780px) {
+          font-size: 0.85em;
+        }
         line-height: 1.8;
         user-select: text;
       }
@@ -173,6 +176,9 @@ span.embed-src {
       }
       .mdg > .mdg-b {
         font-size: 0.9em;
+        @media (max-width: 780px) {
+          font-size: 0.85em;
+        }
         // color: #0008;
         // font-style: italic;
         display: unset;
