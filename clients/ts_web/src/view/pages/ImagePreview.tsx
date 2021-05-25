@@ -19,10 +19,9 @@ export default function ImagePreview (props: {url: string, width?:number, link?:
         {
           props.link ? <a href={props.link}>
             <QrCode content={props.link}></QrCode>
-          </a> : <a href={props.url} download={'download.png'}>
-            <Button type="link" size="large" danger onClick={props.onClose} icon={<CloseOutlined />}>
-            </Button>
           </a>
+            : <Button type="link" size="large" danger onClick={props.onClose} icon={<CloseOutlined />}>
+            </Button>
         }
       </div>
       <div></div>
