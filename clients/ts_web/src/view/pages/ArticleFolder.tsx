@@ -39,7 +39,7 @@ export function ArticleFolder (props: {path: string}) {
             new Condition()
               .setType(Condition.ConditionType.STARTS_WITH)
               .setProp('Path')
-              .setValue(props.path)
+              .setValue(props.path + '/')
           ])
       )
       const [_, articles] = await articlesService.query(query, undefined, 0, 0)

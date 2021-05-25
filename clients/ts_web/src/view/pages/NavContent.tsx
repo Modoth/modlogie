@@ -80,6 +80,9 @@ function NavContent () {
       <Route path="/article/:path">
         <ArticleDetail />
       </Route>
+      <Route path="/random">
+        <ArticleDetail rand={true}/>
+      </Route>
       <Route path="/">
         <>
           <Home />

@@ -288,7 +288,7 @@ export default function Library (props: LibraryProps) {
                       new Condition()
                         .setType(Condition.ConditionType.STARTS_WITH)
                         .setProp('Path')
-                        .setValue(sbj!.path!)
+                        .setValue(sbj!.path! + '/')
                     )
                   )
               ]
@@ -393,7 +393,7 @@ export default function Library (props: LibraryProps) {
               new Condition()
                 .setType(Condition.ConditionType.STARTS_WITH)
                 .setProp('Path')
-                .setValue(rootSubject?.path!)
+                .setValue(rootSubject?.path! + '/')
             ])
         )
         .setOrderBy('Random')

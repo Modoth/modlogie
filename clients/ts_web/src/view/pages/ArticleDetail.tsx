@@ -4,7 +4,7 @@ import IArticleAppservice from '../../app/Interfaces/IArticleAppservice'
 import IViewService from '../../app/Interfaces/IViewService'
 import React, { useState, useEffect } from 'react'
 
-export function ArticleDetail (props: {}) {
+export function ArticleDetail (props: {rand?:boolean}) {
   const param = useLocation<any>()
   const locate = useServicesLocate()
   const path = param.pathname?.slice('/article'.length)
@@ -14,12 +14,14 @@ export function ArticleDetail (props: {}) {
     (async () => {
       const viewService = locate(IViewService)
       viewService.setLoading(true)
-      const [article, articleContentType, type] =
-        (await locate(IArticleAppservice).fetchArticle(path, true)) ||
-        []
+      const [article, articleContentType, type] = (await (props.rand
+        ? locate(IArticleAppservice).fetchRandomArticle(true)
+        : locate(IArticleAppservice).fetchArticle(path, true)
+      )) || []
       viewService.setLoading(false)
       const onclose = () => {
-        setUrl({ pathname: '/' + (type ? type.route : '') })
+        setUrl({ pathname: '/' })
+        // setUrl({ pathname: '/' + (type ? type.route : '') })
       }
       if (!article || !articleContentType) {
         onclose()

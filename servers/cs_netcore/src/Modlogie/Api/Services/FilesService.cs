@@ -203,10 +203,10 @@ namespace Modlogie.Api.Services
             if (randomOrder)
             {
                 total = await items.CountAsync();
-                var skip = total.Value - request.Take;
+                var skip = total.Value - request.Take + 1;
                 if (skip > 0)
                 {
-                    skip = new Random().Next();
+                    skip = new Random().Next() % skip;
                     items = items.Skip(skip);
                 }
 

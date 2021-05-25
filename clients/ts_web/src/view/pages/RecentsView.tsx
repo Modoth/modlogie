@@ -105,7 +105,7 @@ export default function RecentsView (props: { type: ArticleType }) {
                 new Condition()
                   .setType(Condition.ConditionType.STARTS_WITH)
                   .setProp('Path')
-                  .setValue(subjectId)
+                  .setValue(subjectId + '/')
               ]
               : []),
             new Condition()
@@ -159,7 +159,7 @@ export default function RecentsView (props: { type: ArticleType }) {
                     new Condition()
                       .setType(Condition.ConditionType.STARTS_WITH)
                       .setProp('Path')
-                      .setValue(subjectId)
+                      .setValue(subjectId + '/')
                   ]
                   : []),
                 new Condition()
