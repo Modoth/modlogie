@@ -113,7 +113,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   History = '历史';
   Help = '帮助';
   Home = '首页';
-  ImageSave = '保存';
+  ImageSave = '预览图片';
   Import = '导入';
   ItemsCount = '总词条数:';
   Keyword = '关键字';

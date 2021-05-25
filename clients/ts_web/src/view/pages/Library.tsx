@@ -4,7 +4,7 @@ import { ArticleType, ArticleContentType, PluginsConfig } from '../../pluginbase
 import { Button, Space, Radio, Pagination, Drawer, Table, Tree, Input, Badge } from 'antd'
 import { IPublishService } from '../../domain/ServiceInterfaces/IPublishService'
 import { MmIcon } from '../common/Icons'
-import { PlusOutlined, AppstoreOutlined, SearchOutlined, ExportOutlined, HeartFilled } from '@ant-design/icons'
+import { PlusOutlined, AppstoreOutlined, SearchOutlined, CloseOutlined, CheckOutlined, ExportOutlined, HeartFilled } from '@ant-design/icons'
 import { shuffle } from '../../infrac/Lang/shuffle'
 import { useLocation, Redirect } from 'react-router-dom'
 import { useServicesLocate, useUser } from '../common/Contexts'
@@ -746,17 +746,17 @@ export default function Library (props: LibraryProps) {
                 }}
               ></Input>
             )}
-            {/* <Button
+            <Button
               type="link"
               danger
               icon={<CloseOutlined />}
               onClick={() => {
                 setShowFilter(false)
               }}
-            ></Button> */}
+            ></Button>
             <Button
               type="link"
-              icon={<SearchOutlined />}
+              icon={<CheckOutlined />}
               onClick={() => {
                 setShowFilter(false)
                 fetchArticles(1)

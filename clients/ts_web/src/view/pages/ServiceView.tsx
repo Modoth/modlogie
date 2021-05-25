@@ -82,6 +82,7 @@ export default function ServiceView (props: {
   }>()
 
   const [previewImgUrl, setPreviewImgUrl] = useState('')
+  const [previewImgWidth, setPreviewImgWidth] = useState(0)
 
   const [previewArticleList, setPreviewArticleList] = useState(false)
   const [previewArticle, setPreviewArticle] = useState<{ article: Article, type: ArticleContentType, onclose?: {(): void } } | undefined>(undefined)
@@ -252,9 +253,10 @@ export default function ServiceView (props: {
       refFile.current!.click()
     })
   }
-  const fPreviewImage = (url: string) => {
+  const fPreviewImage = (url: string, width = 0) => {
     viewService.lockScrollable(!!url)
     setPreviewImgUrl(url)
+    setPreviewImgWidth(width)
   }
   const fPreviewArticleList = (visiable: boolean): void => {
     if (visiable === previewArticleList) {
@@ -295,6 +297,7 @@ export default function ServiceView (props: {
       } else if (scale !== undefined) {
         opt = { scale }
       }
+      const width = element.getBoundingClientRect().width
       const canvas = await htmlToCanvas(element, opt)
       const imgUrl = canvas.toDataURL('image/png')
       if (imgUrl === 'data:,') {
@@ -311,7 +314,7 @@ export default function ServiceView (props: {
       } else if (scale !== undefined) {
         viewService.error(langs.get(LangKeys.ScreenShotScaled) + `(x${Math.floor(scale * 100) / 100})`, 2000)
       }
-      viewService.previewImage(imgUrl)
+      fPreviewImage(imgUrl, width)
     } catch (e) {
       // viewService!.errorKey(locate(ILangsService), LangKeys.UnknownError)
     } finally {
@@ -442,7 +445,7 @@ export default function ServiceView (props: {
           })}
         </Space>
       </Modal>
-      { previewImgUrl ? <ImagePreview url={previewImgUrl} onClose={() => fPreviewImage('')}/> : null }
+      { previewImgUrl ? <ImagePreview url={previewImgUrl} width={previewImgWidth} onClose={() => fPreviewImage('')}/> : null }
       { previewArticleList ? <ArticleList /> : null }
       {
         previewArticle ? <ArticleSingle key={previewArticle.article.id} {...previewArticle}></ArticleSingle> : null

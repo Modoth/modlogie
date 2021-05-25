@@ -3,7 +3,7 @@
 }
 
 .heart-icon {
-  color: salmon !important;
+  color: salmon;
 }
 
 .library {
@@ -210,26 +210,27 @@
     & .tag-list {
       display: flex;
       box-sizing: border-box;
-      // padding: 3px 0;
-      // border-radius: 10px;
-      // border-bottom: 1px solid #0001;
-      // background: #f9734108;
     }
 
     & .tag-item {
       margin: 3px;
-      // border-radius: 10px;
-      // border-left-width: 1px;
       padding: 0;
       border: none;
       border-radius: 5px;
-      box-shadow: 0px 0px 1px #0008;
+      box-shadow: 0px 0px 1px #000c;
       flex: 1;
       text-align: center;
+      background: #00000006;
+      height: 28px;
       &:first-child {
         padding: 0 10px;
-        // box-shadow: unset;
         flex: unset;
+      }
+      &.ant-radio-button-wrapper-checked {
+        background: var(--primary-c0);
+        &:first-child {
+          background: var(--primary);
+        }
       }
     }
 
