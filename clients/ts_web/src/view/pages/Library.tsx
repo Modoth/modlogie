@@ -182,7 +182,7 @@ export default function Library (props: LibraryProps) {
   const [articles, setArticles] = useState<Article[]>([])
   const [recommendsArticles, setRecommendsArticles] = useState<Article[]>([])
   const [recommendCount, setRecommendCount] = useState(0)
-
+  const [searchChanged, setSearchChanged] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [articleHandlers] = useState<{
     onDelete: {(id: string): void };
@@ -746,28 +746,35 @@ export default function Library (props: LibraryProps) {
                 }}
               ></Input>
             )}
-            <Button
-              type="link"
-              danger
-              icon={<CloseOutlined />}
-              onClick={() => {
-                setShowFilter(false)
-              }}
-            ></Button>
-            <Button
-              type="link"
-              icon={<CheckOutlined />}
-              onClick={() => {
-                setShowFilter(false)
-                fetchArticles(1)
-              }}
-            ></Button>
+            {
+              searchChanged ? <Button
+                type="link"
+                icon={<CheckOutlined />}
+                onClick={() => {
+                  setSearchChanged(false)
+                  setShowFilter(false)
+                  fetchArticles(1)
+                }}
+              ></Button>
+                : <Button
+                  type="link"
+                  danger
+                  icon={<CloseOutlined />}
+                  onClick={() => {
+                    setShowFilter(false)
+                  }}
+                ></Button>
+            }
+
           </div>
           {user.editingPermission && publishTags && publishTags.length ? <Radio.Group
             className="tag-list"
             defaultValue={publishTags[0]}
             buttonStyle="solid"
-            onChange={(e) => setSelectedPublishTag(e.target.value)}
+            onChange={(e) => {
+              setSearchChanged(true)
+              setSelectedPublishTag(e.target.value)
+            }}
           >
               {...publishTags.map((tag:ArticleTag) => (
                 <Radio.Button className="tag-item" key={tag.id} value={tag}>
@@ -780,7 +787,10 @@ export default function Library (props: LibraryProps) {
               className="tag-list"
               defaultValue={undefined}
               buttonStyle="solid"
-              onChange={(e) => setSelectedPrivate(e.target.value)}
+              onChange={(e) => {
+                setSearchChanged(true)
+                setSelectedPrivate(e.target.value)
+              }}
             >
               {...[
                 { label: langs.get(LangKeys.All), value: undefined },
@@ -798,7 +808,10 @@ export default function Library (props: LibraryProps) {
               className="tag-list"
               defaultValue={selectedWeight}
               buttonStyle="solid"
-              onChange={(e) => setSelectedWeight(e.target.value)}
+              onChange={(e) => {
+                setSearchChanged(true)
+                setSelectedWeight(e.target.value)
+              }}
             >
               {...[
                 { label: langs.get(LangKeys.Weight), value: undefined },
@@ -816,7 +829,10 @@ export default function Library (props: LibraryProps) {
               key={tag.name}
               defaultValue={tag.value}
               buttonStyle="solid"
-              onChange={(e) => updateTagValue(i, tag, e.target.value)}
+              onChange={(e) => {
+                setSearchChanged(true)
+                updateTagValue(i, tag, e.target.value)
+              }}
             >
               <Radio.Button className="tag-item" value={undefined}>
                 {langs.get(LangKeys.All)}
@@ -844,9 +860,11 @@ export default function Library (props: LibraryProps) {
               multiple={true}
               selectable={true}
               onCheck={(checked) => {
+                setSearchChanged(true)
                 selectSubjects(checked as any)
               }}
               onSelect={(checked) => {
+                setSearchChanged(true)
                 selectSubjects(checked as any)
               }}
               checkedKeys={selectedSubjectIds}
