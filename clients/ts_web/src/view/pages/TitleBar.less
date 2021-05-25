@@ -1,8 +1,5 @@
 .title-bar-wraper {
-  --height: 47px;
-  @media (min-width:780px) {
-    --height: 41px;
-  }
+  --height: var(--titlebar-height);
   height: var(--height);
 }
 .title-bar {
@@ -15,7 +12,6 @@
   .standalone & {
     background: #fff;
   }
-  padding: 2px 0;
   margin-bottom: 10px;
   border-bottom: none;
   position: fixed;

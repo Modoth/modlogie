@@ -22,7 +22,7 @@ span.embed-src {
   color: #404040;
   font-feature-settings: "tnum";
   font-variant: tabular-nums;
-  margin-top: 50px;
+  margin-top: calc(var(--titlebar-height) + 1px);
   overflow: hidden;
   a {
     color: chocolate;
@@ -32,7 +32,6 @@ span.embed-src {
     top: 0;
     left: 0;
     right: 0;
-    // padding: 0 5px;
     z-index: 2;
     background: #fff;
     @media (min-width: 780px) {
@@ -68,10 +67,8 @@ span.embed-src {
       }
     }
     .menus-bar {
-      padding: 3px 0;
-      @media (min-width: 780px) {
-        padding: 0;
-      }
+      min-height: var(--titlebar-height);
+      padding: 2px 0 1px;
       display: flex;
       .single-article-content-menu-btn-draw {
         margin-right: 5px;

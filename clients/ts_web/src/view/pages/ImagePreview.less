@@ -52,11 +52,8 @@
     width: 100%;
     display: flex;
     align-items: center;
-    --height: 47px;
+    --height: var(--titlebar-height);
     height: var(--height);
-    @media (min-width: 780px) {
-      --height: 41px;
-    }
     .title {
       flex: 1;
       color: #251202;

@@ -632,7 +632,12 @@ export default function ArticleView (props: {
                 </Collapse>
               </>
             ) : (
-              <props.type.Viewer articleId={props.article.id!} content={content} files={files} type={type} />
+              <props.type.Viewer onClick={(ev) => {
+                if ((ev.target as HTMLElement)?.classList?.contains('cloze')) {
+                  return
+                }
+                openDetail()
+              }} articleId={props.article.id!} content={content} files={files} type={type} />
             )}
             {
               (hasMore) ? <div className="show-more"><Button type="link" size="small" icon={<CaretLeftOutlined />} onClick={openDetail}></Button></div> : null
