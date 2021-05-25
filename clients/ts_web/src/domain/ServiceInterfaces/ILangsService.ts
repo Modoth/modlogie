@@ -110,6 +110,7 @@ export class LangKeysInterface {
   PageManageTags = 'PageManageTags';
   PageManageUsers = 'PageManageUsers';
   PageManageWords = 'PageManageWords';
+  PageHome = 'PageHome'
   PageSize = 'PageSize';
   PageToolViewer = 'PageToolViewer';
   Paging = 'Paging';

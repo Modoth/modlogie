@@ -165,6 +165,7 @@ class LangKeysClass implements LangKeysInterface, IKeyValue, ConfigKeysInterface
   PageManageWords = '生词本';
   PageManageUsers = '用户管理'
   PageToolViewer = '实用工具';
+  PageHome = '首页';
   PageSize = '单页数量';
   Paging = '分页(Beta)';
   Password = '密码';
